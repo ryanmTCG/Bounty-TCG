@@ -1632,6 +1632,7 @@ function fxJob(card, ab){
   if (ab.donMinus > 0) steps.unshift({a: "returnDon", who: "own", n: ab.donMinus, upTo: false, must: true, text: `Cost: return ${ab.donMinus} DON!! to your DON!! deck`});
   return {type: "efx", card, tl: TRIG[ab.t] || "Ability", text: ab.text, steps, i: 0, pick: [], dsel: {}};
 }
+const optUsed = (card, a) => { const h = [S.leader, S.stage, ...S.chars].find(f => f && f.card === card); return !!(h && (h.mk || []).includes("au") && /once\s*per\s*turn/i.test(a.text || "")); };
 function fxEnqueue(job){ if (modal && modal.type === "efx") fxQueue.push(job); else { modal = job; renderModal(); } }
 // trigs: array of trigger keys. manual: show a message when nothing matches
 async function runAbility(card, trigs, manual, don){
@@ -1643,6 +1644,8 @@ async function runAbility(card, trigs, manual, don){
     if (!fx) { if (manual) toast("Couldn't read the card text here."); return; }
     const all = fx.ab.filter(x => trigs.includes(x.t)), list = all.filter(x => (x.don || 0) <= (don || 0) && (x.donMinus || 0) <= fieldDon());
     if (!list.length && all.length) { if (manual) toast(`${lab(card)} doesn't meet the DON!! requirement for that.`); return; }
+    if (list.every(x => optUsed(card, x))) { toast(`${lab(card)} already used its Once Per Turn ability this turn.`); return; }
+    list.splice(0, list.length, ...list.filter(x => !optUsed(card, x)));
     if (!list.length) { if (manual) toast(`No ${trigs.map(t => TRIG[t]).join(" / ")} ability found on ${lab(card)}.`); return; }
     list.forEach(x => fxEnqueue(fxJob(card, x)));
   } catch (e) {
@@ -1661,6 +1664,8 @@ async function useAbility(card, x, y){
     const have = (() => { const hs = [S.leader, S.stage, ...S.chars]; const h = hs.find(f => f && f.card === card); return h ? h.d || 0 : 0; })();
     const usable = fx.ab.filter(a => (a.don || 0) <= have && (a.donMinus || 0) <= fieldDon());
     if (!usable.length) { toast(`${lab(card)} doesn't meet the DON!! requirement for its ability.`); return; }
+    if (usable.every(a => optUsed(card, a))) { toast(`${lab(card)} already used its Once Per Turn ability this turn.`); return; }
+    usable.splice(0, usable.length, ...usable.filter(a => !optUsed(card, a)));
     const items = usable.map(a => [`${a.text.slice(0, 70)}${a.text.length > 70 ? "…" : ""}`, () => fxEnqueue(fxJob(card, a))]);
     if (items.length === 1) { items[0][1](); return; }
     showMenu(`${lab(card)} abilities`, items, x || innerWidth / 2 - 100, y || innerHeight / 2 - 80);

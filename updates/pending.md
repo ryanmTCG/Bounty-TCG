@@ -12,3 +12,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - Concede asks "Are you sure you want to concede?" with Keep playing / Yes, concede.
 - Ability used marker goes on a card automatically when its ability resolves.
 - Ability used marker only for Once Per Turn abilities.
+- A card can't use its Once Per Turn ability again while it has Ability used.
