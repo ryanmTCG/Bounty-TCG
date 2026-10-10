@@ -1,8 +1,8 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "shell": 2,
-  "bundle": "web-1.2.0.json.gz",
-  "sha256": "e14034a8a6f59644aae0aef32c53639e9cb625964a224eaff33dc9861e637565",
-  "size": 517800,
-  "notes": "Blocking by tapping a Character, defender resolves attacks, both players set Life before turn 1, 0-power and On K.O. fixes, a No Attack marker, and the card reader hidden from other players."
+  "bundle": "web-1.3.0.json.gz",
+  "sha256": "b6f98fa1e69814cb0d96f4b34c79736f2c777cdbc5b3b2d36522002fcc9f5db8",
+  "size": 520013,
+  "notes": "Concede, Draw for turn, DON!! for turn, Undo action and End turn moved to a panel under the hand. Roll Dice box under Power and Cost (moved from the top bar). Start my turn removed: your turn starts by itself when the opponent ends theirs; Draw for turn and DON!! for turn glow until used and..."
 }

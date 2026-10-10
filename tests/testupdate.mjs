@@ -49,7 +49,7 @@ const look = p => p.evaluate(async () => ({
 
 // 1. a good update downloads, then is used from the next launch
 const prof = "/tmp/bounty-prof-upd"; fs.rmSync(prof, { recursive: true, force: true });
-makeUpdate("1.1.1");
+makeUpdate("99.0.1");
 let A = await launch(prof);
 await wait(7000);
 console.log("first launch", JSON.stringify(await look(A.page)));
@@ -63,16 +63,16 @@ await A.page.evaluate(() => bountyDesktop.checkForUpdate());
 await wait(500);
 console.log("manual check toast", await A.page.evaluate(() => { const t = document.querySelector("#toast"); return t && !t.hidden ? t.textContent : ""; }));
 // a newer one replaces it and the old folder is cleaned up
-makeUpdate("1.1.2");
+makeUpdate("99.0.2");
 await A.page.evaluate(() => bountyDesktop.checkForUpdate());
 await wait(2500);
-console.log("1.1.2 while running 1.1.1", JSON.stringify(await look(A.page)), fs.readdirSync(prof + "/updates"));
+console.log("99.0.2 while running 99.0.1", JSON.stringify(await look(A.page)), fs.readdirSync(prof + "/updates"));
 console.log("errors", JSON.stringify(A.errs));
 await A.app.close();
 
 // 2. a download that doesn't match its checksum is refused
 const prof2 = "/tmp/bounty-prof-upd2"; fs.rmSync(prof2, { recursive: true, force: true });
-makeUpdate("1.1.3", { badSha: true });
+makeUpdate("99.0.3", { badSha: true });
 A = await launch(prof2);
 await wait(7000);
 console.log("bad checksum", JSON.stringify(await look(A.page)), fs.existsSync(prof2 + "/updates/active.json"));
