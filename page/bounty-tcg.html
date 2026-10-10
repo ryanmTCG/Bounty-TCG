@@ -712,6 +712,7 @@ select.sbtn{font-family:var(--slab)}
 .mkb.nb,.mkpill.nb,.mkgh.nb{background:#C93A40}
 .mkb.au,.mkpill.au,.mkgh.au{background:#D98E1F}
 .mkb.nk,.mkpill.nk,.mkgh.nk{background:#7A4FD0}
+.mkb.na,.mkpill.na,.mkgh.na{background:#55636B}
 .mkhint{margin:6px 0 0;font-size:12px;color:var(--muted)}
 .mkrow{position:absolute;left:2px;right:2px;bottom:2px;display:flex;flex-wrap:wrap;gap:2px;z-index:4}
 .mkpill{font-style:normal;font-family:var(--slab);font-size:8px;line-height:1;color:#fff;padding:2px 4px;border-radius:999px;border:1px solid rgba(0,0,0,.6);cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.5)}
@@ -760,6 +761,7 @@ select.sbtn{font-family:var(--slab)}
     <button class="mkb nb" data-mk="nb" type="button" title="Drag onto a card">No Block</button>
     <button class="mkb au" data-mk="au" type="button" title="Drag onto a card">Ability used</button>
     <button class="mkb nk" data-mk="nk" type="button" title="Drag onto a card">No K.O.</button>
+    <button class="mkb na" data-mk="na" type="button" title="Drag onto a card">No Attack</button>
   </div><label class="fxopt"><input type="checkbox" id="fx-auto" data-do="autofx" checked> Auto card effects (reads [On Play], [When Attacking], [On Block], [On K.O.] text off the card art)</label><p class="mkhint">Drag a marker onto any Leader or Character. Tap a marker on your own card to remove it.</p></aside>
   <div class="panrow">
   <div class="pwslot" id="pwslot" data-empty="Power spot. Drag the counter back here."><aside class="pwp" id="pwp" aria-label="Power counter">
@@ -900,7 +902,7 @@ const clean = (s, n = 24) => String(s == null ? "" : s).replace(/[^\p{L}\p{N} .,
 const num = (x, max = 99) => { x = Math.floor(+x); return x >= 0 && x <= max ? x : 0; };
 const hue = code => { let h = 0; for (const ch of String(code).split("-")[0]) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; };
 const ACTK = {rest:1, stand:1, ko:1, bounce:1, bottom:1, pwr:1, dmg:1};
-const MK = {fz:{l:"Freeze", s:"FREEZE"}, nb:{l:"No Block", s:"NO BLOCK"}, au:{l:"Ability used", s:"USED"}, nk:{l:"No K.O.", s:"NO K.O."}};
+const MK = {fz:{l:"Freeze", s:"FREEZE"}, nb:{l:"No Block", s:"NO BLOCK"}, au:{l:"Ability used", s:"USED"}, nk:{l:"No K.O.", s:"NO K.O."}, na:{l:"No Attack", s:"NO ATTACK"}};
 const lab = c => c.n ? c.c + " " + c.n : c.c;
 function shuffle(a){ for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 let toastT;
@@ -1013,7 +1015,7 @@ function onPeers(change){
   render();
 }
 function oppModel(x){
-  const f = o => o && typeof o === "object" ? {c: clean(o.c, 16), n: clean(o.n, 24), r: o.r ? 1 : 0, d: num(o.d, 20), pm: Math.max(-60000, Math.min(60000, Math.round(+o.pm || 0))), cm: Math.max(-20, Math.min(20, Math.round(+o.cm || 0))), mk: Array.isArray(o.mk) ? o.mk.filter(k => MK[k]).slice(0, 4) : []} : null;
+  const f = o => o && typeof o === "object" ? {c: clean(o.c, 16), n: clean(o.n, 24), r: o.r ? 1 : 0, d: num(o.d, 20), pm: Math.max(-60000, Math.min(60000, Math.round(+o.pm || 0))), cm: Math.max(-20, Math.min(20, Math.round(+o.cm || 0))), mk: Array.isArray(o.mk) ? o.mk.filter(k => MK[k]).slice(0, 5) : []} : null;
   return {
     nick: clean(x.nick, 20) || "Opponent", sl: num(x.sl, 6), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
     ld: f(x.ld), ch: (Array.isArray(x.ch) ? x.ch : []).slice(0, 12).map(f).filter(Boolean), st: f(x.st), ev: f(x.ev),
