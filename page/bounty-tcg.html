@@ -1054,7 +1054,9 @@ function oppModel(x){
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
   };
 }
-const fld = x => ({c: x.card.c, n: x.card.n, r: x.r ? 1 : 0, d: x.d || 0, pm: x.pm || 0, cm: x.cm || 0, mk: x.mk || []});
+// attached DON!! give +1000 each, but only during their owner's turn
+const donB = f => S.myTurn && f && f.d ? f.d * 1000 : 0;
+const fld = x => ({c: x.card.c, n: x.card.n, r: x.r ? 1 : 0, d: x.d || 0, pm: (x.pm || 0) + donB(x), cm: x.cm || 0, mk: x.mk || []});
 function pubFull(){
   return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, mq:S.mq.slice(-8), ma:S.ack || 0,
     lf:S.life.length, dd:S.donDeck, da:S.donActive, dr:S.donRested, dk:S.deck.length, h:S.hand.length,
@@ -1770,7 +1772,7 @@ async function offerOppAttack(){
 }
 function fxCands(st){
   const own = st.who === "own", out = [];
-  const src = own ? S.chars.map((f, i) => ({ref: "ch:" + i, c: Object.assign({}, f.card, {pm: f.pm}), k: (CARDDB.get(f.card.c) || {}).k, p: (CARDDB.get(f.card.c) || {}).p})) : (oppM ? oppM.ch.map((f, i) => ({ref: "ch:" + i, c: f, k: (CARDDB.get(f.c) || {}).k, p: (CARDDB.get(f.c) || {}).p})) : []);
+  const src = own ? S.chars.map((f, i) => ({ref: "ch:" + i, c: Object.assign({}, f.card, {pm: (f.pm || 0) + donB(f)}), k: (CARDDB.get(f.card.c) || {}).k, p: (CARDDB.get(f.card.c) || {}).p})) : (oppM ? oppM.ch.map((f, i) => ({ref: "ch:" + i, c: f, k: (CARDDB.get(f.c) || {}).k, p: (CARDDB.get(f.c) || {}).p})) : []);
   for (const x of src) {
     if (st.cost !== null && Number.isFinite(x.k) && x.k > st.cost) continue;
     if (st.power !== null && Number.isFinite(x.p) && x.p > st.power) continue;
@@ -1826,7 +1828,7 @@ function fxApply(){
   if (kind === "giveDon") {
     const f = refs[0] === "ld" ? S.leader : S.chars[+refs[0].slice(3)]; if (!f) { fxNext(); return; }
     let left = Math.max(1, st.n), given = 0;
-    const take = pool => { while (left > 0 && S[pool] > 0) { S[pool]--; f.d++; f.pm = (f.pm || 0) + 1000; left--; given++; } };
+    const take = pool => { while (left > 0 && S[pool] > 0) { S[pool]--; f.d++; left--; given++; } };
     if (st.rested) take("donRested"); else { take("donActive"); take("donRested"); }
     if (given) addLog(`gave ${given} ${st.rested ? "rested " : ""}DON!! to ${lab(f.card)} (+${f.d})`);
     if (given < Math.max(1, st.n)) toast(`Only ${given} ${st.rested ? "rested " : ""}DON!! available in your cost area.`);
@@ -1942,18 +1944,18 @@ function startTurn(){
 function refreshAll(){
   if (S.phase !== "play") { toast("Set up your deck and Life first."); return; }
   const stand = f => { if (f.mk && f.mk.includes("na") && S.turn >= (f.nat || 0)) { f.mk = f.mk.filter(k => k !== "na"); addLog(`${lab(f.card)} can attack again`); } if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; };
-  for (const f of S.chars) { stand(f); S.donRested += f.d; f.pm = (f.pm || 0) - f.d * 1000; f.d = 0; }
+  for (const f of S.chars) { stand(f); S.donRested += f.d; f.d = 0; }
   if (S.stage) S.stage.r = false;
-  stand(S.leader); S.donRested += S.leader.d; S.leader.pm = (S.leader.pm || 0) - S.leader.d * 1000; S.leader.d = 0;
+  stand(S.leader); S.donRested += S.leader.d; S.leader.d = 0;
   S.donActive += S.donRested; S.donRested = 0;
   addLog("refreshed (stood all cards and DON!!)");
   commit();
 }
 function endTurn(){
   if (S.phase !== "play") { toast("Set up your deck and Life first."); return; }
+  if (!S.myTurn) { toast("It isn't your turn."); return; }
   S.pw = 0; S.cc = 0; S.atk = null; S.blk = null;
   for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = 0; f.cm = 0; }
-  if (!S.myTurn) { toast("It isn't your turn."); return; }
   S.myTurn = false; S.et = (S.et || 0) + 1;
   addLog(`ended turn ${S.turn || 0}`);
   commit();
@@ -2046,10 +2048,10 @@ function openCardMenu(src, x, y){
     const f = k === "ch" ? S.chars[i] : k === "st" ? S.stage : S.leader; if (!f) return; title = lab(f.card); info = {c: f.card.c, n: f.card.n, r: f.r ? 1 : 0, d: f.d || 0};
     items.push([f.r ? "Activate (stand)" : "Rest", () => { f.r = !f.r; addLog(`${f.r ? "rested" : "activated"} ${lab(f.card)}`); commit(); }]);
     if (k !== "st") {
-      items.push(["Give DON!! (+1)", () => { if (!S.donActive) { toast("No active DON!! in your cost area."); return; } S.donActive--; f.d++; f.pm = (f.pm || 0) + 1000; addLog(`gave DON!! to ${lab(f.card)} (+${f.d})`); commit(); }]);
+      items.push(["Give DON!! (+1)", () => { if (!S.donActive) { toast("No active DON!! in your cost area."); return; } S.donActive--; f.d++; addLog(`gave DON!! to ${lab(f.card)} (+${f.d})`); commit(); }]);
       if (f.pm) items.push([`Clear power bonus (${f.pm > 0 ? "+" : "\u2212"}${Math.abs(f.pm)})`, () => { f.pm = 0; addLog(`cleared the power bonus on ${lab(f.card)}`); commit(); }]);
       if (f.cm) items.push([`Clear cost bonus (${f.cm > 0 ? "+" : "\u2212"}${Math.abs(f.cm)})`, () => { f.cm = 0; addLog(`cleared the cost bonus on ${lab(f.card)}`); commit(); }]);
-      if (f.d) items.push(["Take DON!! back", () => { f.d--; f.pm = (f.pm || 0) - 1000; S.donRested++; commit(); }]);
+      if (f.d) items.push(["Take DON!! back", () => { f.d--; S.donRested++; commit(); }]);
     }
     if (k !== "ld") items.push(M("Return to hand", "hand"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"), M("Trash", "trash"));
   } else if (k === "ev") {
@@ -2185,13 +2187,13 @@ function moveDon(d, to){
   if (d.att && to === d.att) return;
   if (d.kind === "don" && to === "cost") return;
   if (target) {
-    if (d.att) { fromCard.d--; fromCard.pm = (fromCard.pm || 0) - 1000; target.d++; target.pm = (target.pm || 0) + 1000; addLog(`moved a DON!! from ${lab(fromCard.card)} to ${lab(target.card)}`); }
-    else if (d.pool === "a" && S.donActive > 0) { S.donActive--; target.d++; target.pm = (target.pm || 0) + 1000; addLog(`gave DON!! to ${lab(target.card)} (+${target.d})`); }
-    else if (d.pool === "r" && S.donRested > 0) { S.donRested--; target.d++; target.pm = (target.pm || 0) + 1000; addLog(`gave a rested DON!! to ${lab(target.card)} (+${target.d})`); }
+    if (d.att) { fromCard.d--; target.d++; addLog(`moved a DON!! from ${lab(fromCard.card)} to ${lab(target.card)}`); }
+    else if (d.pool === "a" && S.donActive > 0) { S.donActive--; target.d++; addLog(`gave DON!! to ${lab(target.card)} (+${target.d})`); }
+    else if (d.pool === "r" && S.donRested > 0) { S.donRested--; target.d++; addLog(`gave a rested DON!! to ${lab(target.card)} (+${target.d})`); }
     else return;
-  } else if (to === "cost") { fromCard.d--; fromCard.pm = (fromCard.pm || 0) - 1000; S.donRested++; addLog(`took a DON!! back from ${lab(fromCard.card)}`); }
+  } else if (to === "cost") { fromCard.d--; S.donRested++; addLog(`took a DON!! back from ${lab(fromCard.card)}`); }
   else if (to === "dondeck") {
-    if (d.att) { fromCard.d--; fromCard.pm = (fromCard.pm || 0) - 1000; addLog(`returned a DON!! from ${lab(fromCard.card)} to the DON!! deck`); }
+    if (d.att) { fromCard.d--; addLog(`returned a DON!! from ${lab(fromCard.card)} to the DON!! deck`); }
     else if (d.pool === "a" && S.donActive > 0) { S.donActive--; addLog("returned a DON!! to the DON!! deck"); }
     else if (d.pool === "r" && S.donRested > 0) { S.donRested--; addLog("returned a DON!! to the DON!! deck"); }
     else return;
@@ -2239,7 +2241,7 @@ function defResult(){
   if (!oppM || !oppM.ak) return null;
   const a = oppCardAt(oppM.ak.s), t = ownHolder(oppM.ak.t); if (!a || !t) return null;
   const f = S.blk != null && S.chars[S.blk] ? S.chars[S.blk] : t;
-  const ap = powNum(a, true), tp = powNum({c: f.card.c, pm: f.pm}, false);
+  const ap = powNum(a, true), tp = powNum({c: f.card.c, pm: (f.pm || 0) + donB(f)}, false);
   if (ap === null || tp === null) return null;
   return {ap, tp, hits: ap >= tp, f, onLeader: f === S.leader};
 }
@@ -2262,7 +2264,7 @@ function combatResult(){
   const a = ownHolder(S.atk.s), t = oppCardAt(S.atk.t); if (!a || !t) return null;
   const bk = oppM && oppM.bk != null ? oppM.ch[oppM.bk] : null;
   const d = bk || t, ref = bk ? "ch:" + oppM.bk : S.atk.t;
-  const ap = powNum({c: a.card.c, d: a.d, pm: a.pm}, true), tp = powNum(d, false);
+  const ap = powNum({c: a.card.c, d: a.d, pm: (a.pm || 0) + donB(a)}, true), tp = powNum(d, false);
   if (ap === null || tp === null) return null;
   return {ap, tp, hits: ap >= tp, ref, code: d.c, onLeader: ref === "ld"};
 }
@@ -2595,7 +2597,7 @@ function doAction(a){
       const n = sel[k]; if (!n) continue;
       if (k === "a") { n && (S.donActive = Math.max(0, S.donActive - n)); tot += n; }
       else if (k === "r") { S.donRested = Math.max(0, S.donRested - n); tot += n; }
-      else { const f = donHolder(k); if (f) { const m2 = Math.min(n, f.d || 0); f.d -= m2; f.pm = (f.pm || 0) - 1000 * m2; tot += m2; } }
+      else { const f = donHolder(k); if (f) { const m2 = Math.min(n, f.d || 0); f.d -= m2; tot += m2; } }
     }
     S.donDeck += tot; if (tot) addLog(`returned ${tot} DON!! to the DON!! deck`);
     commit(); fxNext(); return;
