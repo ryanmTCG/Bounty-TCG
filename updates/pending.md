@@ -10,3 +10,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - Roll Dice box removed again (the who-goes-first roll stays in the banner).
 - Coin flip button removed.
 - Concede asks "Are you sure you want to concede?" with Keep playing / Yes, concede.
+- Ability used marker goes on a card automatically when its ability resolves.
