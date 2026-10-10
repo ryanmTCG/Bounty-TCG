@@ -1,8 +1,8 @@
 {
-  "version": "1.3.1",
+  "version": "1.3.2",
   "shell": 2,
-  "bundle": "web-1.3.1.json.gz",
-  "sha256": "51cc53244022bd9c62f40dbde997e193048f9faca7a120d3d5ccb980cff86b61",
-  "size": 521859,
-  "notes": "Abilities now show in a small box over Power and Cost that walks you through each step: tap the glowing card on the board to apply it. Undo also takes back power, rest/stand and markers you put on your opponent's cards."
+  "bundle": "web-1.3.2.json.gz",
+  "sha256": "f426f93eeec7840fc275d928a2b9a3d7ece97cc5b27c0f6a4ff8f2a99a5ebbd6",
+  "size": 521590,
+  "notes": "Attached DON!! now give +1000 only during their owner's turn. Taking a DON!! back on your opponent's turn no longer leaves a card at -1000, and End turn out of turn no longer clears your power bonuses."
 }
