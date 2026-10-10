@@ -10,3 +10,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - Nobody starts the first turn until both players have mulliganed (or kept) and set Life.
 - Attacks are resolved by the defender: the attacker waits while the defender blocks, counters and presses Resolve attack.
 - New "No Attack" marker next to the other four.
+- A card with No Attack can't attack, and the marker comes off after one round.

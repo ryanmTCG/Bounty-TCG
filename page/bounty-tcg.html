@@ -1547,7 +1547,7 @@ function applyMarkReqs(){
         continue;
       }
       f.mk = f.mk || [];
-      if (!f.mk.includes(q.k)) { f.mk.push(q.k); addLog(`${lab(f.card)} got ${MK[q.k].l} from ${oppM.nick}`); }
+      if (!f.mk.includes(q.k)) { f.mk.push(q.k); if (q.k === "na") f.nat = S.turn + 2; addLog(`${lab(f.card)} got ${MK[q.k].l} from ${oppM.nick}`); }
     }
     const keep = S.mq.filter(q => q.id > oppM.ma);
     if (keep.length !== S.mq.length) { S.mq = keep; ch = true; }
@@ -1744,7 +1744,7 @@ function placeMark(code, ref){
   const f = donHolder(ref); if (!f || !MK[code]) return;
   f.mk = f.mk || [];
   if (f.mk.includes(code)) { toast(`${lab(f.card)} already has ${MK[code].l}.`); return; }
-  f.mk.push(code); addLog(`put ${MK[code].l} on ${lab(f.card)}`); commit();
+  f.mk.push(code); if (code === "na") f.nat = S.turn + 1; addLog(`put ${MK[code].l} on ${lab(f.card)}`); commit();
 }
 function placeMarkOpp(code, ref){
   const t = oppCardAt(ref); if (!t || !MK[code]) return;
@@ -1802,7 +1802,7 @@ function startTurn(){
   if (S.phase === "play" && !S.turn && oppM && oppM.kp === 0) { toast(`Waiting for ${oppM.nick} to keep their hand and set Life.`); return; }
   if (S.phase !== "play") { toast(S.phase === "pre" ? "Keep your hand and set your Life first." : (S.phase === "wait" || S.phase === "roll") ? "The match hasn't started yet." : "Set up your deck first."); return; }
   S.turn++;
-  const stand = f => { if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; f.mk = (f.mk || []).filter(k => k !== "au"); };
+  const stand = f => { if (f.mk && f.mk.includes("na") && S.turn >= (f.nat || 0)) { f.mk = f.mk.filter(k => k !== "na"); addLog(`${lab(f.card)} can attack again`); } if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; f.mk = (f.mk || []).filter(k => k !== "au"); };
   for (const f of S.chars) { stand(f); S.donRested += f.d; f.d = 0; f.pm = 0; f.cm = 0; }
   if (S.stage) S.stage.r = false;
   stand(S.leader); S.donRested += S.leader.d; S.leader.d = 0; S.leader.pm = 0; S.leader.cm = 0;
@@ -1817,7 +1817,7 @@ function startTurn(){
 }
 function refreshAll(){
   if (S.phase !== "play") { toast("Set up your deck and Life first."); return; }
-  const stand = f => { if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; };
+  const stand = f => { if (f.mk && f.mk.includes("na") && S.turn >= (f.nat || 0)) { f.mk = f.mk.filter(k => k !== "na"); addLog(`${lab(f.card)} can attack again`); } if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; };
   for (const f of S.chars) { stand(f); S.donRested += f.d; f.pm = (f.pm || 0) - f.d * 1000; f.d = 0; }
   if (S.stage) S.stage.r = false;
   stand(S.leader); S.donRested += S.leader.d; S.leader.pm = (S.leader.pm || 0) - S.leader.d * 1000; S.leader.d = 0;
@@ -2084,6 +2084,7 @@ function movePm(from, to){
 const atkAt = (x, y) => { const el = document.elementFromPoint(x, y); return el && el.closest ? el.closest("[data-atk]") : null; };
 function attackWith(src, target){
   const me = donHolder(src); if (!me) return;
+  if (me.mk && me.mk.includes("na")) { toast(`${lab(me.card)} has No Attack and can't attack yet.`); return; }
   const tg = target === "ld" ? (oppM && oppM.ld) : (oppM && oppM.ch[+target.slice(3)]);
   me.r = true;
   S.atk = {s: src, t: target, n: Date.now() % 1e9}; S.blk = null;
