@@ -6,15 +6,17 @@ Build it
 Double-click "Build Bounty TCG.bat". It downloads the Electron runtime (about
 110 MB, checked against its published checksum), adds the game and your card
 images from the bounty-tcg\cards folder, puts the finished app in the
-"Bounty TCG" folder here, adds a desktop shortcut and starts the game.
+"Bounty TCG" folder here, adds a desktop shortcut, makes "Bounty TCG.zip"
+for sharing and starts the game.
 
 Run it again any time you get an updated "app" folder.
 
 Share it with a friend
 ----------------------
-Zip the whole "Bounty TCG" folder and send it. They unzip it and run
-"Bounty TCG.exe". Nothing else to install, no accounts. The first time it
-opens, it puts a Bounty TCG shortcut on their desktop.
+Send "Bounty TCG.zip" (or upload it to Google Drive). They unzip it and
+open "Play Bounty TCG" in the folder it makes. Nothing else to install, no
+accounts. The first time the game opens, it puts a Bounty TCG shortcut on
+their desktop.
 
 Updates
 -------
@@ -39,7 +41,7 @@ by hand, the same as with "Auto card effects" turned off.
 
 Getting it onto Steam
 ---------------------
-The "Bounty TCG" folder is exactly what you upload to Steam as the game's
+The "Game files" folder is exactly what you upload to Steam as the game's
 content (the depot), with "Bounty TCG.exe" as the launch option.
 What Steam needs that isn't code:
  1. A Steamworks partner account and the $100 app fee per game.

@@ -8,7 +8,7 @@ This is an unofficial fan project. It isn't affiliated with or endorsed by Banda
 
 ## Playing
 
-The desktop app runs on Windows. Unzip the download and run `Bounty TCG.exe` in the **Bounty TCG** folder. There's nothing to install and no account to make. The first time it opens, it puts a shortcut on your desktop.
+The desktop app runs on Windows. Unzip the download and open **Play Bounty TCG** in the folder it makes. There's nothing to install and no account to make. The first time it opens, it puts a shortcut on your desktop.
 
 - **Join table:** pick a room code and send it to a friend. When they type the same code, you're at the same table.
 - **Lobbies:** make an open table that anyone playing can see and join.
@@ -31,7 +31,7 @@ npm install
 python3 tools/build.py      # makes dist/kit
 ```
 
-`dist/kit` goes to a Windows PC. Double-click `Build Bounty TCG.bat` there: it downloads Electron, adds the card images from a `cards` folder and makes the **Bounty TCG** app folder with a desktop shortcut.
+`dist/kit` goes to a Windows PC. Double-click `Build Bounty TCG.bat` there: it downloads Electron, adds the card images from a `cards` folder, makes the **Bounty TCG** app folder with a desktop shortcut, and zips it as `Bounty TCG.zip` for sharing. The folder has `Play Bounty TCG.exe` (a small launcher built from `desktop/kit/launcher.cs`) on top and the app in `Game files`.
 
 The DON!! card and card-back images aren't in this repository. Put `don.png`, `dondeck.jpg` and `sleeve.png` in `private/static/` before building, or the DON!! cards and sleeves show blank.
 
