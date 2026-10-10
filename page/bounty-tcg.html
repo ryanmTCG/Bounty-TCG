@@ -320,6 +320,7 @@ button,input,textarea,select{font:inherit;color:inherit}
 .menu button:hover{background:var(--btn2)}
 .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;z-index:100;max-width:min(92vw,460px);text-align:center}
 .toast[hidden]{display:none}
+.noedit [data-do="reader"],.noedit [data-do="carddata"]{display:none!important}
 .wait{padding:30px 12px;text-align:center;color:var(--muted)}
 
 /* layout: board centered; log and horizontal hand on the left; zoom on the right */
@@ -2913,6 +2914,8 @@ async function initNames(){
   } catch (e) {}
 }
 async function isEditor(){ try { const u = window.claude ? await window.claude.use("user") : null; return u ? !!(await u.canEdit()) : false; } catch (e) { return false; } }
+// only editors see the card reader and card data buttons
+isEditor().then(ok => document.body.classList.toggle("noedit", !ok));
 async function writeNames(db, entries, overwrite){
   const bySet = {};
   entries.forEach((v, code) => { const s = code.split("-")[0]; if (!bySet[s]) bySet[s] = {}; bySet[s][code] = v; });

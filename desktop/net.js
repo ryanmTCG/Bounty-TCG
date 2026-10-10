@@ -397,8 +397,15 @@
   /* ------------------------------------------------------------------ */
   /* user: a local player who owns their own copy                          */
   /* ------------------------------------------------------------------ */
+  // Only the copy Ryan unlocked (Ctrl+Shift+O) shows the card reader and card data tools.
+  const owner = () => { try { return localStorage.getItem("bounty-owner") === "1"; } catch (e) { return false; } };
+  document.addEventListener("keydown", e => {
+    if (!(e.ctrlKey && e.shiftKey && (e.key === "O" || e.key === "o"))) return;
+    try { localStorage.setItem("bounty-owner", owner() ? "0" : "1"); } catch (e) {}
+    location.reload();
+  });
   const userNS = Object.freeze({
-    isOwner: () => true, canEdit: async () => true, can: () => true,
+    isOwner: () => owner(), canEdit: async () => owner(), can: () => owner(),
     id: async () => null, me: async () => ({id: "local", name: ""}), profiles: async () => ({}), search: async () => []
   });
 
