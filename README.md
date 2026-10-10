@@ -2,7 +2,7 @@
 
 A tabletop for playing the One Piece Card Game with friends: build decks, sit at a table with a room code or an open lobby, and play it out with drag-and-drop cards, DON!!, Life and combat helpers.
 
-**Download for Windows:** [Bounty TCG on Google Drive](https://drive.google.com/file/d/1NtBJ2fPxiUjHJcQ8xn-Yxx81c26mY3tr/view). If Google Drive asks you to request access, send the request.
+**Download for Windows:** [Bounty TCG on Google Drive](https://drive.google.com/file/d/1ow4Ba4UO3qLA6jSSYLgWXJvn_2-HYOBU/view). If Google Drive asks you to request access, send the request.
 
 This is an unofficial fan project. It isn't affiliated with or endorsed by Bandai, and this repository doesn't include any card images.
 
