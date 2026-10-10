@@ -9,3 +9,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - Test a deck (both sides) starts with a die roll for who goes first; the Roll Dice box glows while a first-player roll is waiting.
 - Roll Dice box removed again (the who-goes-first roll stays in the banner).
 - Coin flip button removed.
+- Concede asks "Are you sure you want to concede?" with Keep playing / Yes, concede.
