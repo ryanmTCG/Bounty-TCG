@@ -327,6 +327,11 @@ button,input,textarea,select{font:inherit;color:inherit}
 .turnbar [data-do="endturn"]{grid-column:2/span 2}
 .turnbar #startfb{grid-column:1/-1}
 .turnbar .btn.due{background:#F2B84B;color:#2A1D00;box-shadow:0 0 0 3px rgba(242,184,75,.45),0 3px 0 #7A5200}
+.fxpanel{border:2px solid #E9B949;border-radius:14px;background:rgba(10,30,45,.92);padding:10px 12px;font-size:13px;line-height:1.35}
+.fxpanel h3{margin:0 0 4px;font-size:14px;color:#F5C451}
+.fxpanel p{margin:0 0 8px}
+.fxpanel .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.fxpanel .q{opacity:.7;font-size:12px;margin:0 0 6px}
 .pccol{display:flex;flex-direction:column;gap:10px;flex:1 1 270px;min-width:0}
 .pcrow{display:flex;gap:10px;align-items:stretch}
 .pcrow .pwslot{flex:1 1 150px;min-width:120px}
@@ -771,7 +776,7 @@ select.sbtn{font-family:var(--slab)}
     <button class="mkb na" data-mk="na" type="button" title="Drag onto a card">No Attack</button>
   </div><label class="fxopt"><input type="checkbox" id="fx-auto" data-do="autofx" checked> Auto card effects (reads [On Play], [When Attacking], [On Block], [On K.O.] text off the card art)</label><p class="mkhint">Drag a marker onto any Leader or Character. Tap a marker on your own card to remove it.</p></aside>
   <div class="panrow">
-  <div class="pccol"><div class="pcrow">
+  <div class="pccol"><div class="fxpanel" id="fxpanel" hidden></div><div class="pcrow">
   <div class="pwslot" id="pwslot" data-empty="Power spot. Drag the counter back here."><aside class="pwp" id="pwp" aria-label="Power counter">
     <h2 class="pwgrab" title="Drag me anywhere on the board">&#10303; Power</h2>
     <div class="pwval pwgrab" id="pwval" title="Drag me anywhere on the board">0</div>
@@ -1633,7 +1638,21 @@ function fxJob(card, ab){
   return {type: "efx", card, tl: TRIG[ab.t] || "Ability", text: ab.text, steps, i: 0, pick: [], dsel: {}};
 }
 const optUsed = (card, a) => { const h = [S.leader, S.stage, ...S.chars].find(f => f && f.card === card); return !!(h && (h.mk || []).includes("au") && /once\s*per\s*turn/i.test(a.text || "")); };
-function fxEnqueue(job){ if (modal && modal.type === "efx") fxQueue.push(job); else { modal = job; renderModal(); } }
+// the ability being resolved shows in a small box by Power and Cost; the player does it on the board, then taps Done
+let fxCur = null;
+function fxEnqueue(job){ if (fxCur) fxQueue.push(job); else fxCur = job; renderFx(); }
+function renderFx(){
+  const el = $("#fxpanel"); if (!el) return;
+  if (!fxCur) { el.hidden = true; el.innerHTML = ""; return; }
+  el.hidden = false;
+  el.innerHTML = `<h3>[${esc(fxCur.tl || "On Play")}] ${esc(lab(fxCur.card))}</h3><p>${esc(fxCur.text || "")}</p><p class="q">Do this on the board yourself, then tap Done.${fxQueue.length ? ` ${fxQueue.length} more after this.` : ""}</p><div class="row"><button class="btn" data-do="fxpcancel" type="button">Cancel</button><button class="btn pri" data-do="fxpdone" type="button">Done</button></div>`;
+}
+function fxFinish(done){
+  const m = fxCur; if (!m) return;
+  if (done) { const uf = [S.leader, S.stage, ...S.chars].find(f => f && f.card === m.card); if (uf && /once\s*per\s*turn/i.test(m.text || "")) { uf.mk = uf.mk || []; if (!uf.mk.includes("au")) uf.mk.push("au"); } addLog(`resolved ${lab(m.card)}'s ${m.tl || "On Play"}`); }
+  else addLog(`cancelled ${lab(m.card)}'s ability`);
+  fxCur = fxQueue.shift() || null; commit(); renderFx();
+}
 // trigs: array of trigger keys. manual: show a message when nothing matches
 async function runAbility(card, trigs, manual, don){
   if ((!autoFx && !manual) || !ART.get(card.c)) { if (manual) toast("This card has no art uploaded, so its text can't be read."); return; }
@@ -2521,6 +2540,8 @@ function doAction(a){
     if (at >= 0) modal.pick.splice(at, 1); else { if (modal.pick.length >= lim) modal.pick.shift(); modal.pick.push(ref); }
     renderModal(); return;
   }
+  if (a === "fxpdone") { fxFinish(true); return; }
+  if (a === "fxpcancel") { fxFinish(false); return; }
   if (a === "fxapply" && modal && modal.type === "efx") { fxApply(); return; }
   if (a === "fxskip" && modal && modal.type === "efx") { fxNext(); return; }
   if (a === "fxcancel" && modal && modal.type === "efx") { const cd = modal.card, nx = fxQueue.shift(); closeModal(); addLog(`cancelled ${lab(cd)}'s ability`); if (nx) { modal = nx; renderModal(); } return; }
