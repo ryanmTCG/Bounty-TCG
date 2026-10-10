@@ -320,6 +320,12 @@ button,input,textarea,select{font:inherit;color:inherit}
 .menu button:hover{background:var(--btn2)}
 .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;z-index:100;max-width:min(92vw,460px);text-align:center}
 .toast[hidden]{display:none}
+.turnbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 10px 10px;order:3}
+.turnbar .btn{padding:10px 8px;font-size:15px}
+.turnbar .tb-concede{background:#8E1B24;color:#fff}
+.turnbar [data-do="undo"]{grid-column:1/span 1}
+.turnbar [data-do="endturn"]{grid-column:2/span 2}
+@media (min-width:1100px){.turnbar{margin:0;flex:0 0 auto}}
 .noedit [data-do="reader"],.noedit [data-do="carddata"]{display:none!important}
 .wait{padding:30px 12px;text-align:center;color:var(--muted)}
 
@@ -739,11 +745,8 @@ select.sbtn{font-family:var(--slab)}
   <h1>Bounty TCG</h1>
   <div class="status" id="status"></div>
   <span class="sp"></span>
-  <button class="btn" data-do="undo" type="button" title="Undo your last move (Ctrl+Z)">Undo</button>
-  <button class="btn" data-do="concede" type="button" title="Give up this match">Concede</button>
   <button class="btn" data-do="resetboard" type="button" title="Put every card back in your deck and deal a fresh opening hand">Reset board</button>
   <button class="btn" data-do="refresh" type="button" title="Stand all your cards and DON!! without drawing">Refresh</button>
-  <button class="btn" data-do="endturn" type="button" title="End your turn and clear power and cost bonuses">End turn</button>
   <button class="btn pri" data-do="startturn" type="button">Start my turn</button>
   <button class="btn pri" data-do="pswitch" id="pswitch" type="button" hidden>Switch side</button>
   <button class="btn" data-do="coin" type="button">Coin flip</button>
@@ -782,6 +785,13 @@ select.sbtn{font-family:var(--slab)}
     <h2>Your hand <span id="handn"></span> <button class="btn" data-do="sorthand" type="button" style="font-size:12px;padding:2px 10px;vertical-align:middle">Sort by cost</button></h2>
     <div id="hand" class="hand" data-zone="hand"></div>
   </aside>
+  <div class="turnbar">
+    <button class="btn tb-concede" data-do="concede" type="button" title="Give up this match">Concede</button>
+    <button class="btn" data-do="drawturn" type="button" title="Draw 1 card">Draw for turn</button>
+    <button class="btn" data-do="donturn" type="button" title="Add 2 DON!! from your DON!! deck (1 on the very first turn)">DON!! for turn</button>
+    <button class="btn" data-do="undo" type="button" title="Undo your last move (Ctrl+Z)">Undo action</button>
+    <button class="btn pri" data-do="endturn" type="button" title="End your turn and clear power and cost bonuses">End turn</button>
+  </div>
   <div id="banner"></div>
   </div>
   <main class="table">
@@ -2534,6 +2544,13 @@ function doAction(a){
       break;
     case "startturn": startTurn(); break;
     case "undo": undo(); break;
+    case "drawturn": if (S.phase !== "play") { toast("Keep your hand and set Life first."); break; } draw(1); break;
+    case "donturn": {
+      if (S.phase !== "play") { toast("Keep your hand and set Life first."); break; }
+      const add = Math.min(S.turn <= 1 && S.first ? 1 : 2, S.donDeck);
+      if (!add) { toast("Your DON!! deck is empty."); break; }
+      S.donDeck -= add; S.donActive += add; addLog(`added ${add} DON!!`); commit(); break;
+    }
     case "resetboard": if (S.phase === "none" || !lastCfg) { toast("Set up your deck first."); break; } modal = {type: "reset"}; renderModal(); break;
     case "resetyes": { closeModal(); const first = S.first, wasRoom = S.phase !== "wait" && S.phase !== "roll"; newGame(lastCfg, false); S.first = first; addLog("reset their board"); commit(); } break;
     case "concede": if (S.phase !== "pre" && S.phase !== "play") { toast("There's no match to concede yet."); break; } if (S.conceded) { toast("You already conceded."); break; } modal = {type: "concede"}; renderModal(); break;
