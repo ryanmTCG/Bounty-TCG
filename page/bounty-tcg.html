@@ -331,6 +331,7 @@ button,input,textarea,select{font:inherit;color:inherit}
 .pcrow{display:flex;gap:10px;align-items:stretch}
 .pcrow .pwslot{flex:1 1 150px;min-width:120px}
 .dicebtn{min-height:56px;font-size:17px;border-radius:14px}
+.dicebtn.due{background:#F2B84B;color:#2A1D00;box-shadow:0 0 0 3px rgba(242,184,75,.45),0 3px 0 #7A5200}
 @media (min-width:1100px){.turnbar{margin:0;flex:0 0 auto}}
 .noedit [data-do="reader"],.noedit [data-do="carddata"]{display:none!important}
 .wait{padding:30px 12px;text-align:center;color:var(--muted)}
@@ -1242,7 +1243,8 @@ function render(){
     const dr = $('[data-do="drawturn"]'), dn = $('[data-do="donturn"]'), fb = $("#startfb");
     if (dr) dr.classList.toggle("due", on && S.tdr !== S.turn && !(S.first && S.turn === 1));
     if (dn) dn.classList.toggle("due", on && S.tdn !== S.turn);
-    if (fb) fb.hidden = !(R && !PR && S.phase === "play" && oppM && oppM.et == null); }
+    if (fb) fb.hidden = !(R && !PR && S.phase === "play" && oppM && oppM.et == null);
+    const db = $(".dicebtn"); if (db) db.classList.toggle("due", (S.phase === "roll" && !S.roll) || !!(PR && !PR.order && S.phase === "pre")); }
   { const sw = $("#pswitch"); if (sw) { sw.hidden = !PR; if (PR) sw.textContent = "Switch to Player " + (PR.cur === 0 ? 2 : 1); } }
   { const fa = $("#fx-auto"); if (fa) fa.checked = autoFx; }
   $("#opp").innerHTML = side(oppM || EMPTY(), false);
@@ -1254,9 +1256,9 @@ function render(){
     $("#banner").innerHTML = "";
   } else {
     $("#me").innerHTML = side(pubFull(), true);
-    $("#hand").innerHTML = (S.phase === "wait" || S.phase === "roll") ? `<span class="empty">Your hand is dealt when the match starts</span>` : S.hand.length ? S.hand.map((c, i) => tile(c, `data-src="hand:${i}"`, false, 0)).join("") : `<span class="empty">Your hand is empty</span>`;
+    $("#hand").innerHTML = (S.phase === "wait" || S.phase === "roll" || (PR && !PR.order && S.phase === "pre")) ? `<span class="empty">Your hand is dealt when the match starts</span>` : S.hand.length ? S.hand.map((c, i) => tile(c, `data-src="hand:${i}"`, false, 0)).join("") : `<span class="empty">Your hand is empty</span>`;
     fitHand();
-    $("#banner").innerHTML = (S.phase === "wait" || S.phase === "roll") ? matchBannerHTML() : S.phase === "pre"
+    $("#banner").innerHTML = (S.phase === "wait" || S.phase === "roll") ? matchBannerHTML() : (PR && !PR.order && S.phase === "pre") ? practiceRollHTML() : S.phase === "pre"
       ? `<div class="banner"><span>Opening hand. Keep it and set ${S.lifeN} Life cards${S.mull ? "." : ", or mulligan once."}</span><button class="btn pri" data-do="keep" type="button">Keep and set Life</button>${S.mull ? "" : '<button class="btn" data-do="mulligan" type="button">Mulligan</button>'}</div>` : (S.phase === "play" && !S.turn && oppM && oppM.kp === 0) ? `<div class="banner"><span>Waiting for ${esc(oppM.nick)} to keep their hand and set Life\u2026</span></div>` : "";
   }
   let mid = "The Grand Line";
@@ -1515,6 +1517,26 @@ function practiceDeliver(){
     render();
   } finally { PR.busy = false; }
 }
+// practice: roll for both players first; the higher roll picks who goes first
+function practiceRollHTML(){
+  const o = PR.roll;
+  if (!o) return `<div class="banner"><span>Roll a die for each player to see who chooses who goes first.</span><button class="btn pri" data-do="prroll" type="button">Roll die</button></div>`;
+  const w = o[0] > o[1] ? 0 : 1;
+  return `<div class="banner"><span>Player 1 rolled <b>${o[0]}</b>, Player 2 rolled <b>${o[1]}</b>. Player ${w + 1} chooses:</span><button class="btn pri" data-do="prfirst:${w}" type="button">Player ${w + 1} goes first</button><button class="btn" data-do="prfirst:${1 - w}" type="button">Player ${w + 1} goes second</button></div>`;
+}
+function practiceRoll(){
+  if (!PR || PR.order) return;
+  let a, b; do { a = 1 + Math.floor(Math.random() * 6); b = 1 + Math.floor(Math.random() * 6); } while (a === b);
+  PR.roll = [a, b]; addLog(`rolled for who goes first: Player 1 ${a}, Player 2 ${b}`); commit();
+}
+function practiceFirst(i){
+  if (!PR || PR.order || !PR.roll) return;
+  practiceStash();
+  for (const k of [0, 1]) if (PR.sides[k]) PR.sides[k].S.first = k === i;
+  PR.order = {first: i};
+  addLog(`Player ${i + 1} goes first`); commit();
+  if (PR.cur !== i) practiceSwitch();
+}
 function practiceSwitch(){
   if (!PR) return;
   closeMenu(); if (modal && modal.type !== "home") closeModal();
@@ -1539,7 +1561,7 @@ async function startPractice(){
   R = practiceR(); roomCode = "practice"; status = "online";
   oppM = oppModel(PR.pres[1]);
   closeModal(); renderStatus(); renderLog(); render();
-  toast("Practice table ready. You are Player 1. Use Switch side to play as Player 2.");
+  toast("Practice table ready. Roll to see who goes first.");
 }
 function applyMarkReqs(){
   let ch = false;
@@ -1810,13 +1832,14 @@ function matchBannerHTML(){
 }
 function keepHand(){
   if (S.phase !== "pre") return;
+  if (PR && !PR.order) { toast("Roll to see who goes first before keeping your hand."); return; }
   for (let i = 0; i < S.lifeN && S.deck.length; i++) S.life.push(S.deck.shift());
   S.phase = "play"; S.seenEt = oppM && oppM.et ? oppM.et : 0;
   addLog(`set ${S.life.length} Life cards${S.first ? " and is going first" : ""}`);
   commit();
   // the first turn starts by itself once both players are ready
   if (!R) startTurn();
-  else if (PR) { if (oppM && oppM.kp === 1) { if (!S.first) practiceSwitch(); startTurn(); } }
+  else if (PR) { if (oppM && oppM.kp === 1) { PR.pres[PR.cur] = JSON.parse(JSON.stringify(pubFull())); if (!S.first) practiceSwitch(); startTurn(); } }
   else if (S.first && oppM && oppM.kp === 1) startTurn();
 }
 function mulligan(){
@@ -2571,6 +2594,7 @@ function doAction(a){
       break;
     case "startturn": startTurn(); break;
     case "undo": undo(); break;
+    case "prfirst:0": case "prfirst:1": practiceFirst(+a.slice(8)); break;
     case "drawturn":
       if (S.phase !== "play" || !S.turn) { toast("Your turn hasn't started yet."); break; }
       if (S.first && S.turn === 1) { toast("The player going first doesn't draw on their first turn."); break; }
@@ -2626,7 +2650,10 @@ function doAction(a){
     case "heal": if (!S.deck.length) { toast("Your deck is empty."); break; } S.life.unshift(S.deck.shift()); addLog(`healed (Life ${S.life.length})`); commit(); break;
     case "damage": if (!S.life.length) { toast("No Life left. The next hit is lethal."); break; } { const lc = S.life[0]; moveCard("lf:0", "hand"); offerTrigger(lc); } break;
     case "coin": addLog("flipped a coin: " + (Math.random() < .5 ? "heads" : "tails")); break;
-    case "die": { const v = 1 + Math.floor(Math.random() * 6); addLog("rolled a d6: " + v); toast(`You rolled a ${v}.`); const db = $(".dicebtn"); if (db) db.textContent = `Roll Dice (last: ${v})`; break; }
+    case "prroll": practiceRoll(); break;
+    case "die": {
+      if (PR && !PR.order && S.phase === "pre") { practiceRoll(); break; }
+      if (S.phase === "roll" && !S.roll) { doAction("rolld"); break; } const v = 1 + Math.floor(Math.random() * 6); addLog("rolled a d6: " + v); toast(`You rolled a ${v}.`); const db = $(".dicebtn"); if (db) db.textContent = `Roll Dice (last: ${v})`; break; }
     case "setup": openSetup(); break;
     case "savedeck": saveDeck(); break;
     case "art": openArt(); break;

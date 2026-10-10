@@ -6,3 +6,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - Concede, Draw for turn, DON!! for turn, Undo action and End turn moved to a panel under the hand.
 - Roll Dice box under Power and Cost (moved from the top bar).
 - Start my turn removed: your turn starts by itself when the opponent ends theirs; Draw for turn and DON!! for turn glow until used and work once per turn.
+- Test a deck (both sides) starts with a die roll for who goes first; the Roll Dice box glows while a first-player roll is waiting.
