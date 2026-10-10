@@ -11,3 +11,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - Coin flip button removed.
 - Concede asks "Are you sure you want to concede?" with Keep playing / Yes, concede.
 - Ability used marker goes on a card automatically when its ability resolves.
+- Ability used marker only for Once Per Turn abilities.

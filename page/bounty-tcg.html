@@ -1742,7 +1742,7 @@ function fxStepHTML(m){
 function fxNext(){
   const m = modal; if (!m || m.type !== "efx") return;
   m.i++; m.pick = [];
-  if (m.i >= m.steps.length) { const nx = fxQueue.shift(); closeModal(); const uf = [S.leader, S.stage, ...S.chars].find(f => f && f.card === m.card); if (uf) { uf.mk = uf.mk || []; if (!uf.mk.includes("au")) uf.mk.push("au"); } addLog(`resolved ${lab(m.card)}'s ${m.tl || "On Play"}`); commit(); if (nx) { modal = nx; renderModal(); } return; }
+  if (m.i >= m.steps.length) { const nx = fxQueue.shift(); closeModal(); const uf = [S.leader, S.stage, ...S.chars].find(f => f && f.card === m.card); if (uf && /once\s*per\s*turn/i.test(m.text || "")) { uf.mk = uf.mk || []; if (!uf.mk.includes("au")) uf.mk.push("au"); } addLog(`resolved ${lab(m.card)}'s ${m.tl || "On Play"}`); commit(); if (nx) { modal = nx; renderModal(); } return; }
   renderModal();
 }
 function fxApply(){
