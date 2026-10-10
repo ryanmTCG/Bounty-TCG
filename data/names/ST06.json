@@ -1,0 +1,178 @@
+{
+  "cards": {
+    "ST06-001": {
+      "a": "Special",
+      "c": "Black",
+      "kw": "-",
+      "lf": 5,
+      "n": "Sakazuki",
+      "p": 5000,
+      "s": "Navy",
+      "t": "Leader"
+    },
+    "ST06-002": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Koby",
+      "p": 2000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST06-003": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Jango",
+      "p": 3000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST06-004": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 0,
+      "k": 5,
+      "kw": "Double Attack",
+      "n": "Smoker",
+      "p": 7000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST06-005": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Sengoku",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST06-006": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Tashigi",
+      "p": 4000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST06-007": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Tsuru",
+      "p": 2000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST06-008": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 0,
+      "k": 3,
+      "kw": "-",
+      "n": "Hina",
+      "p": 5000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST06-009": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Fullbody",
+      "p": 4000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST06-010": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Helmeppo",
+      "p": 3000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST06-011": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Momonga",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST06-012": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Monkey.D.Garp",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST06-013": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "T-Bone",
+      "p": 5000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST06-014": {
+      "c": "Yellow",
+      "k": 2,
+      "kw": "-",
+      "n": "Shockwave",
+      "s": "Navy",
+      "t": "Event"
+    },
+    "ST06-015": {
+      "c": "Yellow",
+      "k": 1,
+      "kw": "-",
+      "n": "Great Eruption",
+      "s": "Navy",
+      "t": "Event"
+    },
+    "ST06-016": {
+      "c": "Yellow",
+      "k": 1,
+      "kw": "-",
+      "n": "White Out",
+      "s": "Navy",
+      "t": "Event"
+    },
+    "ST06-017": {
+      "c": "Black",
+      "k": 1,
+      "kw": "-",
+      "n": "Navy HQ",
+      "s": "Navy",
+      "t": "Stage"
+    }
+  }
+}

@@ -1,0 +1,648 @@
+{
+  "cards": {
+    "EB03-001": {
+      "a": "Slash",
+      "c": "Blue/Red",
+      "kw": "Rush",
+      "lf": 4,
+      "n": "Nefeltari Vivi",
+      "p": 5000,
+      "s": "Alabasta",
+      "t": "Leader"
+    },
+    "EB03-002": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 5,
+      "kw": "-",
+      "n": "Ain",
+      "p": 6000,
+      "s": "FILM/Neo Navy",
+      "t": "Character"
+    },
+    "EB03-003": {
+      "a": "Special",
+      "c": "Red",
+      "k": 5,
+      "kw": "-",
+      "n": "Uta",
+      "p": 7000,
+      "s": "FILM",
+      "t": "Character"
+    },
+    "EB03-004": {
+      "a": "Wisdom",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Carina",
+      "p": 2000,
+      "s": "FILM/Grantesoro",
+      "t": "Character"
+    },
+    "EB03-005": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Sugar",
+      "s": "Donquixote Pirates",
+      "t": "Character"
+    },
+    "EB03-006": {
+      "a": "Wisdom",
+      "c": "Red",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Nami",
+      "p": 7000,
+      "s": "Alabasta/Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB03-007": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Baccarat",
+      "p": 5000,
+      "s": "FILM/Grantesoro",
+      "t": "Character"
+    },
+    "EB03-008": {
+      "a": "Ranged",
+      "c": "Red",
+      "ctr": 0,
+      "k": 3,
+      "kw": "-",
+      "n": "Hibari",
+      "p": 5000,
+      "s": "Navy/SWORD",
+      "t": "Character"
+    },
+    "EB03-009": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "Makino",
+      "s": "Windmill Village",
+      "t": "Character"
+    },
+    "EB03-010": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Monet",
+      "p": 6000,
+      "s": "Punk Hazard/Donquixote Pirates",
+      "t": "Character"
+    },
+    "EB03-011": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "But If We Ever See Each Other Again... Will You Call Me Your Shipmate?!!",
+      "s": "Alabasta",
+      "t": "Event"
+    },
+    "EB03-012": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Otama",
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "EB03-013": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Carrot",
+      "p": 7000,
+      "s": "Minks",
+      "t": "Character"
+    },
+    "EB03-014": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Kuina",
+      "s": "East Blue/Frost Moon Village",
+      "t": "Character"
+    },
+    "EB03-015": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Camie",
+      "s": "Merfolk/Fish-Man Island",
+      "t": "Character"
+    },
+    "EB03-016": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 0,
+      "k": 1,
+      "kw": "-",
+      "n": "Kouzuki Hiyori",
+      "s": "Land of Wano/Kouzuki Clan",
+      "t": "Character"
+    },
+    "EB03-017": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Jewelry Bonney",
+      "p": 6000,
+      "s": "Supernovas/Bonney Pirates",
+      "t": "Character"
+    },
+    "EB03-018": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 0,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Tashigi",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "EB03-019": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "Blocker",
+      "n": "Wanda",
+      "p": 7000,
+      "s": "Minks",
+      "t": "Character"
+    },
+    "EB03-020": {
+      "c": "Green",
+      "k": 1,
+      "kw": "-",
+      "n": "There You Are, Sore Loser!",
+      "s": "FILM",
+      "t": "Event"
+    },
+    "EB03-021": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Alvida",
+      "p": 2000,
+      "s": "Cross Guild",
+      "t": "Character"
+    },
+    "EB03-022": {
+      "a": "Slash",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "Blocker",
+      "n": "Isuka",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "EB03-023": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Kaya",
+      "s": "East Blue",
+      "t": "Character"
+    },
+    "EB03-024": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Nefeltari Vivi",
+      "p": 4000,
+      "s": "Alabasta",
+      "t": "Character"
+    },
+    "EB03-025": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Hina",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "EB03-026": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 0,
+      "k": 6,
+      "kw": "-",
+      "n": "Boa Hancock",
+      "p": 8000,
+      "s": "The Seven Warlords of the Sea/Kuja Pirates",
+      "t": "Character"
+    },
+    "EB03-027": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Marguerite",
+      "p": 7000,
+      "s": "Amazon Lily",
+      "t": "Character"
+    },
+    "EB03-028": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Yu",
+      "s": "East Blue",
+      "t": "Character"
+    },
+    "EB03-029": {
+      "c": "Blue",
+      "k": 1,
+      "kw": "-",
+      "n": "Insolent Fool!! Stand Down!!",
+      "s": "The Seven Warlords of the Sea/Kuja Pirates",
+      "t": "Event"
+    },
+    "EB03-030": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 5,
+      "kw": "-",
+      "n": "Viola",
+      "p": 6000,
+      "s": "Dressrosa",
+      "t": "Character"
+    },
+    "EB03-031": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Vinsmoke Reiju",
+      "p": 5000,
+      "s": "The Vinsmoke Family/GERMA 66",
+      "t": "Character"
+    },
+    "EB03-032": {
+      "a": "Ranged",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Charlotte Flampe",
+      "p": 2000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "EB03-033": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Charlotte Brulee",
+      "p": 6000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "EB03-034": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 7,
+      "kw": "-",
+      "n": "Charlotte Linlin",
+      "p": 7000,
+      "s": "Rocks Pirates",
+      "t": "Character"
+    },
+    "EB03-035": {
+      "a": "Wisdom",
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Charlotte Pudding",
+      "p": 4000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "EB03-036": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Baby 5",
+      "p": 2000,
+      "s": "Donquixote Pirates",
+      "t": "Character"
+    },
+    "EB03-037": {
+      "a": "Wisdom",
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "-",
+      "n": "Lim",
+      "p": 5000,
+      "s": "ODYSSEY",
+      "t": "Character"
+    },
+    "EB03-038": {
+      "c": "Purple",
+      "k": 1,
+      "kw": "-",
+      "n": "Thanks for the Treat.",
+      "s": "The Vinsmoke Family/GERMA 66",
+      "t": "Event"
+    },
+    "EB03-039": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Ulti",
+      "p": 7000,
+      "s": "Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "EB03-040": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 2000,
+      "k": 5,
+      "kw": "-",
+      "n": "Kalifa",
+      "p": 6000,
+      "s": "CP9",
+      "t": "Character"
+    },
+    "EB03-041": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 0,
+      "k": 4,
+      "kw": "-",
+      "n": "Kujyaku",
+      "p": 6000,
+      "s": "Navy/SWORD",
+      "t": "Character"
+    },
+    "EB03-042": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Koala",
+      "p": 5000,
+      "s": "Dressrosa/Revolutionary Army",
+      "t": "Character"
+    },
+    "EB03-043": {
+      "a": "Special",
+      "c": "Black",
+      "k": 7,
+      "kw": "Blocker",
+      "n": "Stussy",
+      "p": 7000,
+      "s": "CP0",
+      "t": "Character"
+    },
+    "EB03-044": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Black Maria",
+      "p": 4000,
+      "s": "Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "EB03-045": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 0,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Perona",
+      "p": 6000,
+      "s": "Muggy Kingdom/Thriller Bark Pirates",
+      "t": "Character"
+    },
+    "EB03-046": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Miss Doublefinger(Zala)",
+      "p": 5000,
+      "s": "Baroque Works",
+      "t": "Character"
+    },
+    "EB03-047": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Miss.Valentine(Mikita)",
+      "p": 2000,
+      "s": "Baroque Works",
+      "t": "Character"
+    },
+    "EB03-048": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Rebecca",
+      "s": "Dressrosa",
+      "t": "Character"
+    },
+    "EB03-049": {
+      "c": "Black",
+      "k": 1,
+      "kw": "-",
+      "n": "I Knew You People Were Behind This.",
+      "s": "Thriller Bark Pirates",
+      "t": "Event"
+    },
+    "EB03-050": {
+      "c": "Yellow",
+      "k": 2,
+      "kw": "Double Attack",
+      "n": "Conis",
+      "s": "Sky Island",
+      "t": "Character"
+    },
+    "EB03-051": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Charlotte Smoothie",
+      "p": 3000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "EB03-052": {
+      "a": "Wisdom",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Shirahoshi",
+      "s": "Merfolk/Fish-Man Island",
+      "t": "Character"
+    },
+    "EB03-053": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Nami",
+      "p": 6000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB03-054": {
+      "a": "Strike",
+      "c": "Yellow",
+      "k": 3,
+      "kw": "-",
+      "n": "Nico Robin",
+      "p": 5000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB03-055": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 7,
+      "kw": "-",
+      "n": "Nico Robin",
+      "p": 8000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB03-056": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "-",
+      "n": "Belo Betty",
+      "p": 3000,
+      "s": "Revolutionary Army",
+      "t": "Character"
+    },
+    "EB03-057": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Yamato",
+      "p": 6000,
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "EB03-058": {
+      "a": "Wisdom",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Lilith",
+      "p": 6000,
+      "s": "Scientist/Egghead",
+      "t": "Character"
+    },
+    "EB03-059": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "S-Snake",
+      "p": 7000,
+      "s": "Seraphim/Egghead",
+      "t": "Character"
+    },
+    "EB03-060": {
+      "c": "Yellow",
+      "k": 1,
+      "kw": "-",
+      "n": "Will You Be My Servant?",
+      "s": "Straw Hat Crew",
+      "t": "Event"
+    },
+    "EB03-061": {
+      "a": "Special",
+      "c": "Green",
+      "k": 7,
+      "kw": "-",
+      "n": "Uta",
+      "p": 8000,
+      "s": "FILM",
+      "t": "Character"
+    },
+    "EB03-062": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 8,
+      "kw": "Rush",
+      "n": "Trafalgar Law",
+      "p": 6000,
+      "s": "Heart Pirates",
+      "t": "Character"
+    }
+  }
+}

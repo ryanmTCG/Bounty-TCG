@@ -1,0 +1,181 @@
+{
+  "cards": {
+    "ST30-001": {
+      "a": "Special / Strike",
+      "c": "Green/Red",
+      "kw": "-",
+      "lf": 4,
+      "n": "Luffy & Ace",
+      "p": 6000,
+      "s": "Impel Down/Whitebeard Pirates/Straw Hat Crew",
+      "t": "Leader"
+    },
+    "ST30-002": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Inazuma",
+      "p": 2000,
+      "s": "Impel Down/Revolutionary Army",
+      "t": "Character"
+    },
+    "ST30-003": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 8,
+      "kw": "-",
+      "n": "Edward.Newgate",
+      "p": 6000,
+      "s": "Four Emperors/Whitebeard Pirates",
+      "t": "Character"
+    },
+    "ST30-004": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Emporio.Ivankov",
+      "p": 2000,
+      "s": "Impel Down/Revolutionary Army",
+      "t": "Character"
+    },
+    "ST30-005": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 5,
+      "kw": "-",
+      "n": "Jozu",
+      "p": 6000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "ST30-006": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Jinbe",
+      "p": 6000,
+      "s": "Fish-Man/Impel Down/The Sun Pirates",
+      "t": "Character"
+    },
+    "ST30-007": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 0,
+      "k": 4,
+      "kw": "Rush",
+      "n": "Portgas.D.Ace",
+      "p": 6000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "ST30-008": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Marco",
+      "p": 6000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "ST30-009": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "LittleOars Jr.",
+      "p": 2000,
+      "s": "Giant/Whitebeard Pirates Allies",
+      "t": "Character"
+    },
+    "ST30-010": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "Blocker",
+      "n": "Crocodile",
+      "p": 6000,
+      "s": "Impel Down/Former Baroque Works",
+      "t": "Character"
+    },
+    "ST30-011": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Buggy",
+      "p": 1000,
+      "s": "Impel down/Buggy Pirates",
+      "t": "Character"
+    },
+    "ST30-012": {
+      "a": "Strike",
+      "c": "Green",
+      "ctr": 0,
+      "k": 4,
+      "kw": "Rush,Blocker",
+      "n": "Monkey.D.Luffy",
+      "p": 6000,
+      "s": "Impel Down / Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST30-013": {
+      "a": "Strike",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Mr.2.Bon.Kurei(Bentham)",
+      "p": 6000,
+      "s": "Impel Down/Former Baroque Works",
+      "t": "Character"
+    },
+    "ST30-014": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Mr.3(Galdino)",
+      "p": 3000,
+      "s": "Impel Down/Former Baroque Works",
+      "t": "Character"
+    },
+    "ST30-015": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "The Name of This Era Is \"Whitebeard\"!!",
+      "s": "Whitebeard Pirates",
+      "t": "Event"
+    },
+    "ST30-016": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "Can You Still Fight, Luffy?! Of Course!!",
+      "s": "Whitebeard Pirates/Straw Hat Crew",
+      "t": "Event"
+    },
+    "ST30-017": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "And You Get Yourself in Big Trouble!!",
+      "s": "Whitebeard Pirates",
+      "t": "Event"
+    }
+  }
+}

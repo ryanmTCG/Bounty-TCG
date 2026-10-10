@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST18-001": {
+      "a": "Ranged",
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Uso-Hachi",
+      "p": 3000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST18-002": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "O-Nami",
+      "p": 2000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST18-003": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "San-Gorou",
+      "p": 6000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST18-004": {
+      "a": "Slash",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 4,
+      "kw": "-",
+      "n": "Zoro-Juurou",
+      "p": 6000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST18-005": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 7,
+      "kw": "-",
+      "n": "Luffy-Tarou",
+      "p": 8000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    }
+  }
+}

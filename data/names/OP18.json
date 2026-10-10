@@ -1,0 +1,280 @@
+{
+  "cards": {
+    "OP18-001": {
+      "c": "Blue/Red",
+      "kw": "Rush",
+      "lf": 4,
+      "n": "Karoo",
+      "p": 5000,
+      "t": "Leader"
+    },
+    "OP18-003": {
+      "a": "Wisdom",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 5,
+      "kw": "-",
+      "n": "Sea Cat",
+      "p": 6000,
+      "t": "Character"
+    },
+    "OP18-011": {
+      "a": "Wisdom",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Nefertari Vivi",
+      "t": "Character"
+    },
+    "OP18-016": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "Banish",
+      "n": "Monkey.D.Luffy",
+      "p": 7000,
+      "t": "Character"
+    },
+    "OP18-017": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Rush",
+      "n": "Roronoa Zoro",
+      "p": 4000,
+      "t": "Character"
+    },
+    "OP18-021": {
+      "c": "Green/Purple",
+      "kw": "-",
+      "lf": 4,
+      "n": "Franky",
+      "p": 5000,
+      "s": "Water Seven/The Franky Family/Straw Hat Crew",
+      "t": "Leader"
+    },
+    "OP18-022": {
+      "c": "Green",
+      "kw": "-",
+      "lf": 5,
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "t": "Leader"
+    },
+    "OP18-024": {
+      "c": "Green",
+      "kw": "Blocker",
+      "n": "Kokoro"
+    },
+    "OP18-025": {
+      "c": "Green",
+      "kw": "-",
+      "n": "Gonbe"
+    },
+    "OP18-028": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Chimney",
+      "t": "Character"
+    },
+    "OP18-031": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Nico Robin",
+      "p": 5000,
+      "s": "Water Seven/Straw Hat Crew",
+      "t": "Character"
+    },
+    "OP18-034": {
+      "a": "Strike",
+      "c": "Green",
+      "k": 6,
+      "kw": "-",
+      "n": "Franky",
+      "p": 7000,
+      "t": "Character"
+    },
+    "OP18-041": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "kw": "-",
+      "lf": 5,
+      "n": "Ms. All Sunday",
+      "p": 5000,
+      "t": "Leader"
+    },
+    "OP18-044": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Mr.Beans & Miss.Katherina",
+      "p": 4000,
+      "t": "Character"
+    },
+    "OP18-046": {
+      "a": "Special / Wisdom",
+      "c": "Blue",
+      "k": 9,
+      "kw": "-",
+      "n": "Mr. 0 & Ms. All Sunday",
+      "p": 10000,
+      "t": "Character"
+    },
+    "OP18-048": {
+      "a": "Slash",
+      "c": "Blue",
+      "k": 6,
+      "kw": "Rush",
+      "n": "Mr. 1 & Miss Doublefinger",
+      "p": 6000,
+      "t": "Character"
+    },
+    "OP18-055": {
+      "c": "Blue",
+      "kw": "-",
+      "n": "Mr. 9 & Ms. Wednesday"
+    },
+    "OP18-056": {
+      "c": "Blue",
+      "kw": "-",
+      "n": "Mr.13 & Ms.Friday"
+    },
+    "OP18-060": {
+      "c": "Purple",
+      "kw": "-",
+      "n": "Saint Gunko",
+      "p": 5000,
+      "s": "Celestial Dragons/Holy Knights of God",
+      "t": "Leader"
+    },
+    "OP18-061": {
+      "a": "Wisdom",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Iceburg",
+      "t": "Character"
+    },
+    "OP18-065": {
+      "kw": "Blocker",
+      "n": "Saint Gunko",
+      "p": 0,
+      "s": "Celestial Dragons/Holy Knights of God",
+      "t": "Character"
+    },
+    "OP18-066": {
+      "c": "Purple",
+      "kw": "Rush",
+      "n": "Zambai"
+    },
+    "OP18-069": {
+      "n": "Sodomu & Gomora"
+    },
+    "OP18-076": {
+      "c": "Purple",
+      "kw": "-",
+      "n": "Shark Submerge 3",
+      "t": "Stage"
+    },
+    "OP18-078": {
+      "c": "Purple",
+      "k": 5,
+      "kw": "-",
+      "n": "Mini-Merry",
+      "p": 0,
+      "s": "Straw Hat Crew",
+      "t": "Stage"
+    },
+    "OP18-079": {
+      "c": "Black",
+      "kw": "-",
+      "n": "Spandam",
+      "t": "Leader"
+    },
+    "OP18-084": {
+      "a": "Special",
+      "c": "Black",
+      "k": 1,
+      "kw": "-",
+      "n": "Gunko",
+      "p": 2000,
+      "t": "Character"
+    },
+    "OP18-086": {
+      "c": "Black",
+      "kw": "-",
+      "n": "Goldberg"
+    },
+    "OP18-089": {
+      "c": "Black",
+      "kw": "-",
+      "n": "Dorry"
+    },
+    "OP18-091": {
+      "n": "Brogy"
+    },
+    "OP18-093": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 2000,
+      "k": 9,
+      "kw": "Blocker",
+      "n": "MMA",
+      "p": 3000,
+      "t": "Character"
+    },
+    "OP18-100": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Khalifa",
+      "p": 7000,
+      "t": "Character"
+    },
+    "OP18-106": {
+      "c": "Yellow",
+      "kw": "Double Attack",
+      "n": "Doberman"
+    },
+    "OP18-111": {
+      "n": "Momonga"
+    },
+    "OP18-112": {
+      "c": "Yellow",
+      "kw": "Blocker",
+      "n": "Yamakaji"
+    },
+    "OP18-113": {
+      "a": "Strike",
+      "c": "Yellow",
+      "k": 8,
+      "kw": "-",
+      "n": "Rob Lucci",
+      "p": 10000,
+      "t": "Character"
+    },
+    "OP18-119": {
+      "c": "Black",
+      "k": 8,
+      "kw": "-",
+      "n": "Saint Shamrock",
+      "p": 0,
+      "s": "Celestial Dragons/Holy Knights of God",
+      "t": "Character"
+    }
+  }
+}

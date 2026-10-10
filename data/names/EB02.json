@@ -1,0 +1,624 @@
+{
+  "cards": {
+    "EB02-001": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Karoo",
+      "p": 7000,
+      "s": "Animal/Alabasta",
+      "t": "Character"
+    },
+    "EB02-002": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "-",
+      "n": "Sabo",
+      "p": 5000,
+      "s": "Dressrosa / Revolutionary Army",
+      "t": "Character"
+    },
+    "EB02-003": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Tony Tony.Chopper",
+      "p": 3000,
+      "s": "Animal / Drum Kingdom / Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB02-004": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 8,
+      "kw": "-",
+      "n": "Don Accino",
+      "p": 10000,
+      "s": "Accino Family",
+      "t": "Character"
+    },
+    "EB02-005": {
+      "a": "Ranged",
+      "c": "Red",
+      "ctr": 0,
+      "k": 2,
+      "kw": "-",
+      "n": "Fake Straw Hat Crew",
+      "p": 3000,
+      "s": "Impostor Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB02-006": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 0,
+      "k": 6,
+      "kw": "Rush",
+      "n": "Yamato",
+      "p": 7000,
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "EB02-007": {
+      "c": "Red",
+      "k": 3,
+      "kw": "-",
+      "n": "Cloven Rose Blizzard",
+      "s": "Animal / W7 / Straw Hat Pirates",
+      "t": "Event"
+    },
+    "EB02-008": {
+      "c": "Red",
+      "k": 2,
+      "kw": "-",
+      "n": "The Peak",
+      "s": "Music",
+      "t": "Event"
+    },
+    "EB02-009": {
+      "c": "Red",
+      "k": 2,
+      "kw": "-",
+      "n": "Thousand Sunny",
+      "s": "Straw Hat Crew",
+      "t": "Stage"
+    },
+    "EB02-010": {
+      "a": "Strike",
+      "c": "Green/Purple",
+      "kw": "-",
+      "lf": 4,
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "s": "Straw Hat Crew",
+      "t": "Leader"
+    },
+    "EB02-011": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Arlong",
+      "p": 4000,
+      "s": "Fish-Man / East Blue / Arlong Pirates",
+      "t": "Character"
+    },
+    "EB02-012": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "Blocker",
+      "n": "Gaimon",
+      "p": 1000,
+      "s": "East Blue",
+      "t": "Character"
+    },
+    "EB02-013": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Carrot",
+      "s": "Minks",
+      "t": "Character"
+    },
+    "EB02-014": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Sarfunkel",
+      "s": "East Blue",
+      "t": "Character"
+    },
+    "EB02-015": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 7,
+      "kw": "-",
+      "n": "Jewelry Bonney",
+      "p": 7000,
+      "s": "Supernova / Bonnie Pirates",
+      "t": "Character"
+    },
+    "EB02-016": {
+      "a": "Strike",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Chopperman",
+      "p": 6000,
+      "s": "Animal / Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB02-017": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Nami",
+      "p": 2000,
+      "s": "East Blue / Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB02-018": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 0,
+      "k": 4,
+      "kw": "Double Attack",
+      "n": "Buggy",
+      "p": 6000,
+      "s": "East Blue / Buggy Pirates",
+      "t": "Character"
+    },
+    "EB02-019": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Roronoa Zoro",
+      "p": 5000,
+      "s": "East Blue / Straw Hat Crew",
+      "t": "Leader"
+    },
+    "EB02-020": {
+      "c": "Green",
+      "k": 2,
+      "kw": "-",
+      "n": "We Are!",
+      "s": "Music",
+      "t": "Event"
+    },
+    "EB02-021": {
+      "c": "Green",
+      "k": 3,
+      "kw": "-",
+      "n": "Gum-Gum Giant Pistol",
+      "s": "Straw Hat Crew / W7",
+      "t": "Event"
+    },
+    "EB02-022": {
+      "a": "Ranged",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Usopp",
+      "p": 5000,
+      "s": "East Blue / Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB02-023": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Crocodile",
+      "p": 5000,
+      "s": "The Seven Warlords of the Sea / Baroque Works",
+      "t": "Character"
+    },
+    "EB02-024": {
+      "a": "Ranged",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Sogeking",
+      "p": 5000,
+      "s": "Sniper Island",
+      "t": "Character"
+    },
+    "EB02-025": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Donquixote Rosinante",
+      "p": 3000,
+      "s": "Navy / Donquixote Pirates",
+      "t": "Character"
+    },
+    "EB02-026": {
+      "a": "Slash",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Nefeltari Vivi",
+      "p": 2000,
+      "s": "Alabasta",
+      "t": "Character"
+    },
+    "EB02-027": {
+      "a": "Slash",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Vista",
+      "p": 5000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "EB02-028": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Portgas.D.Ace",
+      "p": 5000,
+      "s": "Whitebeard Pirates / Alabasta",
+      "t": "Character"
+    },
+    "EB02-029": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Grandpa Ryu",
+      "p": 5000,
+      "s": "Animals / East Blue",
+      "t": "Character"
+    },
+    "EB02-030": {
+      "c": "Blue",
+      "k": 2,
+      "kw": "-",
+      "n": "And That's When Somebody Makes Fun of Their Friend's Dream!!!!",
+      "s": "Straw Hat Crew / Alabasta",
+      "t": "Event"
+    },
+    "EB02-031": {
+      "c": "Blue",
+      "k": 2,
+      "kw": "-",
+      "n": "Hope",
+      "s": "Music",
+      "t": "Event"
+    },
+    "EB02-032": {
+      "a": "Wisdom",
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Iceburg",
+      "s": "Water 7 / Galley-La Company",
+      "t": "Character"
+    },
+    "EB02-033": {
+      "a": "Wisdom",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "Blocker",
+      "n": "Klabautermann",
+      "s": "Fairy",
+      "t": "Character"
+    },
+    "EB02-034": {
+      "a": "Wisdom",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Komei",
+      "p": 6000,
+      "s": "Navy / Foxy Pirates",
+      "t": "Character"
+    },
+    "EB02-035": {
+      "a": "Strike / Wisdom",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Sanji & Pudding",
+      "p": 7000,
+      "s": "Strawhat Crew / Big Mom Pirates",
+      "t": "Character"
+    },
+    "EB02-036": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Nico Robin",
+      "p": 2000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB02-037": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Franky",
+      "p": 4000,
+      "s": "Straw Hat Crew / Water Seven",
+      "t": "Character"
+    },
+    "EB02-038": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Magellan",
+      "p": 4000,
+      "s": "Impel Down",
+      "t": "Character"
+    },
+    "EB02-039": {
+      "c": "Purple",
+      "k": 4,
+      "kw": "-",
+      "n": "GERMA 66",
+      "s": "Vinsmoke Family / Germa 66",
+      "t": "Event"
+    },
+    "EB02-040": {
+      "c": "Purple",
+      "k": 2,
+      "kw": "-",
+      "n": "BRAND NEW WORLD",
+      "s": "Music",
+      "t": "Event"
+    },
+    "EB02-041": {
+      "c": "Purple",
+      "k": 1,
+      "kw": "-",
+      "n": "Merry Go",
+      "s": "Straw Hat Crew",
+      "t": "Event"
+    },
+    "EB02-042": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "All-Hunt Grount",
+      "p": 8000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "EB02-043": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 7,
+      "kw": "-",
+      "n": "Jonathan",
+      "p": 9000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "EB02-044": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 7,
+      "kw": "Blocker",
+      "n": "Sengoku",
+      "p": 7000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "EB02-045": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Trafalgar Law",
+      "p": 6000,
+      "s": "Dressrosa / Supernova / Heart Pirates",
+      "t": "Character"
+    },
+    "EB02-046": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Hildon",
+      "p": 3000,
+      "s": "Thriller Bark Pirates",
+      "t": "Character"
+    },
+    "EB02-047": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Blueno",
+      "p": 6000,
+      "s": "CP9",
+      "t": "Character"
+    },
+    "EB02-048": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Brook",
+      "p": 6000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB02-049": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Monkey.D.Garp",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "EB02-050": {
+      "c": "Black",
+      "k": 2,
+      "kw": "-",
+      "n": "Kokoro no Chizu",
+      "s": "Music",
+      "t": "Event"
+    },
+    "EB02-051": {
+      "c": "Yellow",
+      "k": 3,
+      "kw": "-",
+      "n": "Three-Pace Hum Soul Notch Slash",
+      "s": "Former Rumbar Pirates",
+      "t": "Event"
+    },
+    "EB02-052": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 10,
+      "kw": "Rush",
+      "n": "Enel",
+      "p": 11000,
+      "s": "Sky Island",
+      "t": "Character"
+    },
+    "EB02-053": {
+      "a": "Wisdom",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Myskina Olga",
+      "p": 4000,
+      "s": "Alchemi",
+      "t": "Character"
+    },
+    "EB02-054": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Sanji",
+      "p": 6000,
+      "s": "East Blue / Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB02-055": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "-",
+      "n": "Jinbe",
+      "p": 5000,
+      "s": "Fish-Man / Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB02-056": {
+      "a": "Wisdom",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Vegapunk",
+      "s": "Egghead / Scientist",
+      "t": "Character"
+    },
+    "EB02-057": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Mad Treasure",
+      "p": 5000,
+      "s": "Treasure Pirates",
+      "t": "Character"
+    },
+    "EB02-058": {
+      "c": "Yellow",
+      "k": 2,
+      "kw": "-",
+      "n": "UUUUUS!",
+      "s": "Music",
+      "t": "Event"
+    },
+    "EB02-059": {
+      "c": "Yellow",
+      "k": 4,
+      "kw": "-",
+      "n": "Without Your Help I Can't Become the King of the Pirates!!!!",
+      "s": "Straw Hat Crew",
+      "t": "Event"
+    },
+    "EB02-060": {
+      "c": "Yellow",
+      "k": 2,
+      "kw": "-",
+      "n": "Merry Go",
+      "s": "Straw Hat Crew",
+      "t": "Stage"
+    },
+    "EB02-061": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 6,
+      "kw": "Rush",
+      "n": "Monkey.D.Luffy",
+      "p": 7000,
+      "s": "Water 7/Straw Hat Crew",
+      "t": "Character"
+    }
+  }
+}

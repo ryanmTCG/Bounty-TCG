@@ -1,0 +1,181 @@
+{
+  "cards": {
+    "ST02-001": {
+      "a": "Special",
+      "c": "Green",
+      "kw": "-",
+      "lf": 5,
+      "n": "Eustass\"Captain\"Kid",
+      "p": 5000,
+      "s": "Supernovas / Kid Pirates",
+      "t": "Leader"
+    },
+    "ST02-002": {
+      "a": "Ranged",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Vito",
+      "p": 5000,
+      "s": "Firetank Pirates",
+      "t": "Character"
+    },
+    "ST02-003": {
+      "a": "Strike",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Urouge",
+      "p": 3000,
+      "s": "Supernovas / Fallen Monk Pirates",
+      "t": "Character"
+    },
+    "ST02-004": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 0,
+      "k": 1,
+      "kw": "Blocker",
+      "n": "Capone\"Gang\"Bege",
+      "p": 1000,
+      "s": "Supernovas / Firetank Pirates",
+      "t": "Character"
+    },
+    "ST02-005": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Killer",
+      "p": 3000,
+      "s": "Supernovas / Kid Pirates",
+      "t": "Character"
+    },
+    "ST02-006": {
+      "a": "Strike",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Koby",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST02-007": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Jewelry Bonney",
+      "p": 1000,
+      "s": "Supernovas / Bonney Pirates",
+      "t": "Character"
+    },
+    "ST02-008": {
+      "a": "Ranged",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Scratchmen Apoo",
+      "p": 3000,
+      "s": "Supernovas / On Air Pirates",
+      "t": "Character"
+    },
+    "ST02-009": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Trafalgar Law",
+      "p": 6000,
+      "s": "Supernovas / Heart Pirates",
+      "t": "Character"
+    },
+    "ST02-010": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Basil Hawkins",
+      "p": 6000,
+      "s": "Supernovas / Hawkins Pirates",
+      "t": "Character"
+    },
+    "ST02-011": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Heat",
+      "p": 4000,
+      "s": "Kid Pirates",
+      "t": "Character"
+    },
+    "ST02-012": {
+      "a": "Strike",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Bepo",
+      "p": 3000,
+      "s": "Mink Tribe / Heart Pirates",
+      "t": "Character"
+    },
+    "ST02-013": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 0,
+      "k": 7,
+      "kw": "Blocker",
+      "n": "Eustass\"Captain\"Kid",
+      "p": 7000,
+      "s": "Supernovas / Kid Pirates",
+      "t": "Character"
+    },
+    "ST02-014": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "X.Drake",
+      "p": 5000,
+      "s": "Navy / Supernovas / Drake Pirates",
+      "t": "Character"
+    },
+    "ST02-015": {
+      "c": "Green",
+      "k": 1,
+      "kw": "-",
+      "n": "Scalpel",
+      "s": "Supernovas / Heart Pirates",
+      "t": "Event"
+    },
+    "ST02-016": {
+      "c": "Green",
+      "k": 2,
+      "kw": "-",
+      "n": "Repel",
+      "s": "Supernovas / Kid Pirates",
+      "t": "Event"
+    },
+    "ST02-017": {
+      "c": "Green",
+      "k": 2,
+      "kw": "-",
+      "n": "Straw Sword",
+      "s": "Supernovas / Hawkins Pirates",
+      "t": "Event"
+    }
+  }
+}

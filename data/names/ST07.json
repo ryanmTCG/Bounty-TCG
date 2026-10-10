@@ -1,0 +1,181 @@
+{
+  "cards": {
+    "ST07-001": {
+      "a": "Special",
+      "c": "Yellow",
+      "kw": "-",
+      "lf": 5,
+      "n": "Charlotte Linlin",
+      "p": 5000,
+      "s": "The Four Emperors / Big Mom Pirates",
+      "t": "Leader"
+    },
+    "ST07-002": {
+      "a": "Wisdom",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Charlotte Anana",
+      "p": 3000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST07-003": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 4,
+      "kw": "Rush",
+      "n": "Charlotte Katakuri",
+      "p": 6000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST07-004": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 5,
+      "kw": "Banish",
+      "n": "Charlotte Snack",
+      "p": 6000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST07-005": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Charlotte Daifuku",
+      "p": 5000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST07-006": {
+      "a": "Ranged",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Charlotte Flampe",
+      "p": 4000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST07-007": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Charlotte Brulee",
+      "p": 1000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST07-008": {
+      "a": "Wisdom",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Charlotte Pudding",
+      "p": 3000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST07-009": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Charlotte Mont-d'Or",
+      "p": 4000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST07-010": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 7,
+      "kw": "-",
+      "n": "Charlotte Linlin",
+      "p": 8000,
+      "s": "Four Emperors / Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST07-011": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Banish",
+      "n": "Zeus",
+      "p": 3000,
+      "s": "Big Mom Pirates / Homies",
+      "t": "Character"
+    },
+    "ST07-012": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Baron Tamago",
+      "p": 6000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST07-013": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Double Attack",
+      "n": "Prometheus",
+      "p": 3000,
+      "s": "Big Mom Pirates / Homies",
+      "t": "Character"
+    },
+    "ST07-014": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Pekoms",
+      "p": 5000,
+      "s": "Minks / Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST07-015": {
+      "c": "Yellow",
+      "k": 5,
+      "kw": "-",
+      "n": "Soul Pocus",
+      "s": "The Four Emperors / Big Mom Pirates",
+      "t": "Event"
+    },
+    "ST07-016": {
+      "c": "Yellow",
+      "k": 1,
+      "kw": "-",
+      "n": "Power Mochi",
+      "s": "Big Mom Pirates",
+      "t": "Event"
+    },
+    "ST07-017": {
+      "c": "Yellow",
+      "k": 2,
+      "kw": "-",
+      "n": "Queen Mama Chanter",
+      "s": "Big Mom Pirates / Homies",
+      "t": "Stage"
+    }
+  }
+}

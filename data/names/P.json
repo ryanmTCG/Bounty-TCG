@@ -1,0 +1,1555 @@
+{
+  "cards": {
+    "P-001": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 0,
+      "k": 6,
+      "kw": "Rush",
+      "n": "Monkey.D.Luffy (001) (Offline Regional 2024 Vol. 2) [Winner]",
+      "p": 7000,
+      "s": "Supernovas / Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-002": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "I Smell Adventure Ahead!",
+      "s": "Straw Hat Crew",
+      "t": "Event"
+    },
+    "P-003": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Double Attack",
+      "n": "Eustass\"Captain\"Kid (Offline Regional 2024 Vol. 2) [Winner]",
+      "p": 4000,
+      "s": "Supernovas/Kid Pirates",
+      "t": "Character"
+    },
+    "P-004": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Crocodile",
+      "p": 5000,
+      "s": "The Seven Warlords of the Sea/Baroque Works",
+      "t": "Character"
+    },
+    "P-005": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 7,
+      "kw": "Banish",
+      "n": "Kaido",
+      "p": 8000,
+      "s": "The Four Emperors/Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "P-006": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Monkey.D.Luffy (006)",
+      "p": 3000,
+      "s": "Supernovas / Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-007": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Monkey.D.Luffy (007)",
+      "p": 5000,
+      "s": "Supernovas / Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-008": {
+      "a": "Strike",
+      "c": "Green",
+      "ctr": 0,
+      "k": 3,
+      "kw": "-",
+      "n": "Yamato - P-008",
+      "p": 5000,
+      "s": "Wano Country",
+      "t": "Character"
+    },
+    "P-009": {
+      "a": "Slash",
+      "c": "Blue",
+      "ctr": 0,
+      "k": 6,
+      "kw": "-",
+      "n": "Trafalgar Law",
+      "p": 7000,
+      "s": "Supernovas / Heart Pirates",
+      "t": "Character"
+    },
+    "P-010": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 8,
+      "kw": "-",
+      "n": "Kaido",
+      "p": 9000,
+      "s": "The Four Emperors / Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "P-011": {
+      "a": "Special",
+      "c": "Red",
+      "kw": "-",
+      "lf": 5,
+      "n": "Uta (One Piece Film Red)",
+      "p": 5000,
+      "s": "FILM",
+      "t": "Leader"
+    },
+    "P-012": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Jellyfish Pirates (One Piece Film Red)",
+      "p": 5000,
+      "s": "FILM / Jellyfish Pirates",
+      "t": "Character"
+    },
+    "P-013": {
+      "a": "Wisdom",
+      "c": "Red",
+      "ctr": 0,
+      "k": 1,
+      "kw": "-",
+      "n": "Gordon (One Piece Film Red)",
+      "p": 2000,
+      "s": "FILM",
+      "t": "Character"
+    },
+    "P-014": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 0,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Koby (One Piece Film Red)",
+      "p": 3000,
+      "s": "FILM / Navy",
+      "t": "Character"
+    },
+    "P-015": {
+      "a": "Wisdom",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Sunny-Kun (One Piece Film Red)",
+      "p": 3000,
+      "s": "FILM / Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-016": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 8,
+      "kw": "-",
+      "n": "Shanks (One Piece Film Red)",
+      "p": 10000,
+      "s": "FILM / The Four Emperors / Red Hair Pirates",
+      "t": "Character"
+    },
+    "P-017": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Trafalgar Law (One Piece Film Red)",
+      "p": 5000,
+      "s": "FILM / Supernovas / Heart Pirates",
+      "t": "Character"
+    },
+    "P-018": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 0,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Bartolomeo (One Piece Film Red)",
+      "p": 3000,
+      "s": "FILM / Supernovas / Barto Club",
+      "t": "Character"
+    },
+    "P-019": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Bepo (One Piece Film Red)",
+      "p": 2000,
+      "s": "FILM / Mink tribe / Heart Pirates",
+      "t": "Character"
+    },
+    "P-020": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Helmeppo (One Piece Film Red)",
+      "p": 2000,
+      "s": "FILM / Navy",
+      "t": "Character"
+    },
+    "P-021": {
+      "a": "Ranged",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 7,
+      "kw": "-",
+      "n": "Benn.Beckman (One Piece Film Red)",
+      "p": 9000,
+      "s": "FILM / Red Hair Pirates",
+      "t": "Character"
+    },
+    "P-022": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 6000,
+      "s": "FILM / Supernovas / Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-023": {
+      "a": "Ranged",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Yasopp (One Piece Film Red)",
+      "p": 8000,
+      "s": "FILM / Red Hair Pirates",
+      "t": "Character"
+    },
+    "P-024": {
+      "c": "Green",
+      "k": 2,
+      "kw": "-",
+      "n": "I'm Gonna Be King of the Pirates!!",
+      "s": "Supernovas / Straw Hat Crew",
+      "t": "Event"
+    },
+    "P-025": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 0,
+      "k": 3,
+      "kw": "-",
+      "n": "Smoker (Pre-Release)",
+      "p": 5000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "P-026": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Morgan",
+      "p": 5000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "P-027": {
+      "a": "Ranged",
+      "c": "Red",
+      "ctr": 0,
+      "k": 2,
+      "kw": "-",
+      "n": "General Franky",
+      "p": 4000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-028": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 0,
+      "k": 5,
+      "kw": "Double Attack",
+      "n": "Portgas.D.Ace",
+      "p": 6000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "P-029": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Bartolomeo",
+      "p": 3000,
+      "s": "FILM / Supernovas / Barto Club",
+      "t": "Character"
+    },
+    "P-030": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Jinbe",
+      "p": 5000,
+      "s": "Fish-man / The 7 Warlords of the Sea / Sun Pirates",
+      "t": "Character"
+    },
+    "P-031": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Uta",
+      "p": 6000,
+      "s": "FILM",
+      "t": "Character"
+    },
+    "P-032": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Sengoku",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "P-033": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-034": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Sanji",
+      "p": 4000,
+      "s": "Vinsmoke Family",
+      "t": "Character"
+    },
+    "P-035": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 0,
+      "k": 6,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 6000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-036": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Monkey.D.Luffy (Pre-Release Tournament)",
+      "p": 4000,
+      "s": "Land of Wano / Straw Hat Pirates",
+      "t": "Character"
+    },
+    "P-037": {
+      "a": "Strike",
+      "c": "Green",
+      "ctr": 0,
+      "k": 2,
+      "kw": "-",
+      "n": "Monkey.D.Luffy (Anime Expo 2023)",
+      "p": 4000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-038": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Trafalgar Law - P-038",
+      "p": 5000,
+      "s": "Heart Pirates / Dressrosa",
+      "t": "Character"
+    },
+    "P-039": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 5,
+      "kw": "Banish",
+      "n": "Bellamy",
+      "p": 6000,
+      "s": "Bellamy Pirates",
+      "t": "Character"
+    },
+    "P-040": {
+      "c": "Purple",
+      "k": 8,
+      "kw": "-",
+      "n": "Kaido",
+      "p": 0,
+      "s": "The Four Emperors / Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "P-041": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 10,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 12000,
+      "s": "The Four Emperors / Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-042": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Roronoa Zoro",
+      "p": 5000,
+      "s": "Wano / Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-043": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 7,
+      "kw": "-",
+      "n": "Monkey.D.Luffy (Convention Promo 2024)",
+      "p": 7000,
+      "s": "Straw Hat Pirates",
+      "t": "Character"
+    },
+    "P-044": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Sabo",
+      "p": 4000,
+      "s": "Revolutionary Army",
+      "t": "Character"
+    },
+    "P-045": {
+      "a": "Slash",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "Banish",
+      "n": "Roronoa Zoro (OP-06 Pre-Release Tournament) [Winner]",
+      "p": 7000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-046": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Yamato",
+      "p": 2000,
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "P-047": {
+      "a": "Strike",
+      "c": "Blue",
+      "kw": "-",
+      "lf": 5,
+      "n": "Monkey.D.Luffy (047)",
+      "p": 5000,
+      "s": "Straw Hat Crew",
+      "t": "Leader"
+    },
+    "P-048": {
+      "a": "Slash",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Arlong",
+      "p": 4000,
+      "s": "Fish-Man / Arlong Pirates",
+      "t": "Character"
+    },
+    "P-049": {
+      "a": "Ranged",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Usopp",
+      "p": 3000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-050": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Sanji",
+      "p": 2000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-051": {
+      "a": "Slash",
+      "c": "Blue",
+      "ctr": 0,
+      "k": 7,
+      "kw": "-",
+      "n": "Shanks",
+      "p": 9000,
+      "s": "Red Hair Pirates",
+      "t": "Character"
+    },
+    "P-052": {
+      "a": "Slash",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Dracule Mihawk",
+      "p": 7000,
+      "s": "Seven Warlords of the Sea",
+      "t": "Character"
+    },
+    "P-053": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Nami",
+      "p": 1000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-054": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Monkey.D.Garp",
+      "p": 7000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "P-055": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 0,
+      "k": 4,
+      "kw": "-",
+      "n": "Monkey.D.Luffy (055) (College Basketball US Voyage)",
+      "p": 5000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-056": {
+      "a": "Slash",
+      "c": "Blue",
+      "ctr": 0,
+      "k": 4,
+      "kw": "-",
+      "n": "Roronoa Zoro",
+      "p": 6000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-057": {
+      "c": "Green",
+      "k": 3,
+      "kw": "-",
+      "n": "Fleeting Lullaby",
+      "s": "Song/FILM",
+      "t": "Event"
+    },
+    "P-058": {
+      "c": "Green",
+      "k": 2,
+      "kw": "-",
+      "n": "Where the Wind Blows",
+      "s": "Song/FILM",
+      "t": "Event"
+    },
+    "P-059": {
+      "c": "Green",
+      "k": 2,
+      "kw": "-",
+      "n": "The World's Continuation",
+      "s": "Song/FILM",
+      "t": "Event"
+    },
+    "P-060": {
+      "c": "Green",
+      "k": 2,
+      "kw": "-",
+      "n": "Tot Musica",
+      "s": "Song/FILM",
+      "t": "Event"
+    },
+    "P-061": {
+      "a": "Strike",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 8,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 10000,
+      "s": "FILM/Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-062": {
+      "a": "Slash / Strike",
+      "c": "Green",
+      "ctr": 0,
+      "k": 4,
+      "kw": "-",
+      "n": "Hody & Hyouzou",
+      "p": 6000,
+      "s": "Fishman/Merfolk/New Fishman Pirates",
+      "t": "Character"
+    },
+    "P-063": {
+      "a": "Strike",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "-",
+      "n": "Jinbe",
+      "p": 5000,
+      "s": "Fishman",
+      "t": "Character"
+    },
+    "P-064": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Kouzuki Momonosuke",
+      "p": 8000,
+      "s": "Land of Wano / Kouzuki Clan",
+      "t": "Character"
+    },
+    "P-065": {
+      "a": "Wisdom",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Tony Tony.Chopper",
+      "p": 4000,
+      "s": "Animal/Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-066": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Boa Hancock",
+      "p": 5000,
+      "s": "Seven Warlords of the Sea / Kuja Pirates",
+      "t": "Character"
+    },
+    "P-067": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Eustass\"Captain\"Kid",
+      "p": 6000,
+      "s": "Supernova/Kid Pirates",
+      "t": "Character"
+    },
+    "P-068": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Sanji",
+      "p": 4000,
+      "s": "Vinsmoke Family / Germa Kingdom",
+      "t": "Character"
+    },
+    "P-069": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Koala",
+      "p": 1000,
+      "s": "Revolutionary Army",
+      "t": "Character"
+    },
+    "P-070": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Carrot",
+      "p": 2000,
+      "s": "Minks",
+      "t": "Character"
+    },
+    "P-071": {
+      "c": "Blue",
+      "k": 4,
+      "kw": "-",
+      "n": "Marco",
+      "p": 0,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "P-072": {
+      "c": "Green",
+      "k": 4,
+      "kw": "-",
+      "n": "Ryuma",
+      "p": 0,
+      "s": "MONSTERS",
+      "t": "Character"
+    },
+    "P-073": {
+      "c": "Yellow",
+      "k": 5,
+      "kw": "-",
+      "n": "Sabo",
+      "p": 0,
+      "s": "Dressrosa / Revolutionary Army",
+      "t": "Character"
+    },
+    "P-074": {
+      "c": "Blue",
+      "k": 3,
+      "kw": "-",
+      "n": "Portgas .D. Ace",
+      "p": 0,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "P-075": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 0,
+      "k": 7,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 7000,
+      "s": "Supernova / Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-076": {
+      "a": "Special / Strike",
+      "c": "Blue/Black",
+      "kw": "-",
+      "lf": 4,
+      "n": "Sakazuki",
+      "p": 5000,
+      "s": "Navy",
+      "t": "Leader"
+    },
+    "P-077": {
+      "c": "Purple",
+      "k": 6,
+      "kw": "-",
+      "n": "Ulti",
+      "p": 5000,
+      "s": "Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "P-078": {
+      "c": "Green",
+      "k": 4,
+      "kw": "-",
+      "n": "Adio",
+      "p": 5000,
+      "s": "ODYSSEY",
+      "t": "Character"
+    },
+    "P-079": {
+      "c": "Green",
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Lim",
+      "p": 0,
+      "s": "ODYSSEY",
+      "t": "Character"
+    },
+    "P-080": {
+      "c": "Red",
+      "k": 7,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 7000,
+      "s": "The Four Emperors/Egghead/Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-081": {
+      "c": "Blue",
+      "k": 4,
+      "kw": "-",
+      "n": "Dracule Mihawk",
+      "p": 5000,
+      "s": "Cross Guild",
+      "t": "Character"
+    },
+    "P-082": {
+      "c": "Blue",
+      "k": 5,
+      "kw": "-",
+      "n": "Crocodile",
+      "p": 7000,
+      "s": "Cross Guild / Former Baroque Works",
+      "t": "Character"
+    },
+    "P-083": {
+      "c": "Red",
+      "k": 6,
+      "kw": "-",
+      "n": "Shanks",
+      "p": 7000,
+      "s": "Four Emperors / Red hair pirates",
+      "t": "Character"
+    },
+    "P-084": {
+      "c": "Blue",
+      "k": 7,
+      "kw": "-",
+      "n": "Buggy",
+      "p": 3000,
+      "s": "Cross Guild / Four Emperors",
+      "t": "Character"
+    },
+    "P-085": {
+      "c": "Yellow",
+      "k": 5,
+      "kw": "-",
+      "n": "Jewelry Bonney",
+      "p": 5000,
+      "s": "Supernova / Bonney Pirates",
+      "t": "Character"
+    },
+    "P-086": {
+      "a": "Slash",
+      "c": "Purple/Red",
+      "kw": "-",
+      "lf": 4,
+      "n": "Trafalgar Law",
+      "p": 5000,
+      "s": "Heart Pirates",
+      "t": "Leader"
+    },
+    "P-087": {
+      "c": "Purple",
+      "k": 5,
+      "kw": "-",
+      "n": "Nico Robin",
+      "p": 7000,
+      "s": "Straw Hat Pirates",
+      "t": "Character"
+    },
+    "P-088": {
+      "c": "Yellow",
+      "k": 4,
+      "kw": "-",
+      "n": "Trafalgar Law",
+      "p": 5000,
+      "s": "Supernovas/Heart Pirates",
+      "t": "Character"
+    },
+    "P-089": {
+      "c": "Yellow",
+      "k": 5,
+      "kw": "-",
+      "n": "Tony Tony.Chopper",
+      "p": 7000,
+      "s": "Animal / Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-090": {
+      "c": "Purple",
+      "k": 7,
+      "kw": "-",
+      "n": "Charlotte Smoothie",
+      "p": 7000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "P-091": {
+      "c": "Green",
+      "k": 4,
+      "kw": "-",
+      "n": "Shirahoshi",
+      "p": 0,
+      "s": "Fishman Island / Merfolk",
+      "t": "Character"
+    },
+    "P-092": {
+      "c": "Red",
+      "k": 7,
+      "kw": "-",
+      "n": "Coby",
+      "p": 7000,
+      "s": "Navy / SWORD",
+      "t": "Character"
+    },
+    "P-093": {
+      "c": "Purple",
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Trafalgar Law",
+      "p": 6000,
+      "s": "Heart Pirates",
+      "t": "Character"
+    },
+    "P-094": {
+      "c": "Green",
+      "k": 4,
+      "kw": "-",
+      "n": "Roronoa Zoro",
+      "p": 4000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-095": {
+      "c": "Blue",
+      "k": 4,
+      "kw": "-",
+      "n": "Sanji",
+      "p": 4000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-096": {
+      "c": "Blue",
+      "k": 2,
+      "kw": "-",
+      "n": "Young Girl",
+      "p": 0,
+      "s": "Sabaody Archipelago",
+      "t": "Character"
+    },
+    "P-097": {
+      "c": "Red",
+      "k": 10,
+      "kw": "-",
+      "n": "Shanks",
+      "p": 12000,
+      "s": "The Four Emperors/Red-Haired Pirates",
+      "t": "Character"
+    },
+    "P-098": {
+      "c": "Blue",
+      "k": 10,
+      "kw": "Blocker",
+      "n": "Buggy",
+      "p": 12000,
+      "s": "The Four Emperors/Cross Guild",
+      "t": "Character"
+    },
+    "P-099": {
+      "c": "Purple",
+      "k": 10,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 2000,
+      "s": "The Four Emperors/Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-100": {
+      "c": "Black",
+      "k": 10,
+      "kw": "-",
+      "n": "Marshall.D.Teach",
+      "p": 0,
+      "s": "The Four Emperors/Blackbeard Pirates",
+      "t": "Character"
+    },
+    "P-101": {
+      "c": "Red",
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Tony Tony.Chopper",
+      "p": 5000,
+      "s": "Animal/Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-102": {
+      "c": "Green",
+      "k": 4,
+      "kw": "-",
+      "n": "Nami",
+      "p": 4000,
+      "s": "Egghead/Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-103": {
+      "c": "Blue",
+      "k": 4,
+      "kw": "-",
+      "n": "Portgas.D.Ace",
+      "p": 6000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "P-104": {
+      "c": "Purple",
+      "k": 8,
+      "kw": "-",
+      "n": "Shanks",
+      "p": 0,
+      "s": "The Four Emperors/Red-Haired Pirates/Former Roger Pirates",
+      "t": "Character"
+    },
+    "P-105": {
+      "c": "Black",
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Sabo",
+      "p": 6000,
+      "s": "Revolutionary Army",
+      "t": "Character"
+    },
+    "P-106": {
+      "c": "Yellow",
+      "k": 5,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 6000,
+      "s": "Egghead/The Four Emperors/Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-107": {
+      "c": "Purple",
+      "k": 8,
+      "kw": "-",
+      "n": "Gol.D.Roger",
+      "p": 0,
+      "s": "Pirate King/Roger Pirates",
+      "t": "Character"
+    },
+    "P-108": {
+      "c": "Green",
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Monkey.D.Luffy",
+      "p": 2000,
+      "s": "Supernovas/Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-109": {
+      "c": "Blue",
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Portgas.D.Ace",
+      "p": 6000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "P-110": {
+      "c": "Blue",
+      "k": 7,
+      "kw": "-",
+      "n": "モンキー・D・ルフィ (Monkey.D.Luffy)",
+      "p": 0,
+      "s": "エルバフ/四皇/麦わらの一味",
+      "t": "Character"
+    },
+    "P-111": {
+      "c": "Green",
+      "k": 3,
+      "kw": "-",
+      "n": "Nico Robin",
+      "p": 0,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-112": {
+      "c": "Blue",
+      "k": 5,
+      "kw": "-",
+      "n": "Nami",
+      "p": 0,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-113": {
+      "c": "Yellow",
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Jewelry Bonney",
+      "p": 0,
+      "s": "Bonney Pirates",
+      "t": "Character"
+    },
+    "P-114": {
+      "c": "Green",
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Roronoa Zoro",
+      "p": 5000,
+      "s": "Supernovas/Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-115": {
+      "c": "Yellow",
+      "k": 6,
+      "kw": "-",
+      "n": "Boa Hancock",
+      "p": 7000,
+      "s": "The Seven Warlors of the Sea/Kuja Pirates",
+      "t": "Character"
+    },
+    "P-116": {
+      "c": "Black",
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Nico Robin",
+      "p": 0,
+      "s": "Straw Hat Crew/Former Baroque Works",
+      "t": "Character"
+    },
+    "P-117": {
+      "c": "Blue",
+      "kw": "-",
+      "n": "Nami",
+      "p": 5000,
+      "s": "East Blue",
+      "t": "Leader"
+    },
+    "P-118": {
+      "c": "Yellow",
+      "k": 6,
+      "kw": "-",
+      "n": "Lilith",
+      "p": 6000,
+      "s": "Egghead/Scientist",
+      "t": "Character"
+    },
+    "P-119": {
+      "c": "Red",
+      "k": 4,
+      "kw": "-",
+      "n": "Portgas.D.Ace",
+      "p": 6000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "P-120": {
+      "c": "Yellow",
+      "k": 6,
+      "kw": "-",
+      "n": "Sanji",
+      "p": 6000,
+      "s": "Sky Island/Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-121": {
+      "k": 4,
+      "kw": "-",
+      "n": "Brook",
+      "p": 5000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-122": {
+      "c": "Red",
+      "kw": "-",
+      "n": "Ace & Sabo & Luffy",
+      "p": 5000,
+      "s": "Navy",
+      "t": "Leader"
+    },
+    "P-123": {
+      "c": "Red",
+      "k": 10,
+      "kw": "-",
+      "n": "Edward.Newgate",
+      "p": 2000,
+      "s": "The Four Emperors/Whitebeard Pirates",
+      "t": "Character"
+    },
+    "P-124": {
+      "c": "Red",
+      "k": 3,
+      "kw": "-",
+      "n": "Curly.Dadan",
+      "p": 5000,
+      "s": "Mountain Bandits",
+      "t": "Character"
+    },
+    "P-125": {
+      "c": "Red",
+      "k": 4,
+      "kw": "-",
+      "n": "Koby",
+      "p": 0,
+      "s": "Navy/SWORD",
+      "t": "Character"
+    },
+    "P-126": {
+      "c": "Red",
+      "k": 4,
+      "kw": "Rush",
+      "n": "Sabo",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "P-127": {
+      "c": "Red",
+      "k": 6,
+      "kw": "-",
+      "n": "Shanks",
+      "p": 7000,
+      "s": "The Four Emperors/Red-Haired Pirates",
+      "t": "Character"
+    },
+    "P-128": {
+      "c": "Red",
+      "k": 5,
+      "kw": "-",
+      "n": "Portgas.D.Ace",
+      "p": 5000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "P-129": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "Makino",
+      "p": 0,
+      "s": "Windmill Village",
+      "t": "Character"
+    },
+    "P-130": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "Monkey.D.Garp",
+      "p": 0,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "P-131": {
+      "c": "Red",
+      "k": 5,
+      "kw": "-",
+      "n": "Monkey.D.Dragon",
+      "p": 6000,
+      "s": "Revolutionary Army",
+      "t": "Character"
+    },
+    "P-132": {
+      "c": "Red",
+      "k": 4,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "P-133": {
+      "c": "Red",
+      "k": 4,
+      "kw": "-",
+      "n": "Yamato",
+      "p": 5000,
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "P-134": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "Habitual Dine and Dashers",
+      "p": 0,
+      "s": "Goa Kingdom",
+      "t": "Event"
+    },
+    "P-135": {
+      "c": "Green",
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-136": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "Usopp",
+      "p": 0,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-137": {
+      "c": "Red",
+      "k": 6,
+      "kw": "Double Attack",
+      "n": "Sanji",
+      "p": 0,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-138": {
+      "c": "Red",
+      "k": 3,
+      "kw": "-",
+      "n": "Tony Tony.Chopper",
+      "p": 0,
+      "s": "Animal/Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-139": {
+      "c": "Red",
+      "k": 5,
+      "kw": "-",
+      "n": "Nami",
+      "p": 0,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-140": {
+      "c": "Red",
+      "k": 7,
+      "kw": "Blocker",
+      "n": "Monkey.D.Luffy",
+      "p": 0,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-141": {
+      "c": "Red",
+      "k": 7,
+      "kw": "Rush",
+      "n": "Roronoa Zoro",
+      "p": 0,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-142": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "Merry Go",
+      "p": 0,
+      "s": "Straw Hat Crew",
+      "t": "Stage"
+    },
+    "P-143": {
+      "c": "Black",
+      "k": 6,
+      "kw": "-",
+      "n": "Crocodile",
+      "p": 5000,
+      "s": "The Seven Warlords of the Sea/Baroque Works",
+      "t": "Character"
+    },
+    "P-144": {
+      "c": "Black",
+      "k": 5,
+      "kw": "-",
+      "n": "Ms. All Sunday",
+      "p": 0,
+      "s": "Baroque Works",
+      "t": "Character"
+    },
+    "P-145": {
+      "c": "Black",
+      "k": 4,
+      "kw": "-",
+      "n": "Ms. Wednesday",
+      "p": 5000,
+      "s": "Baroque Works",
+      "t": "Character"
+    },
+    "P-146": {
+      "c": "Black",
+      "k": 1,
+      "kw": "-",
+      "n": "Miss.Goldenweek(Marianne)",
+      "p": 0,
+      "s": "Baroque Works",
+      "t": "Character"
+    },
+    "P-147": {
+      "c": "Yellow",
+      "k": 3,
+      "kw": "-",
+      "n": "Miss.Valentine(Mikita)",
+      "p": 5000,
+      "s": "Baroque Works",
+      "t": "Character"
+    },
+    "P-148": {
+      "c": "Blue",
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Mr.3(Galdino)",
+      "p": 6000,
+      "s": "Baroque Works",
+      "t": "Character"
+    },
+    "P-149": {
+      "c": "Red",
+      "k": 5,
+      "kw": "Rush: Character",
+      "n": "Mr.5(Gem)",
+      "p": 5000,
+      "s": "Baroque Works",
+      "t": "Character"
+    },
+    "P-150": {
+      "c": "Yellow",
+      "kw": "-",
+      "n": "Kuzan",
+      "p": 0,
+      "s": "Blackbeard Pirates/Former Navy",
+      "t": "Character"
+    },
+    "P-151": {
+      "c": "Purple",
+      "k": 5,
+      "kw": "-",
+      "n": "スモーカー (Smoker)",
+      "p": 10000,
+      "s": "海軍",
+      "t": "Character"
+    },
+    "P-152": {
+      "c": "Red",
+      "k": 10,
+      "kw": "-",
+      "n": "Edward.Newgate",
+      "p": 10000,
+      "s": "The Four Emperors/Whitebeard Pirates",
+      "t": "Character"
+    },
+    "P-153": {
+      "c": "Red",
+      "k": 6,
+      "kw": "-",
+      "n": "Portgas.D.Ace",
+      "p": 3000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "P-154": {
+      "c": "Red",
+      "k": 6,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 3000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-155": {
+      "c": "Yellow",
+      "k": 4,
+      "kw": "-",
+      "n": "Trafalgar Law",
+      "p": 5000,
+      "s": "Supernovas/Heart Pirates",
+      "t": "Character"
+    },
+    "P-157": {
+      "c": "Black",
+      "k": 7,
+      "kw": "-",
+      "n": "Monkey D. Luffy",
+      "p": 6000,
+      "s": "Elbaph / The Four Emperors / Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-159": {
+      "c": "Red",
+      "k": 4,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 0,
+      "s": "Elbaph/The Four Emperors/Straw Hat Crew",
+      "t": "Character"
+    },
+    "P-161": {
+      "c": "Yellow",
+      "kw": "-",
+      "n": "モンキー・D・ルフィ (Monkey.D.Luffy)",
+      "p": 0,
+      "s": "麦わらの一味",
+      "t": "Character"
+    },
+    "P-998": {
+      "kw": "-",
+      "p": 0
+    },
+    "P-999": {
+      "c": "Purple",
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "s": "Straw Hat Crew",
+      "t": "Leader"
+    }
+  }
+}

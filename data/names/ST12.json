@@ -1,0 +1,183 @@
+{
+  "cards": {
+    "ST12-001": {
+      "a": "Slash / Strike",
+      "c": "Blue/Green",
+      "kw": "-",
+      "lf": 4,
+      "n": "Roronoa Zoro & Sanji",
+      "p": 5000,
+      "s": "Straw Hat Crew",
+      "t": "Leader"
+    },
+    "ST12-002": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Kuina",
+      "p": 2000,
+      "s": "Shimotsuki Village",
+      "t": "Character"
+    },
+    "ST12-003": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Dracule Mihawk",
+      "p": 4000,
+      "s": "Seven Warlords of the Sea/Shikkearu Kingdom",
+      "t": "Character"
+    },
+    "ST12-004": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Humandrill",
+      "p": 5000,
+      "s": "Animal / Shikkearu Kingdom",
+      "t": "Character"
+    },
+    "ST12-005": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Perona",
+      "p": 6000,
+      "s": "Shikkearu Kingdom / Thriller Bark Pirates",
+      "t": "Character"
+    },
+    "ST12-006": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Yosaku & Johnny",
+      "p": 3000,
+      "s": "East Blue",
+      "t": "Character"
+    },
+    "ST12-007": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Rika",
+      "s": "East Blue",
+      "t": "Character"
+    },
+    "ST12-008": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 0,
+      "k": 4,
+      "kw": "-",
+      "n": "Roronoa Zoro",
+      "p": 6000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST12-009": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Elephant True Bluefin",
+      "p": 3000,
+      "s": "Animal",
+      "t": "Character"
+    },
+    "ST12-010": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Emporio.Ivankov",
+      "p": 4000,
+      "s": "Impel Down/Revolutionary Army",
+      "t": "Character"
+    },
+    "ST12-011": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 0,
+      "k": 2,
+      "kw": "-",
+      "n": "Sanji",
+      "p": 3000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST12-012": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Charlotte Pudding",
+      "p": 2000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST12-013": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Zeff",
+      "p": 5000,
+      "s": "East Blue",
+      "t": "Character"
+    },
+    "ST12-014": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Duval",
+      "p": 1000,
+      "s": "Flying Fish Riders",
+      "t": "Character"
+    },
+    "ST12-015": {
+      "a": "Slash",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Patty & Carne",
+      "p": 4000,
+      "s": "East Blue",
+      "t": "Character"
+    },
+    "ST12-016": {
+      "c": "Green",
+      "k": 2,
+      "kw": "-",
+      "n": "Lion Strike",
+      "s": "Straw Hat Crew",
+      "t": "Event"
+    },
+    "ST12-017": {
+      "c": "Blue",
+      "k": 1,
+      "kw": "-",
+      "n": "Plastic Surgery Shot",
+      "s": "Straw Hat Crew",
+      "t": "Event"
+    }
+  }
+}

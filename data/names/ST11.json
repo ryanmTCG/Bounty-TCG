@@ -1,0 +1,49 @@
+{
+  "cards": {
+    "ST11-001": {
+      "a": "Special",
+      "c": "Green",
+      "kw": "-",
+      "lf": 5,
+      "n": "Uta",
+      "p": 5000,
+      "s": "FILM",
+      "t": "Leader"
+    },
+    "ST11-002": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Uta",
+      "p": 4000,
+      "s": "FILM",
+      "t": "Character"
+    },
+    "ST11-003": {
+      "c": "Green",
+      "k": 2,
+      "kw": "-",
+      "n": "Backlight",
+      "s": "Song/FILM",
+      "t": "Event"
+    },
+    "ST11-004": {
+      "c": "Green",
+      "k": 1,
+      "kw": "-",
+      "n": "New Genesis",
+      "s": "Song/FILM",
+      "t": "Event"
+    },
+    "ST11-005": {
+      "c": "Green",
+      "k": 3,
+      "kw": "-",
+      "n": "I'm invincible",
+      "s": "Song/FILM",
+      "t": "Event"
+    }
+  }
+}

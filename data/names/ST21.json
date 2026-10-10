@@ -1,0 +1,184 @@
+{
+  "cards": {
+    "ST21-001": {
+      "a": "Strike",
+      "c": "Red",
+      "kw": "-",
+      "lf": 5,
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "s": "Four Emperors / Straw Hat Crew",
+      "t": "Leader"
+    },
+    "ST21-002": {
+      "a": "Ranged",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Usopp",
+      "p": 3000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST21-003": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Sanji",
+      "p": 3000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST21-004": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 0,
+      "k": 1,
+      "kw": "-",
+      "n": "Jewelry Bonney",
+      "p": 3000,
+      "s": "Egghead / Bonney Pirates",
+      "t": "Character"
+    },
+    "ST21-005": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Jinbe",
+      "p": 4000,
+      "s": "Fishmen/Straw Hat Pirates",
+      "t": "Character"
+    },
+    "ST21-006": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Stussy",
+      "p": 5000,
+      "s": "Egghead",
+      "t": "Character"
+    },
+    "ST21-007": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Sentomaru",
+      "p": 2000,
+      "s": "Egghead/Navy",
+      "t": "Character"
+    },
+    "ST21-008": {
+      "a": "Wisdom",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Tony Tony.Chopper",
+      "p": 6000,
+      "s": "Animal/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST21-009": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Nami",
+      "p": 1000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST21-010": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Nico Robin",
+      "p": 4000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST21-011": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Franky",
+      "p": 4000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST21-012": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Brook",
+      "p": 4000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST21-013": {
+      "a": "Wisdom",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Vegapunk",
+      "p": 3000,
+      "s": "Scientist/Egghead",
+      "t": "Character"
+    },
+    "ST21-014": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 0,
+      "k": 5,
+      "kw": "Rush",
+      "n": "Monkey.D.Luffy",
+      "p": 6000,
+      "s": "Four Emperors / Straw Hat Pirates",
+      "t": "Character"
+    },
+    "ST21-015": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Rush",
+      "n": "Roronoa Zoro",
+      "p": 5000,
+      "s": "Straw Hat Pirates",
+      "t": "Character"
+    },
+    "ST21-016": {
+      "c": "Red",
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Gum-Gum Dawn Whip",
+      "s": "Four Emperors / Straw Hat Crew",
+      "t": "Event"
+    },
+    "ST21-017": {
+      "c": "Red",
+      "k": 4,
+      "kw": "-",
+      "n": "Gum-Gum Mole Pistol",
+      "s": "Four Emperors/ Straw Hat Crew",
+      "t": "Event"
+    }
+  }
+}

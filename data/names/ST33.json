@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST33-001": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Koby",
+      "p": 1000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST33-002": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Sakazuki",
+      "p": 5000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST33-003": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Smoker",
+      "p": 3000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST33-004": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 2000,
+      "k": 6,
+      "kw": "Blocker",
+      "n": "Borsalino",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST33-005": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Monkey.D.Garp",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    }
+  }
+}

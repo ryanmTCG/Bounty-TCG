@@ -1,0 +1,178 @@
+{
+  "cards": {
+    "ST01-001": {
+      "a": "Strike",
+      "c": "Red",
+      "kw": "-",
+      "lf": 5,
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "s": "Supernovas / Straw Hat Crew",
+      "t": "Leader"
+    },
+    "ST01-002": {
+      "a": "Ranged",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Usopp",
+      "p": 2000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST01-003": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Karoo",
+      "p": 3000,
+      "s": "Animal / Alabasta",
+      "t": "Character"
+    },
+    "ST01-004": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 0,
+      "k": 2,
+      "kw": "Rush",
+      "n": "Sanji",
+      "p": 4000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST01-005": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 0,
+      "k": 3,
+      "kw": "-",
+      "n": "Jinbe",
+      "p": 5000,
+      "s": "Fish-Man / Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST01-006": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 0,
+      "k": 1,
+      "kw": "Blocker",
+      "n": "Tony Tony.Chopper",
+      "p": 1000,
+      "s": "Animal / Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST01-007": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Nami",
+      "p": 1000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST01-008": {
+      "a": "Wisdom",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Nico Robin",
+      "p": 5000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST01-009": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Nefeltari Vivi",
+      "p": 4000,
+      "s": "Alabasta",
+      "t": "Character"
+    },
+    "ST01-010": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Franky",
+      "p": 6000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST01-011": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Brook",
+      "p": 3000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST01-012": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 0,
+      "k": 5,
+      "kw": "Rush,Blocker",
+      "n": "Monkey.D.Luffy",
+      "p": 6000,
+      "s": "Supernovas / Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST01-013": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 0,
+      "k": 3,
+      "kw": "-",
+      "n": "Roronoa Zoro",
+      "p": 5000,
+      "s": "Supernovas / Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST01-014": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "Guard Point",
+      "s": "Animal / Straw Hat Crew",
+      "t": "Event"
+    },
+    "ST01-015": {
+      "c": "Red",
+      "k": 4,
+      "kw": "-",
+      "n": "Gum-Gum Jet Pistol",
+      "s": "Supernovas / Straw Hat Crew",
+      "t": "Event"
+    },
+    "ST01-016": {
+      "c": "Red",
+      "k": 1,
+      "kw": "Blocker",
+      "n": "Diable Jambe",
+      "s": "Straw Hat Crew",
+      "t": "Event"
+    },
+    "ST01-017": {
+      "c": "Red",
+      "k": 2,
+      "kw": "-",
+      "n": "Thousand Sunny",
+      "s": "Straw Hat Crew",
+      "t": "Stage"
+    }
+  }
+}

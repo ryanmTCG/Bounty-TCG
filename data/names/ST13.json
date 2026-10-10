@@ -1,0 +1,200 @@
+{
+  "cards": {
+    "ST13-001": {
+      "a": "Special",
+      "c": "Red/Yellow",
+      "kw": "-",
+      "lf": 4,
+      "n": "Sabo",
+      "p": 5000,
+      "s": "Dressrosa/Revolutionary Army",
+      "t": "Leader"
+    },
+    "ST13-002": {
+      "a": "Special",
+      "c": "Blue/Yellow",
+      "kw": "-",
+      "lf": 4,
+      "n": "Portgas.D.Ace",
+      "p": 5000,
+      "s": "Whitebeard Pirates",
+      "t": "Leader"
+    },
+    "ST13-003": {
+      "a": "Strike",
+      "c": "Black",
+      "kw": "-",
+      "lf": 4,
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "s": "Supernova/Straw Hat Crew",
+      "t": "Leader"
+    },
+    "ST13-004": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Edward.Newgate",
+      "p": 7000,
+      "s": "Four Emperors / Whitebeard Pirates",
+      "t": "Character"
+    },
+    "ST13-005": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Emporio.Ivankov",
+      "p": 4000,
+      "s": "Revolutionary Army",
+      "t": "Character"
+    },
+    "ST13-006": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Curly.Dadan",
+      "p": 4000,
+      "s": "Bandit",
+      "t": "Character"
+    },
+    "ST13-007": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Sabo",
+      "p": 2000,
+      "s": "Goa Kingdom",
+      "t": "Character"
+    },
+    "ST13-008": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Sabo",
+      "p": 6000,
+      "s": "Dressrosa / Revolutionary Army",
+      "t": "Character"
+    },
+    "ST13-009": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 7,
+      "kw": "-",
+      "n": "Shanks",
+      "p": 7000,
+      "s": "Four Emperors / Red Hair Pirates",
+      "t": "Character"
+    },
+    "ST13-010": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Portgas.D.Ace",
+      "p": 2000,
+      "s": "Goa Kingdom",
+      "t": "Character"
+    },
+    "ST13-011": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 5,
+      "kw": "Rush",
+      "n": "Portgas.D.Ace",
+      "p": 7000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "ST13-012": {
+      "a": "Wisdom",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Makino",
+      "s": "Windmill Village",
+      "t": "Character"
+    },
+    "ST13-013": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Monkey.D.Garp",
+      "p": 2000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST13-014": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 2000,
+      "s": "Goa Kingdom",
+      "t": "Character"
+    },
+    "ST13-015": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 6000,
+      "s": "Supernova / Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST13-016": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 5,
+      "kw": "Rush",
+      "n": "Yamato",
+      "p": 4000,
+      "s": "Wano Country",
+      "t": "Character"
+    },
+    "ST13-017": {
+      "c": "Yellow",
+      "k": 2,
+      "kw": "-",
+      "n": "Flame Dragon King",
+      "s": "Revolutionary Army / Dressrosa",
+      "t": "Event"
+    },
+    "ST13-018": {
+      "c": "Yellow",
+      "k": 1,
+      "kw": "-",
+      "n": "Gum-Gum Jet Spear",
+      "s": "Punk Hazard / Straw Hat Crew",
+      "t": "Event"
+    },
+    "ST13-019": {
+      "c": "Yellow",
+      "k": 1,
+      "kw": "-",
+      "n": "The Three Brothers' Bond",
+      "s": "Goa Kingdom",
+      "t": "Event"
+    }
+  }
+}

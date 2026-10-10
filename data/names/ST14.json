@@ -1,0 +1,176 @@
+{
+  "cards": {
+    "ST14-001": {
+      "a": "Strike",
+      "c": "Black",
+      "kw": "-",
+      "lf": 5,
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "s": "Straw hat Crew",
+      "t": "Leader"
+    },
+    "ST14-002": {
+      "a": "Ranged",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Usopp",
+      "p": 4000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST14-003": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Sanji",
+      "p": 6000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST14-004": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Jinbe",
+      "p": 4000,
+      "s": "Fishman / Sun Pirates",
+      "t": "Character"
+    },
+    "ST14-005": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Tony Tony.Chopper",
+      "p": 6000,
+      "s": "Animal/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST14-006": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Nami",
+      "p": 2000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST14-007": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Nico Robin",
+      "p": 7000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST14-008": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Haredas",
+      "s": "Sky Island",
+      "t": "Character"
+    },
+    "ST14-009": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Franky",
+      "p": 6000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST14-010": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Brook",
+      "p": 7000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST14-011": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Heracles",
+      "p": 2000,
+      "s": "Boin Archipelago",
+      "t": "Character"
+    },
+    "ST14-012": {
+      "a": "Strike",
+      "c": "Black",
+      "k": 8,
+      "kw": "Rush",
+      "n": "Monkey.D.Luffy",
+      "p": 10000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST14-013": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Roronoa Zoro",
+      "p": 8000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST14-014": {
+      "c": "Yellow",
+      "k": 1,
+      "kw": "-",
+      "n": "Gum-Gum Giant Rifl",
+      "s": "Straw hat Crew",
+      "t": "Event"
+    },
+    "ST14-015": {
+      "c": "Yellow",
+      "k": 2,
+      "kw": "-",
+      "n": "Gum-Gum Diable Three-Swords Style Mouten Jet Six Hundred Pound Phoenix Cannon",
+      "s": "Straw Hat Crew",
+      "t": "Event"
+    },
+    "ST14-016": {
+      "c": "Yellow",
+      "k": 1,
+      "kw": "-",
+      "n": "I Have My Crew!!",
+      "s": "Straw Hat Crew",
+      "t": "Event"
+    },
+    "ST14-017": {
+      "c": "Black",
+      "k": 1,
+      "kw": "-",
+      "n": "Thousand Sunny",
+      "s": "Straw Hat Crew",
+      "t": "Stage"
+    }
+  }
+}

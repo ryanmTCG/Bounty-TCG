@@ -1,0 +1,201 @@
+{
+  "cards": {
+    "PRB02-001": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Koby",
+      "p": 5000,
+      "s": "Navy/SWORD",
+      "t": "Character"
+    },
+    "PRB02-002": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Trafalgar Law",
+      "p": 7000,
+      "s": "Punk Hazard/The Seven Warlords of the Sea/Heart Pirates",
+      "t": "Character"
+    },
+    "PRB02-003": {
+      "a": "Ranged",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Lucky.Roux",
+      "p": 2000,
+      "s": "Red-Haired Pirates",
+      "t": "Character"
+    },
+    "PRB02-004": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Jewelry Bonney",
+      "p": 3000,
+      "s": "Supernovas/Bonney Pirates",
+      "t": "Character"
+    },
+    "PRB02-005": {
+      "a": "Strike",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "s": "Supernovas/Straw Hat Crew",
+      "t": "Character"
+    },
+    "PRB02-006": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Roronoa Zoro",
+      "p": 4000,
+      "s": "Supernovas/Straw Hat Crew",
+      "t": "Character"
+    },
+    "PRB02-007": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Jinbe",
+      "p": 5000,
+      "s": "Fish-Man/The Seven Warlords of the Sea/The Sun Pirates",
+      "t": "Character"
+    },
+    "PRB02-008": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 0,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Marco",
+      "p": 6000,
+      "s": "Land of Wano/Former Whitebeard Pirates",
+      "t": "Character"
+    },
+    "PRB02-009": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Mr.3(Galdino)",
+      "p": 1000,
+      "s": "Cross Guild/Former Baroque Works",
+      "t": "Character"
+    },
+    "PRB02-010": {
+      "a": "Wisdom",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 7,
+      "kw": "-",
+      "n": "Charlotte Pudding",
+      "p": 5000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "PRB02-011": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Donquixote Doflamingo",
+      "p": 6000,
+      "s": "The Seven Warlords of the Sea/Donquixote Pirates",
+      "t": "Character"
+    },
+    "PRB02-012": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Nami",
+      "p": 2000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "PRB02-013": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 0,
+      "k": 6,
+      "kw": "-",
+      "n": "Gecko Moria",
+      "p": 7000,
+      "s": "Thriller Bark Pirates/The Seven Warlords of the Sea",
+      "t": "Character"
+    },
+    "PRB02-014": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 2000,
+      "k": 6,
+      "kw": "Blocker",
+      "n": "Sabo",
+      "p": 6000,
+      "s": "Dressrosa/Revolutionary Army",
+      "t": "Character"
+    },
+    "PRB02-015": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Shiryu",
+      "p": 5000,
+      "s": "Blackbeard Pirates",
+      "t": "Character"
+    },
+    "PRB02-016": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Otama",
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "PRB02-017": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Boa Hancock",
+      "p": 7000,
+      "s": "FILM/Seven Warlords of The Sea/Kuja Pirates",
+      "t": "Character"
+    },
+    "PRB02-018": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Portgas.D.Ace",
+      "p": 7000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    }
+  }
+}

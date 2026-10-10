@@ -1,0 +1,162 @@
+{
+  "cards": {
+    "ST09-001": {
+      "a": "Strike",
+      "c": "Yellow",
+      "kw": "-",
+      "lf": 5,
+      "n": "Yamato",
+      "p": 5000,
+      "s": "Land of Wano",
+      "t": "Leader"
+    },
+    "ST09-002": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Uzuki Tempura",
+      "p": 5000,
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "ST09-003": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Ulti",
+      "p": 6000,
+      "s": "Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "ST09-004": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Kaido",
+      "p": 5000,
+      "s": "Four Emperors / Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "ST09-005": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 7,
+      "kw": "Double Attack",
+      "n": "Kouzuki Oden",
+      "p": 7000,
+      "s": "Land of Wano / Kozuki Family",
+      "t": "Character"
+    },
+    "ST09-006": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Kouzuki Momonosuke",
+      "p": 4000,
+      "s": "Land of Wano / Kozuki Family",
+      "t": "Character"
+    },
+    "ST09-007": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Shinobu",
+      "p": 2000,
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "ST09-008": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Shimotsuki Ushimaru",
+      "p": 6000,
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "ST09-009": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Fugetsu Omusubi",
+      "p": 4000,
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "ST09-010": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 6,
+      "kw": "-",
+      "n": "Portgas.D.Ace",
+      "p": 7000,
+      "s": "Wano Country / Whitebeard Pirates",
+      "t": "Character"
+    },
+    "ST09-011": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "s": "Land of Wano / Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST09-012": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Yamato",
+      "p": 3000,
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "ST09-013": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Yamato",
+      "p": 7000,
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "ST09-014": {
+      "c": "Yellow",
+      "k": 1,
+      "kw": "-",
+      "n": "Narikabura Arrow",
+      "s": "Land of Wano",
+      "t": "Event"
+    },
+    "ST09-015": {
+      "c": "Yellow",
+      "k": 2,
+      "kw": "-",
+      "n": "Thunder Bagua",
+      "s": "Land of Wano",
+      "t": "Event"
+    }
+  }
+}

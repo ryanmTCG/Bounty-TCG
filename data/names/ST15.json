@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST15-001": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Atmos",
+      "p": 5000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "ST15-002": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 0,
+      "k": 7,
+      "kw": "-",
+      "n": "Edward.Newgate",
+      "p": 8000,
+      "s": "The Four Emperors / Whitebeard Pirates",
+      "t": "Character"
+    },
+    "ST15-003": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Kingdew",
+      "p": 4000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "ST15-004": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Thatch",
+      "p": 2000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    },
+    "ST15-005": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 0,
+      "k": 5,
+      "kw": "Rush",
+      "n": "Portgas.D.Ace",
+      "p": 6000,
+      "s": "Whitebeard Pirates",
+      "t": "Character"
+    }
+  }
+}

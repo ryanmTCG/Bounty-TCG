@@ -1,0 +1,8 @@
+{
+  "version": "1.1.0",
+  "shell": 2,
+  "bundle": "web-1.1.0.json.gz",
+  "sha256": "8a15b0c0007a3d8d64c134196b40106594315aca4c98a9084a6951ab94338150",
+  "size": 515612,
+  "notes": "Lobbies, banned and rotated card filters, and automatic updates."
+}

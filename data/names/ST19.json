@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST19-001": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 0,
+      "k": 6,
+      "kw": "-",
+      "n": "Smoker",
+      "p": 8000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST19-002": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Sengoku",
+      "p": 1000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST19-003": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Tashigi",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST19-004": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 0,
+      "k": 4,
+      "kw": "-",
+      "n": "Hina",
+      "p": 6000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST19-005": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Monkey.D.Garp",
+      "p": 4000,
+      "s": "Navy",
+      "t": "Character"
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "cards": {
+    "ST16-001": {
+      "a": "Special",
+      "c": "Green",
+      "ctr": 0,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Uta",
+      "p": 6000,
+      "s": "FILM",
+      "t": "Character"
+    },
+    "ST16-002": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Gordon",
+      "s": "FILM",
+      "t": "Character"
+    },
+    "ST16-003": {
+      "a": "Strike",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Charlotte Katakuri",
+      "p": 4000,
+      "s": "FILM / Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST16-004": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 0,
+      "k": 9,
+      "kw": "-",
+      "n": "Shanks",
+      "p": 11000,
+      "s": "FILM / Four Emperors / Red Hair Pirates",
+      "t": "Character"
+    },
+    "ST16-005": {
+      "a": "Strike",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 3000,
+      "s": "FILM / Supernovas / Straw Hat Crew",
+      "t": "Character"
+    }
+  }
+}

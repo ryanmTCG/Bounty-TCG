@@ -1,0 +1,179 @@
+{
+  "cards": {
+    "ST10-001": {
+      "a": "Slash",
+      "c": "Purple/Red",
+      "kw": "-",
+      "lf": 4,
+      "n": "Trafalgar Law",
+      "p": 5000,
+      "s": "Heart Pirates",
+      "t": "Leader"
+    },
+    "ST10-002": {
+      "a": "Strike",
+      "c": "Purple/Red",
+      "kw": "-",
+      "lf": 3,
+      "n": "Monkey.D.Luffy",
+      "p": 6000,
+      "s": "Straw Hat Crew",
+      "t": "Leader"
+    },
+    "ST10-003": {
+      "a": "Special",
+      "c": "Purple/Red",
+      "kw": "-",
+      "lf": 5,
+      "n": "Eustass\"Captain\"Kid",
+      "p": 5000,
+      "s": "Kid Pirates",
+      "t": "Leader"
+    },
+    "ST10-004": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "Rush",
+      "n": "Sanji",
+      "p": 6000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST10-005": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Jinbe",
+      "p": 2000,
+      "s": "Fishmen / Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST10-006": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 0,
+      "k": 10,
+      "kw": "Rush",
+      "n": "Monkey.D.Luffy",
+      "p": 11000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST10-007": {
+      "a": "Slash",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Killer",
+      "p": 6000,
+      "s": "Kid Pirates",
+      "t": "Character"
+    },
+    "ST10-008": {
+      "a": "Ranged",
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "-",
+      "n": "Shachi & Penguin",
+      "p": 5000,
+      "s": "Heart Pirates",
+      "t": "Character"
+    },
+    "ST10-009": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Jean Bart",
+      "p": 5000,
+      "s": "Heart Pirates",
+      "t": "Character"
+    },
+    "ST10-010": {
+      "a": "Slash",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Trafalgar Law",
+      "p": 5000,
+      "s": "Heart Pirates",
+      "t": "Character"
+    },
+    "ST10-011": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Heat",
+      "p": 4000,
+      "s": "Kid Pirates",
+      "t": "Character"
+    },
+    "ST10-012": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Bepo",
+      "p": 5000,
+      "s": "Mink Tribe/Heart Pirates",
+      "t": "Character"
+    },
+    "ST10-013": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 7,
+      "kw": "-",
+      "n": "Eustass\"Captain\"Kid",
+      "p": 8000,
+      "s": "Kid Pirates",
+      "t": "Character"
+    },
+    "ST10-014": {
+      "a": "Slash",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Wire",
+      "p": 3000,
+      "s": "Kid Pirates",
+      "t": "Character"
+    },
+    "ST10-015": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "Gum-Gum Giant Sumo Slap",
+      "s": "Straw Hat Pirates",
+      "t": "Event"
+    },
+    "ST10-016": {
+      "c": "Red",
+      "k": 5,
+      "kw": "-",
+      "n": "Gum-Gum Kong Gatling",
+      "s": "Straw hat Pirates",
+      "t": "Event"
+    },
+    "ST10-017": {
+      "c": "Purple",
+      "k": 3,
+      "kw": "-",
+      "n": "Punk Vise",
+      "s": "Kid Pirates",
+      "t": "Event"
+    }
+  }
+}

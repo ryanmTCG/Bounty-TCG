@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST23-001": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 6,
+      "kw": "Blocker",
+      "n": "Uta",
+      "p": 4000,
+      "s": "FILM",
+      "t": "Character"
+    },
+    "ST23-002": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 0,
+      "k": 9,
+      "kw": "-",
+      "n": "Shanks",
+      "p": 10000,
+      "s": "The Four Emperors/Red-Haired Pirates",
+      "t": "Character"
+    },
+    "ST23-003": {
+      "a": "Ranged",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Benn.Beckman",
+      "p": 5000,
+      "s": "Red-Haired Pirates",
+      "t": "Character"
+    },
+    "ST23-004": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 2000,
+      "s": "FILM/Supernovas/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST23-005": {
+      "a": "Ranged",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Yasopp",
+      "p": 1000,
+      "s": "Red-Haired Pirates",
+      "t": "Character"
+    }
+  }
+}

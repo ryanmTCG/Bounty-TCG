@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST20-001": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Charlotte Katakuri",
+      "p": 6000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST20-002": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Charlotte Cracker",
+      "p": 5000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST20-003": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Charlotte Brulee",
+      "p": 3000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST20-004": {
+      "a": "Wisdom",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Charlotte Pudding",
+      "p": 2000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST20-005": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 6,
+      "kw": "-",
+      "n": "Charlotte Linlin",
+      "p": 7000,
+      "s": "The Four Emperors / Big Mom Pirates",
+      "t": "Character"
+    }
+  }
+}

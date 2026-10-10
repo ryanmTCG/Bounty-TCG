@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST27-001": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Avalo Pizarro",
+      "p": 1000,
+      "s": "Blackbeard Pirates",
+      "t": "Character"
+    },
+    "ST27-002": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Catarina Devon",
+      "p": 1000,
+      "s": "Blackbeard Pirates",
+      "t": "Character"
+    },
+    "ST27-003": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "Blocker",
+      "n": "Kuzan",
+      "p": 6000,
+      "s": "Blackbeard Pirates/Former Navy",
+      "t": "Character"
+    },
+    "ST27-004": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Sanjuan.Wolf",
+      "p": 6000,
+      "s": "Giant/Blackbeard Pirates",
+      "t": "Character"
+    },
+    "ST27-005": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 0,
+      "k": 7,
+      "kw": "-",
+      "n": "Marshall.D.Teach",
+      "p": 8000,
+      "s": "The Four Emperors/Blackbeard Pirates",
+      "t": "Character"
+    }
+  }
+}

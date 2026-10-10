@@ -1,0 +1,160 @@
+{
+  "cards": {
+    "ST08-001": {
+      "a": "Strike",
+      "c": "Black",
+      "kw": "-",
+      "lf": 5,
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "s": "Straw Hat Crew",
+      "t": "Leader"
+    },
+    "ST08-002": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 0,
+      "k": 2,
+      "kw": "-",
+      "n": "Uta",
+      "p": 3000,
+      "s": "FILM",
+      "t": "Character"
+    },
+    "ST08-003": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Gaimon",
+      "p": 4000,
+      "s": "East Blue",
+      "t": "Character"
+    },
+    "ST08-004": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Koby",
+      "p": 1000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST08-005": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 0,
+      "k": 9,
+      "kw": "-",
+      "n": "Shanks",
+      "p": 10000,
+      "s": "Red Haired Pirates",
+      "t": "Character"
+    },
+    "ST08-006": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Shirahoshi",
+      "s": "Mermaid",
+      "t": "Character"
+    },
+    "ST08-007": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Nefeltari Vivi",
+      "p": 1000,
+      "s": "Alabasta Kingdom",
+      "t": "Character"
+    },
+    "ST08-008": {
+      "a": "Slash",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Higuma",
+      "p": 2000,
+      "s": "Mountain Bandit",
+      "t": "Character"
+    },
+    "ST08-009": {
+      "a": "Wisdom",
+      "c": "Black",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Makino",
+      "s": "East Blue",
+      "t": "Character"
+    },
+    "ST08-010": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Monkey.D.Garp",
+      "p": 7000,
+      "s": "Navy",
+      "t": "Character"
+    },
+    "ST08-011": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST08-012": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Laboon",
+      "p": 6000,
+      "s": "Animal",
+      "t": "Character"
+    },
+    "ST08-013": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Mr.2.Bon.Kurei (Bentham)",
+      "p": 6000,
+      "s": "Former Baroque Works",
+      "t": "Character"
+    },
+    "ST08-014": {
+      "c": "Yellow",
+      "k": 2,
+      "kw": "-",
+      "n": "Gum-Gum Bell",
+      "s": "Straw Hat Crew",
+      "t": "Event"
+    },
+    "ST08-015": {
+      "c": "Yellow",
+      "k": 3,
+      "kw": "-",
+      "n": "Gum-Gum Pistol",
+      "s": "Straw Hat Crew",
+      "t": "Event"
+    }
+  }
+}

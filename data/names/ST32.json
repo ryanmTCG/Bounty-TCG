@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST32-001": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Kin'emon",
+      "p": 2000,
+      "s": "Land of Wano / The Akazaya Nine",
+      "t": "Character"
+    },
+    "ST32-002": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Kouzuki Oden",
+      "p": 6000,
+      "s": "Land of Wano/Kouzuki Clan",
+      "t": "Character"
+    },
+    "ST32-003": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 0,
+      "k": 6,
+      "kw": "-",
+      "n": "Dracule Mihawk",
+      "p": 7000,
+      "s": "Muggy Kingdom/The Seven Warlords of the Sea",
+      "t": "Character"
+    },
+    "ST32-004": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Rush: Character",
+      "n": "Silvers Rayleigh",
+      "p": 5000,
+      "s": "Former Roger Pirates",
+      "t": "Character"
+    },
+    "ST32-005": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "Rush: Character",
+      "n": "Roronoa Zoro",
+      "p": 2000,
+      "s": "Supernovas/Straw Hat Crew",
+      "t": "Character"
+    }
+  }
+}

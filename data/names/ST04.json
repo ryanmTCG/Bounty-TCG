@@ -1,0 +1,178 @@
+{
+  "cards": {
+    "ST04-001": {
+      "a": "Strike",
+      "c": "Purple",
+      "kw": "-",
+      "lf": 5,
+      "n": "Kaido",
+      "p": 5000,
+      "s": "The Four Emperors / Animal Kingdom Pirates",
+      "t": "Leader"
+    },
+    "ST04-002": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "-",
+      "n": "Ulti",
+      "p": 5000,
+      "s": "Animal Kindom Pirates",
+      "t": "Character"
+    },
+    "ST04-003": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 9,
+      "kw": "Rush",
+      "n": "Kaido",
+      "p": 10000,
+      "s": "The Four Emperors / Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "ST04-004": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 6,
+      "kw": "-",
+      "n": "King",
+      "p": 7000,
+      "s": "Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "ST04-005": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Queen",
+      "p": 6000,
+      "s": "Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "ST04-006": {
+      "a": "Ranged",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Sasaki",
+      "p": 4000,
+      "s": "Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "ST04-007": {
+      "a": "Slash",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Sheepshead",
+      "p": 4000,
+      "s": "Animal Kingdom Pirates / Smile",
+      "t": "Character"
+    },
+    "ST04-008": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Jack",
+      "p": 4000,
+      "s": "Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "ST04-009": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Ginrummy",
+      "p": 3000,
+      "s": "Animal Kingdom Pirates / Smile",
+      "t": "Character"
+    },
+    "ST04-010": {
+      "a": "Slash",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 3,
+      "kw": "-",
+      "n": "Who's.Who",
+      "p": 3000,
+      "s": "Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "ST04-011": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Black Maria",
+      "p": 2000,
+      "s": "Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "ST04-012": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Page One",
+      "p": 6000,
+      "s": "Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "ST04-013": {
+      "a": "Slash",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "X.Drake",
+      "p": 5000,
+      "s": "Navy / Drake Pirates / Animal Kingdom Pirates",
+      "t": "Character"
+    },
+    "ST04-014": {
+      "c": "Purple",
+      "k": 4,
+      "kw": "-",
+      "n": "Lead Performer \"Disaster\"",
+      "s": "Animal Kingdom Pirates",
+      "t": "Event"
+    },
+    "ST04-015": {
+      "c": "Purple",
+      "k": 6,
+      "kw": "-",
+      "n": "Brachio Bomber",
+      "s": "Animal Kingdom Pirates",
+      "t": "Event"
+    },
+    "ST04-016": {
+      "c": "Purple",
+      "k": 1,
+      "kw": "-",
+      "n": "Blast Breath",
+      "s": "The Four Emperors / Animal Kingdom Pirates",
+      "t": "Event"
+    },
+    "ST04-017": {
+      "c": "Purple",
+      "k": 3,
+      "kw": "-",
+      "n": "Onigashima Island",
+      "s": "Animal Kingdom Pirates",
+      "t": "Stage"
+    }
+  }
+}

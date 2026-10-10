@@ -1,0 +1,418 @@
+{
+  "cards": {
+    "EB05-001": {
+      "c": "Red",
+      "k": 5,
+      "kw": "-",
+      "n": "Jewelry Bonney",
+      "p": 7000,
+      "t": "Character"
+    },
+    "EB05-002": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Doll",
+      "p": 2000,
+      "t": "Character"
+    },
+    "EB05-004": {
+      "c": "Red",
+      "k": 4,
+      "kw": "-",
+      "n": "Baby 5",
+      "p": 6000,
+      "t": "Character"
+    },
+    "EB05-005": {
+      "c": "Red",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Belo Betty",
+      "p": 3000,
+      "t": "Character"
+    },
+    "EB05-006": {
+      "a": "Wisdom",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Miss Buckinham Stussy",
+      "p": 2000,
+      "t": "Character"
+    },
+    "EB05-007": {
+      "c": "Red",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Monet",
+      "p": 1000,
+      "s": "Punk Hazard/Donquixote Pirates",
+      "t": "Character"
+    },
+    "EB05-008": {
+      "c": "Red",
+      "kw": "-"
+    },
+    "EB05-009": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "Fight and Die with Me!!!",
+      "t": "Event"
+    },
+    "EB05-010": {
+      "a": "Wisdom",
+      "c": "Green/Yellow",
+      "kw": "Blocker",
+      "lf": 4,
+      "n": "Nico Robin",
+      "p": 5000,
+      "s": "Straw Hat Crew",
+      "t": "Leader"
+    },
+    "EB05-011": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Otohime",
+      "t": "Character"
+    },
+    "EB05-012": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Camie",
+      "t": "Character"
+    },
+    "EB05-013": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Shirley",
+      "p": 4000,
+      "s": "Merfolk/Fish-Man Island",
+      "t": "Character"
+    },
+    "EB05-014": {
+      "a": "Wisdom",
+      "c": "Green",
+      "k": 1,
+      "kw": "Rush",
+      "n": "Shirahoshi",
+      "t": "Character"
+    },
+    "EB05-016": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Nico Robin",
+      "p": 6000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "EB05-017": {
+      "a": "Wisdom",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Mermaid Cafe Dancers",
+      "t": "Character"
+    },
+    "EB05-018": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Rebecca",
+      "p": 1000,
+      "t": "Character"
+    },
+    "EB05-019": {
+      "c": "Green",
+      "kw": "-"
+    },
+    "EB05-020": {
+      "c": "Green",
+      "k": 1,
+      "kw": "-",
+      "n": "My name is Shirahoshi!!",
+      "t": "Event"
+    },
+    "EB05-021": {
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 9,
+      "kw": "-",
+      "n": "Alvida",
+      "p": 7000,
+      "t": "Character"
+    },
+    "EB05-022": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Octopako",
+      "p": 2000,
+      "t": "Character"
+    },
+    "EB05-023": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Osome",
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "EB05-024": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "Blocker",
+      "n": "Little Sadi",
+      "t": "Character"
+    },
+    "EB05-025": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Domino",
+      "p": 3000,
+      "s": "Impel Down",
+      "t": "Character"
+    },
+    "EB05-027": {
+      "a": "Ranged",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Hibari",
+      "p": 6000,
+      "t": "Character"
+    },
+    "EB05-028": {
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Boa Hancock",
+      "p": 5000,
+      "t": "Character"
+    },
+    "EB05-029": {
+      "c": "Blue",
+      "k": 5,
+      "kw": "-",
+      "n": "Feather Cage",
+      "t": "Event"
+    },
+    "EB05-030": {
+      "c": "Blue",
+      "k": 2,
+      "kw": "-",
+      "n": "Take Care, Everybody. ♡",
+      "t": "Event"
+    },
+    "EB05-031": {
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Vinsmoke Reiju",
+      "p": 5000,
+      "t": "Character"
+    },
+    "EB05-034": {
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Sugar",
+      "t": "Character"
+    },
+    "EB05-035": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Speed",
+      "p": 6000,
+      "t": "Character"
+    },
+    "EB05-036": {
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Tsuru",
+      "s": "Navy",
+      "t": "Character"
+    },
+    "EB05-037": {
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Black Maria",
+      "p": 2000,
+      "t": "Character"
+    },
+    "EB05-038": {
+      "a": "Wisdom",
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Russian",
+      "t": "Character"
+    },
+    "EB05-039": {
+      "c": "Purple",
+      "k": 1,
+      "kw": "-",
+      "n": "Pink Hornet",
+      "t": "Event"
+    },
+    "EB05-040": {
+      "c": "Purple",
+      "k": 0,
+      "kw": "-",
+      "n": "You Need Me, Don't You?!!♡",
+      "t": "Event"
+    },
+    "EB05-042": {
+      "c": "Black",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "-",
+      "n": "Shinobu",
+      "p": 5000,
+      "s": "Land of Wano",
+      "t": "Character"
+    },
+    "EB05-043": {
+      "c": "Black",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "-",
+      "n": "Perona",
+      "p": 5000,
+      "t": "Character"
+    },
+    "EB05-044": {
+      "c": "Black",
+      "ctr": 2000,
+      "k": 2,
+      "kw": "-",
+      "n": "Ms. Father's Day",
+      "p": 2000,
+      "t": "Character"
+    },
+    "EB05-045": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Ms. Monday",
+      "p": 3000,
+      "s": "Baroque Works",
+      "t": "Character"
+    },
+    "EB05-046": {
+      "c": "Black",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Yamato",
+      "p": 5000,
+      "t": "Character"
+    },
+    "EB05-047": {
+      "c": "Black",
+      "kw": "-"
+    },
+    "EB05-048": {
+      "c": "Black",
+      "kw": "-"
+    },
+    "EB05-049": {
+      "c": "Yellow",
+      "kw": "-"
+    },
+    "EB05-050": {
+      "c": "Yellow",
+      "kw": "-"
+    },
+    "EB05-051": {
+      "c": "Yellow",
+      "kw": "-"
+    },
+    "EB05-052": {
+      "c": "Yellow",
+      "kw": "-"
+    },
+    "EB05-053": {
+      "c": "Yellow",
+      "kw": "-"
+    },
+    "EB05-054": {
+      "c": "Yellow",
+      "k": 3,
+      "kw": "-",
+      "n": "Charlotte Brulee",
+      "p": 4000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "EB05-055": {
+      "c": "Yellow",
+      "kw": "-"
+    },
+    "EB05-056": {
+      "c": "Yellow",
+      "k": 1,
+      "kw": "-",
+      "n": "Nico Olvia",
+      "p": 0,
+      "s": "Ohara",
+      "t": "Character"
+    },
+    "EB05-057": {
+      "c": "Yellow",
+      "kw": "-"
+    },
+    "EB05-060": {
+      "c": "Yellow",
+      "kw": "-"
+    },
+    "EB05-061": {
+      "c": "Red",
+      "kw": "-"
+    }
+  }
+}

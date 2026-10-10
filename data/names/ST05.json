@@ -1,0 +1,184 @@
+{
+  "cards": {
+    "ST05-001": {
+      "a": "Slash",
+      "c": "Purple",
+      "k": 1,
+      "kw": "-",
+      "lf": 5,
+      "n": "Shanks",
+      "p": 5000,
+      "s": "FILM / The Four Emperors / Red Hair Pirates",
+      "t": "Leader"
+    },
+    "ST05-002": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 4,
+      "kw": "-",
+      "n": "Ain",
+      "p": 5000,
+      "s": "FILM /Neo Navy",
+      "t": "Character"
+    },
+    "ST05-003": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Ann",
+      "p": 3000,
+      "s": "FILM / Pirate Fest",
+      "t": "Character"
+    },
+    "ST05-004": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Uta",
+      "p": 5000,
+      "s": "FILM",
+      "t": "Character"
+    },
+    "ST05-005": {
+      "a": "Wisdom",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Carina",
+      "p": 3000,
+      "s": "FILM / Gran Tesoro",
+      "t": "Character"
+    },
+    "ST05-006": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Gild Tesoro",
+      "p": 6000,
+      "s": "FILM / Gran Tesoro",
+      "t": "Character"
+    },
+    "ST05-007": {
+      "a": "Wisdom",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Gordon",
+      "p": 3000,
+      "s": "FILM",
+      "t": "Character"
+    },
+    "ST05-008": {
+      "a": "Slash",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 6,
+      "kw": "-",
+      "n": "Shiki",
+      "p": 7000,
+      "s": "FILM / Golden Lion Pirates",
+      "t": "Character"
+    },
+    "ST05-009": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Scarlet",
+      "p": 3000,
+      "s": "FILM / Animal / Golden Lion Pirates",
+      "t": "Character"
+    },
+    "ST05-010": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 7,
+      "kw": "-",
+      "n": "Zephyr",
+      "p": 8000,
+      "s": "FILM / NEO Navy",
+      "t": "Character"
+    },
+    "ST05-011": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 8,
+      "kw": "Double Attack",
+      "n": "Douglas Bullet",
+      "p": 10000,
+      "s": "FILM / Pirate Fest",
+      "t": "Character"
+    },
+    "ST05-012": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Baccarat",
+      "p": 5000,
+      "s": "FILM / Gran Tesoro",
+      "t": "Character"
+    },
+    "ST05-013": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Bins",
+      "p": 6000,
+      "s": "FILM / Neo Navy",
+      "t": "Character"
+    },
+    "ST05-014": {
+      "a": "Wisdom",
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Buena Festa",
+      "s": "FILM / Pirate Fest",
+      "t": "Character"
+    },
+    "ST05-015": {
+      "a": "Wisdom",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Dr. Indigo",
+      "p": 4000,
+      "s": "FILM / Scientist / Golden Lion Pirates",
+      "t": "Character"
+    },
+    "ST05-016": {
+      "c": "Purple",
+      "k": 3,
+      "kw": "-",
+      "n": "Lion's Threat Imperial Earth Bind",
+      "s": "FILM / Golden Lion Pirates",
+      "t": "Event"
+    },
+    "ST05-017": {
+      "c": "Purple",
+      "k": 2,
+      "kw": "-",
+      "n": "Union Armada",
+      "s": "FILM / Pirate Fest",
+      "t": "Event"
+    }
+  }
+}

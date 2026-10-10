@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST36-001": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Cavendish",
+      "p": 3000,
+      "s": "Dressrosa/Supernovas/Beautiful Pirates",
+      "t": "Character"
+    },
+    "ST36-002": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 4,
+      "kw": "-",
+      "n": "Killer",
+      "p": 6000,
+      "s": "Supernova/Kid Pirates",
+      "t": "Character"
+    },
+    "ST36-003": {
+      "a": "Ranged",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "-",
+      "n": "Scratchmen Apoo",
+      "p": 4000,
+      "s": "Supernovas/On-Air Pirates",
+      "t": "Character"
+    },
+    "ST36-004": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Bartolomeo",
+      "p": 2000,
+      "s": "Dressrosa/Supernovas/Barto Club",
+      "t": "Character"
+    },
+    "ST36-005": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 6,
+      "kw": "-",
+      "n": "Eustass\"Captain\"Kid",
+      "p": 7000,
+      "s": "Supernovas/Kid Pirates",
+      "t": "Character"
+    }
+  }
+}

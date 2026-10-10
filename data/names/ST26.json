@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST26-001": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 7,
+      "kw": "-",
+      "n": "Soba Mask",
+      "p": 9000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST26-002": {
+      "a": "Wisdom",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "Blocker",
+      "n": "Tony Tony.Chopper",
+      "p": 4000,
+      "s": "Animal/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST26-003": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Nico Robin",
+      "p": 4000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST26-004": {
+      "a": "Ranged",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 8,
+      "kw": "-",
+      "n": "General Franky",
+      "p": 10000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST26-005": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 6,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "p": 7000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    }
+  }
+}

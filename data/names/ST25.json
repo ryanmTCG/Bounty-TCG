@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST25-001": {
+      "a": "Strike",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Alvida",
+      "p": 5000,
+      "s": "Cross Guild",
+      "t": "Character"
+    },
+    "ST25-002": {
+      "a": "Slash",
+      "c": "Blue",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Cabaji",
+      "p": 1000,
+      "s": "Cross Guild",
+      "t": "Character"
+    },
+    "ST25-003": {
+      "a": "Slash / Special",
+      "c": "Blue",
+      "ctr": 0,
+      "k": 8,
+      "kw": "-",
+      "n": "Crocodile & Mihawk",
+      "p": 7000,
+      "s": "Cross Guild/Former Baroque Works",
+      "t": "Character"
+    },
+    "ST25-004": {
+      "a": "Slash",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Buggy",
+      "p": 1000,
+      "s": "The Four Emperors/Cross Guild",
+      "t": "Character"
+    },
+    "ST25-005": {
+      "a": "Wisdom",
+      "c": "Blue",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Mohji",
+      "p": 1000,
+      "s": "Cross Guild",
+      "t": "Character"
+    }
+  }
+}

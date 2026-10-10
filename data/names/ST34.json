@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST34-001": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 5,
+      "kw": "-",
+      "n": "Charlotte Katakuri",
+      "p": 7000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST34-002": {
+      "a": "Slash",
+      "c": "Purple",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Charlotte Cracker",
+      "p": 5000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST34-003": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Charlotte Brulee",
+      "p": 2000,
+      "s": "Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST34-004": {
+      "a": "Special",
+      "c": "Purple",
+      "ctr": 0,
+      "k": 10,
+      "kw": "-",
+      "n": "Charlotte Linlin",
+      "p": 12000,
+      "s": "The Four Emperors/Big Mom Pirates",
+      "t": "Character"
+    },
+    "ST34-005": {
+      "a": "Strike",
+      "c": "Purple",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Baron Tamago & Pekoms",
+      "p": 4000,
+      "s": "Minks/Big Mom Pirates",
+      "t": "Character"
+    }
+  }
+}

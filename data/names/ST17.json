@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST17-001": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Crocodile",
+      "p": 5000,
+      "s": "The Seven Warlords of the Sea/Baroque Works",
+      "t": "Character"
+    },
+    "ST17-002": {
+      "a": "Slash",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Trafalgar Law",
+      "p": 5000,
+      "s": "Seven Warlords of the Sea / Heart Pirates",
+      "t": "Character"
+    },
+    "ST17-003": {
+      "a": "Slash",
+      "c": "Blue",
+      "ctr": 2000,
+      "k": 1,
+      "kw": "-",
+      "n": "Buggy",
+      "p": 2000,
+      "s": "The Seven Warlords of the Sea/Buggy's delivery",
+      "t": "Character"
+    },
+    "ST17-004": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 0,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Boa Hancock",
+      "p": 6000,
+      "s": "Seven waarlords of the sea/Kuja Pirates",
+      "t": "Character"
+    },
+    "ST17-005": {
+      "a": "Special",
+      "c": "Blue",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Marshall.D.Teach",
+      "p": 3000,
+      "s": "Seven Warlords of the Sea / Blackbeard Pirates",
+      "t": "Character"
+    }
+  }
+}

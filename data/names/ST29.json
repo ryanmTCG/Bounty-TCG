@@ -1,0 +1,180 @@
+{
+  "cards": {
+    "ST29-001": {
+      "a": "Strike",
+      "c": "Yellow",
+      "kw": "-",
+      "lf": 6,
+      "n": "Monkey.D.Luffy",
+      "p": 5000,
+      "s": "The Four Emperors/Egghead/Straw Hat Crew",
+      "t": "Leader"
+    },
+    "ST29-002": {
+      "a": "Ranged",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Usopp",
+      "p": 4000,
+      "s": "Egghead/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST29-003": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Kaku",
+      "p": 5000,
+      "s": "Egghead/CP0",
+      "t": "Character"
+    },
+    "ST29-004": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Sanji",
+      "p": 5000,
+      "s": "Egghead/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST29-005": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 6,
+      "kw": "-",
+      "n": "Jinbe",
+      "p": 5000,
+      "s": "Fish-Man/Egghead/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST29-006": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 6,
+      "kw": "-",
+      "n": "Stussy",
+      "p": 7000,
+      "s": "Egghead",
+      "t": "Character"
+    },
+    "ST29-007": {
+      "a": "Wisdom",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "-",
+      "n": "Tony Tony.Chopper",
+      "p": 5000,
+      "s": "Animal/Egghead/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST29-008": {
+      "a": "Special",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Nami",
+      "p": 1000,
+      "s": "Egghead/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST29-009": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Nico Robin",
+      "p": 2000,
+      "s": "Egghead/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST29-010": {
+      "a": "Ranged",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 5,
+      "kw": "-",
+      "n": "Franky",
+      "p": 6000,
+      "s": "Egghead/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST29-011": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Brook",
+      "p": 2000,
+      "s": "Egghead/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST29-012": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Monkey.D.Luffy",
+      "s": "The Four Emperors/Egghead/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST29-013": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Rob Lucci",
+      "p": 6000,
+      "s": "Egghead/CP0",
+      "t": "Character"
+    },
+    "ST29-014": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 6,
+      "kw": "Rush: Character",
+      "n": "Roronoa Zoro",
+      "p": 8000,
+      "s": "Egghead/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST29-015": {
+      "c": "Yellow",
+      "k": 1,
+      "kw": "-",
+      "n": "Raw Heat Strike",
+      "s": "Egghead/Straw Hat Crew",
+      "t": "Event"
+    },
+    "ST29-016": {
+      "c": "Yellow",
+      "k": 1,
+      "kw": "Unblockable",
+      "n": "Kizaru!! Compared to Two Years Ago We're a Hundred Times Stronger Now!!",
+      "s": "The Four Emperors/Egghead/Straw Hat Crew",
+      "t": "Event"
+    },
+    "ST29-017": {
+      "c": "Yellow",
+      "k": 2,
+      "kw": "-",
+      "n": "Iai Death Lion Song",
+      "s": "Egghead/Straw Hat Crew",
+      "t": "Event"
+    }
+  }
+}

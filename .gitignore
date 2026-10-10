@@ -1,0 +1,7 @@
+node_modules
+dist/
+# Bandai's images (DON!! card, card backs) and card art never go in this public repository
+private/
+cards/
+*.webp
+__pycache__/

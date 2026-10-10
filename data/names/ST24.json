@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST24-001": {
+      "a": "Ranged",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Capone\"Gang\"Bege",
+      "p": 1000,
+      "s": "Supernovas/Firetank Pirates",
+      "t": "Character"
+    },
+    "ST24-002": {
+      "a": "Slash / Special",
+      "c": "Green",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "-",
+      "n": "Kid & Killer",
+      "p": 2000,
+      "s": "Supernovas/Kid Pirates",
+      "t": "Character"
+    },
+    "ST24-003": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "-",
+      "n": "Basil Hawkins",
+      "p": 4000,
+      "s": "Supernovas/Hawkins Pirates",
+      "t": "Character"
+    },
+    "ST24-004": {
+      "a": "Slash / Strike",
+      "c": "Green",
+      "ctr": 0,
+      "k": 10,
+      "kw": "-",
+      "n": "Law & Bepo",
+      "p": 11000,
+      "s": "Minks/Supernovas/Heart Pirates",
+      "t": "Character"
+    },
+    "ST24-005": {
+      "a": "Slash",
+      "c": "Green",
+      "ctr": 2000,
+      "k": 5,
+      "kw": "-",
+      "n": "X.Drake",
+      "p": 5000,
+      "s": "Supernovas/Navy/Drake Pirates",
+      "t": "Character"
+    }
+  }
+}

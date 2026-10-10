@@ -1,0 +1,59 @@
+{
+  "cards": {
+    "ST35-001": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 4,
+      "kw": "Blocker",
+      "n": "Hack",
+      "p": 4000,
+      "s": "Fish-Man/Dressrosa/Revolutionary Army",
+      "t": "Character"
+    },
+    "ST35-002": {
+      "a": "Special",
+      "c": "Red",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "-",
+      "n": "Lindbergh",
+      "p": 4000,
+      "s": "Minks/Revolutionary Army",
+      "t": "Character"
+    },
+    "ST35-003": {
+      "a": "Special",
+      "c": "Black",
+      "ctr": 2000,
+      "k": 3,
+      "kw": "-",
+      "n": "Karasu",
+      "p": 4000,
+      "s": "Revolutionary Army",
+      "t": "Character"
+    },
+    "ST35-004": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 7,
+      "kw": "Blocker",
+      "n": "Koala",
+      "p": 6000,
+      "s": "Dressrosa/Revolutionary Army",
+      "t": "Character"
+    },
+    "ST35-005": {
+      "a": "Strike",
+      "c": "Black",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "-",
+      "n": "Bartholomew Kuma",
+      "p": 5000,
+      "s": "Revolutionary Army",
+      "t": "Character"
+    }
+  }
+}

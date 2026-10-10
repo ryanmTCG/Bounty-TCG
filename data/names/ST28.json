@@ -1,0 +1,58 @@
+{
+  "cards": {
+    "ST28-001": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 3,
+      "kw": "-",
+      "n": "Ashura Doji",
+      "p": 3000,
+      "s": "Land of Wano/The Akazaya Nine",
+      "t": "Character"
+    },
+    "ST28-002": {
+      "a": "Ranged",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker,Banish",
+      "n": "Izo",
+      "p": 1000,
+      "s": "Land of Wano/Former Whitebeard Pirates",
+      "t": "Character"
+    },
+    "ST28-003": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 2000,
+      "k": 4,
+      "kw": "-",
+      "n": "Kin'emon",
+      "p": 5000,
+      "s": "Land of Wano/The Akazaya Nine",
+      "t": "Character"
+    },
+    "ST28-004": {
+      "a": "Slash",
+      "c": "Yellow",
+      "ctr": 0,
+      "k": 6,
+      "kw": "Rush",
+      "n": "Kouzuki Momonosuke",
+      "p": 7000,
+      "s": "Land of Wano/Kouzuki Clan",
+      "t": "Character"
+    },
+    "ST28-005": {
+      "a": "Strike",
+      "c": "Yellow",
+      "ctr": 1000,
+      "k": 1,
+      "kw": "-",
+      "n": "Yamato",
+      "s": "Land of Wano",
+      "t": "Character"
+    }
+  }
+}

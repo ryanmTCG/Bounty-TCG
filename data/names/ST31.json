@@ -1,0 +1,56 @@
+{
+  "cards": {
+    "ST31-001": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "Rush",
+      "n": "Sanji",
+      "p": 3000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST31-002": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 5,
+      "kw": "Blocker",
+      "n": "Jinbe",
+      "p": 6000,
+      "s": "Fish-Man / Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST31-003": {
+      "a": "Slash",
+      "c": "Red",
+      "ctr": 1000,
+      "k": 2,
+      "kw": "Blocker",
+      "n": "Brook",
+      "p": 3000,
+      "s": "Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST31-004": {
+      "a": "Strike",
+      "c": "Red",
+      "ctr": 0,
+      "k": 7,
+      "kw": "Rush",
+      "n": "Monkey.D.Luffy",
+      "p": 9000,
+      "s": "The Four Emperors/Straw Hat Crew",
+      "t": "Character"
+    },
+    "ST31-005": {
+      "c": "Red",
+      "k": 1,
+      "kw": "-",
+      "n": "Thousand Sunny",
+      "s": "Straw Hat Crew",
+      "t": "Stage"
+    }
+  }
+}
