@@ -327,12 +327,18 @@ button,input,textarea,select{font:inherit;color:inherit}
 .turnbar [data-do="endturn"]{grid-column:2/span 2}
 .turnbar #startfb{grid-column:1/-1}
 .turnbar .btn.due{background:#F2B84B;color:#2A1D00;box-shadow:0 0 0 3px rgba(242,184,75,.45),0 3px 0 #7A5200}
-.fxpanel{border:2px solid #E9B949;border-radius:14px;background:rgba(10,30,45,.92);padding:10px 12px;font-size:13px;line-height:1.35}
+.fxpanel{position:absolute;top:0;left:0;right:0;z-index:40;max-height:380px;overflow:auto;border:2px solid #E9B949;border-radius:14px;background:rgba(10,30,45,.97);padding:10px 12px;font-size:13px;line-height:1.35;box-shadow:0 12px 30px rgba(0,0,0,.6)}
+.fxpanel .fxtext{font-size:12px;opacity:.8}
+.fxpanel .fxdo{font-weight:700;font-size:14px;color:#fff}
+.fxpanel .fxcol{display:flex;flex-direction:column;gap:6px;margin:0 0 8px}
+.fxtarget{outline:3px dashed #F2B84B;outline-offset:2px;cursor:pointer;animation:fxpulse 1.2s ease-in-out infinite}
+.fxpicked{outline:4px solid #4ADE80;outline-offset:1px;box-shadow:0 0 14px 4px rgba(74,222,128,.75)}
+@keyframes fxpulse{50%{box-shadow:0 0 16px 5px rgba(242,184,75,.85)}}
 .fxpanel h3{margin:0 0 4px;font-size:14px;color:#F5C451}
 .fxpanel p{margin:0 0 8px}
 .fxpanel .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 .fxpanel .q{opacity:.7;font-size:12px;margin:0 0 6px}
-.pccol{display:flex;flex-direction:column;gap:10px;flex:1 1 270px;min-width:0}
+.pccol{position:relative;display:flex;flex-direction:column;gap:10px;flex:1 1 270px;min-width:0}
 .pcrow{display:flex;gap:10px;align-items:stretch}
 .pcrow .pwslot{flex:1 1 150px;min-width:120px}
 .dicebtn{min-height:56px;font-size:17px;border-radius:14px}
@@ -1280,6 +1286,7 @@ function render(){
   $("#handn").textContent = S.hand.length ? `(${S.hand.length})` : "";
   renderStatus();
   renderModal();
+  renderFx();
   syncHover();
 }
 function fitHand(){
@@ -1311,7 +1318,6 @@ function closeModal(){ lobbyUnwatch(); modal = null; $("#modal").classList.remov
 function renderModal(){
   if (!modal || modal.type === "setup" || modal.type === "lobbies" || modal.type === "home" || modal.type === "art" || modal.type === "cardsdata" || modal.type === "reader") return;
   const close = `<div class="row end"><button class="btn" data-do="closemodal" type="button">Close</button></div>`;
-  if (modal.type === "efx") { showModal(fxStepHTML(modal)); return; }
   if (modal.type === "trig") {
     showModal(`<h2>Trigger! ${esc(lab(modal.card))}</h2><p class="hint">This Life card has a [Trigger] ability:</p><p>${esc(modal.ab.text)}</p><div class="row end"><button class="btn" data-do="trigno" type="button">Keep in hand</button><button class="btn pri" data-do="trigyes" type="button">Activate [Trigger]</button></div>`);
     return;
@@ -1584,7 +1590,7 @@ function applyMarkReqs(){
         }
         else if (q.k === "rest") { f.r = true; addLog(`${nm} was rested by ${by}`); }
         else if (q.k === "stand") { f.r = false; addLog(`${nm} was stood by ${by}`); }
-        else if (q.k === "pwr") { f.pm = Math.max(-60000, Math.min(60000, (f.pm || 0) + q.v)); addLog(`${nm} got ${q.v > 0 ? "+" : "\u2212"}${Math.abs(q.v)} power from ${by}`); }
+        else if (q.k === "pwr") { f.pm = Math.max(-60000, Math.min(60000, (f.pm || 0) + q.v)); addLog(`${nm} got ${q.v > 0 ? "+" : "-"}${Math.abs(q.v)} power from ${by}`); }
         else if (f !== S.leader) {
           const i = S.chars.indexOf(f); if (i < 0) continue;
           S.chars.splice(i, 1); S.donRested += f.d || 0;
@@ -1643,15 +1649,40 @@ let fxCur = null;
 function fxEnqueue(job){ if (fxCur) fxQueue.push(job); else fxCur = job; renderFx(); }
 function renderFx(){
   const el = $("#fxpanel"); if (!el) return;
+  document.querySelectorAll(".fxtarget,.fxpicked").forEach(e => e.classList.remove("fxtarget", "fxpicked"));
   if (!fxCur) { el.hidden = true; el.innerHTML = ""; return; }
-  el.hidden = false;
-  el.innerHTML = `<h3>[${esc(fxCur.tl || "On Play")}] ${esc(lab(fxCur.card))}</h3><p>${esc(fxCur.text || "")}</p><p class="q">Do this on the board yourself, then tap Done.${fxQueue.length ? ` ${fxQueue.length} more after this.` : ""}</p><div class="row"><button class="btn" data-do="fxpcancel" type="button">Cancel</button><button class="btn pri" data-do="fxpdone" type="button">Done</button></div>`;
+  el.hidden = false; el.innerHTML = fxStepHTML(fxCur);
+  const st = fxCur.steps[fxCur.i]; if (!st) return;
+  const glow = (e, ref) => { if (e) e.classList.add(fxCur.pick.includes(ref) ? "fxpicked" : "fxtarget"); };
+  if (st.a === "discard") S.hand.forEach((c, i) => glow(document.querySelector(`#hand [data-src="hand:${i}"]`), "hand:" + i));
+  else if (fxVerb(st, "it")) { const own = fxOwn(st); fxCands(st).forEach(x => glow(document.querySelector(own ? `#me [data-src="${x.ref}"]` : `#opp [data-opp="${x.ref}"]`), x.ref)); }
 }
 function fxFinish(done){
   const m = fxCur; if (!m) return;
   if (done) { const uf = [S.leader, S.stage, ...S.chars].find(f => f && f.card === m.card); if (uf && /once\s*per\s*turn/i.test(m.text || "")) { uf.mk = uf.mk || []; if (!uf.mk.includes("au")) uf.mk.push("au"); } addLog(`resolved ${lab(m.card)}'s ${m.tl || "On Play"}`); }
   else addLog(`cancelled ${lab(m.card)}'s ability`);
   fxCur = fxQueue.shift() || null; commit(); renderFx();
+}
+const fxOwn = st => st.who === "own" || st.a === "giveDon";
+const fxLim = st => st.all ? 99 : st.a === "pwr" || st.a === "giveDon" ? 1 : Math.max(1, st.n || 1);
+const fxVerb = (st, it) => ({rest: `rest ${it}`, stand: `set ${it} active`, ko: `K.O. ${it}`, bounce: `return ${it} to hand`, bottom: `put ${it} on the bottom of the deck`, pwr: `give ${it} ${st.n > 0 ? "+" : "−"}${Math.abs(st.n)} power`, giveDon: `give ${it} ${st.n} ${st.rested ? "rested " : ""}DON!!`})[st.a];
+// tapping a glowing card on the board picks it for the current step; one-target steps apply right away
+function fxPick(ref){
+  const m = fxCur, st = m.steps[m.i], lim = fxLim(st), at = m.pick.indexOf(ref);
+  if (at >= 0) m.pick.splice(at, 1); else { if (m.pick.length >= lim) m.pick.shift(); m.pick.push(ref); }
+  if (!st.all && lim === 1 && m.pick.length === 1) { fxApply(); return; }
+  renderFx();
+}
+function fxTap(t){
+  const st = fxCur && fxCur.steps[fxCur.i]; if (!st) return false;
+  let ref = null;
+  if (st.a === "discard") { const h = t.closest("#hand [data-src^='hand:']"); if (h) ref = h.dataset.src; }
+  else if (fxVerb(st, "it")) {
+    const own = fxOwn(st), e = own ? t.closest("#me [data-src]") : t.closest("#opp [data-opp]");
+    if (e) { const r = own ? e.dataset.src : e.dataset.opp; if (fxCands(st).some(x => x.ref === r)) ref = r; }
+  }
+  if (!ref) return false;
+  clearTimeout(menuT); closeMenu(); fxPick(ref); return true;
 }
 // trigs: array of trigger keys. manual: show a message when nothing matches
 async function runAbility(card, trigs, manual, don){
@@ -1737,40 +1768,40 @@ function fxCands(st){
 }
 function fxStepHTML(m){
   const st = m.steps[m.i]; if (!st) return "";
-  const close = `<button class="btn" data-do="fxskip" type="button">Skip this step</button>`;
-  const head = `<h2>[${esc(m.tl || "On Play")}] ${esc(lab(m.card))}</h2><p class="hint">${esc(m.text)}</p>`;
-  const prog = `<p class="hint">Step ${m.i + 1} of ${m.steps.length}: ${esc(st.text || st.a)}</p>`;
-  const lbl = {rest: "Rest", stand: "Stand", ko: "K.O.", bounce: "Return to hand", bottom: "Put on bottom of deck", pwr: (st.n > 0 ? "+" : "\u2212") + Math.abs(st.n) + " power", giveDon: "Give " + st.n + (st.rested ? " rested" : "") + " DON!! from your cost area to"}[st.a];
-  if (lbl) {
-    const cs = fxCands(st);
-    if (!cs.length) return head + prog + `<p>No eligible ${st.who === "own" ? "cards of yours" : "opposing cards"}.</p><div class="row end"><button class="btn pri" data-do="fxskip" type="button">Next</button></div>`;
+  const cancel = `<button class="btn" data-do="fxcancel" type="button">Cancel</button>`, skip = `<button class="btn" data-do="fxskip" type="button">Skip</button>`;
+  const head = `<h3>[${esc(m.tl || "On Play")}] ${esc(lab(m.card))}</h3><p class="fxtext">${esc(m.text)}</p>${m.steps.length > 1 ? `<p class="q">Step ${m.i + 1} of ${m.steps.length}${st.text ? ": " + esc(st.text) : ""}</p>` : ""}`;
+  const say = (t, btns, extra) => head + `<p class="fxdo">${t}</p>${extra || ""}<div class="row">${btns}</div>`;
+  if (fxVerb(st, "it")) {
+    const cs = fxCands(st), own = fxOwn(st);
+    if (!cs.length) return say(`No ${own ? "cards of yours" : "opposing cards"} can be chosen for this.`, `${cancel}<button class="btn pri" data-do="fxskip" type="button">Next</button>`);
     if (st.all && m.allFor !== m.i) { m.allFor = m.i; m.pick = cs.map(x => x.ref); }
-    const max = ["pwr"].includes(st.a) ? Math.max(1, Math.abs(st.n) > 100 ? 1 : st.n) : Math.max(1, st.n);
-    const lim = st.a === "pwr" || st.a === "giveDon" ? 1 : max;
-    return head + prog + `<p>${st.all ? `${lbl}: <b>all</b> ${st.who === "own" ? "of your" : "opposing"} matching ${/leader/i.test(st.text || "") || st.ld ? "cards" : "Characters"} are selected. Tap one to leave it out.` : `${lbl}: pick ${st.upTo ? "up to " : ""}${lim} ${st.who === "own" ? "of your cards" : "opposing card" + (lim > 1 ? "s" : "")}.`}</p><div class="grid">${cs.map(x => `<div class="fxc">${tile(x.c, `data-do="fxpick:${x.ref}"`, false, 0, m.pick.includes(x.ref) ? "fxsel" : "", 0, 0, x.c.mk)}${x.ref === "ld" ? "<span class=\"hint\">Leader</span>" : ""}</div>`).join("")}</div><div class="row end">${close}<button class="btn pri" data-do="fxapply" type="button">Apply (${m.pick.length})</button></div>`;
+    const what = cs.some(x => x.ref === "ld") ? "card" : "Character", lim = fxLim(st);
+    if (st.all) return say(`Every green ${own ? "" : "opposing "}${what} is chosen: ${esc(fxVerb(st, "them"))}. Tap one on the board to leave it out.`, `${cancel}${skip}<button class="btn pri" data-do="fxapply" type="button">Apply (${m.pick.length})</button>`);
+    const which = lim === 1 && !st.upTo ? (own ? `one of your ${what}s` : `an opposing ${what}`) : `${lim} ${own ? "of your" : "opposing"} ${what}${lim === 1 && !own ? "" : "s"}`;
+    return say(`Tap ${st.upTo ? "up to " : ""}${which} on the board to ${esc(fxVerb(st, lim === 1 ? "it" : "them"))}.`, lim === 1 ? cancel + skip : `${cancel}${skip}<button class="btn pri" data-do="fxapply" type="button">Apply (${m.pick.length})</button>`);
   }
   if (st.a === "returnDon") {
     const sel = m.dsel = m.dsel || {}, tot = Object.values(sel).reduce((a, b) => a + b, 0), opts = [["a", "Active DON!! (cost area)", S.donActive], ["r", "Rested DON!! (cost area)", S.donRested]];
-    if (S.leader && S.leader.d) opts.push(["ld", `Attached to ${lab(S.leader.card)}`, S.leader.d]);
-    S.chars.forEach((f, i) => { if (f.d) opts.push(["ch:" + i, `Attached to ${lab(f.card)}`, f.d]); });
+    if (S.leader && S.leader.d) opts.push(["ld", `On ${lab(S.leader.card)}`, S.leader.d]);
+    S.chars.forEach((f, i) => { if (f.d) opts.push(["ch:" + i, `On ${lab(f.card)}`, f.d]); });
     const rows = opts.filter(o => o[2] > 0).map(o => `<button class="btn ${sel[o[0]] ? "pri" : ""}" data-do="fxrd:${o[0]}" type="button">${esc(o[1])}: ${o[2] - (sel[o[0]] || 0)} left${sel[o[0]] ? ` (returning ${sel[o[0]]})` : ""}</button>`).join("");
     const can = st.upTo ? tot > 0 : tot === st.n;
-    return head + prog + `<p>Choose which DON!! go back to your DON!! deck: <b>${tot}</b> of ${st.n}. Tap a button once per DON!!.</p><div class="row" style="flex-direction:column;align-items:stretch;gap:6px">${rows || "<p>You have no DON!! to return.</p>"}</div><div class="row end"><button class="btn" data-do="fxrdclr" type="button">Clear</button>${st.must ? `<button class="btn" data-do="fxcancel" type="button">Cancel ability</button>` : close}<button class="btn pri" data-do="fxrdok" type="button" ${can ? "" : "disabled"}>Return ${tot} DON!!</button></div>`;
+    return say(`Return ${st.n} DON!! to your DON!! deck (${tot} chosen). Tap a button once per DON!!.`, `<button class="btn" data-do="fxrdclr" type="button">Clear</button>${st.must ? cancel : cancel + skip}<button class="btn pri" data-do="fxrdok" type="button" ${can ? "" : "disabled"}>Return ${tot}</button>`, `<div class="fxcol">${rows || "<p>You have no DON!! to return.</p>"}</div>`);
   }
-  if (st.a === "draw") return head + prog + `<p>Draw ${st.n} card${st.n === 1 ? "" : "s"}.</p><div class="row end">${close}<button class="btn pri" data-do="fxdraw" type="button">Draw ${st.n}</button></div>`;
-  if (st.a === "look") return head + prog + `<p>Look at the top ${st.n} cards of your deck.</p><div class="row end">${close}<button class="btn pri" data-do="fxlook" type="button">Look at top ${st.n}</button></div>`;
-  if (st.a === "don") return head + prog + `<p>Add ${st.n} DON!! from your DON!! deck.</p><div class="row end">${close}<button class="btn" data-do="fxdon:r" type="button">Add rested</button><button class="btn pri" data-do="fxdon:a" type="button">Add active</button></div>`;
-  if (st.a === "discard") return head + prog + `<p>Trash ${st.n} card${st.n === 1 ? "" : "s"} from your hand.</p><div class="grid">${S.hand.map((c, i) => tile(c, `data-do="fxpick:hand:${i}"`, false, 0, m.pick.includes("hand:" + i) ? "fxsel" : "")).join("") || "<p>Your hand is empty.</p>"}</div><div class="row end">${close}<button class="btn pri" data-do="fxapply" type="button">Trash (${m.pick.length})</button></div>`;
-  return head + prog + `<p>Handle this one by hand, then continue.</p><div class="row end"><button class="btn pri" data-do="fxskip" type="button">Next</button></div>`;
+  if (st.a === "draw") return say(`Draw ${st.n} card${st.n === 1 ? "" : "s"}.`, `${cancel}${skip}<button class="btn pri" data-do="fxdraw" type="button">Draw ${st.n}</button>`);
+  if (st.a === "look") return say(`Look at the top ${st.n} cards of your deck.`, `${cancel}${skip}<button class="btn pri" data-do="fxlook" type="button">Look</button>`);
+  if (st.a === "don") return say(`Add ${st.n} DON!! from your DON!! deck.`, `${cancel}${skip}<button class="btn" data-do="fxdon:r" type="button">Add rested</button><button class="btn pri" data-do="fxdon:a" type="button">Add active</button>`);
+  if (st.a === "discard") return say(`Tap ${st.n === 1 ? "a card" : st.n + " cards"} in your hand to trash ${st.n === 1 ? "it" : "them"}.`, st.n === 1 ? cancel + skip : `${cancel}${skip}<button class="btn pri" data-do="fxapply" type="button">Trash (${m.pick.length})</button>`);
+  return say(`Do this one yourself on the board, then tap Next.`, `${cancel}<button class="btn pri" data-do="fxskip" type="button">Next</button>`);
 }
 function fxNext(){
-  const m = modal; if (!m || m.type !== "efx") return;
-  m.i++; m.pick = [];
-  if (m.i >= m.steps.length) { const nx = fxQueue.shift(); closeModal(); const uf = [S.leader, S.stage, ...S.chars].find(f => f && f.card === m.card); if (uf && /once\s*per\s*turn/i.test(m.text || "")) { uf.mk = uf.mk || []; if (!uf.mk.includes("au")) uf.mk.push("au"); } addLog(`resolved ${lab(m.card)}'s ${m.tl || "On Play"}`); commit(); if (nx) { modal = nx; renderModal(); } return; }
-  renderModal();
+  const m = fxCur; if (!m) return;
+  m.i++; m.pick = []; m.dsel = {};
+  if (m.i >= m.steps.length) { fxFinish(true); return; }
+  renderFx();
 }
 function fxApply(){
-  const m = modal, st = m.steps[m.i];
+  const m = fxCur; if (!m) return; const st = m.steps[m.i];
   if (st.a === "discard") {
     const idx = m.pick.map(r => +r.slice(5)).sort((a, b) => b - a);
     idx.forEach(i => { const c = S.hand.splice(i, 1)[0]; if (c) S.trash.unshift(c); });
@@ -2401,7 +2432,7 @@ document.addEventListener("pointerup", e => {
   if (d.kind === "don" || d.kind === "pw" || d.kind === "cw") return;
   const sx = e.clientX, sy = e.clientY, ds = d.src;
   // during the opponent's attack, tapping one of your active Characters blocks with it
-  if (oppM && oppM.ak && /^ch:/.test(ds)) { const i = +ds.slice(3), f = S.chars[i]; if (f && !f.r && S.blk !== i) { closeMenu(); doBlock(i); return; } }
+  if (!fxCur && oppM && oppM.ak && /^ch:/.test(ds)) { const i = +ds.slice(3), f = S.chars[i]; if (f && !f.r && S.blk !== i) { closeMenu(); doBlock(i); return; } }
   clearTimeout(menuT); menuT = setTimeout(() => openCardMenu(ds, sx, sy), 230);
 });
 document.addEventListener("pointercancel", () => { drag = null; clearIns(); if (ghost) { ghost.remove(); ghost = null; } clearOver(); });
@@ -2430,6 +2461,7 @@ document.addEventListener("keydown", e => {
 document.addEventListener("click", e => {
   if (Date.now() - justDragged < 80) return;
   const t = e.target;
+  if (fxCur && t.closest && !t.closest("#fxpanel,.modal,#menu") && fxTap(t)) return;
   const mkd = t.closest("[data-mkdel]");
   if (mkd) { const [ref, k] = mkd.dataset.mkdel.split("|"), f = donHolder(ref); if (f && f.mk) { f.mk = f.mk.filter(x => x !== k); addLog(`removed ${MK[k].l} from ${lab(f.card)}`); commit(); } return; }
   const cbn = t.closest("[data-color]");
@@ -2533,27 +2565,19 @@ function doAction(a){
     if (x) fxEnqueue(fxJob(x.card, x.ab));
     return;
   }
-  if (a.startsWith("fxpick:") && modal && modal.type === "efx") {
-    const ref = a.slice(7), st = modal.steps[modal.i];
-    const lim = st.all ? 99 : st.a === "discard" ? st.n : st.a === "pwr" ? 1 : Math.max(1, st.n);
-    const at = modal.pick.indexOf(ref);
-    if (at >= 0) modal.pick.splice(at, 1); else { if (modal.pick.length >= lim) modal.pick.shift(); modal.pick.push(ref); }
-    renderModal(); return;
-  }
-  if (a === "fxpdone") { fxFinish(true); return; }
-  if (a === "fxpcancel") { fxFinish(false); return; }
-  if (a === "fxapply" && modal && modal.type === "efx") { fxApply(); return; }
-  if (a === "fxskip" && modal && modal.type === "efx") { fxNext(); return; }
-  if (a === "fxcancel" && modal && modal.type === "efx") { const cd = modal.card, nx = fxQueue.shift(); closeModal(); addLog(`cancelled ${lab(cd)}'s ability`); if (nx) { modal = nx; renderModal(); } return; }
-  if (a.startsWith("fxrd:") && modal && modal.type === "efx") {
-    const st = modal.steps[modal.i], k = a.slice(5), sel = modal.dsel = modal.dsel || {};
+  if (a.startsWith("fxpick:") && fxCur) { fxPick(a.slice(7)); return; }
+  if (a === "fxapply" && fxCur) { fxApply(); return; }
+  if (a === "fxskip" && fxCur) { fxNext(); return; }
+  if (a === "fxcancel" && fxCur) { fxFinish(false); return; }
+  if (a.startsWith("fxrd:") && fxCur) {
+    const st = fxCur.steps[fxCur.i], k = a.slice(5), sel = fxCur.dsel = fxCur.dsel || {};
     const have = k === "a" ? S.donActive : k === "r" ? S.donRested : (donHolder(k) || {}).d || 0, tot = Object.values(sel).reduce((x, y) => x + y, 0);
     if (tot < st.n && (sel[k] || 0) < have) sel[k] = (sel[k] || 0) + 1;
-    renderModal(); return;
+    renderFx(); return;
   }
-  if (a === "fxrdclr" && modal && modal.type === "efx") { modal.dsel = {}; renderModal(); return; }
-  if (a === "fxrdok" && modal && modal.type === "efx") {
-    const sel = modal.dsel || {}; let tot = 0;
+  if (a === "fxrdclr" && fxCur) { fxCur.dsel = {}; renderFx(); return; }
+  if (a === "fxrdok" && fxCur) {
+    const sel = fxCur.dsel || {}; let tot = 0;
     for (const k of Object.keys(sel)) {
       const n = sel[k]; if (!n) continue;
       if (k === "a") { n && (S.donActive = Math.max(0, S.donActive - n)); tot += n; }
@@ -2563,9 +2587,9 @@ function doAction(a){
     S.donDeck += tot; if (tot) addLog(`returned ${tot} DON!! to the DON!! deck`);
     commit(); fxNext(); return;
   }
-  if (a === "fxdraw" && modal && modal.type === "efx") { const n = modal.steps[modal.i].n; draw(n); fxNext(); return; }
-  if (a === "fxlook" && modal && modal.type === "efx") { const n = modal.steps[modal.i].n; modal = {type: "peek", n}; fxQueue = []; renderModal(); addLog(`looked at the top ${Math.min(n, S.deck.length)} cards of their deck`); return; }
-  if (a.startsWith("fxdon:") && modal && modal.type === "efx") { addDon(modal.steps[modal.i].n, a === "fxdon:a"); fxNext(); return; }
+  if (a === "fxdraw" && fxCur) { const n = fxCur.steps[fxCur.i].n; draw(n); fxNext(); return; }
+  if (a === "fxlook" && fxCur) { const n = fxCur.steps[fxCur.i].n; fxNext(); modal = {type: "peek", n}; renderModal(); addLog(`looked at the top ${Math.min(n, S.deck.length)} cards of their deck`); return; }
+  if (a.startsWith("fxdon:") && fxCur) { addDon(fxCur.steps[fxCur.i].n, a === "fxdon:a"); fxNext(); return; }
   if (a === "autofx") { autoFx = !autoFx; try { localStorage.setItem("nakama:autofx", autoFx ? "1" : "0"); } catch (e) {} toast(autoFx ? "Auto card effects on." : "Auto card effects off."); return; }
   if (a.startsWith("cmbcnt:")) {
     const v = +a.slice(7), d = myDefender();
