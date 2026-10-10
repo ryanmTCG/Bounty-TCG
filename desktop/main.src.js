@@ -11,9 +11,10 @@ const Anthropic = require("@anthropic-ai/sdk").default;
 
 const APP_DIR = __dirname;
 const WEB_DIR = path.join(APP_DIR, "web");
-// Raise SHELL_VERSION whenever main.js or preload.js change. An update that needs a newer shell
+// Raise SHELL_VERSION whenever main.js or preload.js change. An update whose "shell" is newer
 // than this one asks the player to download the full app instead of installing itself.
-const SHELL_VERSION = 2;
+// 2: updater. 3: desktop shortcut on first launch.
+const SHELL_VERSION = 3;
 const UPDATE_URL = process.env.BOUNTY_UPDATE_URL || "https://raw.githubusercontent.com/ryanmTCG/Bounty-TCG/main/updates/";
 const DOWNLOAD_PAGE = "https://github.com/ryanmTCG/Bounty-TCG";
 const STATIC_BLOBS = {
@@ -238,6 +239,27 @@ ipcMain.handle("sample:json", async (_e, prompt, images) => {
   }
 });
 
+// ---------- desktop shortcut ----------
+// The first time a copy is opened (say, unzipped from a download) it puts a shortcut on the
+// Windows desktop. A shortcut the player deleted stays deleted; one left pointing at a folder
+// that has since moved is pointed at this copy.
+function desktopShortcut() {
+  if (process.platform !== "win32" || process.env.BOUNTY_PROFILE) return;
+  try {
+    const lnk = path.join(app.getPath("desktop"), "Bounty TCG.lnk");
+    const marker = path.join(app.getPath("userData"), "shortcut.json");
+    const opts = { target: process.execPath, cwd: path.dirname(process.execPath), description: "Play Bounty TCG", icon: process.execPath, iconIndex: 0 };
+    if (!readJson(marker)) {
+      if (!fs.existsSync(lnk)) shell.writeShortcutLink(lnk, "create", opts);
+      fs.mkdirSync(path.dirname(marker), { recursive: true });
+      fs.writeFileSync(marker, JSON.stringify({ made: true }));
+    } else if (fs.existsSync(lnk)) {
+      const cur = shell.readShortcutLink(lnk);
+      if (cur.target !== process.execPath && path.basename(cur.target) === "Bounty TCG.exe" && !fs.existsSync(cur.target)) shell.writeShortcutLink(lnk, "replace", opts);
+    }
+  } catch (e) {}
+}
+
 // ---------- window ----------
 let win = null;
 function createWindow() {
@@ -282,5 +304,6 @@ app.whenReady().then(() => {
   protocol.handle("app", handleApp);
   buildMenu();
   createWindow();
+  desktopShortcut();
 });
 app.on("window-all-closed", () => app.quit());

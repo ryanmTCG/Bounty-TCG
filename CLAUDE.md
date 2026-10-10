@@ -17,7 +17,7 @@ Installed copies read `https://raw.githubusercontent.com/ryanmTCG/Bounty-TCG/mai
 2. Run `python3 tools/build.py`, then `python3 tools/publish_update.py "notes"`.
 3. Commit `updates/` with the change and push to `main`.
 
-Whatever is on `main` in `updates/latest.json` reaches every player, so only publish tested builds. Changes to `main.src.js` or `preload.js` need `SHELL_VERSION` and `version.json`'s `shell` raised together; players on an older shell are sent to download the full app.
+Whatever is on `main` in `updates/latest.json` reaches every player, so only publish tested builds. Changes to `main.src.js` or `preload.js` need `SHELL_VERSION` raised, and only reach players through a full app download. Raise `version.json`'s `shell` to match only when the page depends on the new shell: players on an older shell are then sent to download the full app.
 
 ## Rules
 

@@ -44,7 +44,7 @@ The DON!! card and card-back images aren't in this repository. Put `don.png`, `d
    ```
 4. Commit and push to `main`. Every copy of the app picks it up on its next launch.
 
-If `desktop/main.src.js` or `desktop/preload.js` changed, raise `SHELL_VERSION` in `main.src.js` and `shell` in `version.json` too. Those can't be updated in place, so older copies are asked to download the full app.
+If `desktop/main.src.js` or `desktop/preload.js` changed, raise `SHELL_VERSION` in `main.src.js`. Those files can't be updated in place; they reach players with the full app download. If the game page needs the new shell to work, also set `shell` in `version.json` to that number, and older copies are asked to download the full app.
 
 ## Layout
 

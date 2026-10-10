@@ -7,8 +7,9 @@ Writes updates/web-<version>.json.gz and updates/latest.json. Commit both and pu
 each copy of the app reads updates/latest.json from GitHub when it starts, downloads the
 bundle, checks its SHA-256 and switches to it on the next launch.
 
-Bump "version" in version.json first. If main.src.js or preload.js changed, also raise
-SHELL_VERSION in desktop/main.src.js and "shell" in version.json to match: copies with an
+Bump "version" in version.json first. If main.src.js or preload.js changed, raise
+SHELL_VERSION in desktop/main.src.js; those files only reach players in a full app download.
+Set "shell" in version.json to it only when the page needs the new shell: copies with an
 older shell are then told to download the full app instead of installing the update.
 """
 import base64, glob, gzip, hashlib, json, os, re, sys

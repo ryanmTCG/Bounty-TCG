@@ -13,7 +13,8 @@ Run it again any time you get an updated "app" folder.
 Share it with a friend
 ----------------------
 Zip the whole "Bounty TCG" folder and send it. They unzip it and run
-"Bounty TCG.exe". Nothing else to install, no accounts.
+"Bounty TCG.exe". Nothing else to install, no accounts. The first time it
+opens, it puts a Bounty TCG shortcut on their desktop.
 
 Updates
 -------
