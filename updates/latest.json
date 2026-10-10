@@ -1,8 +1,8 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "shell": 2,
-  "bundle": "web-1.1.0.json.gz",
-  "sha256": "8a15b0c0007a3d8d64c134196b40106594315aca4c98a9084a6951ab94338150",
-  "size": 515612,
-  "notes": "Lobbies, banned and rotated card filters, and automatic updates."
+  "bundle": "web-1.2.0.json.gz",
+  "sha256": "e14034a8a6f59644aae0aef32c53639e9cb625964a224eaff33dc9861e637565",
+  "size": 517800,
+  "notes": "Blocking by tapping a Character, defender resolves attacks, both players set Life before turn 1, 0-power and On K.O. fixes, a No Attack marker, and the card reader hidden from other players."
 }
