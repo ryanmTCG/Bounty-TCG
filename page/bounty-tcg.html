@@ -325,6 +325,12 @@ button,input,textarea,select{font:inherit;color:inherit}
 .turnbar .tb-concede{background:#8E1B24;color:#fff}
 .turnbar [data-do="undo"]{grid-column:1/span 1}
 .turnbar [data-do="endturn"]{grid-column:2/span 2}
+.turnbar #startfb{grid-column:1/-1}
+.turnbar .btn.due{background:#F2B84B;color:#2A1D00;box-shadow:0 0 0 3px rgba(242,184,75,.45),0 3px 0 #7A5200}
+.pccol{display:flex;flex-direction:column;gap:10px;flex:1 1 270px;min-width:0}
+.pcrow{display:flex;gap:10px;align-items:stretch}
+.pcrow .pwslot{flex:1 1 150px;min-width:120px}
+.dicebtn{min-height:56px;font-size:17px;border-radius:14px}
 @media (min-width:1100px){.turnbar{margin:0;flex:0 0 auto}}
 .noedit [data-do="reader"],.noedit [data-do="carddata"]{display:none!important}
 .wait{padding:30px 12px;text-align:center;color:var(--muted)}
@@ -747,10 +753,8 @@ select.sbtn{font-family:var(--slab)}
   <span class="sp"></span>
   <button class="btn" data-do="resetboard" type="button" title="Put every card back in your deck and deal a fresh opening hand">Reset board</button>
   <button class="btn" data-do="refresh" type="button" title="Stand all your cards and DON!! without drawing">Refresh</button>
-  <button class="btn pri" data-do="startturn" type="button">Start my turn</button>
   <button class="btn pri" data-do="pswitch" id="pswitch" type="button" hidden>Switch side</button>
   <button class="btn" data-do="coin" type="button">Coin flip</button>
-  <button class="btn" data-do="die" type="button">Roll d6</button>
   <button class="btn" data-do="home" type="button">Home</button>
   <button class="btn" data-do="builder" type="button">Deck builder</button>
   <button class="btn" data-do="art" type="button">Card art</button>
@@ -767,6 +771,7 @@ select.sbtn{font-family:var(--slab)}
     <button class="mkb na" data-mk="na" type="button" title="Drag onto a card">No Attack</button>
   </div><label class="fxopt"><input type="checkbox" id="fx-auto" data-do="autofx" checked> Auto card effects (reads [On Play], [When Attacking], [On Block], [On K.O.] text off the card art)</label><p class="mkhint">Drag a marker onto any Leader or Character. Tap a marker on your own card to remove it.</p></aside>
   <div class="panrow">
+  <div class="pccol"><div class="pcrow">
   <div class="pwslot" id="pwslot" data-empty="Power spot. Drag the counter back here."><aside class="pwp" id="pwp" aria-label="Power counter">
     <h2 class="pwgrab" title="Drag me anywhere on the board">&#10303; Power</h2>
     <div class="pwval pwgrab" id="pwval" title="Drag me anywhere on the board">0</div>
@@ -779,6 +784,7 @@ select.sbtn{font-family:var(--slab)}
     <div class="pwgrid"><button class="cwb neg" data-do="cc:-1" type="button">&minus;1</button><button class="cwb pos" data-do="cc:+1" type="button">+1</button><button class="cwb neg" data-do="cc:-2" type="button">&minus;2</button><button class="cwb pos" data-do="cc:+2" type="button">+2</button><button class="cwb neg" data-do="cc:-3" type="button">&minus;3</button><button class="cwb pos" data-do="cc:+3" type="button">+3</button><button class="cwb neg" data-do="cc:-4" type="button">&minus;4</button><button class="cwb pos" data-do="cc:+4" type="button">+4</button><button class="cwb neg" data-do="cc:-5" type="button">&minus;5</button><button class="cwb pos" data-do="cc:+5" type="button">+5</button><button class="cwb neg" data-do="cc:-6" type="button">&minus;6</button><button class="cwb pos" data-do="cc:+6" type="button">+6</button></div>
     <button class="btn pwreset" data-do="cc:0" type="button">Reset</button>
   </aside></div>
+  </div><button class="btn dicebtn" data-do="die" type="button" title="Roll a six-sided die. Your opponent sees the result in the table log.">Roll Dice</button></div>
   <div class="lifep me" id="myLife" data-zone="life"></div>
   </div>
   <aside class="handp">
@@ -791,6 +797,7 @@ select.sbtn{font-family:var(--slab)}
     <button class="btn" data-do="donturn" type="button" title="Add 2 DON!! from your DON!! deck (1 on the very first turn)">DON!! for turn</button>
     <button class="btn" data-do="undo" type="button" title="Undo your last move (Ctrl+Z)">Undo action</button>
     <button class="btn pri" data-do="endturn" type="button" title="End your turn and clear power and cost bonuses">End turn</button>
+    <button class="btn" data-do="startturn" id="startfb" type="button" hidden title="Your opponent's copy is older and doesn't say when their turn ends">Start my turn</button>
   </div>
   <div id="banner"></div>
   </div>
@@ -1029,7 +1036,7 @@ function oppModel(x){
   return {
     nick: clean(x.nick, 20) || "Opponent", sl: num(x.sl, 6), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
     ld: f(x.ld), ch: (Array.isArray(x.ch) ? x.ch : []).slice(0, 12).map(f).filter(Boolean), st: f(x.st), ev: f(x.ev),
-    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2,
+    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2,
     mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0)))})), ma: num(x.ma, 1000000),
     lf: num(x.lf, 60), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
@@ -1037,7 +1044,7 @@ function oppModel(x){
 }
 const fld = x => ({c: x.card.c, n: x.card.n, r: x.r ? 1 : 0, d: x.d || 0, pm: x.pm || 0, cm: x.cm || 0, mk: x.mk || []});
 function pubFull(){
-  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, mq:S.mq.slice(-8), ma:S.ack || 0,
+  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, mq:S.mq.slice(-8), ma:S.ack || 0,
     lf:S.life.length, dd:S.donDeck, da:S.donActive, dr:S.donRested, dk:S.deck.length, h:S.hand.length,
     tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), lg:myLog.slice(-8)};
 }
@@ -1231,6 +1238,11 @@ function renderPw(){ const v = $("#pwval"); if (!v) return; const n = S.pw || 0;
 function renderCc(){ const v = $("#cwval"); if (!v) return; const n = S.cc || 0; v.textContent = (n > 0 ? "+" : n < 0 ? "\u2212" : "") + Math.abs(n); v.classList.toggle("neg", n < 0); v.classList.toggle("pos", n > 0); }
 function render(){
   renderPw(); renderCc();
+  { const on = S.phase === "play" && S.turn > 0 && S.myTurn;
+    const dr = $('[data-do="drawturn"]'), dn = $('[data-do="donturn"]'), fb = $("#startfb");
+    if (dr) dr.classList.toggle("due", on && S.tdr !== S.turn && !(S.first && S.turn === 1));
+    if (dn) dn.classList.toggle("due", on && S.tdn !== S.turn);
+    if (fb) fb.hidden = !(R && !PR && S.phase === "play" && oppM && oppM.et == null); }
   { const sw = $("#pswitch"); if (sw) { sw.hidden = !PR; if (PR) sw.textContent = "Switch to Player " + (PR.cur === 0 ? 2 : 1); } }
   { const fa = $("#fx-auto"); if (fa) fa.checked = autoFx; }
   $("#opp").innerHTML = side(oppM || EMPTY(), false);
@@ -1761,8 +1773,19 @@ function placeMarkOpp(code, ref){
   if ((t.mk || []).includes(code)) { toast(`${lab(t)} already has ${MK[code].l}.`); return; }
   S.mq.push({id: ++S.mqn, r: ref, c: t.c, k: code}); addLog(`put ${MK[code].l} on ${lab(t)}`); commit();
 }
+let autoT = false;
 function advance(){
   let ch = false;
+  // my turn starts when the opponent ends theirs (or, going first, once they've kept their hand)
+  if (R && !PR && S.phase === "play" && oppM && !autoT && ((oppM.et || 0) > (S.seenEt || 0) || (!S.turn && S.first && oppM.kp === 1))) {
+    autoT = true;
+    setTimeout(() => {
+      autoT = false;
+      if (!R || PR || S.phase !== "play" || !oppM) return;
+      if ((oppM.et || 0) > (S.seenEt || 0)) { S.seenEt = oppM.et; startTurn(); }
+      else if (!S.turn && S.first && oppM.kp === 1) startTurn();
+    }, 0);
+  }
   // the defender resolved my attack
   if (S.atk && S.atk.n && oppM && oppM.rs === S.atk.n) { S.atk = null; ch = true; }
   const goPre = () => { S.phase = "pre"; addLog(S.first ? "will go first" : "will go second"); ch = true; };
@@ -1788,9 +1811,13 @@ function matchBannerHTML(){
 function keepHand(){
   if (S.phase !== "pre") return;
   for (let i = 0; i < S.lifeN && S.deck.length; i++) S.life.push(S.deck.shift());
-  S.phase = "play";
+  S.phase = "play"; S.seenEt = oppM && oppM.et ? oppM.et : 0;
   addLog(`set ${S.life.length} Life cards${S.first ? " and is going first" : ""}`);
   commit();
+  // the first turn starts by itself once both players are ready
+  if (!R) startTurn();
+  else if (PR) { if (oppM && oppM.kp === 1) { if (!S.first) practiceSwitch(); startTurn(); } }
+  else if (S.first && oppM && oppM.kp === 1) startTurn();
 }
 function mulligan(){
   S.deck.push(...S.hand); S.hand = []; shuffle(S.deck);
@@ -1817,12 +1844,9 @@ function startTurn(){
   if (S.stage) S.stage.r = false;
   stand(S.leader); S.donRested += S.leader.d; S.leader.d = 0; S.leader.pm = 0; S.leader.cm = 0;
   S.donActive += S.donRested; S.donRested = 0;
-  const firstTurn = S.first && S.turn === 1;
-  let drew = false;
-  if (!firstTurn && S.deck.length) { S.hand.push(S.deck.shift()); drew = true; }
-  const add = Math.min(firstTurn ? 1 : 2, S.donDeck);
-  S.donDeck -= add; S.donActive += add;
-  addLog(`started turn ${S.turn}${drew ? ", drew a card" : ""}, +${add} DON!!`);
+  S.myTurn = true;
+  addLog(`started turn ${S.turn}`);
+  toast(S.first && S.turn === 1 ? "Your turn! Add your DON!! (no draw on the first turn)." : "Your turn! Draw and add your DON!!.");
   commit();
 }
 function refreshAll(){
@@ -1839,9 +1863,12 @@ function endTurn(){
   if (S.phase !== "play") { toast("Set up your deck and Life first."); return; }
   S.pw = 0; S.cc = 0; S.atk = null; S.blk = null;
   for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = 0; f.cm = 0; }
+  if (!S.myTurn) { toast("It isn't your turn."); return; }
+  S.myTurn = false; S.et = (S.et || 0) + 1;
   addLog(`ended turn ${S.turn || 0}`);
   commit();
   if (PR) { practiceSwitch(); if (S.phase === "play") startTurn(); }
+  else if (!R) startTurn();
 }
 function askCount(mode){
   const t = {draw: "Draw how many cards?", look: "Look at how many cards from the top?"}[mode];
@@ -2544,12 +2571,17 @@ function doAction(a){
       break;
     case "startturn": startTurn(); break;
     case "undo": undo(); break;
-    case "drawturn": if (S.phase !== "play") { toast("Keep your hand and set Life first."); break; } draw(1); break;
+    case "drawturn":
+      if (S.phase !== "play" || !S.turn) { toast("Your turn hasn't started yet."); break; }
+      if (S.first && S.turn === 1) { toast("The player going first doesn't draw on their first turn."); break; }
+      if (S.tdr === S.turn) { toast("You already drew for this turn."); break; }
+      S.tdr = S.turn; draw(1); break;
     case "donturn": {
-      if (S.phase !== "play") { toast("Keep your hand and set Life first."); break; }
+      if (S.phase !== "play" || !S.turn) { toast("Your turn hasn't started yet."); break; }
+      if (S.tdn === S.turn) { toast("You already added DON!! this turn."); break; }
       const add = Math.min(S.turn <= 1 && S.first ? 1 : 2, S.donDeck);
       if (!add) { toast("Your DON!! deck is empty."); break; }
-      S.donDeck -= add; S.donActive += add; addLog(`added ${add} DON!!`); commit(); break;
+      S.tdn = S.turn; S.donDeck -= add; S.donActive += add; addLog(`added ${add} DON!!`); commit(); break;
     }
     case "resetboard": if (S.phase === "none" || !lastCfg) { toast("Set up your deck first."); break; } modal = {type: "reset"}; renderModal(); break;
     case "resetyes": { closeModal(); const first = S.first, wasRoom = S.phase !== "wait" && S.phase !== "roll"; newGame(lastCfg, false); S.first = first; addLog("reset their board"); commit(); } break;
@@ -2594,7 +2626,7 @@ function doAction(a){
     case "heal": if (!S.deck.length) { toast("Your deck is empty."); break; } S.life.unshift(S.deck.shift()); addLog(`healed (Life ${S.life.length})`); commit(); break;
     case "damage": if (!S.life.length) { toast("No Life left. The next hit is lethal."); break; } { const lc = S.life[0]; moveCard("lf:0", "hand"); offerTrigger(lc); } break;
     case "coin": addLog("flipped a coin: " + (Math.random() < .5 ? "heads" : "tails")); break;
-    case "die": addLog("rolled a d6: " + (1 + Math.floor(Math.random() * 6))); break;
+    case "die": { const v = 1 + Math.floor(Math.random() * 6); addLog("rolled a d6: " + v); toast(`You rolled a ${v}.`); const db = $(".dicebtn"); if (db) db.textContent = `Roll Dice (last: ${v})`; break; }
     case "setup": openSetup(); break;
     case "savedeck": saveDeck(); break;
     case "art": openArt(); break;
