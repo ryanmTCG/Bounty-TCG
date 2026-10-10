@@ -1538,7 +1538,7 @@ function applyMarkReqs(){
         else if (f !== S.leader) {
           const i = S.chars.indexOf(f); if (i < 0) continue;
           S.chars.splice(i, 1); S.donRested += f.d || 0;
-          if (q.k === "ko") { S.trash.unshift(f.card); addLog(`${nm} was K.O.'d by ${by}`); }
+          if (q.k === "ko") { S.trash.unshift(f.card); addLog(`${nm} was K.O.'d by ${by}`); const kc = f.card, kd = f.d || 0; setTimeout(() => runAbility(kc, ["onKO"], false, kd), 0); }
           else if (q.k === "bounce") { S.hand.push(f.card); addLog(`${nm} was returned to hand by ${by}`); }
           else if (q.k === "bottom") { S.deck.push(f.card); addLog(`${nm} was put on the bottom of the deck by ${by}`); }
         }
