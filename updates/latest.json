@@ -4,5 +4,5 @@
   "bundle": "web-1.3.0.json.gz",
   "sha256": "b6f98fa1e69814cb0d96f4b34c79736f2c777cdbc5b3b2d36522002fcc9f5db8",
   "size": 520013,
-  "notes": "Concede, Draw for turn, DON!! for turn, Undo action and End turn moved to a panel under the hand. Roll Dice box under Power and Cost (moved from the top bar). Start my turn removed: your turn starts by itself when the opponent ends theirs; Draw for turn and DON!! for turn glow until used and..."
+  "notes": "New turn panel under your hand, and your turn starts by itself when your opponent ends theirs. Practice tables roll to see who goes first. Roll Dice and Coin flip buttons removed. Concede asks if you're sure. Ability used goes on a card after a Once Per Turn ability, and that ability can't be used again that turn."
 }
