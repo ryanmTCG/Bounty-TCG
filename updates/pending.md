@@ -3,5 +3,3 @@
 The desktop app gets an update once 10 changes have piled up here, unless Ryan asks for one sooner.
 Add one line per change. `tools/publish_update.py` publishes them and empties this list.
 
-- Every card's abilities are built in from the official card text, so cards no longer need reading with a Claude API key (OP18 not yet included).
-- OP18 and EB05 abilities are built in too (read off the card images until the official list has them).
