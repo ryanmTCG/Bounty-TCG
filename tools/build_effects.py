@@ -8,11 +8,16 @@ the official card list): https://github.com/buhbbl/punk-records (english/cards/<
 Each card's effect and trigger text is split into abilities in the same shape the game asks Claude
 for (see FX_PROMPT in page/bounty-tcg.html). Clauses the rules below don't recognise become "other"
 steps, which the game shows as text for the player to carry out on the board.
+
+Cards the dataset doesn't have yet (a set that just came out) can be added to data/card-text-extra.json
+as {"cards": {"OP18-001": {"effect": "...", "trigger": null}}}, read off the card images.
 """
 import glob, json, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "page", "effects.json")
+# card text read off card images for sets the dataset doesn't have yet; the dataset wins once it has the card
+EXTRA = os.path.join(ROOT, "data", "card-text-extra.json")
 
 TIMING = {
     "On Play": "onPlay", "When Attacking": "whenAttacking", "On Your Opponent's Attack": "onOppAttack",
@@ -169,8 +174,12 @@ def compact(step):
 
 def main(folder):
     effects = {}
-    for f in sorted(glob.glob(os.path.join(folder, "**", "*.json"), recursive=True)):
-        c = json.load(open(f, encoding="utf-8"))
+    cards = [json.load(open(f, encoding="utf-8")) for f in sorted(glob.glob(os.path.join(folder, "**", "*.json"), recursive=True))]
+    have = {c.get("id") for c in cards}
+    if os.path.exists(EXTRA):
+        extra = json.load(open(EXTRA, encoding="utf-8"))["cards"]
+        cards += [dict(v, id=k) for k, v in sorted(extra.items()) if k not in have]
+    for c in cards:
         code = c.get("id") or ""
         if not re.fullmatch(r"[A-Z0-9]{1,8}-\d{2,4}", code): continue
         ab, blocker = abilities(c.get("effect"))
