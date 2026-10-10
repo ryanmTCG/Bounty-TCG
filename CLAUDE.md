@@ -12,11 +12,19 @@ Bounty TCG is a One Piece Card Game tabletop. The same game page runs in two pla
 
 ## Updates
 
-Installed copies read `https://raw.githubusercontent.com/ryanmTCG/Bounty-TCG/main/updates/latest.json` at launch. To ship a change:
+Installed copies read `https://raw.githubusercontent.com/ryanmTCG/Bounty-TCG/main/updates/latest.json` at launch.
+
+Ryan wants the desktop app updated only once 10 changes have piled up, unless he asks for an update sooner. The claude.ai artifact still gets each change right away. For each change to the game:
+
+1. Make it in the source (usually `page/bounty-tcg.html`), republish the artifact, and commit and push. Source commits don't reach players.
+2. Add one line about it to `updates/pending.md`.
+3. Don't copy it onto Ryan's PC: his copy gets it from GitHub with everyone else's.
+
+To publish, once `updates/pending.md` lists 10 changes or Ryan asks for an update:
 
 1. Bump `version` in `version.json`.
-2. Run `python3 tools/build.py`, then `python3 tools/publish_update.py "notes"`.
-3. Commit `updates/` with the change and push to `main`.
+2. Run `python3 tools/build.py` and the tests, then `python3 tools/publish_update.py`. It refuses with fewer than 10 changes unless you pass `--now` (only when Ryan asked). The notes default to the pending list, which it empties.
+3. Commit `updates/` and push to `main`.
 
 Whatever is on `main` in `updates/latest.json` reaches every player, so only publish tested builds. Changes to `main.src.js` or `preload.js` need `SHELL_VERSION` raised, and only reach players through a full app download. Raise `version.json`'s `shell` to match only when the page depends on the new shell: players on an older shell are then sent to download the full app.
 

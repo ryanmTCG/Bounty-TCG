@@ -37,13 +37,16 @@ The DON!! card and card-back images aren't in this repository. Put `don.png`, `d
 
 ## Publishing an update
 
-1. Make the change, usually in `page/bounty-tcg.html` or `desktop/net.js`.
-2. Raise `version` in `version.json`.
+Updates go out in batches of 10 changes.
+
+1. Make the change, usually in `page/bounty-tcg.html` or `desktop/net.js`, and add a line about it to `updates/pending.md`.
+2. Once 10 changes are listed, raise `version` in `version.json`.
 3. Build and pack it:
    ```
    python3 tools/build.py
-   python3 tools/publish_update.py "One sentence on what changed."
+   python3 tools/publish_update.py
    ```
+   It writes the notes from `updates/pending.md` and empties the list. `--now` publishes before there are 10.
 4. Commit and push to `main`. Every copy of the app picks it up on its next launch.
 
 If `desktop/main.src.js` or `desktop/preload.js` changed, raise `SHELL_VERSION` in `main.src.js`. Those files can't be updated in place; they reach players with the full app download. If the game page needs the new shell to work, also set `shell` in `version.json` to that number, and older copies are asked to download the full app.
@@ -56,5 +59,5 @@ If `desktop/main.src.js` or `desktop/preload.js` changed, raise `SHELL_VERSION` 
 | `desktop/` | The Electron shell (`main.src.js`, `preload.js`), the runtime that replaces claude.ai services (`net.js`), icons and the Windows build kit |
 | `data/` | The card list (names, colors, types, cost, power) and card-reader settings |
 | `tools/` | `build.py` makes the desktop kit, `publish_update.py` packs an update |
-| `updates/` | `latest.json` and the newest update bundles the app downloads |
+| `updates/` | `latest.json` and the newest update bundles the app downloads, and `pending.md`, the changes waiting for the next update |
 | `tests/` | Playwright tests that drive the built app (run with `xvfb-run -a node tests/<name>.mjs`) |
