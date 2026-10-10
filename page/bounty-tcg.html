@@ -1645,7 +1645,7 @@ async function offerOppAttack(){
     for (const f of holders) {
       let fx = null; try { fx = await readEffect(f.card.c); } catch (e) { fx = null; }
       if (!fx) continue;
-      const ci = S.chars.indexOf(f); if (ci >= 0 && fx.blocker && !f.r) blockers.push({i: ci, card: f.card});
+      const ci = S.chars.indexOf(f); 
       for (const ab of fx.ab) if (ab.t === "onOppAttack" && (ab.don || 0) <= (f.d || 0) && (ab.donMinus || 0) <= fieldDon()) list.push({card: f.card, ab});
     }
     $("#toast").hidden = true;
@@ -2282,6 +2282,8 @@ document.addEventListener("pointerup", e => {
   if (d.kind === "mk") { toast("Drag the marker onto a card."); return; }
   if (d.kind === "don" || d.kind === "pw" || d.kind === "cw") return;
   const sx = e.clientX, sy = e.clientY, ds = d.src;
+  // during the opponent's attack, tapping one of your active Characters blocks with it
+  if (oppM && oppM.ak && /^ch:/.test(ds)) { const i = +ds.slice(3), f = S.chars[i]; if (f && !f.r && S.blk !== i) { closeMenu(); doBlock(i); return; } }
   clearTimeout(menuT); menuT = setTimeout(() => openCardMenu(ds, sx, sy), 230);
 });
 document.addEventListener("pointercancel", () => { drag = null; clearIns(); if (ghost) { ghost.remove(); ghost = null; } clearOver(); });
