@@ -1017,7 +1017,7 @@ function oppModel(x){
   return {
     nick: clean(x.nick, 20) || "Opponent", sl: num(x.sl, 6), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
     ld: f(x.ld), ch: (Array.isArray(x.ch) ? x.ch : []).slice(0, 12).map(f).filter(Boolean), st: f(x.st), ev: f(x.ev),
-    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t} : null, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2,
+    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t} : null, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2,
     mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0)))})), ma: num(x.ma, 1000000),
     lf: num(x.lf, 60), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
@@ -1025,7 +1025,7 @@ function oppModel(x){
 }
 const fld = x => ({c: x.card.c, n: x.card.n, r: x.r ? 1 : 0, d: x.d || 0, pm: x.pm || 0, cm: x.cm || 0, mk: x.mk || []});
 function pubFull(){
-  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t} : null, bk:S.blk, rl:S.roll||0, fc:S.fc, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, mq:S.mq.slice(-8), ma:S.ack || 0,
+  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t} : null, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, mq:S.mq.slice(-8), ma:S.ack || 0,
     lf:S.life.length, dd:S.donDeck, da:S.donActive, dr:S.donRested, dk:S.deck.length, h:S.hand.length,
     tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), lg:myLog.slice(-8)};
 }
@@ -1233,7 +1233,7 @@ function render(){
     $("#hand").innerHTML = (S.phase === "wait" || S.phase === "roll") ? `<span class="empty">Your hand is dealt when the match starts</span>` : S.hand.length ? S.hand.map((c, i) => tile(c, `data-src="hand:${i}"`, false, 0)).join("") : `<span class="empty">Your hand is empty</span>`;
     fitHand();
     $("#banner").innerHTML = (S.phase === "wait" || S.phase === "roll") ? matchBannerHTML() : S.phase === "pre"
-      ? `<div class="banner"><span>Opening hand. Keep it and set ${S.lifeN} Life cards${S.mull ? "." : ", or mulligan once."}</span><button class="btn pri" data-do="keep" type="button">Keep and set Life</button>${S.mull ? "" : '<button class="btn" data-do="mulligan" type="button">Mulligan</button>'}</div>` : "";
+      ? `<div class="banner"><span>Opening hand. Keep it and set ${S.lifeN} Life cards${S.mull ? "." : ", or mulligan once."}</span><button class="btn pri" data-do="keep" type="button">Keep and set Life</button>${S.mull ? "" : '<button class="btn" data-do="mulligan" type="button">Mulligan</button>'}</div>` : (S.phase === "play" && !S.turn && oppM && oppM.kp === 0) ? `<div class="banner"><span>Waiting for ${esc(oppM.nick)} to keep their hand and set Life\u2026</span></div>` : "";
   }
   let mid = "The Grand Line";
   if (R && !oppM) mid = "Waiting for an opponent to join the room…";
@@ -1794,6 +1794,8 @@ function draw(n){
 function shuffleDeck(){ shuffle(S.deck); addLog("shuffled their deck"); commit(); }
 function startTurn(){
   S.pw = 0; S.cc = 0; S.atk = null; S.blk = null;
+  // nobody starts a turn until both players have kept their hand and set Life (older copies don't send kp)
+  if (S.phase === "play" && !S.turn && oppM && oppM.kp === 0) { toast(`Waiting for ${oppM.nick} to keep their hand and set Life.`); return; }
   if (S.phase !== "play") { toast(S.phase === "pre" ? "Keep your hand and set your Life first." : (S.phase === "wait" || S.phase === "roll") ? "The match hasn't started yet." : "Set up your deck first."); return; }
   S.turn++;
   const stand = f => { if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; f.mk = (f.mk || []).filter(k => k !== "au"); };
