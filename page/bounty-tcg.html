@@ -1017,7 +1017,7 @@ function oppModel(x){
   return {
     nick: clean(x.nick, 20) || "Opponent", sl: num(x.sl, 6), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
     ld: f(x.ld), ch: (Array.isArray(x.ch) ? x.ch : []).slice(0, 12).map(f).filter(Boolean), st: f(x.st), ev: f(x.ev),
-    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t} : null, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2,
+    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2,
     mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0)))})), ma: num(x.ma, 1000000),
     lf: num(x.lf, 60), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
@@ -1025,7 +1025,7 @@ function oppModel(x){
 }
 const fld = x => ({c: x.card.c, n: x.card.n, r: x.r ? 1 : 0, d: x.d || 0, pm: x.pm || 0, cm: x.cm || 0, mk: x.mk || []});
 function pubFull(){
-  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t} : null, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, mq:S.mq.slice(-8), ma:S.ack || 0,
+  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, mq:S.mq.slice(-8), ma:S.ack || 0,
     lf:S.life.length, dd:S.donDeck, da:S.donActive, dr:S.donRested, dk:S.deck.length, h:S.hand.length,
     tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), lg:myLog.slice(-8)};
 }
@@ -1751,6 +1751,8 @@ function placeMarkOpp(code, ref){
 }
 function advance(){
   let ch = false;
+  // the defender resolved my attack
+  if (S.atk && S.atk.n && oppM && oppM.rs === S.atk.n) { S.atk = null; ch = true; }
   const goPre = () => { S.phase = "pre"; addLog(S.first ? "will go first" : "will go second"); ch = true; };
   if (S.phase === "wait" || S.phase === "roll") {
     if (!R && status !== "connecting") { S.phase = "pre"; return true; }
@@ -2082,7 +2084,7 @@ function attackWith(src, target){
   const me = donHolder(src); if (!me) return;
   const tg = target === "ld" ? (oppM && oppM.ld) : (oppM && oppM.ch[+target.slice(3)]);
   me.r = true;
-  S.atk = {s: src, t: target}; S.blk = null;
+  S.atk = {s: src, t: target, n: Date.now() % 1e9}; S.blk = null;
   addLog(tg ? `attacked ${lab(tg)} with ${lab(me.card)}` : `attacked with ${lab(me.card)}`);
   commit();
   runAbility(me.card, ["whenAttacking"], false, me.d || 0);
@@ -2101,6 +2103,28 @@ function basePow(code){
 function powNum(c, withDon){
   const base = basePow(c.c);
   return Number.isFinite(base) ? base + (c.pm || 0) : null;
+}
+// defender's view of the opponent's attack: {ap, tp, hits, f (my defending card), onLeader} or null
+function defResult(){
+  if (!oppM || !oppM.ak) return null;
+  const a = oppCardAt(oppM.ak.s), t = ownHolder(oppM.ak.t); if (!a || !t) return null;
+  const f = S.blk != null && S.chars[S.blk] ? S.chars[S.blk] : t;
+  const ap = powNum(a, true), tp = powNum({c: f.card.c, pm: f.pm}, false);
+  if (ap === null || tp === null) return null;
+  return {ap, tp, hits: ap >= tp, f, onLeader: f === S.leader};
+}
+function defResolve(apply){
+  if (!oppM || !oppM.ak) return;
+  const r = apply ? defResult() : null;
+  if (r && r.hits && r.onLeader) {
+    if (S.life.length) { const lc = S.life.shift(); S.hand.push(lc); addLog(`took 1 damage (${r.ap} vs ${r.tp}, Life ${S.life.length})`); offerTrigger(lc); }
+    else if (!S.conceded) { S.conceded = true; S.lostDmg = true; S.blk = null; addLog(`took damage at 0 Life and lost the game`); toast("You took damage at 0 Life. You lose!"); }
+  } else if (r && r.hits) {
+    const i = S.chars.indexOf(r.f);
+    if (i >= 0) { S.chars.splice(i, 1); S.donRested += r.f.d || 0; S.trash.unshift(r.f.card); addLog(`${lab(r.f.card)} lost the battle and was K.O.'d (${r.ap} vs ${r.tp})`); const kc = r.f.card, kd = r.f.d || 0; setTimeout(() => runAbility(kc, ["onKO"], false, kd), 0); }
+  } else if (r) addLog(`the attack failed (${r.ap} vs ${r.tp})`);
+  else addLog("finished the opponent's attack");
+  S.rs = oppM.ak.n || 0; S.blk = null; commit();
 }
 function combatResult(){
   // attacker's view: returns {ap, tp, hits, ref, code, onLeader} or null when power is unknown
@@ -2122,11 +2146,11 @@ function myDefender(){
 function combatHTML(){
   if (S.atk) {
     const a = ownHolder(S.atk.s), t = oppCardAt(S.atk.t), bi = oppM && oppM.bk != null ? oppM.ch[oppM.bk] : null;
-    if (a) return `<span>\u2694 <b>${esc(lab(a.card))}</b> attacks <b>${esc(t ? lab(t) : "a target")}</b></span>${bi ? `<span>\u21AA Redirected: <b>${esc(lab(bi))}</b> blocked</span>` : ""}${combatResult() ? `<button class="btn pri" data-do="cmbapply" type="button">Resolve attack</button>` : `<span class="hint">Power unknown for one card, so resolve by hand.</span>`}<button class="btn" data-do="cmbdone" type="button">Attack done</button>`;
+    if (a) return `<span>\u2694 <b>${esc(lab(a.card))}</b> attacks <b>${esc(t ? lab(t) : "a target")}</b></span>${bi ? `<span>\u21AA Redirected: <b>${esc(lab(bi))}</b> blocked</span>` : ""}${R ? `<span class="hint">Waiting for ${esc(oppM ? oppM.nick : "your opponent")} to resolve it\u2026</span><button class="btn" data-do="cmbdone" type="button">Cancel attack</button>` : `${combatResult() ? `<button class="btn pri" data-do="cmbapply" type="button">Resolve attack</button>` : `<span class="hint">Power unknown for one card, so resolve by hand.</span>`}<button class="btn" data-do="cmbdone" type="button">Attack done</button>`}`;
   }
   if (oppM && oppM.ak) {
     const a = oppCardAt(oppM.ak.s), t = ownHolder(oppM.ak.t), b = S.blk != null ? S.chars[S.blk] : null;
-    if (a && t) return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span><button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn" data-do="cmbblock" type="button">${b ? "Change block" : "Block"}</button><button class="btn" data-do="cmbcnt:1000" type="button">+1000</button><button class="btn" data-do="cmbcnt:2000" type="button">+2000</button><button class="btn" data-do="cmbcnt:4000" type="button">+4000</button>`;
+    if (a && t) return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span><button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn" data-do="cmbblock" type="button">${b ? "Change block" : "Block"}</button><button class="btn" data-do="cmbcnt:1000" type="button">+1000</button><button class="btn" data-do="cmbcnt:2000" type="button">+2000</button><button class="btn" data-do="cmbcnt:4000" type="button">+4000</button>${defResult() ? `<button class="btn pri" data-do="dfresolve" type="button">Resolve attack</button>` : `<span class="hint">Power unknown, so resolve by hand.</span>`}<button class="btn" data-do="dfdone" type="button">Attack done</button>`;
   }
   return "";
 }
@@ -2540,6 +2564,8 @@ function doAction(a){
       if (modal && modal.type === "trash") renderModal();
       break;
     }
+    case "dfresolve": defResolve(true); break;
+    case "dfdone": defResolve(false); break;
     case "cmbdone": if (S.atk) { S.atk = null; addLog("finished the attack"); commit(); } break;
     case "cmbblock": cmbBlock(); break;
     case "refresh": refreshAll(); break;
