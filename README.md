@@ -2,11 +2,13 @@
 
 A tabletop for playing the One Piece Card Game with friends: build decks, sit at a table with a room code or an open lobby, and play it out with drag-and-drop cards, DON!!, Life and combat helpers.
 
-This is an unofficial fan project. It isn't affiliated with or endorsed by Bandai, and it doesn't include any card images. Players use their own.
+**Download for Windows:** [Bounty TCG on Google Drive](https://drive.google.com/file/d/1s0oh5_vHMwcifVJJHZTtGYhTOmr0s5Zg/view). If Google Drive asks you to request access, send the request.
+
+This is an unofficial fan project. It isn't affiliated with or endorsed by Bandai, and this repository doesn't include any card images.
 
 ## Playing
 
-The desktop app runs on Windows. Unzip the **Bounty TCG** folder you were given and run `Bounty TCG.exe`. There's nothing to install and no account to make.
+The desktop app runs on Windows. Unzip the download and run `Bounty TCG.exe` in the **Bounty TCG** folder. There's nothing to install and no account to make. The first time it opens, it puts a shortcut on your desktop.
 
 - **Join table:** pick a room code and send it to a friend. When they type the same code, you're at the same table.
 - **Lobbies:** make an open table that anyone playing can see and join.
