@@ -6,6 +6,7 @@ Bounty TCG is a One Piece Card Game tabletop. The same game page runs in two pla
 
 - `page/bounty-tcg.html` is the source of truth for the game. It is written for claude.ai's `window.claude.use(...)` capabilities (room, db, assets, user, sample).
 - `desktop/net.js` provides those capabilities in the desktop app: PeerJS rooms (the room namespace itself is the shared lobby), localStorage db with `seed.json`, card art on disk, and card reading with the player's own Claude API key. It also shows update banners.
+- `page/effects.json` holds every card's abilities, built from the official card text by `tools/build_effects.py` (run it on the English card files from github.com/buhbbl/punk-records). The game uses these first and only asks Claude to read cards that aren't in it. Rebuild it when a new set comes out, and publish it with the artifact as a supporting file.
 - `tools/build.py` patches the page for the desktop (bundled fonts, wording that assumed claude.ai accounts) and builds `dist/kit`. Every patch must match exactly once, or the build stops.
 - `desktop/main.src.js` is the Electron main process. It serves `app://bounty/` and runs the updater.
 - The full app (with card art) is a zip on Ryan's Google Drive, linked at the top of `README.md`. The app's "Open download page" button opens this repository's page, so a new Drive link only needs changing in the README.

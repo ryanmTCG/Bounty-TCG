@@ -780,7 +780,7 @@ select.sbtn{font-family:var(--slab)}
     <button class="mkb au" data-mk="au" type="button" title="Drag onto a card">Ability used</button>
     <button class="mkb nk" data-mk="nk" type="button" title="Drag onto a card">No K.O.</button>
     <button class="mkb na" data-mk="na" type="button" title="Drag onto a card">No Attack</button>
-  </div><label class="fxopt"><input type="checkbox" id="fx-auto" data-do="autofx" checked> Auto card effects (reads [On Play], [When Attacking], [On Block], [On K.O.] text off the card art)</label><p class="mkhint">Drag a marker onto any Leader or Character. Tap a marker on your own card to remove it.</p></aside>
+  </div><label class="fxopt"><input type="checkbox" id="fx-auto" data-do="autofx" checked> Auto card effects (runs [On Play], [When Attacking], [On Block] and [On K.O.] abilities for you)</label><p class="mkhint">Drag a marker onto any Leader or Character. Tap a marker on your own card to remove it.</p></aside>
   <div class="panrow">
   <div class="pccol"><div class="fxpanel" id="fxpanel" hidden></div><div class="pcrow">
   <div class="pwslot" id="pwslot" data-empty="Power spot. Drag the counter back here."><aside class="pwp" id="pwp" aria-label="Power counter">
@@ -1634,7 +1634,22 @@ const FX_PROMPT = `This image is a card from the One Piece Trading Card Game. Re
 {"blocker": false, "abilities": [ {"t": "onPlay", "don": 0, "donMinus": 0, "text": "the exact text of that ability", "steps": [ {"a": "...", "who": "...", "n": 1, "upTo": true, "cost": null, "power": null, "rested": false, "ld": false, "all": false, "text": "..."} ]} ]}
 "t" is the ability's timing keyword, one of: "onPlay" ([On Play]), "whenAttacking" ([When Attacking]), "onOppAttack" ([On Your Opponent's Attack]), "onBlock" ([On Block]), "onKO" ([On K.O.]), "trigger" ([Trigger]), "activateMain" ([Activate: Main]), "main" ([Main] on an Event), "counter" ([Counter]), "endOfTurn" ([End of Your Turn]), "yourTurn" ([Your Turn]), "other" (anything else, like [DON!! xN] or [Blocker] or [Once Per Turn] keyword-only text with no action). Skip pure keyword reminders such as [Rush] and [Blocker] that have no action to carry out. Set the top-level "blocker" to true if the card has the Blocker keyword. Look carefully: on these cards Blocker is usually printed as a small ORANGE rounded tag/label reading "Blocker" at the start of the effect box, followed by the reminder "(After your opponent declares an attack, you may rest this card to change the attack target to this card.)". Other keyword tags such as Rush, Double Attack and Banish are different colours and do not count. Cards with the Blocker tag or reminder text, or "[Blocker]" in the text, are true; otherwise false. "don" is the number N when the ability is printed under a [DON!! xN] requirement (for example [DON!! x1] or [DON!! x2] before [When Attacking] or [Your Turn]); use 0 when there is no such requirement. "donMinus" is the number N when the ability starts with a [DON!! -N] (or "(-N DON!!)") cost, meaning you must return N DON!! cards from your field to your DON!! deck to use it; 0 when there is no such cost. One object per ability; a card can have several. If it has no abilities reply {"abilities": []}.
 "steps" breaks that ability into actions in order. "a" is one of: "rest" (rest a Character or Leader), "stand" (set active), "ko" (K.O. a Character), "bounce" (return a Character to its owner's hand), "bottom" (place a Character at the bottom of its owner's deck), "pwr" (change power until end of turn, put the amount in n, negative for a decrease), "draw" (draw n cards), "look" (look at the top n cards of your deck), "don" (add n DON!! from the DON!! deck to your cost area), "returnDon" (return n DON!! cards from your field to your DON!! deck, as an effect step, not for a [DON!! -N] cost), "giveDon" (give n DON!! cards that are already in your cost area to your Leader or a Character, i.e. "Give ... up to 1 rested DON!! card" or "attach"; set "rested" true when it says rested DON!!), "discard" (trash n cards from your hand), "other" (anything else, including conditions, searching, playing a card or life effects). "who" is "opp" for the opponent's cards, "own" for your own cards. "n" is how many cards or the amount. "upTo" is true for "up to". "cost" is the maximum cost allowed or null. "power" is the maximum power allowed or null. "ld" is true ONLY when the clause explicitly names Leader as an allowed target (e.g. "your Leader or 1 of your Characters", "Leader or Character cards"); a Leader is NOT a Character, so when the clause only says "Character" or "Characters", ld is false. "all" is true when the clause says to affect ALL matching cards (e.g. "Rest all Characters", "K.O. all of your opponent's Characters with a cost of 3 or less"), false when it says a number of cards or "up to". "text" is the clause of the effect that this step covers. If an effect has a condition like "If you have 3 or more...", still list its steps and put the condition in "text". No other text.`;
+// every card's abilities, built from the official card text by tools/build_effects.py, so most cards never need reading
+const BFX = new Map();
+fetch("effects.json").then(r => r.ok ? r.json() : {}).then(j => { for (const k in j) BFX.set(k, normFx(j[k])); }).catch(() => {});
+const fxKnown = code => BFX.has(code) || EFX.has(code);
+const canRead = code => BFX.has(code) || !!ART.get(code);
+const fxText = (t, n) => String(t == null ? "" : t).replace(/[\u0000-\u001f<>]/g, " ").trim().slice(0, n);
+function normFx(r){
+  const raw = Array.isArray(r && r.abilities) ? r.abilities : [];
+  const ab = raw.slice(0, 8).map(x => {
+    const steps = (Array.isArray(x && x.steps) ? x.steps : []).slice(0, 6).map(t => ({a: String(t.a || "other"), who: t.who === "own" ? "own" : "opp", n: Math.max(1, Math.min(60000, Math.round(Math.abs(+t.n) || 1))) * (+t.n < 0 ? -1 : 1), upTo: t.upTo !== false, cost: Number.isFinite(+t.cost) && t.cost !== null ? +t.cost : null, power: Number.isFinite(+t.power) && t.power !== null ? +t.power : null, rested: t.rested === true, ld: typeof t.ld === "boolean" ? t.ld : null, all: t.all === true, text: fxText(t.text, 300)}));
+    return {t: TRIG[x && x.t] ? x.t : "other", don: Math.max(0, Math.min(10, Math.round(+(x && x.don) || 0))), donMinus: Math.max(0, Math.min(10, Math.round(+(x && x.donMinus) || 0))), text: fxText(x && x.text, 600), steps};
+  }).filter(x => x.text);
+  return {v: 2, ab, blocker: !!(r && r.blocker)};
+}
 async function readEffect(code, force){
+  if (BFX.has(code)) return BFX.get(code);
   if (force) EFX.delete(code);
   if (EFX.has(code)) return EFX.get(code);
   const id = ART.get(code); if (!id) return null;
@@ -1642,12 +1657,7 @@ async function readEffect(code, force){
   const caps = await sample.limits().catch(() => null); if (!caps || !caps.images) return null;
   const blob = await (await fetch("/_blob/" + id)).blob();
   const r = await sample.json(FX_PROMPT, {images: [blob], modelTier: "quick"});
-  const raw = Array.isArray(r && r.abilities) ? r.abilities : [];
-  const ab = raw.slice(0, 8).map(x => {
-    const steps = (Array.isArray(x && x.steps) ? x.steps : []).slice(0, 6).map(t => ({a: String(t.a || "other"), who: t.who === "own" ? "own" : "opp", n: Math.max(1, Math.min(60000, Math.round(Math.abs(+t.n) || 1))) * (+t.n < 0 ? -1 : 1), upTo: t.upTo !== false, cost: Number.isFinite(+t.cost) && t.cost !== null ? +t.cost : null, power: Number.isFinite(+t.power) && t.power !== null ? +t.power : null, rested: t.rested === true, ld: typeof t.ld === "boolean" ? t.ld : null, all: t.all === true, text: clean(String(t.text || ""), 300)}));
-    return {t: TRIG[x && x.t] ? x.t : "other", don: Math.max(0, Math.min(10, Math.round(+(x && x.don) || 0))), donMinus: Math.max(0, Math.min(10, Math.round(+(x && x.donMinus) || 0))), text: clean(String((x && x.text) || ""), 600), steps};
-  }).filter(x => x.text);
-  const fx = {v: 2, ab, blocker: !!(r && r.blocker)};
+  const fx = normFx(r);
   EFX.set(code, fx); saveEfx();
   return fx;
 }
@@ -1701,9 +1711,9 @@ function fxTap(t){
 }
 // trigs: array of trigger keys. manual: show a message when nothing matches
 async function runAbility(card, trigs, manual, don){
-  if ((!autoFx && !manual) || !ART.get(card.c)) { if (manual) toast("This card has no art uploaded, so its text can't be read."); return; }
+  if ((!autoFx && !manual) || !canRead(card.c)) { if (manual) toast("This card's text isn't available."); return; }
   try {
-    if (!EFX.has(card.c)) toast(`Reading ${card.c}…`);
+    if (!fxKnown(card.c)) toast(`Reading ${card.c}…`);
     const fx = await readEffect(card.c);
     $("#toast").hidden = true;
     if (!fx) { if (manual) toast("Couldn't read the card text here."); return; }
@@ -1721,9 +1731,9 @@ async function runAbility(card, trigs, manual, don){
 const runOnPlay = (card, ev) => runAbility(card, ev ? ["onPlay", "main"] : ["onPlay"]);
 // pick any ability on a card and run it (Activate: Main, Counter, Trigger, On K.O., etc.)
 async function useAbility(card, x, y){
-  if (!ART.get(card.c)) { toast("This card has no art uploaded, so its text can't be read."); return; }
+  if (!canRead(card.c)) { toast("This card's text isn't available."); return; }
   try {
-    if (!EFX.has(card.c)) toast(`Reading ${card.c}…`);
+    if (!fxKnown(card.c)) toast(`Reading ${card.c}…`);
     const fx = await readEffect(card.c); $("#toast").hidden = true;
     if (!fx || !fx.ab.length) { toast(`No abilities found on ${lab(card)}.`); return; }
     const have = (() => { const hs = [S.leader, S.stage, ...S.chars]; const h = hs.find(f => f && f.card === card); return h ? h.d || 0 : 0; })();
@@ -1738,9 +1748,9 @@ async function useAbility(card, x, y){
 }
 // a Life card that was just taken as damage: offer its [Trigger] ability
 async function offerTrigger(card, tries){
-  if (!autoFx || !card || !ART.get(card.c)) return;
+  if (!autoFx || !card || !canRead(card.c)) return;
   try {
-    if (!EFX.has(card.c)) toast("Checking " + card.c + " for a [Trigger]\u2026");
+    if (!fxKnown(card.c)) toast("Checking " + card.c + " for a [Trigger]\u2026");
     const fx = await readEffect(card.c); $("#toast").hidden = true;
     const ab = fx && fx.ab.find(x => x.t === "trigger");
     if (!ab || S.hand.findIndex(c => c.u === card.u) < 0) return;
@@ -1752,11 +1762,11 @@ async function offerTrigger(card, tries){
 async function offerOppAttack(){
   if (!autoFx || !oppM || !oppM.ak || modal) return;
   const ak = oppM.ak, tgt = ownHolder(ak.t), src = oppCardAt(ak.s);
-  const holders = [S.leader, ...S.chars, S.stage].filter(f => f && ART.get(f.card.c));
+  const holders = [S.leader, ...S.chars, S.stage].filter(f => f && canRead(f.card.c));
   if (!holders.length) return;
   try {
     const key = oppAtkKey;
-    if (holders.some(f => !EFX.has(f.card.c))) toast("Checking your cards for [On Your Opponent's Attack]\u2026");
+    if (holders.some(f => !fxKnown(f.card.c))) toast("Checking your cards for [On Your Opponent's Attack]\u2026");
     const list = [], blockers = [];
     for (const f of holders) {
       let fx = null; try { fx = await readEffect(f.card.c); } catch (e) { fx = null; }
@@ -2305,12 +2315,12 @@ function doBlock(i){
 async function cmbBlock(showAll){
   const cands = S.chars.map((f, i) => [f, i]).filter(([f, i]) => !f.r || S.blk === i);
   if (!cands.length) { toast("You have no active Characters to block with."); return; }
-  const need = cands.some(([f]) => { const e = EFX.get(f.card.c); return ART.get(f.card.c) && (!e || e.v !== 2); });
+  const need = cands.some(([f]) => { const e = EFX.get(f.card.c); return !BFX.has(f.card.c) && ART.get(f.card.c) && (!e || e.v !== 2); });
   if (need) toast("Checking which Characters have [Blocker]\u2026");
   const items = []; let unknown = 0;
   for (const [f, i] of cands) {
-    let fx = EFX.get(f.card.c);
-    if (ART.get(f.card.c) && (!fx || fx.v !== 2)) { try { fx = await readEffect(f.card.c, true); } catch (e) { fx = null; } }
+    let fx = BFX.get(f.card.c) || EFX.get(f.card.c);
+    if (!BFX.has(f.card.c) && ART.get(f.card.c) && (!fx || fx.v !== 2)) { try { fx = await readEffect(f.card.c, true); } catch (e) { fx = null; } }
     if (!showAll && fx && fx.blocker === false) continue;
     if (!fx) unknown++;
     items.push([`${lab(f.card)}${S.blk === i ? " (current)" : ""}${fx ? "" : " (can't check)"}`, () => {

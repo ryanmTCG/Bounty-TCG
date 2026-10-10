@@ -71,6 +71,7 @@ for coll in ("names", "settings"):
 json.dump(seed, open(os.path.join(WEB, "seed.json"), "w"), separators=(",", ":"))
 json.dump({"version": VER["version"], "shell": VER["shell"]}, open(os.path.join(WEB, "version.json"), "w"))
 
+shutil.copy(os.path.join(ROOT, "page", "effects.json"), WEB)
 shutil.copy(os.path.join(DESK, "net.js"), WEB)
 shutil.copy(os.path.join(NM, "peerjs", "dist", "peerjs.min.js"), WEB)
 shutil.copy(os.path.join(DESK, "icon.png"), os.path.join(WEB, "static", "icon.png"))
