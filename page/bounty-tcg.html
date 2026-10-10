@@ -931,6 +931,7 @@ const num = (x, max = 99) => { x = Math.floor(+x); return x >= 0 && x <= max ? x
 const hue = code => { let h = 0; for (const ch of String(code).split("-")[0]) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; };
 const ACTK = {rest:1, stand:1, ko:1, bounce:1, bottom:1, pwr:1, dmg:1};
 const MK = {fz:{l:"Freeze", s:"FREEZE"}, nb:{l:"No Block", s:"NO BLOCK"}, au:{l:"Ability used", s:"USED"}, nk:{l:"No K.O.", s:"NO K.O."}, na:{l:"No Attack", s:"NO ATTACK"}};
+for (const k in MK) ACTK["x" + k] = 1;
 const lab = c => c.n ? c.c + " " + c.n : c.c;
 function shuffle(a){ for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 let toastT;
@@ -1048,7 +1049,7 @@ function oppModel(x){
     nick: clean(x.nick, 20) || "Opponent", sl: num(x.sl, 6), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
     ld: f(x.ld), ch: (Array.isArray(x.ch) ? x.ch : []).slice(0, 12).map(f).filter(Boolean), st: f(x.st), ev: f(x.ev),
     ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2,
-    mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0)))})), ma: num(x.ma, 1000000),
+    mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0))), u: q.u ? 1 : 0})), ma: num(x.ma, 1000000),
     lf: num(x.lf, 60), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
   };
@@ -1076,12 +1077,23 @@ function commit(){
   lastSnap = now;
   render(); publish();
 }
+function sendOpp(q){ q.id = ++S.mqn; S.mq.push(q); S.mqh = (S.mqh || []).concat(Object.assign({}, q)).slice(-30); }
+const OPP_BACK = {pwr: q => ({k: "pwr", v: -q.v}), rest: () => ({k: "stand"}), stand: () => ({k: "rest"})};
 function undo(){
   if (!undoStack.length) { toast("Nothing to undo."); return; }
   const prev = JSON.parse(undoStack.pop());
   if (prev.phase !== S.phase) { toast("You can't undo back past the start of the match."); undoStack = []; return; }
-  S = prev; lastSnap = snapNow();
+  // changes already sent to the opponent can't be pulled back, so send the reverse of each one
+  const cur = S, back = (cur.mqh || []).filter(q => q.id > (prev.mqn || 0) && !q.u), stuck = [];
+  S = prev; S.mq = cur.mq; S.mqn = cur.mqn; S.ack = Math.max(prev.ack || 0, cur.ack || 0); S.mqh = cur.mqh;
+  for (const q of back.reverse()) {
+    q.u = 1;
+    const r = MK[q.k] ? {k: "x" + q.k} : OPP_BACK[q.k] ? OPP_BACK[q.k](q) : null;
+    if (r) { r.id = ++S.mqn; r.r = q.r; r.c = q.c; r.v = r.v || 0; r.u = 1; S.mq.push(r); } else stuck.push(q);
+  }
+  lastSnap = snapNow();
   addLog("undid their last move");
+  if (stuck.length) toast("Undone on your side. Your opponent's K.O. or damage from that move can't be taken back.");
   render(); publish();
 }
 
@@ -1588,9 +1600,10 @@ function applyMarkReqs(){
           if (S.life.length) { const lc = S.life.shift(); S.hand.push(lc); addLog(`took 1 damage from ${by} (Life ${S.life.length})`); offerTrigger(lc); toast(`${by}'s attack hit your Leader. Life card added to your hand.`); }
           else if (!S.conceded) { S.conceded = true; S.lostDmg = true; S.atk = null; S.blk = null; addLog(`took damage at 0 Life from ${by} and lost the game`); toast("You took damage at 0 Life. You lose!"); }
         }
-        else if (q.k === "rest") { f.r = true; addLog(`${nm} was rested by ${by}`); }
-        else if (q.k === "stand") { f.r = false; addLog(`${nm} was stood by ${by}`); }
-        else if (q.k === "pwr") { f.pm = Math.max(-60000, Math.min(60000, (f.pm || 0) + q.v)); addLog(`${nm} got ${q.v > 0 ? "+" : "-"}${Math.abs(q.v)} power from ${by}`); }
+        else if (q.k === "rest") { f.r = true; addLog(q.u ? `${by} undid standing ${nm}` : `${nm} was rested by ${by}`); }
+        else if (q.k === "stand") { f.r = false; addLog(q.u ? `${by} undid resting ${nm}` : `${nm} was stood by ${by}`); }
+        else if (q.k === "pwr") { f.pm = Math.max(-60000, Math.min(60000, (f.pm || 0) + q.v)); addLog(q.u ? `${by} undid ${q.v > 0 ? "-" : "+"}${Math.abs(q.v)} power on ${nm}` : `${nm} got ${q.v > 0 ? "+" : "-"}${Math.abs(q.v)} power from ${by}`); }
+        else if (q.k[0] === "x") { const mk = q.k.slice(1); if (f.mk && f.mk.includes(mk)) { f.mk = f.mk.filter(x => x !== mk); addLog(`${by} took ${MK[mk].l} back off ${nm}`); } }
         else if (f !== S.leader) {
           const i = S.chars.indexOf(f); if (i < 0) continue;
           S.chars.splice(i, 1); S.donRested += f.d || 0;
@@ -1832,7 +1845,7 @@ function fxApply(){
     for (const ref of refs) {
       const t = oppCardAt(ref); if (!t) continue;
       if (ref === "ld" && !["rest", "stand", "pwr"].includes(kind)) continue;
-      S.mq.push({id: ++S.mqn, r: ref, c: t.c, k: kind, v: kind === "pwr" ? st.n : 0});
+      sendOpp({r: ref, c: t.c, k: kind, v: kind === "pwr" ? st.n : 0});
       addLog(`${kind === "ko" ? "K.O.'d" : kind === "rest" ? "rested" : kind === "stand" ? "stood" : kind === "bounce" ? "returned to hand" : kind === "bottom" ? "put on the bottom of the deck" : (st.n > 0 ? "+" : "\u2212") + Math.abs(st.n) + " power on"} ${lab(t)}`);
     }
   }
@@ -1847,7 +1860,7 @@ function placeMark(code, ref){
 function placeMarkOpp(code, ref){
   const t = oppCardAt(ref); if (!t || !MK[code]) return;
   if ((t.mk || []).includes(code)) { toast(`${lab(t)} already has ${MK[code].l}.`); return; }
-  S.mq.push({id: ++S.mqn, r: ref, c: t.c, k: code}); addLog(`put ${MK[code].l} on ${lab(t)}`); commit();
+  sendOpp({r: ref, c: t.c, k: code, v: 0}); addLog(`put ${MK[code].l} on ${lab(t)}`); commit();
 }
 let autoT = false;
 function advance(){
@@ -2668,7 +2681,7 @@ function doAction(a){
     case "cmbapply": {
       const r = combatResult(); if (!S.atk || !r) break;
       if (r.hits) {
-        S.mq.push({id: ++S.mqn, r: r.ref, c: r.code, k: r.onLeader ? "dmg" : "ko", v: 0});
+        sendOpp({r: r.ref, c: r.code, k: r.onLeader ? "dmg" : "ko", v: 0});
         addLog(r.onLeader ? `hit the Leader for 1 damage (${r.ap} vs ${r.tp})` : `K.O.'d the defending Character (${r.ap} vs ${r.tp})`);
       } else addLog(`attack failed (${r.ap} vs ${r.tp})`);
       S.atk = null; commit(); break;
