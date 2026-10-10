@@ -2087,12 +2087,17 @@ function attackWith(src, target){
 }
 // ---------- combat ----------
 function powTxt(c, withDon){
-  const base0 = (CARDDB.get(c.c) || {}).p, base = base0 > 0 ? base0 : null, bonus = (c.pm || 0);
+  const base = basePow(c.c), bonus = (c.pm || 0);
   if (Number.isFinite(base)) return String(base + bonus);
   return bonus ? "? (" + (bonus > 0 ? "+" : "\u2212") + Math.abs(bonus) + ")" : "?";
 }
+// a printed 0 counts for Characters and Leaders; for anything else 0 means "no power known"
+function basePow(code){
+  const e = CARDDB.get(code) || {};
+  return e.p > 0 || (e.p === 0 && /Character|Leader/.test(e.t || "")) ? e.p : null;
+}
 function powNum(c, withDon){
-  const b0 = (CARDDB.get(c.c) || {}).p, base = b0 > 0 ? b0 : null;
+  const base = basePow(c.c);
   return Number.isFinite(base) ? base + (c.pm || 0) : null;
 }
 function combatResult(){
@@ -2906,7 +2911,7 @@ async function initNames(){
           const v = cards[k];
           if (!/^[A-Z0-9]{1,8}-\d{2,4}$/.test(k) || !v || typeof v !== "object") continue;
           const n = nameClean(v.n); if (!n && !nameClean(v.c)) continue;
-          m.set(k, {n, kw: nameClean(v.kw).slice(0, 80), s: nameClean(v.s).slice(0, 80), c: nameClean(v.c).slice(0, 30), t: nameClean(v.t).slice(0, 30), k: (v.k != null && Number.isFinite(+v.k)) ? (+v.k > 10 && +v.k < 20 ? 10 : (+v.k >= 0 && +v.k <= 10 ? +v.k : null)) : null, p: v.p != null && Number.isFinite(+v.p) && +v.p > 0 ? +v.p : null, a: nameClean(v.a).slice(0, 30), ctr: Number.isFinite(+v.ctr) && +v.ctr > 0 ? +v.ctr : null, lf: Number.isFinite(+v.lf) && +v.lf > 0 ? +v.lf : null});
+          m.set(k, {n, kw: nameClean(v.kw).slice(0, 80), s: nameClean(v.s).slice(0, 80), c: nameClean(v.c).slice(0, 30), t: nameClean(v.t).slice(0, 30), k: (v.k != null && Number.isFinite(+v.k)) ? (+v.k > 10 && +v.k < 20 ? 10 : (+v.k >= 0 && +v.k <= 10 ? +v.k : null)) : null, p: v.p != null && v.p !== "" && Number.isFinite(+v.p) && +v.p >= 0 ? +v.p : null, a: nameClean(v.a).slice(0, 30), ctr: Number.isFinite(+v.ctr) && +v.ctr > 0 ? +v.ctr : null, lf: Number.isFinite(+v.lf) && +v.lf > 0 ? +v.lf : null});
         }
       });
       CARDDB = m; render(); if (builderOpen) renderLib(); cdSummary();
