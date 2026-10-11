@@ -1,8 +1,8 @@
 {
-  "version": "1.3.3",
+  "version": "1.3.4",
   "shell": 2,
-  "bundle": "web-1.3.3.json.gz",
-  "sha256": "6dd002210ac8633e9f0116114e704d5d41182f68790f8517634b27eeb8bb9ac1",
-  "size": 680013,
-  "notes": "Every card's abilities are now built into the game, including OP18 and EB05, so you no longer need a Claude API key to use card effects."
+  "bundle": "web-1.3.4.json.gz",
+  "sha256": "04689a318862c9d59941752a6df526e766237acb0812f2b6e4624193d710a55f",
+  "size": 694729,
+  "notes": "The table background is an old sea chart instead of water. The home screen and deck builder use the sea-chart background too. The home screen has three buttons (Play, Deck editor, Sign in); Play opens a page with the game modes. The deck editor's Back to table button is now Home. The deck..."
 }
