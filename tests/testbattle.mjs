@@ -181,6 +181,35 @@ check(lz.me === lz.life && lz.opp === lz.olife && /hand/.test(lz.hand), "both Li
 await A.page.click("#me .lifez"); await A.page.waitForTimeout(300);
 check(await A.page.evaluate(() => [...document.querySelectorAll("#menu button")].some(b => /Take damage/.test(b.textContent))), "tapping your Life opens the Life actions");
 await A.page.keyboard.press("Escape");
+// smoother play: playable cards light up, tap to attack, the opponent's new card lights up, an attack you can't answer
+// resolves by itself, effect wording picks the right cards, and E ends the turn
+const glowN = await def.page.evaluate(async () => { S.donActive = 5; commit(); await new Promise(r => setTimeout(r, 300)); return {can: document.querySelectorAll("#hand .card.canplay").length, want: S.hand.filter(c => (handCost(c) || {cost: 99}).cost <= 5).length}; });
+console.log("playable", JSON.stringify(glowN));
+check(glowN.can > 0 && glowN.can === glowN.want, "hand cards your DON!! can pay for light up");
+await def.page.evaluate(() => { S.leader.r = false; commit(); openCardMenu("ld", 300, 300); [...document.querySelectorAll("#menu button")].find(b => b.textContent === "Attack").click(); });
+await def.page.waitForTimeout(300);
+const lit = await def.page.evaluate(() => document.querySelectorAll("#opp .atkpick").length);
+await def.page.click('#opp [data-atk="ld"]'); await def.page.waitForTimeout(300);
+const tapAtk = await def.page.evaluate(() => S.atk && S.atk.t);
+check(lit > 0 && tapAtk === "ld", "tap Attack, then tap the target, starts the attack");
+await def.page.evaluate(() => doAction("cmbdone")); await def.page.waitForTimeout(2500);
+await def.page.evaluate(() => { const i = S.hand.findIndex(c => (CARDDB.get(c.c) || {}).t === "Character"); moveCard("hand:" + i, "chars", true); });
+await atk.page.waitForTimeout(1500);
+check(await atk.page.evaluate(() => document.querySelectorAll("#opp .oppnew").length) > 0, "the opponent's new card lights up");
+await atk.page.evaluate(() => { S.hand = S.hand.filter(c => !(CARDDB.get(c.c) || {}).ctr && !fxAb(c.c).some(a => a.t === "counter")); S.chars.forEach(f => f.r = true); commit(); });
+await def.page.waitForTimeout(1500);
+await def.page.evaluate(() => { S.leader.r = false; attackWith("ld", "ld"); });
+await def.page.waitForTimeout(5000);
+const qr = await def.page.evaluate(() => ({atk: !!S.atk}));
+const qrLife = await atk.page.evaluate(() => S.life.length);
+console.log("quick resolve", JSON.stringify(qr), qrLife);
+check(!qr.atk, "an attack the defender can't answer resolves by itself");
+const spec = await def.page.evaluate(() => { const nami = fxAb("OP01-016").map(a => lookSpec(a.text)).find(Boolean); return {n: nami && nami.n, bottom: nami && nami.bottom, zoro: nami && nami.pred("OP01-025"), nami: nami && nami.pred("OP01-016"), navy: nami && nami.pred("ST33-004")}; });
+console.log("look spec", JSON.stringify(spec));
+check(spec.n === 1 && spec.bottom && spec.zoro && !spec.nami && !spec.navy, "Nami's search only offers Straw Hat Crew cards other than Nami");
+await def.page.evaluate(() => document.dispatchEvent(new KeyboardEvent("keydown", {key: "e", bubbles: true})));
+await def.page.waitForTimeout(1500);
+check(await def.page.evaluate(() => !S.myTurn), "E ends the turn");
 console.log("errorsA", A.errs.slice(0, 5)); console.log("errorsB", B.errs.slice(0, 5));
 await A.app.close(); await B.app.close(); peer.kill();
 console.log(fail ? `${fail} FAILED` : "all passed");

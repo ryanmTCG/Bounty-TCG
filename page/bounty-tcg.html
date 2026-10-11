@@ -920,6 +920,11 @@ select.sbtn{font-family:var(--slab)}
 .ohandp{margin:10px 10px 0;padding:6px 12px 10px;border-width:4px;order:0}
 .ohandp h2{display:flex;gap:8px;align-items:center;margin:0 0 6px;font-family:var(--slab);font-weight:400;font-size:15px;color:#F2B84B;text-shadow:0 2px 0 rgba(0,0,0,.55)}
 .ohandp .ohname{color:var(--coral)}
+.hand .card.canplay{box-shadow:0 0 0 3px #5BE07A,0 0 12px rgba(91,224,122,.7)}
+.card.canatk{box-shadow:0 0 0 3px #FF8A3D,0 0 12px rgba(255,138,61,.7)}
+.card.oppnew{box-shadow:0 0 0 3px #7CC8FF,0 0 16px rgba(124,200,255,.9)}
+.card.nomatch{opacity:.4;filter:grayscale(.6)}
+.slot.atkpick{outline:3px solid #FF6B5B;outline-offset:1px;cursor:crosshair;background:rgba(255,107,91,.18)}
 .card .hcost{position:absolute;left:-2px;top:-2px;z-index:3;min-width:1.7em;text-align:center;background:#2E8B3E;color:#fff;border:2px solid #E9FFE6;border-radius:999px;padding:0 .35em;font-style:normal;font-family:var(--slab);font-size:1.05em;line-height:1.4;box-shadow:0 1px 4px rgba(0,0,0,.5);pointer-events:none}
 .card .hcost.maybe{background:#7A6A2E}
 .tbopts{display:flex;flex-wrap:wrap;gap:4px 16px;margin:0 10px 10px;padding:6px 12px;border-radius:14px;background:rgba(18,38,45,.55);order:3}
@@ -2107,7 +2112,7 @@ function render(){
   const ch = res ? `<span>\u2691 ${res}</span>` : S.phase === "none" ? "" : combatHTML(), midEl = $("#mid");
   midEl.classList.toggle("combat", !!ch);
   if (ch) midEl.innerHTML = ch; else midEl.textContent = mid;
-  markCombat(); updTimers(); fxWatch();
+  markCombat(); updTimers(); fxWatch(); markTargets(); markPlayable(); markOppNew(); quickResolve();
   if (myChal && oppM) { myChal = null; clearTimeout(chalT); }
   lobbyUpdate();
   $("#handn").textContent = S.hand.length ? `(${S.hand.length})` : "";
@@ -2141,6 +2146,11 @@ function renderStatus(){
 
 // ---------- modals ----------
 function showModal(html){ lobbyUnwatch(); const m = $("#modal"); m.classList.remove("homebg", "lobpage", "accpage"); m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`; m.hidden = false; }
+function peekRest(){
+  const k = Math.min(modal.n, S.deck.length);
+  if (k) { S.deck.push(...S.deck.splice(0, k)); addLog(`put ${k} card${k === 1 ? "" : "s"} on the bottom of their deck`); }
+  closeModal(); commit();
+}
 function closeModal(){ lobbyUnwatch(); modal = null; $("#modal").classList.remove("homebg", "lobpage", "accpage"); $("#modal").hidden = true; $("#modal").innerHTML = ""; }
 function renderModal(){
   if (!modal || modal.type === "setup" || modal.type === "lobbies" || modal.type === "home" || modal.type === "art" || modal.type === "cardsdata" || modal.type === "reader") return;
@@ -2158,7 +2168,8 @@ function renderModal(){
   } else if (modal.type === "peek") {
     const cards = S.deck.slice(0, modal.n);
     if (!cards.length) { closeModal(); return; }
-    showModal(`<h2>${modal.all ? "Search your deck (" + cards.length + ")" : "Top " + cards.length + " of your deck"}</h2><p class="hint">Only you can see these. Tap a card to take it. Shuffle when you're done.</p><div class="grid">${cards.map((c, i) => tile(c, `data-src="dk:${i}"`, false, 0)).join("")}</div><div class="row end">${modal.all ? "" : '<button class="btn" data-do="peekbottom" type="button">Send all to bottom</button>'}<button class="btn" data-do="shuffle" type="button">Shuffle deck</button><button class="btn pri" data-do="closemodal" type="button">Done</button></div>`);
+    const pr = modal.pred, hint = modal.take ? `The effect lets you take up to ${modal.take}${pr ? " of the glowing cards" : ""}.${modal.bottom ? " The rest go to the bottom of your deck once you've taken them, or tap Take none." : ""}` : "Tap a card to take it. Shuffle when you're done.";
+    showModal(`<h2>${modal.all ? "Search your deck (" + cards.length + ")" : "Top " + cards.length + " of your deck"}</h2><p class="hint">Only you can see these. ${hint}</p><div class="grid">${cards.map((c, i) => tile(c, `data-src="dk:${i}"`, false, 0, modal.take && pr ? (pr(c.c) ? "fxtarget" : "nomatch") : "")).join("")}</div><div class="row end">${modal.take && modal.bottom ? '<button class="btn" data-do="peekrest" type="button">Take none, rest to bottom</button>' : ""}${modal.all ? "" : '<button class="btn" data-do="peekbottom" type="button">Send all to bottom</button>'}<button class="btn" data-do="shuffle" type="button">Shuffle deck</button><button class="btn pri" data-do="closemodal" type="button">Done</button></div>`);
   } else if (modal.type === "reset") {
     showModal(`<h2>Reset your board?</h2><p class="hint">Every card goes back into your deck, which is shuffled, and you get a fresh opening hand to keep or mulligan. Your opponent's side isn't touched.</p><div class="row end"><button class="btn" data-do="closemodal" type="button">Cancel</button><button class="btn pri" data-do="resetyes" type="button">Reset board</button></div>`);
   } else if (modal.type === "concede") {
@@ -2510,6 +2521,7 @@ function renderFx(){
   const st = fxCur.steps[fxCur.i]; if (!st) return;
   const glow = (e, ref) => { if (e) e.classList.add(fxCur.pick.includes(ref) ? "fxpicked" : "fxtarget"); };
   if (st.a === "discard") S.hand.forEach((c, i) => glow(document.querySelector(`#hand [data-src="hand:${i}"]`), "hand:" + i));
+  else if (fxCur.play && fxCur.play.from === "hand") S.hand.forEach((c, i) => { if (fxCur.play.pred(c.c)) glow(document.querySelector(`#hand [data-src="hand:${i}"]`), "hand:" + i); });
   else if (fxVerb(st, "it")) { const own = fxOwn(st); fxCands(st).forEach(x => glow(document.querySelector(own ? `#me [data-src="${x.ref}"]` : `#opp [data-opp="${x.ref}"]`), x.ref)); }
 }
 function fxFinish(done){
@@ -2531,6 +2543,7 @@ function fxPick(ref){
 function fxTap(t){
   const st = fxCur && fxCur.steps[fxCur.i]; if (!st) return false;
   let ref = null;
+  if (fxCur.play && fxCur.play.from === "hand") { const h = t.closest("#hand [data-src^='hand:']"); if (h && fxCur.play.pred((S.hand[+h.dataset.src.slice(5)] || {}).c)) { fxPlay(h.dataset.src); return true; } return false; }
   if (st.a === "discard") { const h = t.closest("#hand [data-src^='hand:']"); if (h) ref = h.dataset.src; }
   else if (fxVerb(st, "it")) {
     const own = fxOwn(st), e = own ? t.closest("#me [data-src]") : t.closest("#opp [data-opp]");
@@ -2647,11 +2660,17 @@ function fxStepHTML(m){
   if (st.a === "look") return say(`Look at the top ${st.n} cards of your deck.`, `${cancel}${skip}<button class="btn pri" data-do="fxlook" type="button">Look</button>`);
   if (st.a === "don") return say(`Add ${st.n} DON!! from your DON!! deck.`, `${cancel}${skip}<button class="btn" data-do="fxdon:r" type="button">Add rested</button><button class="btn pri" data-do="fxdon:a" type="button">Add active</button>`);
   if (st.a === "discard") return say(`Tap ${st.n === 1 ? "a card" : st.n + " cards"} in your hand to trash ${st.n === 1 ? "it" : "them"}.`, st.n === 1 ? cancel + skip : `${cancel}${skip}<button class="btn pri" data-do="fxapply" type="button">Trash (${m.pick.length})</button>`);
+  const ps = st.a === "other" ? (m.play || (m.play = playSpec(st.text || m.text))) : null;
+  if (ps) {
+    const pool = ps.from === "hand" ? S.hand : S.trash, ok = pool.filter(c => ps.pred(c.c)).length;
+    return say(ok ? `Tap a glowing card in your ${ps.from} to play it${ps.rested ? " rested" : ""} for free (up to ${ps.n}).` : `No card in your ${ps.from} fits this effect.`,
+      `${cancel}${ps.from === "trash" && ok ? '<button class="btn" data-do="fxtrash" type="button">Open trash</button>' : ""}<button class="btn pri" data-do="fxskip" type="button">${ok ? "Done" : "Next"}</button>`);
+  }
   return say(`Do this one yourself on the board, then tap Next.`, `${cancel}<button class="btn pri" data-do="fxskip" type="button">Next</button>`);
 }
 function fxNext(){
   const m = fxCur; if (!m) return;
-  m.i++; m.pick = []; m.dsel = {};
+  m.i++; m.pick = []; m.dsel = {}; m.play = null;
   if (m.i >= m.steps.length) { fxFinish(true); return; }
   renderFx();
 }
@@ -2868,6 +2887,48 @@ function costCond(t){
   if (t === "the turn in which a card in your hand is trashed by an effect") return !!S.myTurn && S.htr === S.turn;
   return null;
 }
+// which cards an effect's wording allows, e.g. "{Straw Hat Crew} type Character card with a cost of 3 or less other
+// than [Nami]". Returns a test on a card number, or null when nothing in the wording narrows it down.
+function cardFilter(seg){
+  seg = String(seg || "");
+  const tests = []; let m;
+  const col = seg.match(/\b(red|green|blue|purple|black|yellow)\b/i);
+  if (col) tests.push(i => String(i.c || "").toLowerCase().includes(col[1].toLowerCase()));
+  const tys = [...seg.matchAll(/\{([^}]+)\}/g)].map(x => x[1]);
+  if (tys.length) tests.push((i, code) => tys.some(t => hasType(code, t)));
+  if ((m = seg.match(/type including "([^"]+)"/))) { const w = m[1]; tests.push((i, code) => typesOf(code).some(y => y.includes(w))); }
+  const cat = seg.match(/\b(Character|Event|Stage)\b/);
+  if (cat) tests.push(i => i.t === cat[1]);
+  if ((m = seg.match(/cost of (\d+) or (less|more)/))) { const n = +m[1], le = m[2] === "less"; tests.push(i => Number.isFinite(i.k) && (le ? i.k <= n : i.k >= n)); }
+  else if ((m = seg.match(/cost of (\d+)\b/))) { const n = +m[1]; tests.push(i => i.k === n); }
+  if ((m = seg.match(/(\d+) power or (less|more)/))) { const n = +m[1], le = m[2] === "less"; tests.push(i => Number.isFinite(i.p) && (le ? i.p <= n : i.p >= n)); }
+  const not = [...seg.matchAll(/other than \[([^\]]+)\]/g)].map(x => x[1]);
+  if (not.length) tests.push((i, code) => !not.includes(nameOf(code)));
+  const names = [...seg.replace(/other than \[[^\]]+\]/g, "").matchAll(/\[([^\]]+)\]/g)].map(x => x[1]);
+  if (names.length) tests.push((i, code) => names.includes(nameOf(code)));
+  if (!tests.length) return null;
+  return code => { const i = CARDDB.get(code) || {}; return tests.every(f => f(i, code)); };
+}
+// "Look at 5 cards ...; reveal up to 1 X and add it to your hand. Then, place the rest at the bottom"
+function lookSpec(text){
+  const m = String(text || "").match(/reveal up to (\d+) (.+?) and add (?:it|them) to your hand/i) || String(text || "").match(/add up to (\d+) (.+?) to your hand/i);
+  if (!m) return null;
+  return {n: +m[1], pred: cardFilter(m[2]), bottom: /(rest|remaining cards?) (at|on|to) the bottom/i.test(text)};
+}
+// "Play up to 1 X from your hand/trash"
+function playSpec(text){
+  const m = String(text || "").match(/play up to (\d+) (.+?) from your (hand|trash)( rested)?/i);
+  if (!m) return null;
+  return {n: +m[1], pred: cardFilter(m[2]) || (() => true), from: m[3].toLowerCase(), rested: !!m[4] || /\brested\b/i.test(m[2])};
+}
+const playDest = code => { const t = (CARDDB.get(code) || {}).t; return t === "Stage" ? "stage" : t === "Event" ? "event" : "chars"; };
+function fxPlay(src){
+  const m = fxCur, pl = m && m.play, c = src.startsWith("hand:") ? S.hand[+src.slice(5)] : S.trash[+src.slice(3)];
+  if (!pl || !c || !pl.pred(c.c)) return;
+  moveCard(src, playDest(c.c), true);
+  if (pl.rested && playDest(c.c) === "chars" && S.chars.length) { S.chars[S.chars.length - 1].r = true; commit(); }
+  if (--pl.n <= 0) { closeModal(); fxNext(); } else renderFx();
+}
 function handCost(c){
   const info = CARDDB.get(c.c) || {}, base = info.k;
   if (!Number.isFinite(base)) return null;
@@ -2915,14 +2976,18 @@ function moveCard(src, dest, free, pay){
   const c = r.card, nm = lab(c), wasPublic = k === "ch" || k === "st" || k === "ev" || k === "tr";
   let msg = "";
   if (dest === "hand") { S.hand.push(c); msg = k === "lf" ? `took damage (Life ${S.life.length})` : wasPublic ? `returned ${nm} to hand` : k === "dk" ? "took a card from the deck to hand" : "moved a card to hand"; }
-  else if (dest === "chars") { S.chars.push({card: c, r: false, d: 0}); msg = `played ${nm}`; if (S.chars.length > 5) toast("That's more than 5 Characters. Trash one to stay within the limit."); }
+  else if (dest === "chars") { S.chars.push({card: c, r: false, d: 0, pt: S.turn}); msg = `played ${nm}`; if (S.chars.length > 5) toast("That's more than 5 Characters. Trash one to stay within the limit."); }
   else if (dest === "stage") { if (S.stage) { S.trash.unshift(S.stage.card); msg = `replaced their Stage (trashed ${lab(S.stage.card)}), then `; } S.stage = {card: c, r: false, d: 0}; msg += `played ${nm} as Stage`; }
   else if (dest === "event") { if (S.ev) { S.trash.unshift(S.ev.card); msg = `replaced their Event (trashed ${lab(S.ev.card)}), then `; } S.ev = {card: c, r: false, d: 0}; msg += `played ${nm} as Event`; }
   else if (dest === "trash") { S.trash.unshift(c); msg = k === "lf" ? `trashed ${nm} from Life` : k === "ch" ? `trashed ${nm} (KO)` : `trashed ${nm}`; }
   else if (dest === "deck") { S.deck.unshift(c); msg = wasPublic ? `put ${nm} on top of the deck` : "put a card on top of the deck"; }
   else if (dest === "deckbot") { S.deck.push(c); msg = wasPublic ? `put ${nm} on the bottom of the deck` : "put a card on the bottom of the deck"; }
   else if (dest === "life") { S.life.unshift(c); msg = `added a card to Life (${S.life.length})`; }
-  if (k === "dk" && modal && modal.type === "peek") { modal.n = Math.max(0, modal.n - 1); }
+  if (k === "dk" && modal && modal.type === "peek") {
+    modal.n = Math.max(0, modal.n - 1);
+    // a search that says "add up to N ... then place the rest at the bottom" finishes by itself once N are taken
+    if (modal.take && dest === "hand" && --modal.take <= 0 && modal.bottom) peekRest();
+  }
   if (k === "hand" && dest === "trash" && S.myTurn) S.htr = S.turn;
   if (plays) {
     statPlayed(c.c);
@@ -2966,6 +3031,7 @@ function openCardMenu(src, x, y){
       ["Play for free (an effect lets you)", () => moveCard(src, /Stage/.test(ty) ? "stage" : /Event/.test(ty) ? "event" : "chars", true)], M("Add to Life", "life"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"), M("Trash", "trash")];
   } else if (k === "ch" || k === "st" || k === "ld") {
     const f = k === "ch" ? S.chars[i] : k === "st" ? S.stage : S.leader; if (!f) return; title = lab(f.card); info = {c: f.card.c, n: f.card.n, r: f.r ? 1 : 0, d: f.d || 0};
+    if (k !== "st" && !f.r && S.myTurn && S.phase === "play" && oppM) items.push(["Attack", () => { atkPick = src; markTargets(); toast("Tap the Leader or Character to attack. Tap anywhere else to cancel."); }]);
     items.push([f.r ? "Activate (stand)" : "Rest", () => { f.r = !f.r; addLog(`${f.r ? "rested" : "activated"} ${lab(f.card)}`); commit(); }]);
     if (k !== "st") {
       items.push(["Give DON!! (+1)", () => { if (!S.donActive) { toast("No active DON!! in your cost area."); return; } S.donActive--; f.d++; addLog(`gave DON!! to ${lab(f.card)} (+${f.d})`); commit(); }]);
@@ -2979,7 +3045,8 @@ function openCardMenu(src, x, y){
     items = [M("Trash", "trash"), M("Return to hand", "hand"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot")];
   } else if (k === "tr") {
     const c = S.trash[i]; if (!c) return; title = lab(c); info = {c: c.c, n: c.n, r: 0, d: 0};
-    items = [M("Return to hand", "hand"), M("Play to Character area", "chars"), M("Play as Stage", "stage"), M("Play as Event", "event"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot")];
+    if (fxCur && fxCur.play && fxCur.play.from === "trash" && fxCur.play.pred(c.c)) items.push(["Play it (from the effect)", () => fxPlay(src)]);
+    items.push(M("Return to hand", "hand"), M("Play to Character area", "chars"), M("Play as Stage", "stage"), M("Play as Event", "event"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"));
   } else if (k === "dk") {
     const c = S.deck[i]; if (!c) return; title = lab(c); info = {c: c.c, n: c.n, r: 0, d: 0};
     items = [M("Add to hand", "hand"), M("Trash", "trash"), M("Put on bottom of deck", "deckbot"), M("Add to Life", "life")];
@@ -3131,6 +3198,46 @@ function movePm(from, to){
   commit();
 }
 const atkAt = (x, y) => { const el = document.elementFromPoint(x, y); return el && el.closest ? el.closest("[data-atk]") : null; };
+// on your turn, light up the hand cards your active DON!! can pay for and the cards that can still attack
+// (nobody attacks on their first turn, and a Character played this turn needs [Rush])
+function markPlayable(){
+  const on = S.phase === "play" && S.myTurn && !S.atk && !(oppM && oppM.ak);
+  S.hand.forEach((c, i) => { const el = document.querySelector(`#hand [data-src="hand:${i}"]`); if (!el) return; const hc = on ? handCost(c) : null; el.classList.toggle("canplay", !!(hc && hc.cost <= S.donActive)); });
+  const can = f => on && S.turn > 1 && f && !f.r && !(f.mk || []).includes("na") && (f.pt !== S.turn || /Rush/.test((CARDDB.get(f.card.c) || {}).kw || ""));
+  [["ld", S.leader], ...S.chars.map((f, i) => ["ch:" + i, f])].forEach(([r, f]) => { const el = document.querySelector(`#me [data-src="${r}"]`); if (el) el.classList.toggle("canatk", !!can(f)); });
+}
+// light up a card the opponent just played, or just gave DON!!, so nobody has to read the log for it
+let oppSeen = null, oppHot = new Map();
+function markOppNew(){
+  if (!oppM) { oppSeen = null; return; }
+  const now = Date.now(), cur = new Map([["ld", oppM.ld], ["st", oppM.st], ...(oppM.ch || []).map((x, i) => ["ch:" + i, x])].filter(([, x]) => x).map(([r, x]) => [r, x.c + "|" + (x.d || 0)]));
+  if (oppSeen) for (const [r, k] of cur) if (oppSeen.get(r) !== k) { const [c, d] = k.split("|"), [pc, pd] = (oppSeen.get(r) || "|").split("|"); if (c !== pc || +d > +(pd || 0)) oppHot.set(r, now + 2500); }
+  oppSeen = cur;
+  for (const [r, until] of oppHot) { const el = document.querySelector(`#opp [data-opp="${r}"]`); if (until < now) { oppHot.delete(r); continue; } if (el) el.classList.add("oppnew"); setTimeout(() => { const e2 = document.querySelector(`#opp [data-opp="${r}"]`); if (e2) e2.classList.remove("oppnew"); }, until - now); }
+}
+// when you're attacked and can't answer (no counter cards, no Counter Events you can pay for, no Blocker and no
+// [On Your Opponent's Attack] ability), the attack resolves by itself after a moment instead of waiting on you
+let qrKey = null;
+function quickResolve(){
+  if (!oppM || !oppM.ak || S.rs === oppM.ak.n || S.blk != null || fxCur || modal || qrKey === oppM.ak.n) return;
+  const n = oppM.ak.n;
+  if (handCounters().length) return;
+  if (S.hand.some(c => fxAb(c.c).some(a => a.t === "counter") && (handCost(c) || {cost: 99}).cost <= S.donActive)) return;
+  if (S.chars.some(f => !f.r && (!(BFX.get(f.card.c) || EFX.get(f.card.c)) || (BFX.get(f.card.c) || EFX.get(f.card.c)).blocker))) return;
+  if ([S.leader, S.stage, ...S.chars].some(f => f && fxAb(f.card.c).some(a => a.t === "onOppAttack"))) return;
+  qrKey = n;
+  setTimeout(() => {
+    if (!oppM || !oppM.ak || oppM.ak.n !== n || S.rs === n || S.blk != null || fxCur || modal) return;
+    const known = !!defResult(); defResolve(known);
+    toast("No Blocker or counters to use, so the attack went through.");
+  }, 1800);
+}
+// tap to attack: choose Attack in a card's menu, then tap a lit-up target
+let atkPick = null;
+function markTargets(){
+  document.querySelectorAll(".atkpick").forEach(e => e.classList.remove("atkpick"));
+  if (atkPick) document.querySelectorAll("#opp [data-atk]").forEach(e => e.classList.add("atkpick"));
+}
 function attackWith(src, target){
   const me = donHolder(src); if (!me) return;
   if (me.mk && me.mk.includes("na")) { toast(`${lab(me.card)} has No Attack and can't attack yet.`); return; }
@@ -3387,6 +3494,13 @@ document.addEventListener("dblclick", e => {
   if (dk && S.phase === "play") { closeMenu(); draw(1); }
 });
 document.addEventListener("keydown", e => {
+  // shortcuts: E ends your turn, Space resolves an attack on you, Esc cancels picking an attack target
+  if (!e.ctrlKey && !e.metaKey && !e.altKey && !/^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test((e.target || {}).tagName || "") && !modal) {
+    const k = e.key.toLowerCase();
+    if (k === "escape" && atkPick) { atkPick = null; markTargets(); return; }
+    if (k === "e" && S.phase === "play" && S.myTurn && !S.atk) { e.preventDefault(); doAction("endturn"); return; }
+    if (k === " " && oppM && oppM.ak && S.rs !== oppM.ak.n) { e.preventDefault(); doAction("dfresolve"); return; }
+  }
   if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === "z" && !/^(INPUT|TEXTAREA|SELECT)$/.test((e.target || {}).tagName || "")) { e.preventDefault(); undo(); }
 });
 
@@ -3395,6 +3509,7 @@ document.addEventListener("click", e => {
   if (Date.now() - justDragged < 80) return;
   const t = e.target;
   if (fxCur && t.closest && !t.closest("#fxpanel,.modal,#menu") && fxTap(t)) return;
+  if (atkPick && t.closest && !t.closest("#menu")) { const tg = t.closest("#opp [data-atk]"), src = atkPick; atkPick = null; markTargets(); if (tg) attackWith(src, tg.dataset.atk); return; }
   const mkd = t.closest("[data-mkdel]");
   if (mkd) { const [ref, k] = mkd.dataset.mkdel.split("|"), f = donHolder(ref); if (f && f.mk) { f.mk = f.mk.filter(x => x !== k); addLog(`removed ${MK[k].l} from ${lab(f.card)}`); commit(); } return; }
   const cbn = t.closest("[data-color]");
@@ -3521,7 +3636,7 @@ function doAction(a){
     commit(); fxNext(); return;
   }
   if (a === "fxdraw" && fxCur) { const n = fxCur.steps[fxCur.i].n; draw(n); fxNext(); return; }
-  if (a === "fxlook" && fxCur) { const n = fxCur.steps[fxCur.i].n; fxNext(); modal = {type: "peek", n}; renderModal(); addLog(`looked at the top ${Math.min(n, S.deck.length)} cards of their deck`); return; }
+  if (a === "fxlook" && fxCur) { const n = fxCur.steps[fxCur.i].n, sp = lookSpec(fxCur.text); fxNext(); modal = {type: "peek", n, take: sp ? sp.n : 0, pred: sp && sp.pred, bottom: !!(sp && sp.bottom)}; renderModal(); addLog(`looked at the top ${Math.min(n, S.deck.length)} cards of their deck`); return; }
   if (a.startsWith("fxdon:") && fxCur) { addDon(fxCur.steps[fxCur.i].n, a === "fxdon:a"); fxNext(); return; }
   if (a === "sndon") { sndOn = !sndOn; try { localStorage.setItem("bounty:snd", sndOn ? "1" : "0"); } catch (e) {} if (sndOn) snd("turn"); toast(sndOn ? "Sounds on." : "Sounds off."); return; }
   if (a === "autofx") { autoFx = !autoFx; try { localStorage.setItem("nakama:autofx", autoFx ? "1" : "0"); } catch (e) {} toast(autoFx ? "Auto card effects on." : "Auto card effects off."); return; }
@@ -3607,6 +3722,8 @@ function doAction(a){
     case "concedeyes": closeModal(); S.conceded = true; S.atk = null; S.blk = null; addLog("conceded the match"); commit(); break;
     case "rolld": if (S.phase === "roll" && !S.roll) { S.roll = 1 + Math.floor(Math.random() * 6); addLog(`rolled a ${S.roll} to see who goes first`); commit(); } break;
     case "fcf": case "fcs": if (S.phase === "roll" && S.roll && oppM && S.roll > oppM.rl && !S.fc) { S.fc = a === "fcf" ? "f" : "s"; addLog(S.fc === "f" ? "chose to go first" : "chose to go second"); commit(); } break;
+    case "peekrest": if (modal && modal.type === "peek") peekRest(); break;
+    case "fxtrash": modal = {type: "trash"}; renderModal(); break;
     case "peekbottom": if (modal && modal.type === "peek") { const k = Math.min(modal.n, S.deck.length); if (!k) break; modal = {type: "order", cards: S.deck.slice(0, k), n: modal.n}; renderModal(); } break;
     case "ordback": if (modal && modal.type === "order") { modal = {type: "peek", n: modal.n}; renderModal(); } break;
     case "ordgo": if (modal && modal.type === "order") { const k = modal.cards.length; S.deck.splice(0, k); S.deck.push(...modal.cards); closeModal(); addLog(`put ${k} looked-at card${k === 1 ? "" : "s"} on the bottom of the deck`); commit(); } break;
