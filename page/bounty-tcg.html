@@ -754,6 +754,7 @@ select.sbtn{font-family:var(--slab)}
   .mktray{flex:0 0 auto}
 }
 .fxopt{display:flex;gap:6px;align-items:center;font-size:12px;margin-top:8px;color:var(--ink)}
+.fxopt + .fxopt{margin-top:3px}
 .card.fxsel{outline:4px solid #F2B84B;outline-offset:1px;box-shadow:0 0 14px 4px rgba(242,184,75,.8)}
 .fxc{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
 .mid.combat .cmbhit{color:#B8F5B0}
@@ -841,7 +842,7 @@ select.sbtn{font-family:var(--slab)}
     <button class="mkb au" data-mk="au" type="button" title="Drag onto a card">Ability used</button>
     <button class="mkb nk" data-mk="nk" type="button" title="Drag onto a card">No K.O.</button>
     <button class="mkb na" data-mk="na" type="button" title="Drag onto a card">No Attack</button>
-  </div><label class="fxopt"><input type="checkbox" id="fx-auto" data-do="autofx" checked> Auto card effects (runs [On Play], [When Attacking], [On Block] and [On K.O.] abilities for you)</label><p class="mkhint">Drag a marker onto any Leader or Character. Tap a marker on your own card to remove it.</p></aside>
+  </div><label class="fxopt"><input type="checkbox" id="fx-auto" data-do="autofx" checked> Auto card effects (runs [On Play], [When Attacking], [On Block] and [On K.O.] abilities for you)</label><label class="fxopt"><input type="checkbox" id="turn-auto" data-do="autoturn" checked> Auto start of turn (stands your cards, draws and adds DON!! for you)</label><p class="mkhint">Drag a marker onto any Leader or Character. Tap a marker on your own card to remove it.</p></aside>
   <div class="panrow">
   <div class="pccol"><div class="fxpanel" id="fxpanel" hidden></div><div class="pcrow">
   <div class="pwslot" id="pwslot" data-empty="Power spot. Drag the counter back here."><aside class="pwp" id="pwp" aria-label="Power counter">
@@ -1664,7 +1665,7 @@ function render(){
     if (fb) fb.hidden = !(R && !PR && S.phase === "play" && oppM && oppM.et == null);
     const db = $(".dicebtn"); if (db) db.classList.toggle("due", (S.phase === "roll" && !S.roll) || !!(PR && !PR.order && S.phase === "pre")); }
   { const sw = $("#pswitch"); if (sw) { sw.hidden = !PR; if (PR) sw.textContent = "Switch to Player " + (PR.cur === 0 ? 2 : 1); } }
-  { const fa = $("#fx-auto"); if (fa) fa.checked = autoFx; }
+  { const fa = $("#fx-auto"); if (fa) fa.checked = autoFx; const ta = $("#turn-auto"); if (ta) ta.checked = autoTurn; }
   $("#opp").innerHTML = side(oppM || EMPTY(), false);
   $("#oppLife").innerHTML = lifePanel(oppM || EMPTY(), false);
   $("#myLife").innerHTML = lifePanel(pubFull(), true);
@@ -2034,8 +2035,8 @@ function applyMarkReqs(){
   return ch;
 }
 // ---------- card effects (read off the card art) ----------
-let autoFx = true, fxQueue = [], oppAtkKey = "";
-try { autoFx = localStorage.getItem("nakama:autofx") !== "0"; } catch (e) {}
+let autoFx = true, fxQueue = [], oppAtkKey = "", autoTurn = true;
+try { autoFx = localStorage.getItem("nakama:autofx") !== "0"; autoTurn = localStorage.getItem("bounty:autoturn") !== "0"; } catch (e) {}
 const EFX = new Map();
 try { const j = JSON.parse(localStorage.getItem("nakama:efx7") || "{}"); for (const k in j) EFX.set(k, j[k]); } catch (e) {}
 function saveEfx(){ try { localStorage.setItem("nakama:efx7", JSON.stringify(Object.fromEntries(EFX))); } catch (e) {} }
@@ -2358,7 +2359,13 @@ function startTurn(){
   S.donActive += S.donRested; S.donRested = 0;
   S.myTurn = true;
   addLog(`started turn ${S.turn}`);
-  toast(S.first && S.turn === 1 ? "Your turn! Add your DON!! (no draw on the first turn)." : "Your turn! Draw and add your DON!!.");
+  if (autoTurn) {
+    // Refresh, Draw and DON!! phases in one go: no draw for the first player's first turn, and 1 DON!! on it
+    const noDraw = S.first && S.turn === 1, did = [];
+    if (!noDraw && S.tdr !== S.turn) { S.tdr = S.turn; if (S.deck.length) { S.hand.push(S.deck.shift()); addLog("drew a card"); did.push("drew 1 card"); } else did.push("couldn't draw: your deck is empty"); }
+    if (S.tdn !== S.turn) { const add = Math.min(noDraw ? 1 : 2, S.donDeck); if (add) { S.tdn = S.turn; S.donDeck -= add; S.donActive += add; addLog(`added ${add} DON!!`); did.push(`added ${add} DON!!`); } }
+    toast("Your turn! Stood your cards" + (did.length ? (did.length > 1 ? ", " + did.slice(0, -1).join(", ") + " and " : " and ") + did[did.length - 1] : "") + ".");
+  } else toast(S.first && S.turn === 1 ? "Your turn! Add your DON!! (no draw on the first turn)." : "Your turn! Draw and add your DON!!.");
   commit();
 }
 function refreshAll(){
@@ -3053,6 +3060,7 @@ function doAction(a){
   if (a === "fxdraw" && fxCur) { const n = fxCur.steps[fxCur.i].n; draw(n); fxNext(); return; }
   if (a === "fxlook" && fxCur) { const n = fxCur.steps[fxCur.i].n; fxNext(); modal = {type: "peek", n}; renderModal(); addLog(`looked at the top ${Math.min(n, S.deck.length)} cards of their deck`); return; }
   if (a.startsWith("fxdon:") && fxCur) { addDon(fxCur.steps[fxCur.i].n, a === "fxdon:a"); fxNext(); return; }
+  if (a === "autoturn") { autoTurn = !autoTurn; try { localStorage.setItem("bounty:autoturn", autoTurn ? "1" : "0"); } catch (e) {} toast(autoTurn ? "Auto start of turn on: you'll draw and get DON!! automatically." : "Auto start of turn off: use Draw for turn and DON!! for turn."); return; }
   if (a === "autofx") { autoFx = !autoFx; try { localStorage.setItem("nakama:autofx", autoFx ? "1" : "0"); } catch (e) {} toast(autoFx ? "Auto card effects on." : "Auto card effects off."); return; }
   if (a.startsWith("cmbcnt:")) {
     const v = +a.slice(7), d = myDefender();

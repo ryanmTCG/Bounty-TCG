@@ -93,6 +93,18 @@ await atk.page.click('#mid [data-do="cmbdone"]');
 await def.page.waitForTimeout(3000);
 const d5 = await def.page.evaluate(() => ({pm: S.leader.pm || 0, bc: S.leader.bc || 0}));
 check(d5.pm === 0 && d5.bc === 0, "cancelled attack takes counters back off");
+// automatic start of turn: going first gets 1 DON!! and no draw; the other player then gets a card and 2 DON!! when the turn passes
+const t1 = await atk.page.evaluate(() => ({don: S.donActive, deck: S.donDeck, hand: S.hand.length}));
+check(t1.don === 1 && t1.deck === 9 && t1.hand === 5, "first turn added 1 DON!! and skipped the draw");
+const before = await def.page.evaluate(() => ({hand: S.hand.length, deck: S.deck.length, don: S.donDeck}));
+await atk.page.click('[data-do="endturn"]');
+await def.page.waitForTimeout(3000);
+const t2 = await def.page.evaluate(() => ({mine: S.myTurn, hand: S.hand.length, deck: S.deck.length, don: S.donDeck, active: S.donActive, toast: document.querySelector("#toast").textContent}));
+console.log("turn 2", JSON.stringify(t2));
+check(t2.mine && t2.hand === before.hand + 1 && t2.deck === before.deck - 1 && t2.don === before.don - 2 && t2.active === 2, "second player's turn drew 1 and added 2 DON!! by itself");
+check(/drew 1 card and added 2 DON!!/.test(t2.toast), "the turn toast says what happened");
+await def.page.click('[data-do="donturn"]'); await def.page.waitForTimeout(500);
+check(await def.page.evaluate(() => S.donActive) === 2, "DON!! for turn doesn't add a second time");
 console.log("errorsA", A.errs.slice(0, 5)); console.log("errorsB", B.errs.slice(0, 5));
 await A.app.close(); await B.app.close(); peer.kill();
 console.log(fail ? `${fail} FAILED` : "all passed");
