@@ -2566,6 +2566,7 @@ async function runAbility(card, trigs, manual, don){
     list.splice(0, list.length, ...list.filter(x => !optUsed(card, x)));
     if (!list.length) { if (manual) toast(`No ${trigs.map(t => TRIG[t]).join(" / ")} ability found on ${lab(card)}.`); return; }
     list.forEach(x => fxEnqueue(fxJob(card, x)));
+    list.forEach(x => grantActiveAtk(card, x.text || ""));
   } catch (e) {
     $("#toast").hidden = true;
     if (!fxFailed) { fxFailed = true; toast("Couldn't read the card text (" + ((e && e.code) || "error") + "). Turn off Auto card effects under the turn buttons if you don't want this."); }
@@ -2584,7 +2585,7 @@ async function useAbility(card, x, y){
     if (!usable.length) { toast(`${lab(card)} doesn't meet the DON!! requirement for its ability.`); return; }
     if (usable.every(a => optUsed(card, a))) { toast(`${lab(card)} already used its Once Per Turn ability this turn.`); return; }
     usable.splice(0, usable.length, ...usable.filter(a => !optUsed(card, a)));
-    const items = usable.map(a => [`${a.text.slice(0, 70)}${a.text.length > 70 ? "…" : ""}`, () => fxEnqueue(fxJob(card, a))]);
+    const items = usable.map(a => [`${a.text.slice(0, 70)}${a.text.length > 70 ? "…" : ""}`, () => { fxEnqueue(fxJob(card, a)); grantActiveAtk(card, a.text || ""); }]);
     if (items.length === 1) { items[0][1](); return; }
     showMenu(`${lab(card)} abilities`, items, x || innerWidth / 2 - 100, y || innerHeight / 2 - 80);
   } catch (e) { $("#toast").hidden = true; toast("Couldn't read the card text (" + ((e && e.code) || "error") + ")."); }
@@ -3247,11 +3248,27 @@ function markTargets(){
 // "can also attack active Characters": the card's own text (with its DON!! condition), or "ok" when another card's effect may allow it
 const ACT_RX = /can also attack (your opponent's )?active Characters/i;
 function canHitActive(f){
-  const own = fxAb(f.card.c).find(a => ACT_RX.test(a.text || "") && /This Character/i.test(a.text || "") && a.t === "other");
-  if (own) { const m = /DON!! x(\d+)/.exec(own.text); if (!m || (f.d || 0) >= +m[1]) return true; }
   if (f.aa === S.turn) return true;
-  const src = [S.leader, S.stage, S.ev, ...S.chars].filter(Boolean).map(x => x.card || x).concat(S.trash.slice(0, 5));
-  return src.some(c => c && c.c && fxAb(c.c).some(a => ACT_RX.test(a.text || "") && !(a.t === "other" && /This Character/i.test(a.text || "")))) ? "ok" : false;
+  const own = fxAb(f.card.c).find(a => a.t === "other" && ACT_RX.test(a.text || "") && /This Character/i.test(a.text || ""));
+  if (!own) return false;
+  const m = /DON!! x(\d+)/.exec(own.text);
+  return !m || (f.d || 0) >= +m[1];
+}
+// abilities like EB03-008 / OP11-084: "up to 1 of your {Type} Leader or Character cards can also attack active Characters during this turn"
+function grantActiveAtk(card, text){
+  if (!ACT_RX.test(text) || !/during this turn/i.test(text)) return;
+  const self = [S.leader, ...S.chars].find(f => f && f.card === card);
+  if (/: This Character can also attack/i.test(text)) { if (self) { self.aa = S.turn; addLog(`${lab(card)} can attack active Characters this turn`); commit(); } return; }
+  const m = /up to 1 of your (?:\{([^}]+)\} type )?(Leader or Character cards|Leader|Characters)/i.exec(text); if (!m) return;
+  if (/If your Leader has the \{([^}]+)\} type/i.test(text)) { const t = /If your Leader has the \{([^}]+)\} type/i.exec(text)[1]; if (!S.leader || !hasType(S.leader.card.c, t)) return; }
+  const ty = m[1], kind = m[2].toLowerCase();
+  const pool = [kind !== "characters" ? S.leader : null, ...(kind !== "leader" ? S.chars : [])].filter(f => f && (!ty || hasType(f.card.c, ty)));
+  if (!pool.length) { toast(`No ${ty ? ty + " " : ""}card to let attack active Characters.`); return; }
+  const give = f => { f.aa = S.turn; addLog(`let ${lab(f.card)} attack active Characters this turn (${lab(card)})`); commit(); render(); };
+  setTimeout(() => {
+    if (pool.length === 1) give(pool[0]);
+    else showMenu(`${lab(card)}: which card can also attack active Characters this turn?`, pool.map(f => [lab(f.card), () => give(f)]).concat([["None", () => {}]]), innerWidth / 2 - 140, innerHeight / 2 - 80);
+  }, 600);
 }
 function attackWith(src, target, ok){
   const me = donHolder(src); if (!me) return;
@@ -3259,9 +3276,7 @@ function attackWith(src, target, ok){
   if (target !== "ld") {
     const tg0 = oppM && oppM.ch[+target.slice(3)];
     if (tg0 && !tg0.r && !ok) {
-      const h = canHitActive(me);
-      if (h === "ok") { showMenu(`${lab(tg0)} is active. Does an effect let ${lab(me.card)} attack active Characters this turn?`, [["Yes, attack it", () => { me.aa = S.turn; attackWith(src, target, true); }], ["No", () => {}]], innerWidth / 2 - 140, innerHeight / 2 - 60); return; }
-      if (!h) { toast(`${lab(tg0)} is active. You can only attack rested Characters, or the Leader.`); return; }
+      if (!canHitActive(me)) { toast(`${lab(tg0)} is active. You can only attack rested Characters, or the Leader.`); return; }
     }
   }
   if (me.mk && me.mk.includes("na")) { toast(`${lab(me.card)} has No Attack and can't attack yet.`); return; }

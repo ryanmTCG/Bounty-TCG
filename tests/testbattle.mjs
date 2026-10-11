@@ -109,6 +109,23 @@ await A.page.waitForTimeout(2000);
 const rule = await atk.page.evaluate(() => { const t0 = S.turn; S.turn = 1; S.leader.r = false; attackWith("ld", "ld"); const first = !S.atk; S.turn = Math.max(t0, 2); attackWith("ld", "ch:0"); const act = !S.atk; S.leader.r = false; return {first, act}; });
 check(rule.first, "no attacks on your first turn");
 check(rule.act, "an active Character can't be attacked");
+// cards that let a card attack active Characters: OP04-090 by itself, OP01-021 with 1 DON!!, OP11-119 grants it
+const grant = await atk.page.evaluate(async () => {
+  const has = c => CARDDB.has(c);
+  const f1 = {card: {c: "OP04-090"}, d: 0}, f2 = {card: {c: "OP01-021"}, d: 0}, f3 = {card: {c: "OP01-021"}, d: 1};
+  const plain = {card: {u: 997, c: "OP01-001", n: ""}, r: false, d: 0};
+  S.chars.push(plain);
+  grantActiveAtk({c: "OP11-119"}, (EFX.get("OP11-119") || BFX.get("OP11-119") || {ab: []}).ab ? "[On Play] Up to 1 of your Characters can also attack active Characters during this turn." : "");
+  await new Promise(r => setTimeout(r, 900));
+  const menu = !!document.querySelector("#menu button");
+  if (menu) [...document.querySelectorAll("#menu button")].find(b => b.textContent === lab(plain.card) || b.textContent.includes("OP01-001")).click();
+  const out = {has: has("OP04-090") && has("OP01-021"), self: canHitActive(f1), don0: canHitActive(f2), don1: canHitActive(f3), granted: canHitActive(plain)};
+  S.chars.splice(S.chars.indexOf(plain), 1); commit();
+  return out;
+});
+console.log("active attack", JSON.stringify(grant));
+check(grant.self && !grant.don0 && grant.don1, "cards that attack active Characters themselves work, with their DON!! need");
+check(grant.granted, "an effect can let another card attack active Characters");
 await def.page.evaluate(() => { S.chars[S.chars.length - 1].r = true; commit(); });
 await A.page.waitForTimeout(2000);
 await atk.page.evaluate(() => { S.leader.r = false; S.turn = Math.max(S.turn, 2); attackWith("ld", "ch:0"); });
