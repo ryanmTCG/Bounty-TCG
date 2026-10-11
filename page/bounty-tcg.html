@@ -818,6 +818,16 @@ select.sbtn{font-family:var(--slab)}
 .pfinfo b{display:block;color:#FFE9B8;font-family:var(--slab);font-weight:400;font-size:17px}
 .pfinfo small{display:block;color:var(--muted);font-size:12px}
 .pfline{font-size:14px;color:#F1DDB0}
+.pfhist{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:8px}
+.pfh{display:flex;gap:12px;align-items:center;padding:8px 12px;border:2px solid rgba(255,240,205,.25);border-left-width:6px;border-radius:14px;background:rgba(0,0,0,.22)}
+.pfh.win{border-left-color:#5DBB63}
+.pfh.loss{border-left-color:#D9534F}
+.pfh .card{--cw:44px;--ch:62px;flex:0 0 auto;margin:0;font-size:8px}
+.pfh .pfnone{width:44px;height:62px;border-radius:6px;background:rgba(255,255,255,.08)}
+.pfres{flex:0 0 46px;text-align:center;font-family:var(--slab);font-size:15px}
+.pfh.win .pfres{color:#9BE39F}
+.pfh.loss .pfres{color:#FFA9A6}
+.pfh .pfinfo b{font-size:16px}
 .pfcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px}
 .pfcard{position:relative}
 .pfcard .card{--cw:100%;--ch:auto;width:100%;height:auto;aspect-ratio:5 / 7;margin:0;font-size:9px}
@@ -1088,8 +1098,8 @@ async function connect(code){
     if (!room) throw new Error("no room");
     const r = await room.join(code);
     R = r;
-    r.onPeers(onPeers);
-    r.onConnection(c => { status = c ? "online" : "reconnecting"; renderStatus(); });
+    r.onPeers(ch => { if (R === r) onPeers(ch); });
+    r.onConnection(c => { if (R !== r) return; status = c ? "online" : "reconnecting"; renderStatus(); });
     status = "online";
     doPublish();
   } catch (e) {
@@ -1345,7 +1355,7 @@ function rankResult(won, why){
   if (won) RANK.w++; else RANK.l++;
   RANK.nick = S.nick || RANK.nick;
   rankSave();
-  const d = RANK.b - before, up = rankName(RANK.b) !== rankName(before);
+  const d = RANK.b - before, up = rankName(RANK.b) !== rankName(before); S.rankD = d;
   const msg = (why ? why + " " : "") + (!d ? `Ranked loss. Your bounty is already ${berry(0)}, so it stays there.`
     : `Ranked ${won ? "win" : "loss"}: bounty ${won ? "+" : "−"}${berry(Math.abs(d))}. It's now ${berry(RANK.b)}${up ? `, and you're a ${rankName(RANK.b)}${won ? "!" : "."}` : ` (${rankName(RANK.b)}).`}`);
   setTimeout(() => toast(msg), 60);
@@ -1357,7 +1367,7 @@ function rankCheck(){
   // a loss counts the moment you lose, even if your opponent has already left; a win comes from the opponent's loss
   const lost = S.conceded, won = !lost && !!(oppM && oppM.cd);
   if (won || lost) { rankResult(won); return; }
-  if (oppM) { S.rankGone = 0; if (!S.rankPend) { S.rankPend = true; rankPend((S.leader && S.leader.card && S.leader.card.c) || "1"); } return; }
+  if (oppM) { S.rankGone = 0; if (!S.rankPend) { S.rankPend = true; rankPend(JSON.stringify({ld: (S.leader && S.leader.card && S.leader.card.c) || "", op: (oppM.ld && oppM.ld.c) || "", on: oppM.nick})); } return; }
   // the opponent is gone: if they stay gone (and we're still connected), they've left and we win
   if (status !== "online" || !R) { S.rankGone = 0; return; }
   if (!S.rankGone) {
@@ -1369,7 +1379,7 @@ function rankCheck(){
 // leaving a ranked match before it's over (starting another game, going offline) concedes it
 function rankForfeit(){
   if (rejoining || !S.ranked || S.rankDone || !S.rankOpp) return;
-  rankResult(false, "You left a ranked match, so it counts as a loss.");
+  S.rankLeft = true; rankResult(false, "You left a ranked match, so it counts as a loss.");
   S.conceded = true; S.atk = null; S.blk = null;   // tell the opponent, so they get their win straight away
   try { commit(); } catch (e) {}
 }
@@ -1385,10 +1395,11 @@ function rankPendingCheck(){
     return;
   }
   rankPend(false);
+  let info = {}; try { if (p[0] === "{") info = JSON.parse(p) || {}; else info = {ld: p}; } catch (e) {}
   const before = RANK.b, step = 25000 + Math.round(Math.random() * 50) * 100;
   RANK.b = Math.max(0, before - Math.round(step * LOSS[rankName(before)] / 100) * 100); RANK.l++;
   rankSave();
-  statLoss(p);
+  statLoss(String(info.ld || ""), {op: String(info.op || ""), on: clean(info.on, 20), b: RANK.b - before});
   setTimeout(() => toast(before === RANK.b ? `You left a ranked match before it ended, so it counted as a loss. Your bounty is already ${berry(0)}, so it stays there.`
     : `You left a ranked match before it ended, so it counted as a loss: bounty −${berry(before - RANK.b)}. It's now ${berry(RANK.b)}.`), 1500);
 }
@@ -1435,7 +1446,7 @@ async function rankedFind(){
   const open = lobbyList().find(l => l.r && l.s < 2 && !l.mine);
   const room = open ? open.c : "ranked-" + lobbyCode();
   const c = Object.assign({}, v, {room, nick: v.nick || RANK.nick || "Player", life: v.life || 5, sleeve: v.sleeve | 0, first: !!v.first});
-  status = "connecting";
+  await leaveRoom(); status = "connecting";
   newGame(c, true); S.ranked = true;
   closeModal();
   await connect(room);
@@ -1447,13 +1458,16 @@ async function rankedFind(){
 // ---------- profile ----------
 // Win/loss record, most played decks (by Leader) and most played cards, counted from online matches against
 // another player. Kept in this browser and, when signed in to claude.ai, in the player's own private storage.
-function statsBlank(){ return {g: 0, w: 0, l: 0, ld: {}, cd: {}}; }
+const HIST_MAX = 20;
+function statsBlank(){ return {g: 0, w: 0, l: 0, ld: {}, cd: {}, h: []}; }
 function statsFrom(x){
   const o = statsBlank(); if (!x || typeof x !== "object") return o;
   o.g = x.g | 0; o.w = x.w | 0; o.l = x.l | 0;
   const code = k => /^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(k);
   if (x.ld && typeof x.ld === "object") for (const k of Object.keys(x.ld).slice(0, 200)) if (code(k)) { const v = x.ld[k] || {}; o.ld[k] = {n: v.n | 0, w: v.w | 0, l: v.l | 0}; }
   if (x.cd && typeof x.cd === "object") for (const k of Object.keys(x.cd).slice(0, 600)) if (code(k)) o.cd[k] = x.cd[k] | 0;
+  // match history, newest first: time, my Leader, their Leader and name, result, ranked, bounty change, how it ended
+  if (Array.isArray(x.h)) o.h = x.h.slice(0, HIST_MAX).filter(e => e && typeof e === "object").map(e => ({t: +e.t || 0, me: code(e.me) ? e.me : "", op: code(e.op) ? e.op : "", on: clean(e.on, 20), r: e.r === "w" ? "w" : "l", rk: e.rk ? 1 : 0, b: Math.max(-99999, Math.min(99999, Math.round(+e.b || 0))), y: ["cd", "dmg", "left", "time"].includes(e.y) ? e.y : ""}));
   return o;
 }
 function statsLoadLocal(){ try { return statsFrom(JSON.parse(localStorage.getItem("bounty:stats") || "null")); } catch (e) { return statsBlank(); } }
@@ -1482,9 +1496,11 @@ function statsSave(){
   clearTimeout(statsTimer);
   statsTimer = setTimeout(async () => { const ref = await statsDoc(); if (ref) { try { await ref.set(Object.assign({t: Date.now()}, STATS)); } catch (e) {} } }, 1500);
 }
+function statHist(e){ STATS.h = [Object.assign({t: Date.now()}, e), ...(STATS.h || [])].slice(0, HIST_MAX); }
 function statLd(code){ if (!/^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(code || "")) return null; return STATS.ld[code] || (STATS.ld[code] = {n: 0, w: 0, l: 0}); }
 function statCheck(){
   if (PR || S.statDone || S.phase === "none") return;
+  if (oppM && R) { if (oppM.ld && oppM.ld.c) S.statOpLd = oppM.ld.c; S.statOpNick = oppM.nick; }
   if (!S.statOpp) {
     if (!(R && oppM && S.phase !== "wait")) return;
     S.statOpp = true; STATS.g++;           // an opponent sat down: this game counts toward the Leader's games played
@@ -1496,12 +1512,24 @@ function statCheck(){
   S.statDone = true;
   const e = statLd(S.leader && S.leader.card && S.leader.card.c);
   if (won) { STATS.w++; if (e) e.w++; } else { STATS.l++; if (e) e.l++; }
+  const y = lost ? (S.lostDmg ? "dmg" : S.tmo >= TIMEOUTS_MAX ? "time" : S.rankLeft ? "left" : "cd") : (oppM && oppM.cd ? (oppM.cdw ? "dmg" : (oppM.to || 0) >= TIMEOUTS_MAX ? "time" : "cd") : "left");
+  statHist({me: (S.leader && S.leader.card && S.leader.card.c) || "", op: S.statOpLd || "", on: S.statOpNick || "", r: won ? "w" : "l", rk: S.ranked && S.rankOpp ? 1 : 0, b: S.rankD || 0, y});
   statsSave();
 }
-function statLoss(code){ STATS.l++; const e = statLd(code); if (e) e.l++; statsSave(); }
+function statLoss(code, info){ STATS.l++; const e = statLd(code); if (e) e.l++; statHist({me: code || "", op: (info && info.op) || "", on: (info && info.on) || "", r: "l", rk: 1, b: (info && info.b) || 0, y: "left"}); statsSave(); }
 function statPlayed(code){
   if (PR || !S.statOpp || !/^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(code || "")) return;
   STATS.cd[code] = (STATS.cd[code] | 0) + 1; statsSave();
+}
+function ago(t){
+  const m = Math.round((Date.now() - t) / 60000);
+  return m < 1 ? "just now" : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m / 60)} h ago` : m < 2880 ? "yesterday" : new Date(t).toLocaleDateString(undefined, {month: "short", day: "numeric"});
+}
+const HOW = {w: {cd: "They conceded", dmg: "Won on damage", left: "They left", time: "They ran out of time"}, l: {cd: "You conceded", dmg: "Lost on damage", left: "You left", time: "You ran out of time"}};
+function histRow(e){
+  const opn = e.op ? (nameOf(e.op) || e.op) : "Unknown Leader", men = e.me ? (nameOf(e.me) || e.me) : "";
+  const bits = [HOW[e.r][e.y], e.rk ? `Ranked${e.b ? ` ${e.b > 0 ? "+" : "\u2212"}${berry(Math.abs(e.b))}` : ""}` : "", e.t ? ago(e.t) : ""].filter(Boolean);
+  return `<div class="pfh ${e.r === "w" ? "win" : "loss"}"><span class="pfres">${e.r === "w" ? "Win" : "Loss"}</span>${e.op ? tile({c: e.op, n: nameOf(e.op)}, "", false, 0) : `<div class="card pfnone"></div>`}<div class="pfinfo"><b>vs ${esc(e.on || "Opponent")}</b><small>${esc(opn)}${e.op ? " (" + esc(e.op) + ")" : ""}${men ? ` against your ${esc(men)}` : ""}</small><span class="pfline">${esc(bits.join(" \u00B7 "))}</span></div></div>`;
 }
 function pct(w, l){ return w + l ? Math.round(100 * w / (w + l)) + "%" : "–"; }
 function openProfile(){
@@ -1519,6 +1547,9 @@ function openProfile(){
       <div><b>${pct(STATS.w, STATS.l)}</b><small>Win rate</small></div>
       <div><b>${RANK.w}–${RANK.l}</b><small>Ranked record</small></div>
     </div>
+    <h3 class="rkh">Match history</h3>
+    ${(STATS.h || []).length ? `<div class="pfhist">${STATS.h.map(histRow).join("")}</div>`
+      : `<div class="lbempty"><b>No matches yet</b>Your last ${HIST_MAX} online matches show up here, with who you played and how it went.</div>`}
     <h3 class="rkh">Most played decks</h3>
     ${decks.length ? `<div class="pfdecks">${decks.map(([c, v]) => `<div class="pfdeck">${tileOf(c)}<div class="pfinfo"><b>${esc(nameOf(c) || c)}</b><small>${esc(c)}</small><span class="pfline">${v.n} game${v.n === 1 ? "" : "s"} · ${v.w}–${v.l} · ${pct(v.w, v.l)} wins</span></div></div>`).join("")}</div>`
       : `<div class="lbempty"><b>No matches yet</b>Play someone online and the Leaders you use show up here.</div>`}
@@ -1995,7 +2026,7 @@ async function startGame(join){
   const jl = join && modal && modal.type === "setup" ? modal.lobby : null, pub = !!(join && c.pub && !jl);
   const fmt = pub ? c.fmt : jl ? jl.f : "", bad = fmt ? illegalNote(deckIllegal(c, fmt), fmt) : "";
   save(Object.assign({}, c, {pub: false}));
-  if (join) status = "connecting";
+  if (join) { await leaveRoom(); status = "connecting"; }
   newGame(c, !!join);
   closeModal();
   if (jl && bad) toast("Heads up: " + bad);
