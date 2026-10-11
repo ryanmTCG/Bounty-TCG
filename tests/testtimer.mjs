@@ -51,7 +51,9 @@ check(/^⏱ [23]:\d\d$/.test(t2 || ""), "opponent sees the same clock");
 check(await chip(def.page, "#tmr-me") === null, "no clock for the player waiting");
 await atk.page.screenshot({ path: OUT + "/clock.png" });
 // attacking pauses the attacker's clock; the defender gets 45 seconds to answer
-await atk.page.evaluate(() => attackWith("ld", "ld"));
+// keep the attack open so the clock shows (no auto-resolve)
+await def.page.evaluate(() => { quickResolve = () => {}; });
+await atk.page.evaluate(() => (S.turn = Math.max(S.turn, 2), attackWith)("ld", "ld"));
 await wait(3000);
 const p1 = await chip(atk.page, "#tmr-me"), r1 = await chip(def.page, "#tmr-cmb"), o1 = await chip(def.page, "#tmr-opp");
 console.log("attack", p1, "|", r1, "|", o1);

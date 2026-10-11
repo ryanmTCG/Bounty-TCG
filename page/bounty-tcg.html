@@ -2571,7 +2571,7 @@ async function runAbility(card, trigs, manual, don){
     if (!fxFailed) { fxFailed = true; toast("Couldn't read the card text (" + ((e && e.code) || "error") + "). Turn off Auto card effects under the turn buttons if you don't want this."); }
   }
 }
-const runOnPlay = (card, ev) => runAbility(card, ev ? ["onPlay", "main"] : ["onPlay"]);
+const runOnPlay = (card, ev) => runAbility(card, ev ? (oppM && oppM.ak && S.rs !== oppM.ak.n ? ["counter"] : ["onPlay", "main"]) : ["onPlay"]);
 // pick any ability on a card and run it (Activate: Main, Counter, Trigger, On K.O., etc.)
 async function useAbility(card, x, y){
   if (!canRead(card.c)) { toast("This card's text isn't available."); return; }
@@ -3025,13 +3025,19 @@ function openCardMenu(src, x, y){
   const M = (label, dest) => [label, () => moveCard(src, dest)];
   let items = [], title = "", info = null;
   if (k === "hand") {
-    const c = S.hand[i]; if (!c) return; title = lab(c); info = {c: c.c, n: c.n, r: 0, d: 0};
+    const c = S.hand[i]; if (!c) return;
+    // defending: tapping a card in hand uses it as a Counter
+    if (oppM && oppM.ak && S.rs !== oppM.ak.n && !fxCur) {
+      if ((CARDDB.get(c.c) || {}).ctr) { doAction("cmbhc:" + i); return; }
+      if (fxAb(c.c).some(a => a.t === "counter")) { doAction("cmbev:" + i); return; }
+    }
+    title = lab(c); info = {c: c.c, n: c.n, r: 0, d: 0};
     const ty = (CARDDB.get(c.c) || {}).t || "";
     items = [M("Play to Character area", "chars"), M("Play as Stage", "stage"), M("Play as Event", "event"),
       ["Play for free (an effect lets you)", () => moveCard(src, /Stage/.test(ty) ? "stage" : /Event/.test(ty) ? "event" : "chars", true)], M("Add to Life", "life"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"), M("Trash", "trash")];
   } else if (k === "ch" || k === "st" || k === "ld") {
     const f = k === "ch" ? S.chars[i] : k === "st" ? S.stage : S.leader; if (!f) return; title = lab(f.card); info = {c: f.card.c, n: f.card.n, r: f.r ? 1 : 0, d: f.d || 0};
-    if (k !== "st" && !f.r && S.myTurn && S.phase === "play" && oppM) items.push(["Attack", () => { atkPick = src; markTargets(); toast("Tap the Leader or Character to attack. Tap anywhere else to cancel."); }]);
+    if (k !== "st" && !f.r && S.myTurn && S.turn > 1 && S.phase === "play" && oppM) items.push(["Attack", () => { atkPick = src; markTargets(); toast("Tap the Leader or Character to attack. Tap anywhere else to cancel."); }]);
     items.push([f.r ? "Activate (stand)" : "Rest", () => { f.r = !f.r; addLog(`${f.r ? "rested" : "activated"} ${lab(f.card)}`); commit(); }]);
     if (k !== "st") {
       items.push(["Give DON!! (+1)", () => { if (!S.donActive) { toast("No active DON!! in your cost area."); return; } S.donActive--; f.d++; addLog(`gave DON!! to ${lab(f.card)} (+${f.d})`); commit(); }]);
@@ -3222,7 +3228,7 @@ function quickResolve(){
   if (!oppM || !oppM.ak || S.rs === oppM.ak.n || S.blk != null || fxCur || modal || qrKey === oppM.ak.n) return;
   const n = oppM.ak.n;
   if (handCounters().length) return;
-  if (S.hand.some(c => fxAb(c.c).some(a => a.t === "counter") && (handCost(c) || {cost: 99}).cost <= S.donActive)) return;
+  if (counterEvents().length) return;
   if (S.chars.some(f => !f.r && (!(BFX.get(f.card.c) || EFX.get(f.card.c)) || (BFX.get(f.card.c) || EFX.get(f.card.c)).blocker))) return;
   if ([S.leader, S.stage, ...S.chars].some(f => f && fxAb(f.card.c).some(a => a.t === "onOppAttack"))) return;
   qrKey = n;
@@ -3236,10 +3242,28 @@ function quickResolve(){
 let atkPick = null;
 function markTargets(){
   document.querySelectorAll(".atkpick").forEach(e => e.classList.remove("atkpick"));
-  if (atkPick) document.querySelectorAll("#opp [data-atk]").forEach(e => e.classList.add("atkpick"));
+  if (atkPick) { const f = donHolder(atkPick), h = f && canHitActive(f); document.querySelectorAll("#opp [data-atk]").forEach(e => { const r = e.dataset.atk, t = r === "ld" ? null : oppM && oppM.ch[+r.slice(3)]; if (r === "ld" || (t && t.r) || h) e.classList.add("atkpick"); }); }
 }
-function attackWith(src, target){
+// "can also attack active Characters": the card's own text (with its DON!! condition), or "ok" when another card's effect may allow it
+const ACT_RX = /can also attack (your opponent's )?active Characters/i;
+function canHitActive(f){
+  const own = fxAb(f.card.c).find(a => ACT_RX.test(a.text || "") && /This Character/i.test(a.text || "") && a.t === "other");
+  if (own) { const m = /DON!! x(\d+)/.exec(own.text); if (!m || (f.d || 0) >= +m[1]) return true; }
+  if (f.aa === S.turn) return true;
+  const src = [S.leader, S.stage, S.ev, ...S.chars].filter(Boolean).map(x => x.card || x).concat(S.trash.slice(0, 5));
+  return src.some(c => c && c.c && fxAb(c.c).some(a => ACT_RX.test(a.text || "") && !(a.t === "other" && /This Character/i.test(a.text || "")))) ? "ok" : false;
+}
+function attackWith(src, target, ok){
   const me = donHolder(src); if (!me) return;
+  if (!(S.turn > 1)) { toast("No one can attack on their first turn. Attacks start on your second turn."); return; }
+  if (target !== "ld") {
+    const tg0 = oppM && oppM.ch[+target.slice(3)];
+    if (tg0 && !tg0.r && !ok) {
+      const h = canHitActive(me);
+      if (h === "ok") { showMenu(`${lab(tg0)} is active. Does an effect let ${lab(me.card)} attack active Characters this turn?`, [["Yes, attack it", () => { me.aa = S.turn; attackWith(src, target, true); }], ["No", () => {}]], innerWidth / 2 - 140, innerHeight / 2 - 60); return; }
+      if (!h) { toast(`${lab(tg0)} is active. You can only attack rested Characters, or the Leader.`); return; }
+    }
+  }
   if (me.mk && me.mk.includes("na")) { toast(`${lab(me.card)} has No Attack and can't attack yet.`); return; }
   const tg = target === "ld" ? (oppM && oppM.ld) : (oppM && oppM.ch[+target.slice(3)]);
   me.r = true;
@@ -3274,7 +3298,7 @@ function defResult(){
   return {ap, tp, hits: ap >= tp, f, onLeader: f === S.leader};
 }
 function defResolve(apply){
-  if (!oppM || !oppM.ak) return;
+  if (!oppM || !oppM.ak || S.rs === oppM.ak.n) return;
   const r = apply ? defResult() : null;
   if (r && r.hits && r.onLeader) {
     if (S.life.length) { const lc = S.life.shift(); S.hand.push(lc); addLog(`took 1 damage (${r.ap} vs ${r.tp}, Life ${S.life.length})`); offerTrigger(lc); }
@@ -3303,6 +3327,10 @@ function endBattle(){
   return ch;
 }
 // counter cards in hand, one entry per card, biggest first
+// [Counter] Events in hand that I have the active DON!! to play
+function counterEvents(){
+  return S.hand.map((c, i) => ({c, i, cost: (handCost(c) || {cost: 99}).cost})).filter(e => fxAb(e.c.c).some(a => a.t === "counter") && e.cost <= S.donActive);
+}
 function handCounters(){
   const g = new Map();
   S.hand.forEach((c, i) => { const v = (CARDDB.get(c.c) || {}).ctr; if (!v) return; const e = g.get(c.c); if (e) e.n++; else g.set(c.c, {i, v, c, n: 1}); });
@@ -3330,13 +3358,14 @@ function combatHTML(){
     const a = ownHolder(S.atk.s), t = oppCardAt(S.atk.t), bi = oppM && oppM.bk != null ? oppM.ch[oppM.bk] : null;
     if (a) return `<span>\u2694 <b>${esc(lab(a.card))}</b> attacks <b>${esc(t ? lab(t) : "a target")}</b></span>${bi ? `<span>\u21AA Redirected: <b>${esc(lab(bi))}</b> blocked</span>` : ""}${cmbPow(combatResult(), false)}<span class="tmr" id="tmr-cmb" hidden></span><span class="cmbbr"></span>${R ? `<span class="hint">Waiting for ${esc(oppM ? oppM.nick : "your opponent")} to resolve it\u2026</span><button class="btn" data-do="cmbdone" type="button">Cancel attack</button>` : `${combatResult() ? `<button class="btn pri" data-do="cmbapply" type="button">Resolve attack</button>` : `<span class="hint">Power unknown for one card, so resolve by hand.</span>`}<button class="btn" data-do="cmbdone" type="button">Attack done</button>`}`;
   }
-  if (oppM && oppM.ak) {
+  if (oppM && oppM.ak && S.rs !== oppM.ak.n) {
     const a = oppCardAt(oppM.ak.s), t = ownHolder(oppM.ak.t), b = S.blk != null ? S.chars[S.blk] : null;
     if (a && t) {
       const r = defResult(), d = myDefender(), hc = handCounters();
       const ctrs = hc.map(e => { const nm = nameOf(e.c.c) || e.c.c; return `<button class="btn cmbctr" data-do="cmbhc:${e.i}" type="button" title="Trash ${esc(lab(e.c))} from your hand for +${e.v} power">+${e.v} ${esc(nm.length > 16 ? nm.slice(0, 15) + "\u2026" : nm)}${e.n > 1 ? ` <i>\u00D7${e.n}</i>` : ""}</button>`; }).join("");
+      const evs = counterEvents().map(e => `<button class="btn cmbctr" data-do="cmbev:${e.i}" type="button" title="Play this Counter Event for ${e.cost} DON!!">${esc(lab(e.c))} <i>(${e.cost} DON!!)</i></button>`).join("");
       const res = !r ? "Resolve attack" : r.hits ? (r.onLeader ? "Take 1 damage" : "Resolve: K.O.") : "Resolve: attack fails";
-      return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span>${cmbPow(r, true)}${d && d.bc ? `<span>Counters <i>+${d.bc}</i></span>` : ""}<span class="tmr" id="tmr-cmb" hidden></span><span class="cmbbr"></span>${ctrs ? `<span class="cmblbl">Counter from hand:</span>${ctrs}<span class="cmbbr"></span>` : ""}<button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn" data-do="cmbblock" type="button">${b ? "Change block" : "Block"}</button><button class="btn" data-do="cmbcnt:1000" type="button" title="Add power by hand, for this battle">+1000</button><button class="btn" data-do="cmbcnt:2000" type="button" title="Add power by hand, for this battle">+2000</button><button class="btn" data-do="cmbcnt:4000" type="button" title="Add power by hand, for this battle">+4000</button>${r ? `<button class="btn pri" data-do="dfresolve" type="button">${res}</button>` : `<span class="hint">Power unknown, so resolve by hand.</span>`}<button class="btn" data-do="dfdone" type="button">Attack done</button>`;
+      return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span>${cmbPow(r, true)}${d && d.bc ? `<span>Counters <i>+${d.bc}</i></span>` : ""}<span class="tmr" id="tmr-cmb" hidden></span><span class="cmbbr"></span>${ctrs || evs ? `<span class="hint">Tap a Counter card in your hand to use it.</span><span class="cmbbr"></span>` : ""}<button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn" data-do="cmbblock" type="button">${b ? "Change block" : "Block"}</button>${r ? `<button class="btn pri" data-do="dfresolve" type="button">${res}</button>` : `<span class="hint">Power unknown, so resolve by hand.</span>`}<button class="btn" data-do="dfdone" type="button">Attack done</button>`;
     }
   }
   return "";
@@ -3640,12 +3669,6 @@ function doAction(a){
   if (a.startsWith("fxdon:") && fxCur) { addDon(fxCur.steps[fxCur.i].n, a === "fxdon:a"); fxNext(); return; }
   if (a === "sndon") { sndOn = !sndOn; try { localStorage.setItem("bounty:snd", sndOn ? "1" : "0"); } catch (e) {} if (sndOn) snd("turn"); toast(sndOn ? "Sounds on." : "Sounds off."); return; }
   if (a === "autofx") { autoFx = !autoFx; try { localStorage.setItem("nakama:autofx", autoFx ? "1" : "0"); } catch (e) {} toast(autoFx ? "Auto card effects on." : "Auto card effects off."); return; }
-  if (a.startsWith("cmbcnt:")) {
-    const v = +a.slice(7), d = myDefender();
-    if (!d || !v) return;
-    d.pm = Math.max(-60000, Math.min(60000, (d.pm || 0) + v)); d.bc = (d.bc || 0) + v;
-    addLog(`countered +${v} on ${lab(d.card)}`); commit(); snd("ctr"); fxFloat($(`#me [data-src="${d === S.leader ? "ld" : "ch:" + S.chars.indexOf(d)}"]`), `+${v}`, "ctr"); return;
-  }
   if (a.startsWith("frch:")) { challenge(a.slice(5)); return; }
   if (a.startsWith("frrm:")) { const c = a.slice(5), f = STATS.fr.find(x => x.c === c); STATS.fr = STATS.fr.filter(x => x.c !== c); statsSave(); renderFriends(); if (f) toast(`Removed ${f.n || f.c} from your friends.`); return; }
   if (a.startsWith("fradd:")) { const c = a.slice(6), e = (STATS.h || []).find(x => x.fc === c); if (addFriend(c, e && e.on)) renderFriends(); return; }
@@ -3654,6 +3677,11 @@ function doAction(a){
   if (a === "invyes" && curInv) { const inv = curInv, v = deckReady(); if (!v) return; chalSeen.add(inv.id); showInvite(null); sitAt(inv.r, v).then(() => toast(`You joined ${inv.nk}'s table.`)); return; }
   if (a === "invno" && curInv) { chalSeen.add(curInv.id); myDc = curInv.id; showInvite(null); lobbyUpdate(); return; }
   if (a === "invadd" && curInv) { if (addFriend(curInv.fc, curInv.nk)) showInvite(curInv); return; }
+  if (a.startsWith("cmbev:")) {
+    const i = +a.slice(6), c = S.hand[i];
+    if (!c || !oppM || !oppM.ak || S.rs === oppM.ak.n || !fxAb(c.c).some(x => x.t === "counter")) return;
+    moveCard("hand:" + i, "event"); return;
+  }
   if (a.startsWith("cmbhc:")) {
     const i = +a.slice(6), c = S.hand[i], d = myDefender(), v = c ? (CARDDB.get(c.c) || {}).ctr : 0;
     if (!c || !d || !v || !oppM || !oppM.ak) return;
