@@ -8,3 +8,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - Blockers show a tag and glow when they can block; tap one to block, then tap Counter cards to save it.
 - End of Turn abilities run when you end the turn, and you pick their order when there are several.
 - The battle log names the attacker, and End turn lights up when nothing is left to play or attack with.
+- Panels have a mottled steel finish with gold corner scrollwork.
