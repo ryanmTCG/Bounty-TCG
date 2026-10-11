@@ -5,3 +5,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 
 - New table layout like the playmat: Life sits on the board beside your Characters, the opponent's hand and the table log are on the left, and the card preview and turn buttons are on the right.
 - Took out the Markers box and the Power and Cost counters now that card effects run by themselves. The Auto card effects, Auto start of turn and Sounds switches sit under the turn buttons, and the card preview is bigger.
+- Playing a card from your hand now needs as many active DON!! as it costs (it used to let you play short with a warning). Tap a card in your hand and choose Play for free when an effect plays it.

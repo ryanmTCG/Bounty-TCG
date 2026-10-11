@@ -122,6 +122,24 @@ check(t2.mine && t2.hand === before.hand + 1 && t2.deck === before.deck - 1 && t
 check(/drew 1 card and added 2 DON!!/.test(t2.toast), "the turn toast says what happened");
 await def.page.click('[data-do="donturn"]'); await def.page.waitForTimeout(500);
 check(await def.page.evaluate(() => S.donActive) === 2, "DON!! for turn doesn't add a second time");
+// playing from hand takes as many active DON!! as the card costs; an effect can play one for free
+const pay = await def.page.evaluate(() => {
+  const ch = k => [...CARDDB.keys()].find(c => /^OP01-/.test(c) && /Character/.test((CARDDB.get(c) || {}).t || "") && (CARDDB.get(c) || {}).k === k);
+  S.hand.push({c: ch(3), n: ""}, {c: ch(2), n: ""}); commit();
+  const big = S.hand.length - 2, n0 = S.chars.length;
+  moveCard("hand:" + big, "chars");
+  const refused = {chars: S.chars.length - n0, hand: S.hand.length, don: S.donActive, toast: document.querySelector("#toast").textContent};
+  moveCard("hand:" + (S.hand.length - 1), "chars");
+  const paid = {chars: S.chars.length - n0, don: S.donActive, rested: S.donRested};
+  openCardMenu("hand:" + (S.hand.length - 1), 200, 200);
+  const free = [...document.querySelectorAll("#menu button")].find(b => /Play for free/.test(b.textContent));
+  if (free) free.click();
+  return {refused, paid, menu: !!free, after: {chars: S.chars.length - n0, don: S.donActive}, log: LOG.slice(-2).map(l => l.t || l.m || String(l))};
+});
+console.log("DON!! cost", JSON.stringify(pay));
+check(pay.refused.chars === 0 && pay.refused.don === 2 && /costs 3, and you have 2 active DON!!/.test(pay.refused.toast), "a 3-cost card can't be played with 2 active DON!!");
+check(pay.paid.chars === 1 && pay.paid.don === 0, "a 2-cost card rests both DON!!");
+check(pay.menu && pay.after.chars === 2 && pay.after.don === 0, "Play for free plays it without DON!!");
 // quick chat: a phrase from the menu shows up on the other player's screen and in the table log
 check(await A.page.isVisible("#qcbtn"), "chat button shows in a match");
 await A.page.click("#qcbtn"); await A.page.waitForTimeout(300);

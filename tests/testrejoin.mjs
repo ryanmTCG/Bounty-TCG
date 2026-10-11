@@ -39,7 +39,7 @@ for (let i = 0; i < 12; i++) for (const x of [A, B]) {
   if (b) { await b.click().catch(() => {}); await x.page.waitForTimeout(700); }
 }
 await A.page.waitForTimeout(1500);
-await A.page.evaluate(() => { moveCard("hand:0", "chars"); commit(); });
+await A.page.evaluate(() => { S.donActive = Math.max(S.donActive, 10); moveCard("hand:0", "chars"); commit(); });
 await A.page.waitForTimeout(1500);
 const look = p => p.evaluate(() => ({ phase: S.phase, turn: S.turn, hand: S.hand.length, chars: S.chars.map(f => f.card.c), life: S.life.length, deck: S.deck.length, room: roomCode, opp: oppM ? oppM.nick : null, oppChars: oppM ? oppM.ch.length : null }));
 const before = await look(A.page);

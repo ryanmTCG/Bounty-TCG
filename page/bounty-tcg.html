@@ -2825,10 +2825,17 @@ function removeFrom(src){
   if (k === "st") { const f = S.stage; if (!f) return null; S.stage = null; return {card: f.card, d: 0}; }
   return null;
 }
-function moveCard(src, dest){
+// free = an effect plays the card, so no DON!! are paid
+function moveCard(src, dest, free){
   const k = src.split(":")[0];
   if (k === "ld") return;
   if (ZONE[k] === dest) return;
+  const plays = k === "hand" && (dest === "chars" || dest === "stage" || dest === "event");
+  if (plays && !free) {
+    // playing a card from hand takes as many active DON!! as it costs
+    const pc = S.hand[+src.split(":")[1]], cost = pc ? (CARDDB.get(pc.c) || {}).k : null;
+    if (pc && Number.isFinite(cost) && cost > S.donActive) { toast(`${lab(pc)} costs ${cost}, and you have ${S.donActive} active DON!!. If an effect lets you play it, tap it in your hand and choose Play for free.`); return; }
+  }
   const r = removeFrom(src);
   if (!r) { toast("Nothing there to move."); return; }
   if (r.d) S.donRested += r.d;
@@ -2843,19 +2850,18 @@ function moveCard(src, dest){
   else if (dest === "deckbot") { S.deck.push(c); msg = wasPublic ? `put ${nm} on the bottom of the deck` : "put a card on the bottom of the deck"; }
   else if (dest === "life") { S.life.unshift(c); msg = `added a card to Life (${S.life.length})`; }
   if (k === "dk" && modal && modal.type === "peek") { modal.n = Math.max(0, modal.n - 1); }
-  if (k === "hand" && (dest === "chars" || dest === "stage" || dest === "event")) {
+  if (plays) {
     statPlayed(c.c);
     const cost = (CARDDB.get(c.c) || {}).k;
-    if (Number.isFinite(cost) && cost > 0) {
-      const n = Math.min(cost, S.donActive);
-      S.donActive -= n; S.donRested += n;
-      msg += ` (rested ${n} DON!!)`;
-      if (n < cost) toast(`${nm} costs ${cost}, but you only had ${n} active DON!!.`);
+    if (free) msg += " for free (an effect played it)";
+    else if (Number.isFinite(cost) && cost > 0) {
+      S.donActive -= cost; S.donRested += cost;
+      msg += ` (rested ${cost} DON!!)`;
     } else if (!Number.isFinite(cost)) toast("No cost saved for that card, so no DON!! were rested. Import card data to enable this.");
   }
   addLog(msg);
   commit();
-  if (k === "hand" && (dest === "chars" || dest === "stage" || dest === "event")) runOnPlay(c, dest === "event");
+  if (plays) runOnPlay(c, dest === "event");
   else if (k === "ch" && dest === "trash") runAbility(c, ["onKO"], false, r.d || 0);
 }
 
@@ -2882,7 +2888,9 @@ function openCardMenu(src, x, y){
   let items = [], title = "", info = null;
   if (k === "hand") {
     const c = S.hand[i]; if (!c) return; title = lab(c); info = {c: c.c, n: c.n, r: 0, d: 0};
-    items = [M("Play to Character area", "chars"), M("Play as Stage", "stage"), M("Play as Event", "event"), M("Add to Life", "life"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"), M("Trash", "trash")];
+    const ty = (CARDDB.get(c.c) || {}).t || "";
+    items = [M("Play to Character area", "chars"), M("Play as Stage", "stage"), M("Play as Event", "event"),
+      ["Play for free (an effect lets you)", () => moveCard(src, /Stage/.test(ty) ? "stage" : /Event/.test(ty) ? "event" : "chars", true)], M("Add to Life", "life"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"), M("Trash", "trash")];
   } else if (k === "ch" || k === "st" || k === "ld") {
     const f = k === "ch" ? S.chars[i] : k === "st" ? S.stage : S.leader; if (!f) return; title = lab(f.card); info = {c: f.card.c, n: f.card.n, r: f.r ? 1 : 0, d: f.d || 0};
     items.push([f.r ? "Activate (stand)" : "Rest", () => { f.r = !f.r; addLog(`${f.r ? "rested" : "activated"} ${lab(f.card)}`); commit(); }]);
