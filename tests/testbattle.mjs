@@ -181,6 +181,21 @@ const dn = await eotP.evaluate(() => {
   return {rested, kept};
 });
 check(dn.rested && dn.kept, "rested DON!! can't be given, and given DON!! stays on its card");
+// a Character played this turn needs [Rush], or a card like OP11-001 for {SWORD} Characters
+const rs = await eotP.evaluate(() => {
+  const plain = [...CARDDB.keys()].find(k => /Character/.test((CARDDB.get(k) || {}).t || "") && !/Rush/.test(String((CARDDB.get(k) || {}).kw || "")) && !fxAb(k).some(a => RUSH_RX.test(a.text || "")) && !hasType(k, "SWORD"));
+  const sword = "OP11-092", rush = [...CARDDB.keys()].find(k => /^Rush$/.test(String((CARDDB.get(k) || {}).kw || "")));
+  const ld0 = S.leader, ch0 = S.chars.slice();
+  S.chars = [];
+  const mk = c => ({card: {u: 900 + Math.random(), c, n: ""}, r: false, d: 0, pt: S.turn});
+  const a = rushNow(mk(plain)), b = rushNow(mk(rush));
+  S.leader = {card: {c: "OP11-001", n: ""}, r: false, d: 0}; const c = rushNow(mk(sword)), d = rushNow(mk(plain));
+  S.leader = ld0; S.chars = ch0;
+  return {plain, rush, a, b, c, d, swordType: hasType(sword, "SWORD")};
+});
+console.log("rush", JSON.stringify(rs));
+check(rs.a === false && rs.b === "all", "a Character played this turn can't attack without [Rush]");
+check(!rs.swordType || (rs.c === "chars" && rs.d === false), "OP11-001 lets {SWORD} Characters attack Characters the turn they're played");
 await def.page.evaluate(() => { S.chars[S.chars.length - 1].r = true; commit(); });
 await A.page.waitForTimeout(2000);
 await atk.page.evaluate(() => { S.leader.r = false; S.turn = Math.max(S.turn, 2); attackWith("ld", "ch:0"); });

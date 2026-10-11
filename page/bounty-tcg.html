@@ -3305,7 +3305,7 @@ function markPlayable(){
   const eb = document.querySelector('.turnbar [data-do="endturn"]');
   const on = S.phase === "play" && S.myTurn && !S.atk && !(oppM && oppM.ak);
   S.hand.forEach((c, i) => { const el = document.querySelector(`#hand [data-src="hand:${i}"]`); if (!el) return; const hc = on ? handCost(c) : null; el.classList.toggle("canplay", !!(hc && hc.cost <= S.donActive)); });
-  const can = f => on && S.turn > 1 && f && !f.r && !(f.mk || []).includes("na") && (f.pt !== S.turn || /Rush/.test((CARDDB.get(f.card.c) || {}).kw || ""));
+  const can = f => on && S.turn > 1 && f && !f.r && !(f.mk || []).includes("na") && !!rushNow(f);
   [["ld", S.leader], ...S.chars.map((f, i) => ["ch:" + i, f])].forEach(([r, f]) => { const el = document.querySelector(`#me [data-src="${r}"]`); if (el) el.classList.toggle("canatk", !!can(f)); });
   // nothing left to play or attack with: point at End turn
   if (eb) eb.classList.toggle("endglow", !!(on && !fxCur && !modal && !document.querySelector("#hand .canplay, #me .canatk")));
@@ -3367,8 +3367,46 @@ function grantActiveAtk(card, text){
     else showMenu(`${lab(card)}: which card can also attack active Characters this turn?`, pool.map(f => [lab(f.card), () => give(f)]).concat([["None", () => {}]]), innerWidth / 2 - 140, innerHeight / 2 - 80);
   }, 600);
 }
+// can a card attack this turn? "all", "chars" (Characters only), {ask: kind, by} when a conditional or granted effect might allow it, or false
+const RUSH_RX = /gains? \[Rush\]|can attack Characters on the turn/i;
+const rushKind = t => /gains? \[Rush\]/i.test(t) ? "all" : "chars";
+function rushNow(f){
+  if (!f || f === S.leader || f.pt !== S.turn) return "all";
+  const code = f.card.c, kw = String((CARDDB.get(code) || {}).kw || "");
+  if (/Rush: Character/i.test(kw)) return "chars";
+  if (/Rush/.test(kw)) return "all";
+  if (f.rush === S.turn) return f.rushK || "all";
+  let maybe = null, by = null;
+  for (const a of fxAb(code)) {
+    const t = a.text || ""; if (!RUSH_RX.test(t) || !/This Character/i.test(t)) continue;
+    if (a.t === "other" || a.t === "yourTurn") {
+      const m = /DON!! x(\d+)/.exec(t); if (m && (f.d || 0) < +m[1]) continue;
+      if (/\bIf\b/i.test(t)) { maybe = maybe || rushKind(t); by = by || code; } else return rushKind(t);
+    } else { maybe = maybe || rushKind(t); by = by || code; }
+  }
+  // other cards: "Your {SWORD} type Characters can attack Characters on the turn in which they are played", Leaders and effects that grant [Rush]
+  const field = [S.leader, S.stage, ...S.chars.filter(g => g !== f)].filter(Boolean).map(g => g.card).concat(S.ev ? [S.ev.card] : [], S.trash.slice(0, 3));
+  for (const c of field) for (const a of fxAb(c.c)) {
+    const t = a.text || ""; if (!RUSH_RX.test(t) || /this Character (gains?|can attack)/i.test(t)) continue;
+    const ty = (/\{([^}]+)\} type Characters?/i.exec(t) || [])[1]; if (ty && !hasType(code, ty)) continue;
+    if ((a.t === "other" || a.t === "yourTurn") && [S.leader, S.stage, ...S.chars].some(g => g && g.card === c)) {
+      const lc = /If your Leader has the \{([^}]+)\} type/i.exec(t);
+      if (lc) { if (S.leader && hasType(S.leader.card.c, lc[1]) && !/\bIf\b[\s\S]*\bIf\b/i.test(t)) return rushKind(t); continue; }
+      if (!/\bIf\b/i.test(t) && !/other than|with a cost|red|green|blue|purple|black|yellow/i.test(t)) return rushKind(t);
+    }
+    maybe = maybe || rushKind(t); by = by || c.c;
+  }
+  return maybe ? {ask: maybe, by} : false;
+}
 function attackWith(src, target, ok){
   const me = donHolder(src); if (!me) return;
+  if (!ok && me !== S.leader && me.pt === S.turn) {
+    const rk = rushNow(me);
+    if (!rk) { toast(`${lab(me.card)} was played this turn and doesn't have [Rush], so it can't attack yet.`); return; }
+    if (rk.ask) { showMenu(`${lab(me.card)} was played this turn. Does ${rk.by === me.card.c ? "its" : lab({c: rk.by}) + "'s"} effect let it attack${rk.ask === "chars" ? " Characters" : ""} now?`, [["Yes, attack", () => { me.rush = S.turn; me.rushK = rk.ask; attackWith(src, target); }], ["No", () => {}]], innerWidth / 2 - 150, innerHeight / 2 - 60); return; }
+    if (rk === "chars" && target === "ld") { toast(`${lab(me.card)} can only attack Characters on the turn it's played.`); return; }
+  }
+  if (me.rush === S.turn && me.rushK === "chars" && me.pt === S.turn && target === "ld") { toast(`${lab(me.card)} can only attack Characters on the turn it's played.`); return; }
   if (!(S.turn > 1)) { toast("No one can attack on their first turn. Attacks start on your second turn."); return; }
   if (target !== "ld") {
     const tg0 = oppM && oppM.ch[+target.slice(3)];
