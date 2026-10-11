@@ -128,7 +128,7 @@ button,input,textarea,select{font:inherit;color:inherit}
 .deckrow .btn{padding:5px 10px}
 .deckrow .btn.warn{background:var(--coral);color:#fff}
 #saved-list{max-height:190px;overflow:auto;margin-top:4px}
-.builder{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;background-color:var(--sea-b);background-image:linear-gradient(180deg,var(--sea-a),var(--sea-b));padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);overflow:hidden}
+.builder{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;background:#C9A66B var(--map) center/cover no-repeat;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);overflow:hidden}
 .builder[hidden]{display:none}
 .bdbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 12px;background:var(--panel);border-bottom:1px solid var(--line)}
 .bdbar h2{font-family:"Alfa Slab One",Georgia,serif;font-weight:400;font-size:20px;margin:0 6px 0 0}
@@ -271,9 +271,9 @@ button,input,textarea,select{font:inherit;color:inherit}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:grid;place-items:center;z-index:40;padding:14px}
 .modal[hidden]{display:none}
 .sheet{background:var(--panel);color:var(--ink);border-radius:14px;width:min(640px,100%);max-height:88vh;overflow:auto;padding:16px 18px}
-.modal.homebg{background:radial-gradient(ellipse at 50% 115%,#1F7FA3 0%,#0B4766 45%,#04202F 100%);grid-template-columns:minmax(0,1fr) minmax(0,460px) minmax(0,1fr);gap:18px;overflow:hidden}
-.modal.homebg::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.035) 0 2px,transparent 2px 46px);pointer-events:none}
-.homewaves{position:absolute;left:0;bottom:0;width:100%;height:150px;pointer-events:none}
+.modal.homebg{background:#C9A66B var(--map) center/cover no-repeat;grid-template-columns:minmax(0,1fr) minmax(0,460px) minmax(0,1fr);gap:18px;overflow:hidden}
+.modal.homebg::before{content:none}
+.homewaves{display:none;position:absolute;left:0;bottom:0;width:100%;height:150px;pointer-events:none}
 .homewaves path{animation:wave 7s ease-in-out infinite alternate}
 .homewaves path:nth-child(2){animation-duration:5s;animation-direction:alternate-reverse}
 @keyframes wave{from{transform:translateX(-40px)}to{transform:translateX(40px)}}
