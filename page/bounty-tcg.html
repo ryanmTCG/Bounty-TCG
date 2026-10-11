@@ -900,7 +900,7 @@ select.sbtn{font-family:var(--slab)}
 .accmsg.bad{color:#FF9A8A}
 .btn.rejoin{background:linear-gradient(180deg,#7FE0A0,#2E9E5B);color:#08240F;border-color:#12262D}
 /* playmat layout: each side is one grid laid out like the mat, with Life on the board.
-   Left column: opponent's hand, table log, your hand. Right column: card preview, turn buttons, markers, Power and Cost. */
+   Left column: opponent's hand, table log, your hand. Right column: card preview, turn buttons, the auto-play switches. */
 .side{display:grid;grid-template-columns:repeat(5,var(--ch));grid-template-rows:auto var(--ch) var(--ch) var(--ch);gap:6px;justify-content:center;align-items:center;padding:8px 6px}
 .side.me{grid-template-areas:"head head head head head" "life chars chars chars chars" "life ev ld st dk" "dd cost cost cost tr"}
 .side.opp{grid-template-rows:var(--ch) var(--ch) var(--ch) auto;grid-template-areas:"tr cost cost cost dd" "dk st ld ev life" "chars chars chars chars life" "head head head head head"}
@@ -923,7 +923,8 @@ select.sbtn{font-family:var(--slab)}
 .ohandp{margin:10px 10px 0;padding:6px 12px 10px;border-width:4px;order:0}
 .ohandp h2{display:flex;gap:8px;align-items:center;margin:0 0 6px;font-family:var(--slab);font-weight:400;font-size:15px;color:#F2B84B;text-shadow:0 2px 0 rgba(0,0,0,.55)}
 .ohandp .ohname{color:var(--coral)}
-.fxwhy{font-size:inherit}
+.tbopts{display:flex;flex-wrap:wrap;gap:4px 16px;margin:0 10px 10px;padding:6px 12px;border-radius:14px;background:rgba(18,38,45,.55);order:3}
+.tbopts .fxopt{margin:0;font-size:13px}
 .ohandp .ohcards{min-height:calc(var(--cw)*1.12)}
 .ohandp .ohcards .lbl{position:static;transform:none;text-align:left}
 @media (max-width:1099px){.fxhost{order:3;position:relative;margin:0 10px}}
@@ -937,17 +938,9 @@ select.sbtn{font-family:var(--slab)}
   .sidep>.zoomp{flex:1 1 0;min-height:180px;container-type:size;display:flex;justify-content:center;align-items:flex-start}
   .sidep #zoom{--zw:min(100cqw,calc(100cqh / 1.4));width:var(--zw);height:calc(var(--zw)*1.4);min-height:0}
   .sidep .zoomempty{width:100%;height:100%}
-  .sidep .mktray{padding:6px 10px 8px}
-  .sidep .mkgrid{gap:6px;justify-content:space-around}
-  .sidep .mkb{width:48px;height:48px;font-size:10px;padding:2px;border-width:2px}
-  .sidep .fxopt{margin-top:4px;font-size:12px}
-  .sidep .fxwhy{display:none}
-  .sidep .mkgrid+.fxopt{margin-top:8px}
+  .sidep .tbopts{margin:0}
   .sidep .turnbar{gap:6px}
   .sidep .turnbar .btn{padding:8px 4px;font-size:14px;line-height:1.15}
-  .sidep .pcrow{flex:1 1 100%}
-  .sidep .mkhint{display:none}
-  .sidep .panrow .pwslot{height:200px}
 }
 </style>
 </head>
@@ -974,8 +967,7 @@ select.sbtn{font-family:var(--slab)}
       <li>Tap a card for its options, or drag it to a zone.</li>
       <li>Tap a DON!! card to rest or activate it. Drag one onto your Leader or a Character to give it.</li>
       <li>Drag the gold +N badge on a card to move that DON!! to another card, back to your cost area, or to the DON!! deck.</li>
-      <li>Drag a number from the Power box onto your Leader or a Character to give it that power for the turn. Drag the badge off the card to remove it, or onto another card to move it.</li>
-      <li>The Cost box works the same way: drag +1 to +6 or &minus;1 to &minus;6 onto a card for a cost bonus.</li>
+      <li>Drag a power or cost badge on a card onto another card to move it, or off the card to remove it.</li>
       <li>Tap your Deck, Life, Trash or DON!! deck for actions.</li>
     </ul></details>
     <div class="logbox" id="log"></div>
@@ -1005,27 +997,11 @@ select.sbtn{font-family:var(--slab)}
     <button class="btn" data-do="startturn" id="startfb" type="button" hidden title="Your opponent's copy is older and doesn't say when their turn ends">Start my turn</button>
   </div>
   <div id="banner"></div>
-  <aside class="mktray" id="mktray" aria-label="Markers"><h2>Markers</h2><div class="mkgrid">
-    <button class="mkb fz" data-mk="fz" type="button" title="Drag onto a card">Freeze</button>
-    <button class="mkb nb" data-mk="nb" type="button" title="Drag onto a card">No Block</button>
-    <button class="mkb au" data-mk="au" type="button" title="Drag onto a card">Ability used</button>
-    <button class="mkb nk" data-mk="nk" type="button" title="Drag onto a card">No K.O.</button>
-    <button class="mkb na" data-mk="na" type="button" title="Drag onto a card">No Attack</button>
-  </div><label class="fxopt" title="Runs [On Play], [When Attacking], [On Block] and [On K.O.] abilities for you"><input type="checkbox" id="fx-auto" data-do="autofx" checked> <span>Auto card effects<small class="fxwhy"> (runs [On Play], [When Attacking], [On Block] and [On K.O.] abilities for you)</small></span></label><label class="fxopt" title="Stands your cards, draws and adds DON!! for you"><input type="checkbox" id="turn-auto" data-do="autoturn" checked> <span>Auto start of turn<small class="fxwhy"> (stands your cards, draws and adds DON!! for you)</small></span></label><label class="fxopt"><input type="checkbox" id="snd-on" data-do="sndon" checked> Sounds</label><p class="mkhint">Drag a marker onto any Leader or Character. Tap a marker on your own card to remove it.</p></aside>
-  <div class="panrow"><div class="pcrow">
-  <div class="pwslot" id="pwslot" data-empty="Power spot. Drag the counter back here."><aside class="pwp" id="pwp" aria-label="Power counter">
-    <h2 class="pwgrab" title="Drag me anywhere on the board">&#10303; Power</h2>
-    <div class="pwval pwgrab" id="pwval" title="Drag me anywhere on the board">0</div>
-    <div class="pwgrid"><button class="pwb neg" data-do="pw:-1000" type="button">&minus;1000</button><button class="pwb pos" data-do="pw:+1000" type="button">+1000</button><button class="pwb neg" data-do="pw:-2000" type="button">&minus;2000</button><button class="pwb pos" data-do="pw:+2000" type="button">+2000</button><button class="pwb neg" data-do="pw:-3000" type="button">&minus;3000</button><button class="pwb pos" data-do="pw:+3000" type="button">+3000</button><button class="pwb neg" data-do="pw:-4000" type="button">&minus;4000</button><button class="pwb pos" data-do="pw:+4000" type="button">+4000</button><button class="pwb neg" data-do="pw:-5000" type="button">&minus;5000</button><button class="pwb pos" data-do="pw:+5000" type="button">+5000</button><button class="pwb neg" data-do="pw:-6000" type="button">&minus;6000</button><button class="pwb pos" data-do="pw:+6000" type="button">+6000</button></div>
-    <button class="btn pwreset" data-do="pw:0" type="button">Reset</button>
-  </aside></div>
-  <div class="pwslot cwslot" id="cwslot" data-empty="Cost spot. Drag the counter back here."><aside class="pwp cwp" id="cwp" aria-label="Cost counter">
-    <h2 class="pwgrab" title="Drag me anywhere on the board">&#10303; Cost</h2>
-    <div class="pwval pwgrab" id="cwval" title="Drag me anywhere on the board">0</div>
-    <div class="pwgrid"><button class="cwb neg" data-do="cc:-1" type="button">&minus;1</button><button class="cwb pos" data-do="cc:+1" type="button">+1</button><button class="cwb neg" data-do="cc:-2" type="button">&minus;2</button><button class="cwb pos" data-do="cc:+2" type="button">+2</button><button class="cwb neg" data-do="cc:-3" type="button">&minus;3</button><button class="cwb pos" data-do="cc:+3" type="button">+3</button><button class="cwb neg" data-do="cc:-4" type="button">&minus;4</button><button class="cwb pos" data-do="cc:+4" type="button">+4</button><button class="cwb neg" data-do="cc:-5" type="button">&minus;5</button><button class="cwb pos" data-do="cc:+5" type="button">+5</button><button class="cwb neg" data-do="cc:-6" type="button">&minus;6</button><button class="cwb pos" data-do="cc:+6" type="button">+6</button></div>
-    <button class="btn pwreset" data-do="cc:0" type="button">Reset</button>
-  </aside></div>
-  </div></div>
+  <div class="tbopts">
+    <label class="fxopt" title="Runs [On Play], [When Attacking], [On Block] and [On K.O.] abilities for you"><input type="checkbox" id="fx-auto" data-do="autofx" checked> Auto card effects</label>
+    <label class="fxopt" title="Stands your cards, draws and adds DON!! for you"><input type="checkbox" id="turn-auto" data-do="autoturn" checked> Auto start of turn</label>
+    <label class="fxopt"><input type="checkbox" id="snd-on" data-do="sndon" checked> Sounds</label>
+  </div>
   </aside>
 </div>
 
@@ -2088,11 +2064,8 @@ function oppHandPanel(m){
   return `<h2><span class="ohname">${esc(oppM ? m.nick + "'s" : "Opponent's")}</span> hand <span class="chip">${h}</span></h2><div class="ohcards" style="width:calc(var(--ohw) + ${Math.max(0, h - 1) * step}px)">${hc || '<span class="lbl">No cards</span>'}</div>`;
 }
 const EMPTY = () => ({nick:"Opponent", sl:0, tn:0, ld:null, ch:[], st:null, ev:null, ak:null, bk:null, rl:0, fc:null, cd:false, cdw:false, mq:[], ma:0, lf:0, dd:0, da:0, dr:0, dk:0, h:0, tr:[]});
-function renderPw(){ const v = $("#pwval"); if (!v) return; const n = S.pw || 0; v.textContent = (n > 0 ? "+" : n < 0 ? "\u2212" : "") + Math.abs(n); v.classList.toggle("neg", n < 0); v.classList.toggle("pos", n > 0); }
-function renderCc(){ const v = $("#cwval"); if (!v) return; const n = S.cc || 0; v.textContent = (n > 0 ? "+" : n < 0 ? "\u2212" : "") + Math.abs(n); v.classList.toggle("neg", n < 0); v.classList.toggle("pos", n > 0); }
 function render(){
   rankCheck(); statCheck();
-  renderPw(); renderCc();
   { const on = S.phase === "play" && S.turn > 0 && S.myTurn;
     const dr = $('[data-do="drawturn"]'), dn = $('[data-do="donturn"]'), fb = $("#startfb");
     if (dr) dr.classList.toggle("due", on && S.tdr !== S.turn && !(S.first && S.turn === 1));
@@ -2574,7 +2547,7 @@ async function runAbility(card, trigs, manual, don){
     list.forEach(x => fxEnqueue(fxJob(card, x)));
   } catch (e) {
     $("#toast").hidden = true;
-    if (!fxFailed) { fxFailed = true; toast("Couldn't read the card text (" + ((e && e.code) || "error") + "). Turn off Auto card effects in the Markers box if you don't want this."); }
+    if (!fxFailed) { fxFailed = true; toast("Couldn't read the card text (" + ((e && e.code) || "error") + "). Turn off Auto card effects under the turn buttons if you don't want this."); }
   }
 }
 const runOnPlay = (card, ev) => runAbility(card, ev ? ["onPlay", "main"] : ["onPlay"]);
@@ -2711,17 +2684,6 @@ function fxApply(){
     }
   }
   commit(); fxNext();
-}
-function placeMark(code, ref){
-  const f = donHolder(ref); if (!f || !MK[code]) return;
-  f.mk = f.mk || [];
-  if (f.mk.includes(code)) { toast(`${lab(f.card)} already has ${MK[code].l}.`); return; }
-  f.mk.push(code); if (code === "na") f.nat = S.turn + 1; addLog(`put ${MK[code].l} on ${lab(f.card)}`); commit();
-}
-function placeMarkOpp(code, ref){
-  const t = oppCardAt(ref); if (!t || !MK[code]) return;
-  if ((t.mk || []).includes(code)) { toast(`${lab(t)} already has ${MK[code].l}.`); return; }
-  sendOpp({r: ref, c: t.c, k: code, v: 0}); addLog(`put ${MK[code].l} on ${lab(t)}`); commit();
 }
 let autoT = false;
 function advance(){
@@ -3230,12 +3192,6 @@ async function cmbBlock(showAll){
   const bb = document.querySelector('[data-do="cmbblock"]'), r = bb ? bb.getBoundingClientRect() : {left: 200, bottom: 200};
   showMenu("Redirect the attack to a [Blocker]\u2026", items, r.left, r.bottom + 4);
 }
-function giveCost(v, to){
-  const t = donHolder(to); if (!t || !v) return;
-  t.cm = Math.max(-20, Math.min(20, (t.cm || 0) + v));
-  addLog(`gave ${lab(t.card)} ${v > 0 ? "+" : "\u2212"}${Math.abs(v)} cost (now ${t.cm > 0 ? "+" : "\u2212"}${Math.abs(t.cm)})`);
-  commit();
-}
 function moveCm(from, to){
   const f = donHolder(from); if (!f || !f.cm) return;
   if (to === from) return;
@@ -3243,12 +3199,6 @@ function moveCm(from, to){
   f.cm = 0;
   if (t) { t.cm = Math.max(-20, Math.min(20, (t.cm || 0) + v)); addLog(`moved ${v > 0 ? "+" : "\u2212"}${Math.abs(v)} cost from ${lab(f.card)} to ${lab(t.card)}`); }
   else addLog(`removed the cost bonus from ${lab(f.card)}`);
-  commit();
-}
-function givePower(v, to){
-  const t = donHolder(to); if (!t || !v) return;
-  t.pm = Math.max(-60000, Math.min(60000, (t.pm || 0) + v));
-  addLog(`${v > 0 ? "gave" : "gave a penalty to"} ${lab(t.card)} ${v > 0 ? "+" : "\u2212"}${Math.abs(v)} power (now ${t.pm > 0 ? "+" : "\u2212"}${Math.abs(t.pm)})`);
   commit();
 }
 function clearOver(){ document.querySelectorAll(".over").forEach(e => e.classList.remove("over")); }
@@ -3281,12 +3231,6 @@ document.addEventListener("pointerdown", e => {
   if (!e.target.closest("#menu")) closeMenu();
   if (e.pointerType === "mouse" && e.button !== 0) return;
   if (e.target.closest("[data-mkdel]")) return;
-  const mkb = e.target.closest(".mkb");
-  if (mkb) { drag = {kind: "mk", code: mkb.dataset.mk, sx: e.clientX, sy: e.clientY, el: mkb}; return; }
-  const pwbtn = e.target.closest(".pwb");
-  if (pwbtn) { drag = {kind: "pw", val: +String(pwbtn.dataset.do).slice(3), sx: e.clientX, sy: e.clientY, el: pwbtn}; return; }
-  const cwbtn = e.target.closest(".cwb");
-  if (cwbtn) { drag = {kind: "cw", val: +String(cwbtn.dataset.do).slice(3), sx: e.clientX, sy: e.clientY, el: cwbtn}; return; }
   const cmb = e.target.closest("[data-csrc]");
   if (cmb) { const ce = cmb.closest("[data-src]"); drag = {src: ce ? ce.dataset.src : cmb.dataset.csrc, cm: cmb.dataset.csrc, sx: e.clientX, sy: e.clientY, el: ce || cmb}; return; }
   const pmb = e.target.closest("[data-psrc]");
@@ -3302,10 +3246,8 @@ document.addEventListener("pointermove", e => {
   if (!drag) return;
   if (!ghost && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 8) {
     closeMenu(); hidePreview();
-    if (drag.cm || drag.kind === "cw") { const v = drag.kind === "cw" ? drag.val : ((donHolder(drag.cm) || {}).cm || 0); ghost = document.createElement("div"); ghost.className = "card ghost cwgh " + (v < 0 ? "neg" : "pos"); ghost.innerHTML = "<b>" + (v < 0 ? "\u2212" : "+") + Math.abs(v) + "</b>"; }
+    if (drag.cm) { const v = (donHolder(drag.cm) || {}).cm || 0; ghost = document.createElement("div"); ghost.className = "card ghost cwgh " + (v < 0 ? "neg" : "pos"); ghost.innerHTML = "<b>" + (v < 0 ? "\u2212" : "+") + Math.abs(v) + "</b>"; }
     else if (drag.pm) { const h = donHolder(drag.pm), v = h ? h.pm || 0 : 0; ghost = document.createElement("div"); ghost.className = "card ghost pwgh " + (v < 0 ? "neg" : "pos"); ghost.innerHTML = "<b>" + (v < 0 ? "\u2212" : "+") + Math.abs(v) + "</b>"; }
-    else if (drag.kind === "mk") { ghost = document.createElement("div"); ghost.className = "card ghost mkgh " + drag.code; ghost.innerHTML = "<b>" + MK[drag.code].s + "</b>"; }
-    else if (drag.kind === "pw") { ghost = document.createElement("div"); ghost.className = "card ghost pwgh " + (drag.val < 0 ? "neg" : "pos"); ghost.innerHTML = "<b>" + (drag.val < 0 ? "\u2212" : "+") + Math.abs(drag.val) + "</b>"; }
     else if (drag.kind === "don" || drag.att) { ghost = document.createElement("div"); ghost.className = "card ghost dongh"; ghost.innerHTML = "<b>DON!!</b>"; }
     else { ghost = drag.el.cloneNode(true); ghost.className = "card ghost"; ghost.removeAttribute("data-src"); }
     document.body.appendChild(ghost);
@@ -3314,8 +3256,7 @@ document.addEventListener("pointermove", e => {
     ghost.style.left = e.clientX + "px"; ghost.style.top = e.clientY + "px";
     clearOver();
     let z;
-    if (drag.kind === "pw" || drag.pm || drag.kind === "cw" || drag.cm) { z = dzoneAt(e.clientX, e.clientY); if (z && !/^(ld|ch:)/.test(z.dataset.dzone)) z = null; }
-    else if (drag.kind === "mk") { z = dzoneAt(e.clientX, e.clientY); if (z && !/^(ld|ch:)/.test(z.dataset.dzone)) z = null; if (!z) z = atkAt(e.clientX, e.clientY); }
+    if (drag.pm || drag.cm) { z = dzoneAt(e.clientX, e.clientY); if (z && !/^(ld|ch:)/.test(z.dataset.dzone)) z = null; }
     else if (!drag.kind && !drag.att && !drag.pm && drag.src === "ld") z = atkAt(e.clientX, e.clientY);
     else if (!drag.kind && !drag.att && !drag.pm && /^ch:/.test(drag.src) && atkAt(e.clientX, e.clientY)) z = atkAt(e.clientX, e.clientY);
     else z = (drag.kind === "don" || drag.att) ? dzoneAt(e.clientX, e.clientY) : zoneAt(e.clientX, e.clientY);
@@ -3330,15 +3271,7 @@ document.addEventListener("pointerup", e => {
   if (ghost) {
     ghost.remove(); ghost = null; clearOver(); justDragged = Date.now();
     if (d.cm) { const z = dzoneAt(e.clientX, e.clientY); moveCm(d.cm, z && /^(ld|ch:)/.test(z.dataset.dzone) ? z.dataset.dzone : null); return; }
-    if (d.kind === "mk") {
-      const z = dzoneAt(e.clientX, e.clientY);
-      if (z && /^(ld|ch:)/.test(z.dataset.dzone)) placeMark(d.code, z.dataset.dzone);
-      else { const a = atkAt(e.clientX, e.clientY); if (a) placeMarkOpp(d.code, a.dataset.atk); }
-      return;
-    }
-    if (d.kind === "cw") { const z = dzoneAt(e.clientX, e.clientY); if (z && /^(ld|ch:)/.test(z.dataset.dzone)) giveCost(d.val, z.dataset.dzone); return; }
     if (d.pm) { const z = dzoneAt(e.clientX, e.clientY); movePm(d.pm, z && /^(ld|ch:)/.test(z.dataset.dzone) ? z.dataset.dzone : null); return; }
-    if (d.kind === "pw") { const z = dzoneAt(e.clientX, e.clientY); if (z && /^(ld|ch:)/.test(z.dataset.dzone)) givePower(d.val, z.dataset.dzone); return; }
     if (d.kind === "don" || d.att) { const z = dzoneAt(e.clientX, e.clientY); if (z) moveDon(d, z.dataset.dzone); return; }
     const atk = /^(ch:|ld$)/.test(d.src) ? atkAt(e.clientX, e.clientY) : null;
     if (atk) { attackWith(d.src, atk.dataset.atk); return; }
@@ -3348,8 +3281,7 @@ document.addEventListener("pointerup", e => {
     if (z) moveCard(d.src, z.dataset.zone);
     return;
   }
-  if (d.kind === "mk") { toast("Drag the marker onto a card."); return; }
-  if (d.kind === "don" || d.kind === "pw" || d.kind === "cw") return;
+  if (d.kind === "don") return;
   const sx = e.clientX, sy = e.clientY, ds = d.src;
   // during the opponent's attack, tapping one of your active Characters blocks with it
   if (!fxCur && oppM && oppM.ak && /^ch:/.test(ds)) { const i = +ds.slice(3), f = S.chars[i]; if (f && !f.r && S.blk !== i) { closeMenu(); doBlock(i); return; } }
@@ -3534,8 +3466,6 @@ function doAction(a){
     d.pm = Math.max(-60000, Math.min(60000, (d.pm || 0) + v)); d.bc = (d.bc || 0) + v;
     addLog(`used ${lab(c)} from hand as a +${v} Counter on ${lab(d.card)}`); commit(); snd("ctr"); fxFloat($(`#me [data-src="${d === S.leader ? "ld" : "ch:" + S.chars.indexOf(d)}"]`), `+${v}`, "ctr"); return;
   }
-  if (a.startsWith("cc:")) { const v = +a.slice(3); S.cc = v === 0 ? 0 : Math.max(-20, Math.min(20, (S.cc || 0) + v)); commit(); return; }
-  if (a.startsWith("pw:")) { const v = +a.slice(3); S.pw = v === 0 ? 0 : Math.max(-60000, Math.min(60000, (S.pw || 0) + v)); commit(); return; }
   if (a.startsWith("bdtab:")) { $("#bdmain").dataset.tab = a.slice(6); return; }
   if (a.startsWith("lbjoin:")) { const lb = lobbyList().find(x => x.c === a.slice(7)); if (lb && lb.s < 2) openSetup({join: lb}); else toast(lb ? "That table just filled up." : "That lobby just closed."); return; }
   switch (a) {
@@ -5293,47 +5223,6 @@ async function rdReadAll(){
   const p2 = $("#rd-prog"); if (p2) p2.innerHTML = msg;
   const c2 = $("#rd-close"); if (c2) c2.disabled = false;
 }
-
-// ---------- power counter: drag it anywhere on the board, drag it back to its spot ----------
-function floatable(pwId, slotId){
-  const pw = document.getElementById(pwId), slot = document.getElementById(slotId);
-  if (!pw || !slot) return;
-  let st = null;
-  const inSlot = (x, y) => { const r = slot.getBoundingClientRect(); return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom; };
-  pw.addEventListener("pointerdown", e => {
-    if (!e.target.closest(".pwgrab") || (e.pointerType === "mouse" && e.button !== 0)) return;
-    const r = pw.getBoundingClientRect();
-    st = {id: e.pointerId, dx: e.clientX - r.left, dy: e.clientY - r.top, sx: e.clientX, sy: e.clientY, moved: false};
-    try { pw.setPointerCapture(e.pointerId); } catch (err) {}
-    e.preventDefault();
-  });
-  pw.addEventListener("pointermove", e => {
-    if (!st || e.pointerId !== st.id) return;
-    if (!st.moved) {
-      if (Math.hypot(e.clientX - st.sx, e.clientY - st.sy) < 6) return;
-      st.moved = true; pw.classList.add("dragging");
-      if (!pw.classList.contains("float")) { document.body.appendChild(pw); pw.classList.add("float"); slot.classList.add("empty"); }
-    }
-    const w = pw.offsetWidth, docW = document.documentElement.scrollWidth;
-    const left = Math.max(0, Math.min(docW - w, e.clientX - st.dx + window.scrollX));
-    const top = Math.max(0, e.clientY - st.dy + window.scrollY);
-    pw.style.left = left + "px"; pw.style.top = top + "px";
-    slot.classList.toggle("hot", inSlot(e.clientX, e.clientY));
-  });
-  const end = e => {
-    if (!st || e.pointerId !== st.id) return;
-    const moved = st.moved; st = null; pw.classList.remove("dragging");
-    try { pw.releasePointerCapture(e.pointerId); } catch (err) {}
-    if (moved && inSlot(e.clientX, e.clientY)) {
-      pw.classList.remove("float"); pw.style.left = ""; pw.style.top = "";
-      slot.appendChild(pw); slot.classList.remove("empty");
-    }
-    slot.classList.remove("hot");
-  };
-  pw.addEventListener("pointerup", end);
-  pw.addEventListener("pointercancel", end);
-}
-floatable("pwp", "pwslot"); floatable("cwp", "cwslot");
 
 // ---------- boot ----------
 initDecks();
