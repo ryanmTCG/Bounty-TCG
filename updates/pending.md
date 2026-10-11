@@ -9,3 +9,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - End of Turn abilities run when you end the turn, and you pick their order when there are several.
 - The battle log names the attacker, and End turn lights up when nothing is left to play or attack with.
 - Panels have a mottled steel finish with gold corner scrollwork.
+- Buttons are steel or gold plate with gold trim, a shine on hover, and ornaments on the main menu buttons.
