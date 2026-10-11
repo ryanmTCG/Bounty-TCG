@@ -21,6 +21,7 @@ const count = () => page.evaluate(() => {
 const rules = await page.evaluate(() => Object.fromEntries(["OP01-001", "OP01-016", "OP01-039", "OP04-118", "ST09-001", "ST10-001", "ST10-002", "P-039", "P-040", "OP06-047", "OP14-020", "OP05-001", "EB01-001", "OP03-122"].map(c => [c, legalOf(c)])));
 console.log("rules", JSON.stringify(rules));
 // all cards: group off, sort by set, pick OP01 to see rotated tags
+await page.check("#bd-showban"); await page.check("#bd-showrot");
 await page.selectOption("#bd-set", "OP01");
 await page.waitForTimeout(400);
 console.log("OP01 shown", JSON.stringify(await count()));
@@ -56,6 +57,7 @@ await page.evaluate(() => {
 await page.waitForTimeout(400);
 console.log("deck chips", JSON.stringify(await page.evaluate(() => [...document.querySelectorAll("#bd-deck .bd-stats .chip")].map(e => [e.textContent, e.title]))));
 console.log("deck labels", JSON.stringify(await page.evaluate(() => [...document.querySelectorAll("#bd-deck .bdctl span")].map(e => [e.textContent, e.className, e.title]))));
+await page.check("#bd-showban"); await page.check("#bd-showrot");
 await page.selectOption("#bd-set", "OP01");
 await page.waitForTimeout(400);
 await page.screenshot({ path: OUT + "/deck.png" });
