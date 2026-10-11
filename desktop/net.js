@@ -346,7 +346,7 @@
   /* Plain REST calls, so no Firebase library is bundled. Security rules: tools/firestore.rules.              */
   /* ------------------------------------------------------------------ */
   // Ryan's Firebase web app config. The apiKey isn't a secret: the Firestore rules decide who reads and writes what.
-  const FB_CONFIG = null;
+  const FB_CONFIG = {apiKey: "AIzaSyCIZXvpraLHWAFmGD4smB6tYMWO8zNGJGU", projectId: "bounty-tcg-1771e"};
   const fbq = new URLSearchParams(location.search);
   const FB = fbq.get("fbtest")   // tests point this at a local stand-in server
     ? {apiKey: "test", projectId: "test", auth: fbq.get("fbtest") + "/auth", token: fbq.get("fbtest") + "/token", store: fbq.get("fbtest") + "/fs"}
