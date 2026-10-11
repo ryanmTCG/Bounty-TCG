@@ -70,7 +70,7 @@ await B.page.fill("#f-deck", deckB);
 await B.page.click("#f-joinbtn");
 await wait(5000);
 for (const [n, x] of [["A", A], ["B", B]]) {
-  console.log(n, "table", JSON.stringify(await x.page.evaluate(() => ({ status: document.querySelector("#status").textContent, opp: [...document.querySelectorAll(".opp .nick, .lifehead .ltitle")].map(e => e.textContent), banner: (document.querySelector("#banner") || {}).textContent }))));
+  console.log(n, "table", JSON.stringify(await x.page.evaluate(() => ({ status: document.querySelector("#status").textContent, opp: [...document.querySelectorAll(".opp .nick, .ohandp .ohname")].map(e => e.textContent), banner: (document.querySelector("#banner") || {}).textContent }))));
 }
 await B.page.screenshot({ path: OUT + "/6-B-table.png" });
 console.log("C after join", JSON.stringify(await lobbies(C.page)));

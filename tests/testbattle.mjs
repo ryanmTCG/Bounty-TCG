@@ -132,6 +132,13 @@ console.log("chat", JSON.stringify({text: qc.text, show: qc.show}));
 check(qc.show && qc.text === "Ryan: \u{1F389} Good game!", "opponent sees the message bubble");
 check(/says \u201C\u{1F389} Good game!\u201D/u.test(qc.log), "message is in the table log");
 await B.page.screenshot({ path: OUT + "/chat.png" });
+// Life sits on the board: both sides show it, and tapping your own opens the Life actions
+const lz = await A.page.evaluate(() => ({me: document.querySelectorAll("#me .lifez .lifecard").length, opp: document.querySelectorAll("#opp .lifez .lifecard").length, life: S.life.length, olife: oppM.lf, hand: document.querySelector("#oppHand").textContent}));
+console.log("life zones", JSON.stringify(lz));
+check(lz.me === lz.life && lz.opp === lz.olife && /hand/.test(lz.hand), "both Life zones and the opponent's hand show");
+await A.page.click("#me .lifez"); await A.page.waitForTimeout(300);
+check(await A.page.evaluate(() => [...document.querySelectorAll("#menu button")].some(b => /Take damage/.test(b.textContent))), "tapping your Life opens the Life actions");
+await A.page.keyboard.press("Escape");
 console.log("errorsA", A.errs.slice(0, 5)); console.log("errorsB", B.errs.slice(0, 5));
 await A.app.close(); await B.app.close(); peer.kill();
 console.log(fail ? `${fail} FAILED` : "all passed");

@@ -51,7 +51,7 @@ for (let i = 0; i < 12; i++) {
 }
 await A.page.waitForTimeout(1500);
 for (const [n, x] of [["A", A], ["B", B]]) {
-  const st = await x.page.evaluate(() => ({ chips: [...document.querySelectorAll(".shead .chip, .lifehead .chip")].map(e => e.textContent), banner: (document.querySelector(".banner") || {}).textContent, hand: document.querySelectorAll(".hand .card").length }));
+  const st = await x.page.evaluate(() => ({ chips: [...document.querySelectorAll(".shead .chip, .ohandp .chip")].map(e => e.textContent), banner: (document.querySelector(".banner") || {}).textContent, hand: document.querySelectorAll(".hand .card").length }));
   console.log(n, JSON.stringify(st));
   await x.page.screenshot({ path: `${OUT}/${n}-play.png` });
 }

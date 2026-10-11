@@ -55,7 +55,7 @@ button,input,textarea,select{font:inherit;color:inherit}
 .dot.on{background:#2FA66A}
 
 .app{display:grid;grid-template-columns:minmax(0,1fr);max-width:1200px;margin:0 auto}
-.table,.handp,.lifep,.bd-libwrap{
+.table,.handp,.lifep,.ohandp,.bd-libwrap{
   --line:rgba(255,240,205,.55); --muted:#F1DDB0; --ink:#FFF6E0; --gold:#F2B84B; --coral:#FFA091;
   --btn2:rgba(0,0,0,.3); --band-opp:rgba(45,8,8,.3); --band-me:rgba(255,236,190,.07);
   color:var(--ink);
@@ -543,7 +543,7 @@ select.sbtn{height:26px;min-width:88px}
 .chip.good{background:#2FA66A;border-color:#12262D}.chip.bad{background:#B8342A;border-color:#12262D}
 .banner{margin:10px 10px 0;border:3px solid #12262D;border-radius:16px;font-family:var(--slab);font-weight:400;background:linear-gradient(180deg,#FFD27A,#E8A72C);box-shadow:0 4px 0 var(--edge),0 8px 16px rgba(0,0,0,.35)}
 .banner .btn{font-size:13px}
-.table,.handp,.lifep{border-radius:20px}
+.table,.handp,.lifep,.ohandp{border-radius:20px}
 .lifehead .ltitle,.shead .nick{text-shadow:0 2px 0 rgba(0,0,0,.55);letter-spacing:.3px}
 .shead .nick{font-size:18px}
 .side.me .shead .nick::before,.side.opp .shead .nick::before{content:"";display:inline-block;width:20px;height:20px;margin-right:6px;vertical-align:-4px;background:var(--skull) center/contain no-repeat}
@@ -899,6 +899,56 @@ select.sbtn{font-family:var(--slab)}
 .accmsg{min-height:1.3em;margin:8px 0 0;color:#F1DDB0}
 .accmsg.bad{color:#FF9A8A}
 .btn.rejoin{background:linear-gradient(180deg,#7FE0A0,#2E9E5B);color:#08240F;border-color:#12262D}
+/* playmat layout: each side is one grid laid out like the mat, with Life on the board.
+   Left column: opponent's hand, table log, your hand. Right column: card preview, turn buttons, markers, Power and Cost. */
+.side{display:grid;grid-template-columns:repeat(5,var(--ch));grid-template-rows:auto var(--ch) var(--ch) var(--ch);gap:6px;justify-content:center;align-items:center;padding:8px 6px}
+.side.me{grid-template-areas:"head head head head head" "life chars chars chars chars" "life ev ld st dk" "dd cost cost cost tr"}
+.side.opp{grid-template-rows:var(--ch) var(--ch) var(--ch) auto;grid-template-areas:"tr cost cost cost dd" "dk st ld ev life" "chars chars chars chars life" "head head head head head"}
+.side .z-head{grid-area:head;width:auto;max-width:none}
+.side.opp .z-head{justify-content:flex-end}
+.side .z-chars{grid-area:chars;width:auto}
+.chars.z-chars .slot{width:calc((var(--ch)*4 - 6px) / 5)}
+.side .z-ev{grid-area:ev}.side .z-ld{grid-area:ld}.side .z-st{grid-area:st}.side .z-dk{grid-area:dk}.side .z-dd{grid-area:dd}.side .z-tr{grid-area:tr}
+.side .z-cost{grid-area:cost;--inner:calc(var(--ch)*3 + 12px - var(--cw)*.4)}
+.side .slot.evslot{border-color:#F2B84B;border-style:dashed;background:rgba(242,184,75,.10)}
+.side .slot.evslot .lbl{color:#F2B84B}
+.lifez{grid-area:life;align-self:stretch;position:relative;border:1.5px dashed var(--line);border-radius:8px;background:rgba(0,0,0,.16);
+  --lstep:min(calc(var(--cw)*.6),calc((var(--ch)*2 + 6px - var(--cw)*.94 - 12px) / var(--d,1)))}
+.lifez[data-act]{cursor:pointer}
+.lifez.over{outline:3px solid var(--gold-fill);outline-offset:1px;background:rgba(242,184,75,.22)}
+.lifez .card.lifecard{position:absolute;left:50%;top:calc(6px + var(--i)*var(--lstep));margin:calc(var(--cw)*-.2) 0 0 calc(var(--cw) / -2);transform:rotate(90deg) scale(.94);z-index:calc(20 - var(--i))}
+.side.opp .lifez .card.lifecard{top:auto;bottom:calc(6px + var(--i)*var(--lstep));margin:0 0 calc(var(--cw)*-.2) calc(var(--cw) / -2)}
+.lifez .cnt{z-index:25}
+.side.opp .lifez .cnt{bottom:auto;top:3px}
+.ohandp{margin:10px 10px 0;padding:6px 12px 10px;border-width:4px;order:0}
+.ohandp h2{display:flex;gap:8px;align-items:center;margin:0 0 6px;font-family:var(--slab);font-weight:400;font-size:15px;color:#F2B84B;text-shadow:0 2px 0 rgba(0,0,0,.55)}
+.ohandp .ohname{color:var(--coral)}
+.fxwhy{font-size:inherit}
+.ohandp .ohcards{min-height:calc(var(--cw)*1.12)}
+.ohandp .ohcards .lbl{position:static;transform:none;text-align:left}
+@media (max-width:1099px){.fxhost{order:3;position:relative;margin:0 10px}}
+@media (min-width:1100px){
+  :root{--cw:clamp(46px,min(calc((100vw - 880px) / 7),calc((100vh - 262px) / 8.4)),130px)}
+  .app{grid-template-columns:minmax(260px,460px) calc(var(--cw)*7 + 60px) minmax(240px,400px)}
+  .leftcol .ohandp{flex:0 0 auto;margin:0}
+  .sidep{justify-self:stretch;min-width:0;display:flex;flex-direction:column;gap:10px;width:auto;overflow:auto;position:sticky;top:calc(58px + env(safe-area-inset-top,0px));height:calc(100vh - 78px - env(safe-area-inset-top,0px))}
+  .sidep>*,.sidep>#banner{flex:0 0 auto;order:0}
+  .sidep>.fxhost{position:relative;height:0;margin-bottom:-10px}
+  .sidep>.zoomp{flex:1 1 0;min-height:180px;container-type:size;display:flex;justify-content:center;align-items:flex-start}
+  .sidep #zoom{--zw:min(100cqw,calc(100cqh / 1.4));width:var(--zw);height:calc(var(--zw)*1.4);min-height:0}
+  .sidep .zoomempty{width:100%;height:100%}
+  .sidep .mktray{padding:6px 10px 8px}
+  .sidep .mkgrid{gap:6px;justify-content:space-around}
+  .sidep .mkb{width:48px;height:48px;font-size:10px;padding:2px;border-width:2px}
+  .sidep .fxopt{margin-top:4px;font-size:12px}
+  .sidep .fxwhy{display:none}
+  .sidep .mkgrid+.fxopt{margin-top:8px}
+  .sidep .turnbar{gap:6px}
+  .sidep .turnbar .btn{padding:8px 4px;font-size:14px;line-height:1.15}
+  .sidep .pcrow{flex:1 1 100%}
+  .sidep .mkhint{display:none}
+  .sidep .panrow .pwslot{height:200px}
+}
 </style>
 </head>
 <body>
@@ -917,15 +967,52 @@ select.sbtn{font-family:var(--slab)}
 
 <div class="app">
   <div class="leftcol">
+  <aside class="ohandp" id="oppHand" aria-label="Opponent's hand"></aside>
+  <aside class="logp">
+    <h2>Table log</h2>
+    <details class="tipbox"><summary>Tips</summary><ul class="tips">
+      <li>Tap a card for its options, or drag it to a zone.</li>
+      <li>Tap a DON!! card to rest or activate it. Drag one onto your Leader or a Character to give it.</li>
+      <li>Drag the gold +N badge on a card to move that DON!! to another card, back to your cost area, or to the DON!! deck.</li>
+      <li>Drag a number from the Power box onto your Leader or a Character to give it that power for the turn. Drag the badge off the card to remove it, or onto another card to move it.</li>
+      <li>The Cost box works the same way: drag +1 to +6 or &minus;1 to &minus;6 onto a card for a cost bonus.</li>
+      <li>Tap your Deck, Life, Trash or DON!! deck for actions.</li>
+    </ul></details>
+    <div class="logbox" id="log"></div>
+  </aside>
+  <aside class="handp">
+    <h2>Your hand <span id="handn"></span> <button class="btn" data-do="sorthand" type="button" style="font-size:12px;padding:2px 10px;vertical-align:middle">Sort by cost</button></h2>
+    <div id="hand" class="hand" data-zone="hand"></div>
+  </aside>
+  </div>
+  <main class="table">
+    <section id="opp"></section>
+    <div class="mid" id="mid">The Grand Line</div>
+    <section id="me"></section>
+  </main>
+  <aside class="sidep">
+  <div class="fxhost"><div class="fxpanel" id="fxpanel" hidden></div></div>
+    <div class="zoomp">
+      <div id="zoom"><div class="zoomempty">Hover over a card to read it here</div></div>
+    </div>
+  <div class="turnbar">
+    <button class="btn tb-concede" data-do="concede" type="button" title="Give up this match">Concede</button>
+    <button class="btn" data-do="drawturn" type="button" title="Draw 1 card">Draw for turn</button>
+    <button class="btn" data-do="donturn" type="button" title="Add 2 DON!! from your DON!! deck (1 on the very first turn)">DON!! for turn</button>
+    <button class="btn" data-do="undo" type="button" title="Undo your last move (Ctrl+Z)">Undo action</button>
+    <button class="btn qcbtn" data-do="quickchat" id="qcbtn" type="button" hidden title="Send your opponent a quick message">💬 Chat</button>
+    <button class="btn pri" data-do="endturn" type="button" title="End your turn and clear power and cost bonuses">End turn</button>
+    <button class="btn" data-do="startturn" id="startfb" type="button" hidden title="Your opponent's copy is older and doesn't say when their turn ends">Start my turn</button>
+  </div>
+  <div id="banner"></div>
   <aside class="mktray" id="mktray" aria-label="Markers"><h2>Markers</h2><div class="mkgrid">
     <button class="mkb fz" data-mk="fz" type="button" title="Drag onto a card">Freeze</button>
     <button class="mkb nb" data-mk="nb" type="button" title="Drag onto a card">No Block</button>
     <button class="mkb au" data-mk="au" type="button" title="Drag onto a card">Ability used</button>
     <button class="mkb nk" data-mk="nk" type="button" title="Drag onto a card">No K.O.</button>
     <button class="mkb na" data-mk="na" type="button" title="Drag onto a card">No Attack</button>
-  </div><label class="fxopt"><input type="checkbox" id="fx-auto" data-do="autofx" checked> Auto card effects (runs [On Play], [When Attacking], [On Block] and [On K.O.] abilities for you)</label><label class="fxopt"><input type="checkbox" id="turn-auto" data-do="autoturn" checked> Auto start of turn (stands your cards, draws and adds DON!! for you)</label><label class="fxopt"><input type="checkbox" id="snd-on" data-do="sndon" checked> Sounds</label><p class="mkhint">Drag a marker onto any Leader or Character. Tap a marker on your own card to remove it.</p></aside>
-  <div class="panrow">
-  <div class="pccol"><div class="fxpanel" id="fxpanel" hidden></div><div class="pcrow">
+  </div><label class="fxopt" title="Runs [On Play], [When Attacking], [On Block] and [On K.O.] abilities for you"><input type="checkbox" id="fx-auto" data-do="autofx" checked> <span>Auto card effects<small class="fxwhy"> (runs [On Play], [When Attacking], [On Block] and [On K.O.] abilities for you)</small></span></label><label class="fxopt" title="Stands your cards, draws and adds DON!! for you"><input type="checkbox" id="turn-auto" data-do="autoturn" checked> <span>Auto start of turn<small class="fxwhy"> (stands your cards, draws and adds DON!! for you)</small></span></label><label class="fxopt"><input type="checkbox" id="snd-on" data-do="sndon" checked> Sounds</label><p class="mkhint">Drag a marker onto any Leader or Character. Tap a marker on your own card to remove it.</p></aside>
+  <div class="panrow"><div class="pcrow">
   <div class="pwslot" id="pwslot" data-empty="Power spot. Drag the counter back here."><aside class="pwp" id="pwp" aria-label="Power counter">
     <h2 class="pwgrab" title="Drag me anywhere on the board">&#10303; Power</h2>
     <div class="pwval pwgrab" id="pwval" title="Drag me anywhere on the board">0</div>
@@ -939,45 +1026,6 @@ select.sbtn{font-family:var(--slab)}
     <button class="btn pwreset" data-do="cc:0" type="button">Reset</button>
   </aside></div>
   </div></div>
-  <div class="lifep me" id="myLife" data-zone="life"></div>
-  </div>
-  <aside class="handp">
-    <h2>Your hand <span id="handn"></span> <button class="btn" data-do="sorthand" type="button" style="font-size:12px;padding:2px 10px;vertical-align:middle">Sort by cost</button></h2>
-    <div id="hand" class="hand" data-zone="hand"></div>
-  </aside>
-  <div class="turnbar">
-    <button class="btn tb-concede" data-do="concede" type="button" title="Give up this match">Concede</button>
-    <button class="btn" data-do="drawturn" type="button" title="Draw 1 card">Draw for turn</button>
-    <button class="btn" data-do="donturn" type="button" title="Add 2 DON!! from your DON!! deck (1 on the very first turn)">DON!! for turn</button>
-    <button class="btn" data-do="undo" type="button" title="Undo your last move (Ctrl+Z)">Undo action</button>
-    <button class="btn qcbtn" data-do="quickchat" id="qcbtn" type="button" hidden title="Send your opponent a quick message">💬 Chat</button>
-    <button class="btn pri" data-do="endturn" type="button" title="End your turn and clear power and cost bonuses">End turn</button>
-    <button class="btn" data-do="startturn" id="startfb" type="button" hidden title="Your opponent's copy is older and doesn't say when their turn ends">Start my turn</button>
-  </div>
-  <div id="banner"></div>
-  </div>
-  <main class="table">
-    <section id="opp"></section>
-    <div class="mid" id="mid">The Grand Line</div>
-    <section id="me"></section>
-  </main>
-  <aside class="sidep">
-    <div class="lifep opp" id="oppLife"></div>
-    <div class="zoomp">
-      <div id="zoom"><div class="zoomempty">Hover over a card to read it here</div></div>
-    </div>
-  <aside class="logp">
-    <h2>Table log</h2>
-    <details class="tipbox"><summary>Tips</summary><ul class="tips">
-      <li>Tap a card for its options, or drag it to a zone.</li>
-      <li>Tap a DON!! card to rest or activate it. Drag one onto your Leader or a Character to give it.</li>
-      <li>Drag the gold +N badge on a card to move that DON!! to another card, back to your cost area, or to the DON!! deck.</li>
-      <li>Drag a number from the Power box onto your Leader or a Character to give it that power for the turn. Drag the badge off the card to remove it, or onto another card to move it.</li>
-      <li>The Cost box works the same way: drag +1 to +6 or &minus;1 to &minus;6 onto a card for a cost bonus.</li>
-      <li>Tap your Deck, Life, Trash or DON!! deck for actions.</li>
-    </ul></details>
-    <div class="logbox" id="log"></div>
-  </aside>
   </aside>
 </div>
 
@@ -1306,8 +1354,8 @@ function fxWatch(){
   const play = S.phase === "play";
   if (S.nick !== fxSeen.who) { fxSeen = {life: null, olife: null, res: S.conceded ? "l" : oppM && oppM.cd ? "w" : "", who: S.nick}; }   // practice switched sides
   const ml = play ? S.life.length : null, ol = play && oppM && oppM.ready ? oppM.lf : null;
-  if (ml != null && fxSeen.life != null && ml < fxSeen.life) { snd("hit"); fxFloat($("#myLife"), `−${fxSeen.life - ml} Life`, "dmg"); fxFlash(); }
-  if (ol != null && fxSeen.olife != null && ol < fxSeen.olife) { snd("hit"); fxFloat($("#oppLife"), `−${fxSeen.olife - ol} Life`, "dmg"); }
+  if (ml != null && fxSeen.life != null && ml < fxSeen.life) { snd("hit"); fxFloat($("#me .lifez"), `−${fxSeen.life - ml} Life`, "dmg"); fxFlash(); }
+  if (ol != null && fxSeen.olife != null && ol < fxSeen.olife) { snd("hit"); fxFloat($("#opp .lifez"), `−${fxSeen.olife - ol} Life`, "dmg"); }
   fxSeen.life = ml; fxSeen.olife = ol;
   const res = S.conceded ? "l" : oppM && oppM.cd ? "w" : "";
   if (res && res !== fxSeen.res && play) { snd(res === "w" ? "win" : "lose"); fxFloat($(res === "w" ? "#opp" : "#me"), res === "w" ? "Victory!" : "Defeat", res === "w" ? "win" : "lose"); }
@@ -1996,6 +2044,9 @@ function tile(c, attr, rest, d, cls, pm, cm, mk, showPw){
   return `<div class="card ${cls || ""} ${rest ? "rest" : ""} ${id ? "hasart" : ""}" style="--h:${hue(c.c)}" ${attr}><i class="stripe"></i><b>${esc(c.c)}</b>${nm}${img}${pm && !(showPw && Number.isFinite(powNum({c: c.c, pm: pm}))) ? `<em class="pm ${pm < 0 ? "neg" : ""}"${(m => m ? ` data-psrc="${m[1]}"` : "")(/data-src="([^"]+)"/.exec(attr || ""))}>${pm > 0 ? "+" : "\u2212"}${Math.abs(pm)}</em>` : ""}${cm ? `<em class="cm ${cm < 0 ? "neg" : ""}"${(m => m ? ` data-csrc="${m[1]}"` : "")(/data-src="([^"]+)"/.exec(attr || ""))}>${cm > 0 ? "+" : "\u2212"}${Math.abs(cm)}</em>` : ""}${mk && mk.length ? `<div class="mkrow">${mk.map(k => MK[k] ? `<em class="mkpill ${k}"${(m => m ? ` data-mkdel="${m[1]}|${k}" title="Tap to remove"` : "")(/data-src="([^"]+)"/.exec(attr || ""))}>${MK[k].s}</em>` : "").join("")}</div>` : ""}${showPw && Number.isFinite(powNum({c: c.c, pm: pm})) ? `<em class="pw" title="Current power">${powNum({c: c.c, pm: pm})}</em>` : ""}${d ? `<em class="don"${(m => m ? ` data-dsrc="${m[1]}"` : "")(/data-src="([^"]+)"/.exec(attr || ""))}>+${d}</em>` : ""}</div>`;
 }
 const backCard = (label, attr, cls) => `<div class="card back ${cls || ""}" ${attr || ""}><b>${esc(label)}</b></div>`;
+// Each side is one grid laid out like the playmat: Life down the left, Characters beside it, then Event, Leader,
+// Stage and Deck, with the DON!! deck, cost area and Trash along the edge. The opponent's side is the same turned
+// around (CSS places the areas), so their Life is on the right and their Trash in the far corner.
 function side(m, mine){
   const A = k => mine ? `data-src="${k}"` : `data-opp="${k}"`;
   const Z = z => mine ? `data-zone="${z}"` : "";
@@ -2007,44 +2058,34 @@ function side(m, mine){
     const c = m.ch[i];
     chars += `<div class="slot" ${mine && c ? `data-dzone="ch:${i}"` : ""} ${!mine && c ? `data-atk="ch:${i}"` : ""}>${c ? tile(c, A("ch:" + i), c.r, c.d, "", c.pm, c.cm, c.mk, true) : (i === 0 && !m.ch.length ? lbl("Characters") : "")}</div>`;
   }
-  chars += `<div class="slot evslot" ${Z("event")}>${m.ev ? tile(m.ev, A("ev"), false, 0) : lbl("Event")}</div>`;
   const top = m.tr[0] ? {c: m.tr[0][0], n: m.tr[0][1]} : null;
-  const backRow = `<div class="back">
-    <div class="slot" ${mine && m.ld ? 'data-dzone="ld"' : ""} ${!mine && m.ld ? 'data-atk="ld"' : ""}>${m.ld ? tile(m.ld, A("ld"), m.ld.r, m.ld.d, "leader", m.ld.pm, m.ld.cm, m.ld.mk, true) : lbl("Leader")}</div>
-    <div class="slot" ${Z("stage")}>${m.st ? tile(m.st, A("st"), m.st.r, 0) : lbl("Stage")}</div>
-    <div class="slot" ${Z("deck")} ${ACT("deck")}>${m.dk ? backCard(m.dk, "", "stack sl" + m.sl) : lbl("Deck")}</div>
-    <div class="slot" ${Z("trash")} ${ACT("trash")}>${top ? tile(top, "", false, 0) + `<em class="cnt">${m.tr.length}</em>` : lbl("Trash")}</div>
-    <div class="slot" ${mine ? 'data-act="dondeck" data-dzone="dondeck"' : ""}>${m.dd ? backCard("DON!!", "", "stack dondeckback") + `<em class="cnt">${m.dd}</em>` : lbl("DON!! deck")}</div>
-  </div>`;
+  const lf = m.lf || 0;
+  let lc = "";
+  for (let i = 0; i < lf; i++) lc += `<div class="card back sl${m.sl} lifecard" style="--i:${i}"></div>`;
+  const life = `<div class="lifez${lf ? "" : " empty"}" ${mine ? 'data-act="life" data-zone="life" title="Tap for Life actions, or drop a card here"' : ""} style="--d:${Math.max(lf - 1, 1)}">${lc}${lf ? `<em class="cnt">Life ${lf}</em>` : lbl("Life")}</div>`;
+  const ev = `<div class="slot z-ev evslot" ${Z("event")}>${m.ev ? tile(m.ev, A("ev"), false, 0) : lbl("Event")}</div>`;
+  const ld = `<div class="slot z-ld" ${mine && m.ld ? 'data-dzone="ld"' : ""} ${!mine && m.ld ? 'data-atk="ld"' : ""}>${m.ld ? tile(m.ld, A("ld"), m.ld.r, m.ld.d, "leader", m.ld.pm, m.ld.cm, m.ld.mk, true) : lbl("Leader")}</div>`;
+  const st = `<div class="slot z-st" ${Z("stage")}>${m.st ? tile(m.st, A("st"), m.st.r, 0) : lbl("Stage")}</div>`;
+  const dk = `<div class="slot z-dk" ${Z("deck")} ${ACT("deck")}>${m.dk ? backCard(m.dk, "", "stack sl" + m.sl) : lbl("Deck")}</div>`;
+  const tr = `<div class="slot z-tr" ${Z("trash")} ${ACT("trash")}>${top ? tile(top, "", false, 0) + `<em class="cnt">${m.tr.length}</em>` : lbl("Trash")}</div>`;
+  const dd = `<div class="slot z-dd" ${mine ? 'data-act="dondeck" data-dzone="dondeck"' : ""}>${m.dd ? backCard("DON!!", "", "stack dondeckback") + `<em class="cnt">${m.dd}</em>` : lbl("DON!! deck")}</div>`;
   const total = m.da + m.dr;
   let tok = "";
   for (let i = 0; i < total; i++) {
     const act = i < m.da;
     tok += `<div class="card doncard ${act ? "" : "rest"}" style="--i:${i}" ${mine ? `data-don="${act ? "a" : "r"}" role="button" tabindex="0" aria-label="${act ? "Active" : "Rested"} DON!!"` : ""}><b>DON!!</b></div>`;
   }
-  const donRow = `<div class="donrow"><div class="cost" ${mine ? 'data-dzone="cost"' : ""} style="--dn:${Math.max(total - 1, 1)}">${tok || lbl("Cost area")}${total ? `<em class="cnt">${m.da} active</em>` : ""}</div></div>`;
+  const cost = `<div class="cost z-cost" ${mine ? 'data-dzone="cost"' : ""} style="--dn:${Math.max(total - 1, 1)}">${tok || lbl("Cost area")}${total ? `<em class="cnt">${m.da} active</em>` : ""}</div>`;
   const tmr = `<span class="chip tmr" id="tmr-${mine ? "me" : "opp"}" hidden></span>`;
-  const head = `<div class="shead"><span class="nick">${esc(m.nick)}</span>${m.tn ? `<span class="chip">Turn ${m.tn}</span>` : ""}${tmr}${!mine && m.cc ? `<span class="chip cwchip">Cost ${m.cc > 0 ? "+" : "\u2212"}${Math.abs(m.cc)}</span>` : ""}${!mine && m.pw ? `<span class="chip pwchip">Power ${m.pw > 0 ? "+" : "\u2212"}${Math.abs(m.pw)}</span>` : ""}<span class="chip">Hand ${m.h}</span><span class="chip">Deck ${m.dk}</span><span class="chip">Life ${m.lf}</span></div>`;
-  const ohead = (m.tn || m.cc || m.pw || m.tl != null) ? `<div class="shead">${m.tn ? `<span class="chip">Turn ${m.tn}</span>` : ""}${tmr}${m.cc ? `<span class="chip cwchip">Cost ${m.cc > 0 ? "+" : "\u2212"}${Math.abs(m.cc)}</span>` : ""}${m.pw ? `<span class="chip pwchip">Power ${m.pw > 0 ? "+" : "\u2212"}${Math.abs(m.pw)}</span>` : ""}</div>` : "";
-  const parts = mine ? [head, `<div class="chars" ${Z("chars")}>${chars}</div>`, backRow, donRow] : [ohead, donRow, backRow, `<div class="chars">${chars}</div>`];
-  return `<div class="side ${mine ? "me" : "opp"}">${parts.join("")}</div>`;
+  const head = `<div class="shead z-head"><span class="nick">${esc(m.nick)}</span>${m.tn ? `<span class="chip">Turn ${m.tn}</span>` : ""}${tmr}${!mine && m.cc ? `<span class="chip cwchip">Cost ${m.cc > 0 ? "+" : "−"}${Math.abs(m.cc)}</span>` : ""}${!mine && m.pw ? `<span class="chip pwchip">Power ${m.pw > 0 ? "+" : "−"}${Math.abs(m.pw)}</span>` : ""}<span class="chip">Hand ${m.h}</span><span class="chip">Deck ${m.dk}</span><span class="chip">Life ${lf}</span></div>`;
+  return `<div class="side ${mine ? "me" : "opp"}">${head}${life}<div class="chars z-chars" ${Z("chars")}>${chars}</div>${ev}${ld}${st}${dk}${dd}${cost}${tr}</div>`;
 }
-function lifePanel(m, mine){
-  const n = m.lf;
-  let cards = "";
-  for (let i = 0; i < n; i++) cards += `<div class="card back sl${m.sl} lifecard" style="--i:${i}"></div>`;
-  const act = mine ? 'data-act="life"' : "";
-  const stack = n ? `<div class="lifestack" ${act} style="--n:${n}" title="${mine ? "Tap for Life actions, or drop a card here" : ""}">${cards}</div>` : `<div class="lifestack empty" ${act}><span class="lbl">No Life</span></div>`;
-  const dmg = mine && n ? `<button class="btn" data-do="damage" type="button">Take damage</button>` : "";
-  const heal = mine ? `<button class="btn healbtn" data-do="heal" type="button">Heal</button>` : "";
-  if (!mine) {
-    const h = m.h || 0, step = h > 1 ? Math.min(30, Math.floor(170 / (h - 1))) : 0;
-    let hc = "";
-    for (let i = 0; i < h; i++) hc += `<div class="card back sl${m.sl} ohcard" style="left:${i * step}px"></div>`;
-    const hand = `<div class="ohand"><span class="ohlbl">Hand ${h}</span><div class="ohcards" style="width:calc(var(--ohw) + ${Math.max(0, h - 1) * step}px)">${hc || '<span class="lbl">No cards</span>'}</div></div>`;
-    return `<div class="lifehead"><span class="ltitle">${esc(m.nick)}'s Life</span><span class="chip">${n}</span><span class="chip">Hand ${h}</span></div><div class="lifebody"><div class="lifecol">${stack}</div>${hand}</div>`;
-  }
-  return `<div class="lifehead"><span class="ltitle">Your Life</span><span class="chip">${n}</span>${dmg}</div>${stack}${heal}`;
+// the opponent's hand, face down, in the top-left panel
+function oppHandPanel(m){
+  const h = m.h || 0, step = h > 1 ? Math.min(34, Math.floor(260 / (h - 1))) : 0;
+  let hc = "";
+  for (let i = 0; i < h; i++) hc += `<div class="card back sl${m.sl} ohcard" style="left:${i * step}px"></div>`;
+  return `<h2><span class="ohname">${esc(oppM ? m.nick + "'s" : "Opponent's")}</span> hand <span class="chip">${h}</span></h2><div class="ohcards" style="width:calc(var(--ohw) + ${Math.max(0, h - 1) * step}px)">${hc || '<span class="lbl">No cards</span>'}</div>`;
 }
 const EMPTY = () => ({nick:"Opponent", sl:0, tn:0, ld:null, ch:[], st:null, ev:null, ak:null, bk:null, rl:0, fc:null, cd:false, cdw:false, mq:[], ma:0, lf:0, dd:0, da:0, dr:0, dk:0, h:0, tr:[]});
 function renderPw(){ const v = $("#pwval"); if (!v) return; const n = S.pw || 0; v.textContent = (n > 0 ? "+" : n < 0 ? "\u2212" : "") + Math.abs(n); v.classList.toggle("neg", n < 0); v.classList.toggle("pos", n > 0); }
@@ -2062,8 +2103,7 @@ function render(){
   { const sw = $("#pswitch"); if (sw) { sw.hidden = !PR; if (PR) sw.textContent = "Switch to Player " + (PR.cur === 0 ? 2 : 1); } }
   { const fa = $("#fx-auto"); if (fa) fa.checked = autoFx; const ta = $("#turn-auto"); if (ta) ta.checked = autoTurn; const so = $("#snd-on"); if (so) so.checked = sndOn; }
   $("#opp").innerHTML = side(oppM || EMPTY(), false);
-  $("#oppLife").innerHTML = lifePanel(oppM || EMPTY(), false);
-  $("#myLife").innerHTML = lifePanel(pubFull(), true);
+  $("#oppHand").innerHTML = oppHandPanel(oppM || EMPTY());
   if (S.phase === "none") {
     $("#me").innerHTML = `<div class="wait"><button class="btn pri" data-do="setup" type="button">Set up your side of the table</button></div>`;
     $("#hand").innerHTML = "";
@@ -2922,7 +2962,7 @@ function openActMenu(a, x, y){
     ["Shuffle deck", shuffleDeck],
     ["Change sleeves", () => { S.sleeve = (S.sleeve + 1) % 7; addLog("changed their card sleeves"); commit(); }]], x, y);
   else if (a === "life") showMenu(`Life (${S.life.length})`, [
-    ["Take damage (top Life to hand)", () => { if (!S.life.length) { toast("No Life left. The next hit is lethal."); return; } moveCard("lf:0", "hand"); }],
+    ["Take damage (top Life to hand)", () => doAction("damage")],
     ["Take damage (trash it)", () => { if (!S.life.length) { toast("No Life left. The next hit is lethal."); return; } moveCard("lf:0", "trash"); }],
     ["Look at top Life card", () => { if (!S.life.length) return; modal = {type: "life"}; renderModal(); }],
     ["Add top of deck to Life", () => moveCard("dk:0", "life")],
