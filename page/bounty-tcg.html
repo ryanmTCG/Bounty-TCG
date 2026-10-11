@@ -921,6 +921,9 @@ select.sbtn{font-family:var(--slab)}
 .ohandp h2{display:flex;gap:8px;align-items:center;margin:0 0 6px;font-family:var(--slab);font-weight:400;font-size:15px;color:#F2B84B;text-shadow:0 2px 0 rgba(0,0,0,.55)}
 .ohandp .ohname{color:var(--coral)}
 .hand .card.canplay{box-shadow:0 0 0 3px #5BE07A,0 0 12px rgba(91,224,122,.7)}
+.card.isblk::after{content:"Blocker";position:absolute;left:50%;bottom:2px;transform:translateX(-50%);font:700 9px/1.4 system-ui,sans-serif;background:#2C6BED;color:#fff;padding:0 5px;border-radius:6px;pointer-events:none;z-index:3}
+.card.canblk{box-shadow:0 0 0 3px #2C6BED,0 0 12px rgba(44,107,237,.75)}
+.turnbar .endglow{box-shadow:0 0 0 3px #FFD23F,0 0 14px rgba(255,210,63,.8)}
 .card.canatk{box-shadow:0 0 0 3px #FF8A3D,0 0 12px rgba(255,138,61,.7)}
 .card.oppnew{box-shadow:0 0 0 3px #7CC8FF,0 0 16px rgba(124,200,255,.9)}
 .card.nomatch{opacity:.4;filter:grayscale(.6)}
@@ -2822,6 +2825,23 @@ function refreshAll(){
 function endTurn(){
   if (S.phase !== "play") { toast("Set up your deck and Life first."); return; }
   if (!S.myTurn) { toast("It isn't your turn."); return; }
+  // [End of Your Turn] abilities resolve first, then the turn ends by itself
+  if (autoFx && S.eot !== S.turn) {
+    S.eot = S.turn;
+    const eot = [S.leader, S.stage, ...S.chars].filter(f => f && fxAb(f.card.c).some(a => a.t === "endOfTurn"));
+    if (eot.length) {
+      // one at a time; with several, the player picks the order since outcomes can depend on it
+      const left = eot.slice(), t0 = Date.now();
+      const idle = fn => { const w = () => { if (!S.myTurn) return; if ((fxCur || fxQueue.length || modal) && Date.now() - t0 < 300000) { setTimeout(w, 400); return; } fn(); }; setTimeout(w, 800); };
+      const run = f => { left.splice(left.indexOf(f), 1); runAbility(f.card, ["endOfTurn"], false, f.d || 0); idle(next); };
+      const next = () => {
+        if (!left.length) { endTurn(); return; }
+        if (left.length === 1) { run(left[0]); return; }
+        showMenu("End of turn: which ability resolves next?", left.map(f => [`${lab(f.card)}: ${(fxAb(f.card.c).find(a => a.t === "endOfTurn") || {}).text?.slice(0, 60) || ""}`, () => run(f)]), innerWidth / 2 - 160, innerHeight / 2 - 100);
+      };
+      next(); return;
+    }
+  }
   S.pw = 0; S.cc = 0; S.atk = null; S.blk = null;
   for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = 0; f.cm = 0; f.bc = 0; }
   S.myTurn = false; S.et = (S.et || 0) + 1;
@@ -3037,7 +3057,9 @@ function openCardMenu(src, x, y){
     items = [M("Play to Character area", "chars"), M("Play as Stage", "stage"), M("Play as Event", "event"),
       ["Play for free (an effect lets you)", () => moveCard(src, /Stage/.test(ty) ? "stage" : /Event/.test(ty) ? "event" : "chars", true)], M("Add to Life", "life"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"), M("Trash", "trash")];
   } else if (k === "ch" || k === "st" || k === "ld") {
-    const f = k === "ch" ? S.chars[i] : k === "st" ? S.stage : S.leader; if (!f) return; title = lab(f.card); info = {c: f.card.c, n: f.card.n, r: f.r ? 1 : 0, d: f.d || 0};
+    const f = k === "ch" ? S.chars[i] : k === "st" ? S.stage : S.leader; if (!f) return;
+    if (k === "ch" && defending() && !f.r && S.blk == null && isBlocker(f.card.c) && !fxCur) { doBlock(i); toast(`${lab(f.card)} blocks. Tap Counter cards in your hand to save it.`); return; }
+    title = lab(f.card); info = {c: f.card.c, n: f.card.n, r: f.r ? 1 : 0, d: f.d || 0};
     if (k !== "st" && !f.r && S.myTurn && S.turn > 1 && S.phase === "play" && oppM) items.push(["Attack", () => { atkPick = src; markTargets(); toast("Tap the Leader or Character to attack. Tap anywhere else to cancel."); }]);
     items.push([f.r ? "Activate (stand)" : "Rest", () => { f.r = !f.r; addLog(`${f.r ? "rested" : "activated"} ${lab(f.card)}`); commit(); }]);
     if (k !== "st") {
@@ -3207,11 +3229,18 @@ function movePm(from, to){
 const atkAt = (x, y) => { const el = document.elementFromPoint(x, y); return el && el.closest ? el.closest("[data-atk]") : null; };
 // on your turn, light up the hand cards your active DON!! can pay for and the cards that can still attack
 // (nobody attacks on their first turn, and a Character played this turn needs [Rush])
+const isBlocker = c => { const fx = BFX.get(c) || EFX.get(c); return !!(fx && fx.blocker); };
+const defending = () => !!(oppM && oppM.ak && S.rs !== oppM.ak.n);
 function markPlayable(){
+  // Blocker tags on both boards, and the blockers that can answer this attack
+  document.querySelectorAll('#me [data-src^="ch:"], #opp [data-atk^="ch:"]').forEach(el => { const mine = !!el.dataset.src, i = +(mine ? el.dataset.src : el.dataset.atk).slice(3), f = mine ? S.chars[i] : oppM && oppM.ch[i], c = f && (mine ? f.card.c : f.c); const card = el.classList.contains("card") ? el : el.querySelector(".card"); if (!card) return; card.classList.toggle("isblk", !!(c && isBlocker(c))); card.classList.toggle("canblk", !!(mine && f && !f.r && S.blk == null && defending() && isBlocker(c))); });
+  const eb = document.querySelector('.turnbar [data-do="endturn"]');
   const on = S.phase === "play" && S.myTurn && !S.atk && !(oppM && oppM.ak);
   S.hand.forEach((c, i) => { const el = document.querySelector(`#hand [data-src="hand:${i}"]`); if (!el) return; const hc = on ? handCost(c) : null; el.classList.toggle("canplay", !!(hc && hc.cost <= S.donActive)); });
   const can = f => on && S.turn > 1 && f && !f.r && !(f.mk || []).includes("na") && (f.pt !== S.turn || /Rush/.test((CARDDB.get(f.card.c) || {}).kw || ""));
   [["ld", S.leader], ...S.chars.map((f, i) => ["ch:" + i, f])].forEach(([r, f]) => { const el = document.querySelector(`#me [data-src="${r}"]`); if (el) el.classList.toggle("canatk", !!can(f)); });
+  // nothing left to play or attack with: point at End turn
+  if (eb) eb.classList.toggle("endglow", !!(on && !fxCur && !modal && !document.querySelector("#hand .canplay, #me .canatk")));
 }
 // light up a card the opponent just played, or just gave DON!!, so nobody has to read the log for it
 let oppSeen = null, oppHot = new Map();
@@ -3314,14 +3343,15 @@ function defResult(){
 }
 function defResolve(apply){
   if (!oppM || !oppM.ak || S.rs === oppM.ak.n) return;
+  const by = (x => x ? lab(x) : "the attack")(oppCardAt(oppM.ak.s));
   const r = apply ? defResult() : null;
   if (r && r.hits && r.onLeader) {
-    if (S.life.length) { const lc = S.life.shift(); S.hand.push(lc); addLog(`took 1 damage (${r.ap} vs ${r.tp}, Life ${S.life.length})`); offerTrigger(lc); }
+    if (S.life.length) { const lc = S.life.shift(); S.hand.push(lc); addLog(`took 1 damage from ${by} (${r.ap} vs ${r.tp}, Life ${S.life.length})`); offerTrigger(lc); }
     else if (!S.conceded) { S.conceded = true; S.lostDmg = true; S.blk = null; addLog(`took damage at 0 Life and lost the game`); toast("You took damage at 0 Life. You lose!"); }
   } else if (r && r.hits) {
     const i = S.chars.indexOf(r.f);
-    if (i >= 0) { S.chars.splice(i, 1); S.donRested += r.f.d || 0; S.trash.unshift(r.f.card); addLog(`${lab(r.f.card)} lost the battle and was K.O.'d (${r.ap} vs ${r.tp})`); const kc = r.f.card, kd = r.f.d || 0; setTimeout(() => runAbility(kc, ["onKO"], false, kd), 0); }
-  } else if (r) addLog(`the attack failed (${r.ap} vs ${r.tp})`);
+    if (i >= 0) { S.chars.splice(i, 1); S.donRested += r.f.d || 0; S.trash.unshift(r.f.card); addLog(`${lab(r.f.card)} was K.O.'d by ${by} (${r.ap} vs ${r.tp})`); const kc = r.f.card, kd = r.f.d || 0; setTimeout(() => runAbility(kc, ["onKO"], false, kd), 0); }
+  } else if (r) addLog(`stopped ${by}'s attack (${r.ap} vs ${r.tp})`);
   else addLog("finished the opponent's attack");
   endBattle(); S.rs = oppM.ak.n || 0; S.blk = null; commit();
 }
@@ -3380,7 +3410,7 @@ function combatHTML(){
       const ctrs = hc.map(e => { const nm = nameOf(e.c.c) || e.c.c; return `<button class="btn cmbctr" data-do="cmbhc:${e.i}" type="button" title="Trash ${esc(lab(e.c))} from your hand for +${e.v} power">+${e.v} ${esc(nm.length > 16 ? nm.slice(0, 15) + "\u2026" : nm)}${e.n > 1 ? ` <i>\u00D7${e.n}</i>` : ""}</button>`; }).join("");
       const evs = counterEvents().map(e => `<button class="btn cmbctr" data-do="cmbev:${e.i}" type="button" title="Play this Counter Event for ${e.cost} DON!!">${esc(lab(e.c))} <i>(${e.cost} DON!!)</i></button>`).join("");
       const res = !r ? "Resolve attack" : r.hits ? (r.onLeader ? "Take 1 damage" : "Resolve: K.O.") : "Resolve: attack fails";
-      return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span>${cmbPow(r, true)}${d && d.bc ? `<span>Counters <i>+${d.bc}</i></span>` : ""}<span class="tmr" id="tmr-cmb" hidden></span><span class="cmbbr"></span>${ctrs || evs ? `<span class="hint">Tap a Counter card in your hand to use it.</span><span class="cmbbr"></span>` : ""}<button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn" data-do="cmbblock" type="button">${b ? "Change block" : "Block"}</button>${r ? `<button class="btn pri" data-do="dfresolve" type="button">${res}</button>` : `<span class="hint">Power unknown, so resolve by hand.</span>`}<button class="btn" data-do="dfdone" type="button">Attack done</button>`;
+      return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span>${cmbPow(r, true)}${d && d.bc ? `<span>Counters <i>+${d.bc}</i></span>` : ""}<span class="tmr" id="tmr-cmb" hidden></span><span class="cmbbr"></span>${ctrs || evs ? `<span class="hint">${b ? `Tap Counter cards in your hand to save ${esc(lab(b.card))}.` : "Tap a Counter card in your hand to use it."}</span><span class="cmbbr"></span>` : ""}${!b && S.chars.some(f => !f.r && isBlocker(f.card.c)) ? `<span class="hint">Tap a glowing Blocker to block.</span>` : ""}<button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn" data-do="cmbblock" type="button">${b ? "Change block" : "Block"}</button>${r ? `<button class="btn pri" data-do="dfresolve" type="button">${res}</button>` : `<span class="hint">Power unknown, so resolve by hand.</span>`}<button class="btn" data-do="dfdone" type="button">Attack done</button>`;
     }
   }
   return "";

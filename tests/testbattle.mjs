@@ -126,6 +126,37 @@ const grant = await atk.page.evaluate(async () => {
 console.log("active attack", JSON.stringify(grant));
 check(grant.self && !grant.don0 && grant.don1, "cards that attack active Characters themselves work, with their DON!! need");
 check(grant.granted, "an effect can let another card attack active Characters");
+// tap a glowing Blocker to block, then counter onto the blocker; the log names the attacker
+await def.page.evaluate(() => { const code = [...CARDDB.keys()].find(k => isBlocker(k) && (CARDDB.get(k) || {}).p >= 1000); S.chars.push({card: {u: 996, c: code, n: ""}, r: false, d: 0}); const cc = [...CARDDB.keys()].find(k => (CARDDB.get(k) || {}).ctr === 1000); S.hand.push({u: 995, c: cc, n: ""}); commit(); });
+await A.page.waitForTimeout(1500);
+await atk.page.evaluate(() => { S.leader.r = false; S.turn = Math.max(S.turn, 2); attackWith("ld", "ld"); });
+await def.page.waitForTimeout(3000);
+const bl = await def.page.evaluate(async () => {
+  const k = S.chars.findIndex(f => f.card.u === 996), glow = !!document.querySelector(`#me [data-src="ch:${k}"].canblk, #me [data-src="ch:${k}"] .canblk`), tag = !!document.querySelector(`#me [data-src="ch:${k}"].isblk, #me [data-src="ch:${k}"] .isblk`);
+  openCardMenu("ch:" + k, 300, 300); const blk = S.blk === k;
+  openCardMenu("hand:" + S.hand.findIndex(c => c.u === 995), 300, 300);
+  const bc = (S.chars[k] || {}).bc || 0, ld = S.leader.bc || 0;
+  defResolve(true); await new Promise(r => setTimeout(r, 300));
+  return {glow, tag, blk, bc, ld, log: myLog.map(e => e[1]).slice(-2).join(" | ")};
+});
+console.log("blocker", JSON.stringify(bl));
+check(bl.glow && bl.tag, "Blockers are tagged and glow when they can block");
+check(bl.blk && bl.bc === 1000 && bl.ld === 0, "tap a Blocker to block, then counters go on the blocker");
+check(/OP01-001/.test(bl.log), "the battle log names the attacker");
+await atk.page.waitForTimeout(2500);
+// several End of Turn abilities: the player picks the order
+const eotP = (await atk.page.evaluate(() => S.myTurn)) ? atk.page : def.page;
+const eo = await eotP.evaluate(async () => {
+  const codes = [...CARDDB.keys()].filter(k => /Character/.test((CARDDB.get(k) || {}).t || "") && fxAb(k).some(a => a.t === "endOfTurn")).slice(0, 2);
+  const add = codes.map((c, n) => ({card: {u: 990 + n, c, n: ""}, r: false, d: 0})); S.chars.push(...add); const t0 = S.turn;
+  endTurn(); await new Promise(r => setTimeout(r, 400));
+  const items = [...document.querySelectorAll("#menu button")].map(b => b.textContent);
+  const still = S.myTurn && S.turn === t0;
+  closeMenu(); add.forEach(f => S.chars.splice(S.chars.indexOf(f), 1)); commit();
+  return {codes, items: items.length, still};
+});
+console.log("end of turn", JSON.stringify(eo));
+check(eo.codes.length === 2 && eo.items >= 2 && eo.still, "with two End of Turn abilities, the player picks which goes first");
 await def.page.evaluate(() => { S.chars[S.chars.length - 1].r = true; commit(); });
 await A.page.waitForTimeout(2000);
 await atk.page.evaluate(() => { S.leader.r = false; S.turn = Math.max(S.turn, 2); attackWith("ld", "ch:0"); });
