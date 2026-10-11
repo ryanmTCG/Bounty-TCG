@@ -939,8 +939,8 @@ select.sbtn{font-family:var(--slab)}
 .ohandp h2{display:flex;gap:8px;align-items:center;margin:0 0 6px;font-family:var(--slab);font-weight:400;font-size:15px;color:#F2B84B;text-shadow:0 2px 0 rgba(0,0,0,.55)}
 .ohandp .ohname{color:var(--coral)}
 .hand .card.canplay{box-shadow:0 0 0 3px #5BE07A,0 0 12px rgba(91,224,122,.7)}
-.card.isblk::after{content:"Blocker";position:absolute;left:50%;bottom:2px;transform:translateX(-50%);font:700 9px/1.4 system-ui,sans-serif;background:#2C6BED;color:#fff;padding:0 5px;border-radius:6px;pointer-events:none;z-index:3}
-.card.canblk{box-shadow:0 0 0 3px #2C6BED,0 0 12px rgba(44,107,237,.75)}
+.card.isblk::after{content:"Blocker";position:absolute;left:50%;bottom:2px;transform:translateX(-50%);font:700 9px/1.4 system-ui,sans-serif;background:#F07A1A;color:#fff;padding:0 5px;border-radius:6px;pointer-events:none;z-index:3}
+.card.canblk{box-shadow:0 0 0 3px #F07A1A,0 0 12px rgba(240,122,26,.75)}
 .turnbar .endglow{box-shadow:0 0 0 3px #FFD23F,0 0 14px rgba(255,210,63,.8)}
 .card.canatk{box-shadow:0 0 0 3px #FF8A3D,0 0 12px rgba(255,138,61,.7)}
 .card.oppnew{box-shadow:0 0 0 3px #7CC8FF,0 0 16px rgba(124,200,255,.9)}
@@ -3131,7 +3131,7 @@ function openCardMenu(src, x, y){
       items.push(["Give DON!! (+1)", () => { if (!S.donActive) { toast("No active DON!! in your cost area."); return; } S.donActive--; f.d++; addLog(`gave DON!! to ${lab(f.card)} (+${f.d})`); commit(); }]);
       if (f.pm) items.push([`Clear power bonus (${f.pm > 0 ? "+" : "\u2212"}${Math.abs(f.pm)})`, () => { f.pm = 0; f.bc = 0; addLog(`cleared the power bonus on ${lab(f.card)}`); commit(); }]);
       if (f.cm) items.push([`Clear cost bonus (${f.cm > 0 ? "+" : "\u2212"}${Math.abs(f.cm)})`, () => { f.cm = 0; addLog(`cleared the cost bonus on ${lab(f.card)}`); commit(); }]);
-      if (f.d) items.push(["Take DON!! back", () => { f.d--; S.donRested++; commit(); }]);
+      if (f.d && fxCur) items.push(["Take DON!! back (an effect says so)", () => { f.d--; S.donRested++; addLog(`took a DON!! back from ${lab(f.card)}`); commit(); }]);
     }
     if (k !== "ld") items.push(M("Return to hand", "hand"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"), M("Trash", "trash"));
   } else if (k === "ev") {
@@ -3264,6 +3264,9 @@ const donHolder = k => k === "ld" ? S.leader : (k && k.startsWith("ch:")) ? S.ch
 function moveDon(d, to){
   const fromCard = d.att ? donHolder(d.att) : null;
   if (d.att && (!fromCard || !fromCard.d)) { toast("No DON!! attached there."); return; }
+  // attached DON!! only moves when an effect says so; rested DON!! in the cost area can't be given
+  if (d.att && !fxCur) { toast("DON!! given to a card stays there until your next Refresh Phase, unless an effect moves it."); return; }
+  if (!d.att && d.pool === "r" && to !== "dondeck") { toast("Rested DON!! can't be given. Only active DON!! can."); return; }
   const target = donHolder(to);
   if (d.att && to === d.att) return;
   if (d.kind === "don" && to === "cost") return;
@@ -3475,7 +3478,7 @@ function combatHTML(){
       const ctrs = hc.map(e => { const nm = nameOf(e.c.c) || e.c.c; return `<button class="btn cmbctr" data-do="cmbhc:${e.i}" type="button" title="Trash ${esc(lab(e.c))} from your hand for +${e.v} power">+${e.v} ${esc(nm.length > 16 ? nm.slice(0, 15) + "\u2026" : nm)}${e.n > 1 ? ` <i>\u00D7${e.n}</i>` : ""}</button>`; }).join("");
       const evs = counterEvents().map(e => `<button class="btn cmbctr" data-do="cmbev:${e.i}" type="button" title="Play this Counter Event for ${e.cost} DON!!">${esc(lab(e.c))} <i>(${e.cost} DON!!)</i></button>`).join("");
       const res = !r ? "Resolve attack" : r.hits ? (r.onLeader ? "Take 1 damage" : "Resolve: K.O.") : "Resolve: attack fails";
-      return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span>${cmbPow(r, true)}${d && d.bc ? `<span>Counters <i>+${d.bc}</i></span>` : ""}<span class="tmr" id="tmr-cmb" hidden></span><span class="cmbbr"></span>${ctrs || evs ? `<span class="hint">${b ? `Tap Counter cards in your hand to save ${esc(lab(b.card))}.` : "Tap a Counter card in your hand to use it."}</span><span class="cmbbr"></span>` : ""}${!b && S.chars.some(f => !f.r && isBlocker(f.card.c)) ? `<span class="hint">Tap a glowing Blocker to block.</span>` : ""}<button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn" data-do="cmbblock" type="button">${b ? "Change block" : "Block"}</button><button class="btn pri" data-do="${r ? "dfresolve" : "dfdone"}" type="button">${res}</button>`;
+      return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span>${cmbPow(r, true)}${d && d.bc ? `<span>Counters <i>+${d.bc}</i></span>` : ""}<span class="tmr" id="tmr-cmb" hidden></span><span class="cmbbr"></span>${ctrs || evs ? `<span class="hint">${b ? `Tap Counter cards in your hand to save ${esc(lab(b.card))}.` : "Tap a Counter card in your hand to use it."}</span><span class="cmbbr"></span>` : ""}${!b && S.chars.some(f => !f.r && isBlocker(f.card.c)) ? `<span class="hint">Tap a glowing Blocker to block.</span>` : ""}<button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn pri" data-do="${r ? "dfresolve" : "dfdone"}" type="button">${res}</button>`;
     }
   }
   return "";
@@ -3563,6 +3566,8 @@ document.addEventListener("pointerdown", e => {
   const pmb = e.target.closest("[data-psrc]");
   if (pmb) { const pe = pmb.closest("[data-src]"); drag = {src: pe ? pe.dataset.src : pmb.dataset.psrc, pm: pmb.dataset.psrc, sx: e.clientX, sy: e.clientY, el: pe || pmb}; return; }
   const bdg = e.target.closest("[data-dsrc]"), tok = e.target.closest("[data-don]");
+  if (tok && !bdg && tok.dataset.don === "r") { toast("Rested DON!! can't be moved. Only active DON!! can be given to your cards."); return; }
+  if (bdg && !fxCur) { toast("DON!! given to a card stays there until your next Refresh Phase, unless an effect moves it."); return; }
   if (tok && !bdg) { drag = {kind: "don", pool: tok.dataset.don, sx: e.clientX, sy: e.clientY, el: tok}; return; }
   const el = e.target.closest("[data-src]");
   if (!el) return;

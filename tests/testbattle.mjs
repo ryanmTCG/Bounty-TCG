@@ -173,6 +173,14 @@ console.log("timing", JSON.stringify(tl));
 check(tl.oppTurn.every(x => !x) && !tl.onPlayMine, "only allowed abilities can be used, and On Play never by hand");
 check(tl.lim.leader && !tl.lim.chars && tl.lim.maxP === 4000 && tl.c0.length === 0, "a 5000 power Leader isn't a target for a 4000 or less effect");
 check(tl.pub.every(Boolean), "the log keeps combat, turns, searches and trash pickups, and hides the rest");
+const dn = await eotP.evaluate(() => {
+  const a0 = S.donActive, r0 = S.donRested, d0 = S.leader.d || 0;
+  S.donRested = Math.max(1, r0); moveDon({kind: "don", pool: "r"}, "ld"); const rested = (S.leader.d || 0) === d0;
+  S.leader.d = d0 + 1; moveDon({att: "ld"}, "cost"); const kept = S.leader.d === d0 + 1;
+  S.leader.d = d0; S.donActive = a0; S.donRested = r0; commit();
+  return {rested, kept};
+});
+check(dn.rested && dn.kept, "rested DON!! can't be given, and given DON!! stays on its card");
 await def.page.evaluate(() => { S.chars[S.chars.length - 1].r = true; commit(); });
 await A.page.waitForTimeout(2000);
 await atk.page.evaluate(() => { S.leader.r = false; S.turn = Math.max(S.turn, 2); attackWith("ld", "ch:0"); });
