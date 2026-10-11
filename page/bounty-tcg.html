@@ -758,6 +758,14 @@ select.sbtn{font-family:var(--slab)}
 .fxc{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
 .mid.combat .cmbhit{color:#B8F5B0}
 .mid.combat .cmbmiss{color:#FFB3B3}
+/* tidy filter bar: search and dropdowns on one row, colors, sort and checkboxes on the next */
+.bd-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.bd-search{flex:1 1 100%;flex-wrap:wrap}
+.bd-opts{flex-direction:row;align-items:center;gap:8px;flex:0 0 auto}
+.bd-opts select{height:30px;padding:0 8px;border-radius:10px;border:1.5px solid var(--line);background:rgba(0,0,0,.3);color:var(--ink)}
+.bd-checks{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;margin-left:auto}
+.bd-checks .bdart,.bd-checks .bdshow,.bd-checks .bdshow label{display:flex;align-items:center;gap:5px;font-size:13px}
+.bd-checks .bdshow{gap:10px}
 </style>
 </head>
 <body>
@@ -868,9 +876,6 @@ select.sbtn{font-family:var(--slab)}
             <select id="bd-type" aria-label="Filter by type" hidden><option value="">All types</option></select>
             <select id="bd-kw" aria-label="Filter by keyword tag" hidden><option value="">All keywords</option></select>
             <select id="bd-attr" aria-label="Filter by attribute" hidden><option value="">All attributes</option></select>
-            <label class="bdart"><input type="checkbox" id="bd-artonly"> Only cards with art</label>
-            <label class="bdart"><input type="checkbox" id="bd-group" checked> Group by color</label>
-            <span class="bdart bdshow" title="Banned: on the official ban list, so not allowed in any format. Rotated: Block 1 cards, out of Standard since April 1, 2026 but still allowed in Extra. List checked October 2026.">Show <label><input type="checkbox" id="bd-showban" checked> Banned</label><label><input type="checkbox" id="bd-showrot" checked> Rotated</label></span>
           </div>
         </div>
         <div class="bd-colors">
@@ -897,6 +902,11 @@ select.sbtn{font-family:var(--slab)}
             </div>
             <button type="button" class="linkbtn" data-do="rdrefresh" title="Re-read every card's cost and power with the current reader settings">Update costs and power</button>
           </div>
+        </div>
+        <div class="bd-checks">
+          <label class="bdart"><input type="checkbox" id="bd-artonly"> Only cards with art</label>
+          <label class="bdart"><input type="checkbox" id="bd-group" checked> Group by color</label>
+          <span class="bdart bdshow" title="Banned: on the official ban list, so not allowed in any format. Rotated: Block 1 cards, out of Standard since April 1, 2026 but still allowed in Extra. List checked October 2026.">Show <label><input type="checkbox" id="bd-showban" checked> Banned</label><label><input type="checkbox" id="bd-showrot" checked> Rotated</label></span>
         </div>
       </div>
       <div class="bd-lib" id="bd-lib"></div>

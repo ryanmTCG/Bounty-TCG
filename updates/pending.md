@@ -8,3 +8,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - The home screen has three buttons (Play, Deck editor, Sign in); Play opens a page with the game modes.
 - The deck editor's Back to table button is now Home.
 - The deck editor's Use this deck button is now Play: it saves the deck and opens the Play page.
+- The deck editor's filter bar is tidier: search and dropdowns on one row, colors and sort below, checkboxes in their own row.
