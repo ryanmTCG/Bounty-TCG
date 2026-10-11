@@ -32,5 +32,5 @@ Whatever is on `main` in `updates/latest.json` reaches every player, so only pub
 ## Rules
 
 - Never commit card art, `*.webp`, or Bandai's DON!!/sleeve images. `private/static/` holds the latter locally and is gitignored. Update bundles skip them too.
-- Run the tests in `tests/` against `dist/kit/app` after building: `xvfb-run -a node tests/testupdate.mjs`, `testlobby.mjs`, `testlegal.mjs`, `test2p.mjs`, `testranked.mjs`, `testaccount.mjs` (accounts against a local stand-in for Firebase). The multiplayer tests start a local PeerJS server from the `peer` package.
+- Run the tests in `tests/` against `dist/kit/app` after building: `xvfb-run -a node tests/testupdate.mjs`, `testlobby.mjs`, `testlegal.mjs`, `test2p.mjs`, `testranked.mjs`, `testaccount.mjs` (accounts against a local stand-in for Firebase), `testrejoin.mjs`. The multiplayer tests start a local PeerJS server from the `peer` package.
 - After changing the page, the claude.ai artifact needs republishing separately; the desktop app gets it through an update.

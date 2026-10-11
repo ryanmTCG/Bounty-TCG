@@ -68,7 +68,10 @@ const B2 = await (async () => {
   const app = await electron.launch({ executablePath: "node_modules/electron/dist/electron", args: ["--no-sandbox", "dist/kit/app"], env: { ...process.env, BOUNTY_PROFILE: "/tmp/bounty-prof-rkb", BOUNTY_QUERY: q } });
   const page = await app.firstWindow(); await page.waitForTimeout(3500); return { app, page };
 })();
-console.log("B before", JSON.stringify(bBefore), "B reopened", JSON.stringify(await B2.page.evaluate(() => [RANK, localStorage.getItem("bounty:rankpend")])), await toastText(B2.page));
+// the match could still be rejoined, so the loss waits; choosing not to rejoin (or waiting too long) applies it
+console.log("B before", JSON.stringify(bBefore), "B reopened", JSON.stringify(await B2.page.evaluate(() => [RANK, (document.querySelector('[data-do="rejoin"]') || {}).textContent])));
+await B2.page.evaluate(() => rankDeferredApply()); await B2.page.waitForTimeout(2000);
+console.log("B gave up the rejoin", JSON.stringify(await B2.page.evaluate(() => [RANK, localStorage.getItem("bounty:rankpend"), localStorage.getItem("bounty:match")])), await toastText(B2.page));
 await B2.app.close();
 await A.page.evaluate(() => { closeModal(); openRanked(); }); await wait(1500);
 console.log("A board", JSON.stringify(await rk(A.page)));

@@ -810,6 +810,7 @@ select.sbtn{font-family:var(--slab)}
 .sheet input[type=email]:focus,.sheet input[type=password]:focus{outline:none;border-color:#F2B84B;box-shadow:0 0 0 3px rgba(242,184,75,.35)}
 .accmsg{min-height:1.3em;margin:8px 0 0;color:#F1DDB0}
 .accmsg.bad{color:#FF9A8A}
+.btn.rejoin{background:linear-gradient(180deg,#7FE0A0,#2E9E5B);color:#08240F;border-color:#12262D}
 </style>
 </head>
 <body>
@@ -1081,7 +1082,8 @@ async function connect(code){
   render();
 }
 async function leaveRoom(){
-  rankForfeit();
+  if (rejoining) return;
+  rankForfeit(); matchForget();
   if (R) { try { await R.leave(); } catch (e) {} }
   R = null; oppPeer = null; oppM = null; PR = null;
   if (myLobby) { myLobby = null; lobbyUpdate(); }
@@ -1123,6 +1125,7 @@ let pubT = null;
 function publish(){ if (!R) return; clearTimeout(pubT); pubT = setTimeout(doPublish, 80); }
 function doPublish(){
   if (!R) return;
+  matchSave();
   const p = S.phase === "none" ? {p:0, nick:S.nick} : pubFull();
   if (p.tr && JSON.stringify(p).length > 3400) p.tr = p.tr.map(t => [t[0]]);
   R.presence(p).catch(() => {});
@@ -1229,7 +1232,7 @@ async function rankSave(){
 // Leaving counts as a loss. While a ranked match is on, a marker sits in this browser; it's cleared when the match
 // ends normally, so closing the window mid-match costs the bounty on the next visit. The player who stays wins once
 // the leaver has been gone for RANK_GRACE (a short drop-out that reconnects doesn't count).
-let RANK_GRACE = 60000;
+let RANK_GRACE = 120000;   // long enough to reopen the game and press Rejoin
 function rankPend(on){ try { if (on) localStorage.setItem("bounty:rankpend", typeof on === "string" ? on : "1"); else localStorage.removeItem("bounty:rankpend"); } catch (e) {} }
 function rankResult(won, why){
   S.rankDone = true; S.rankWon = won; rankPend(false);
@@ -1261,14 +1264,22 @@ function rankCheck(){
 }
 // leaving a ranked match before it's over (starting another game, going offline) concedes it
 function rankForfeit(){
-  if (!S.ranked || S.rankDone || !S.rankOpp) return;
+  if (rejoining || !S.ranked || S.rankDone || !S.rankOpp) return;
   rankResult(false, "You left a ranked match, so it counts as a loss.");
   S.conceded = true; S.atk = null; S.blk = null;   // tell the opponent, so they get their win straight away
   try { commit(); } catch (e) {}
 }
+let rankDeferred = false;
 function rankPendingCheck(){
   let p = null; try { p = localStorage.getItem("bounty:rankpend"); } catch (e) {}
   if (!p) return;
+  // a ranked match that can still be rejoined isn't lost yet: wait until the chance to rejoin runs out
+  const m = matchSaved();
+  if (m && m.ranked && !rankDeferred) {
+    rankDeferred = true;
+    setTimeout(rankDeferredApply, Math.max(0, m.t + RANK_GRACE - 10000 - Date.now()));
+    return;
+  }
   rankPend(false);
   const before = RANK.b, step = 25000 + Math.round(Math.random() * 50) * 100;
   RANK.b = Math.max(0, before - Math.round(step * LOSS[rankName(before)] / 100) * 100); RANK.l++;
@@ -1458,6 +1469,55 @@ async function accountReset(){
   if (!email) { accMsg("Enter your email above first, then press Forgot your password? again.", true); return; }
   try { await a.reset(email); accMsg(`If there's an account for ${email}, a link to pick a new password is on its way. Check your inbox.`); }
   catch (e) { accMsg((e && e.message) || "Couldn't send the email right now.", true); }
+}
+
+// ---------- rejoin ----------
+// An online match is saved in this browser as it's played, so a dropped connection, a crash or a closed
+// window can be picked up again: the player reopens the game, presses Rejoin, and is back at the same table.
+const MATCH_KEY = "bounty:match", MATCH_MAX = 2 * 3600 * 1000;
+let rejoining = false, matchT = null;
+function matchSave(){
+  if (!R || PR || rejoining || !roomCode || roomCode === "practice") return;
+  if (S.phase !== "pre" && S.phase !== "play" && S.phase !== "roll") return;
+  if (S.conceded || (oppM && oppM.cd)) { matchForget(); return; }   // the match is over
+  clearTimeout(matchT);
+  matchT = setTimeout(() => {
+    try { localStorage.setItem(MATCH_KEY, JSON.stringify({room: roomCode, t: Date.now(), opp: oppM ? oppM.nick : "", ranked: !!S.ranked, lobby: myLobby, cfg: lastCfg, log: myLog.slice(-40), S})); } catch (e) {}
+  }, 200);
+}
+function matchForget(){ clearTimeout(matchT); try { localStorage.removeItem(MATCH_KEY); } catch (e) {} }
+function matchSaved(){
+  try {
+    const m = JSON.parse(localStorage.getItem(MATCH_KEY) || "null");
+    if (!m || !m.room || !m.S || typeof m.S !== "object") return null;
+    // a ranked match can only be rejoined before the opponent is given the win
+    if (Date.now() - m.t > (m.ranked ? RANK_GRACE - 10000 : MATCH_MAX)) return null;
+    return m;
+  } catch (e) { return null; }
+}
+async function rejoinMatch(){
+  const m = matchSaved();
+  if (!m) { toast(rankDeferred ? "That ranked match can't be rejoined any more." : "That match can't be rejoined any more."); matchForget(); openHome(); return; }
+  closeModal(); if (builderOpen) closeBuilder();
+  rejoining = true;
+  try {
+    await leaveRoom();
+    S = Object.assign(blank(), m.S); lastCfg = m.cfg || lastCfg; myLog = Array.isArray(m.log) ? m.log : [];
+    LOG = myLog.map(e => ({who: S.nick || "You", mine: true, m: String(e[1] || "")})); logSeq = myLog.reduce((n, e) => Math.max(n, (+e[0] || 0) + 1), 0); renderLog();
+    S.rankGone = 0; S.rankPend = false; undoStack = []; lastSnap = snapNow();
+    if (m.ranked) { rankDeferred = false; rankPend(false); }   // back at the table: the match carries on
+    status = "connecting"; render();
+    await connect(m.room);
+  } finally { rejoining = false; }
+  if (R && m.lobby && m.lobby.c === m.room) { myLobby = m.lobby; lobbyUpdate(); }
+  addLog("rejoined the table");
+  commit();
+  toast(m.opp ? `You're back at the table with ${m.opp}.` : "You're back at the table.");
+}
+function rankDeferredApply(){
+  if (!rankDeferred) return;
+  rankDeferred = false; matchForget();
+  rankPendingCheck();
 }
 
 function openLobbies(){
@@ -1716,6 +1776,7 @@ async function diagnose(){
 }
 // the desktop app can offer its own email accounts (window.bountyAccount); on claude.ai the claude.ai account is used
 const fbAcct = () => window.bountyAccount && window.bountyAccount.available ? window.bountyAccount : null;
+function rejoinBtn(){ const m = S.phase === "none" ? matchSaved() : null; return m ? `<button class="btn pri rejoin" data-do="rejoin" type="button">Rejoin your match${m.opp ? " with " + esc(m.opp) : ""}${m.ranked ? " (ranked)" : ""}</button>` : ""; }
 function acctBtn(){ const a = fbAcct(); return a ? (a.user() ? "Account" : "Sign in") : "Sign in"; }
 function renderAcct(){
   const el = $("#home-acct"); if (!el) return;
@@ -1734,7 +1795,7 @@ function openHome(page){
       <button class="btn" data-do="homeranked" type="button">Ranked</button>
       <button class="btn" data-do="homeboth" type="button">Test a deck (play both sides)</button>
       <button class="btn" data-do="home" type="button">Back</button>` : `
-      <button class="btn pri homeplay" data-do="homeplay" type="button">Play</button>
+      ${rejoinBtn()}<button class="btn pri homeplay" data-do="homeplay" type="button">Play</button>
       <button class="btn" data-do="homebuilder" type="button">Deck editor</button>
       <button class="btn" data-do="homeprofile" type="button">Profile</button>
       <button class="btn" data-do="homesign" type="button">${acctBtn()}</button>
@@ -1846,7 +1907,7 @@ async function startGame(join){
 // ---------- game actions ----------
 let lastCfg = null;
 function newGame(c, join){
-  rankForfeit();
+  rankForfeit(); matchForget(); rankDeferredApply();
   lastCfg = c;
   const cards = []; let u = 1;
   for (const e of parseLines(c.deck)) for (let k = 0; k < e.count; k++) cards.push({u: u++, c: e.code, n: e.name});
@@ -2978,6 +3039,7 @@ function doAction(a){
     case "lbmake": openSetup({pub: true}); break;
     case "homebuilder": closeModal(); openBuilder(); break;
     case "homeprofile": closeModal(); openProfile(); break;
+    case "rejoin": rejoinMatch(); break;
     case "homesign": if (fbAcct()) openAccount(); else diagnose(); break;
     case "accin": case "accup": accountGo(a === "accup"); break;
     case "accreset": accountReset(); break;
