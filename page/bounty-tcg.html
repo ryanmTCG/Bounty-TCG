@@ -1173,6 +1173,8 @@ function illegalNote(bad, fmt){
 // loser's own game says so (they conceded or took damage at 0 Life), so a winner can't claim a win by themselves.
 // Each ranked game moves the bounty by a random ฿25,000 to ฿30,000; every ฿300,000 is a new rank.
 const RANKS = [[900000, "Yonko"], [600000, "Warlord"], [300000, "Supernova"], [0, "Rookie"]];
+// losses hurt less at low ranks: a quarter of the usual amount for a Rookie, rising to the full amount at Yonko
+const LOSS = {Rookie: .25, Supernova: .5, Warlord: .75, Yonko: 1};
 function rankName(b){ return RANKS.find(x => b >= x[0])[1]; }
 function berry(n){ return "฿" + Math.max(0, Math.round(+n || 0)).toLocaleString("en-US"); }
 function rankFrom(x, nick){ return {b: Number.isFinite(+x.b) ? Math.max(0, Math.round(+x.b)) : 0, w: x.w | 0, l: x.l | 0, nick: String(x.nick || nick || "")}; }
@@ -1205,7 +1207,7 @@ function rankCheck(){
   if (!won && !lost) return;
   S.rankDone = true;
   const before = RANK.b, step = 25000 + Math.round(Math.random() * 50) * 100;   // ฿25,000 to ฿30,000 in ฿100 steps
-  RANK.b = Math.max(0, before + (won ? step : -step));
+  RANK.b = Math.max(0, before + (won ? step : -Math.round(step * LOSS[rankName(before)] / 100) * 100));
   if (won) RANK.w++; else RANK.l++;
   RANK.nick = S.nick || RANK.nick;
   rankSave();
@@ -1225,7 +1227,7 @@ function openRanked(){
   modal = {type: "ranked"};
   const v = loadSaved(), ld = parseLines(v.leader || "")[0], n = deckCount(v.deck || ""), bad = illegalNote(deckIllegal(v, "std"), "std");
   showModal(`<h2>Ranked</h2>
-    <p class="hint">Play a Standard match against someone else who's looking. Win and your bounty goes up by ฿25,000 to ฿30,000; lose and it drops by the same. Every ฿300,000 earns a new rank: Rookie, Supernova, Warlord, then Yonko. A result counts when the losing player concedes or takes damage at 0 Life.</p>
+    <p class="hint">Play a Standard match against someone else who's looking. Win and your bounty goes up by ฿25,000 to ฿30,000. Every ฿300,000 earns a new rank: Rookie, Supernova, Warlord, then Yonko. Losing costs a Rookie a quarter of that, a Supernova half, a Warlord three quarters and a Yonko the full amount. A result counts when the losing player concedes or takes damage at 0 Life.</p>
     <div class="rkme"><span class="rkbadge">${esc(rankName(RANK.b))}</span><div><b>${berry(RANK.b)}</b> bounty<small>${RANK.w} win${RANK.w === 1 ? "" : "s"} · ${RANK.l} loss${RANK.l === 1 ? "" : "es"}</small></div></div>
     <div class="rkdeck">Your deck: ${ld ? `<b>${esc(ld.code)} ${esc(ld.name || nameOf(ld.code) || "")}</b>, ${n} cards` : "<b>none picked yet</b>"} <button class="linkbtn" data-do="homebuilder" type="button">Change it in the Deck editor</button>${bad ? `<div class="rkbad">${esc(bad)}</div>` : ""}</div>
     <div class="lbbar"><button class="btn pri" data-do="rkfind" type="button">Find a match</button><span class="sp"></span><span class="lbcount" id="lb-count"></span></div>
