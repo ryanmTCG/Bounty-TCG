@@ -5,7 +5,8 @@
  *   db     -> this browser's storage, seeded with the bundled card database
  *   assets -> card art stored in this browser (IndexedDB), served by sw.js,
  *             or on disk through the desktop shell (window.bountyDesktop)
- *   user   -> a local player who can edit their own copy
+ *   user   -> a local player who can edit their own copy; signed in to a Bounty account (Firebase email
+ *             sign-in), their id makes decks, bounty and profile sync between computers
  *   sample -> card reading through the desktop shell, with the player's own Claude API key
  * The game calls window.claude.use(name) exactly as before.
  */
@@ -339,7 +340,122 @@
       onSnapshot(cb) { const s = {kind: "col", path, cb}; subs.add(s); seedReady.then(() => { if (subs.has(s)) cb(colSnap(path)); }); return () => subs.delete(s); }
     };
   }
-  const dbNS = Object.freeze({collection: colRef, doc: docRef});
+  /* ------------------------------------------------------------------ */
+  /* accounts: optional email sign-in. A signed-in player's decks, bounty and profile (data/users/<uid>/...)  */
+  /* live in Firestore instead of this computer, and the ranked leaderboard (ranks/...) is shared by everyone. */
+  /* Plain REST calls, so no Firebase library is bundled. Security rules: tools/firestore.rules.              */
+  /* ------------------------------------------------------------------ */
+  // Ryan's Firebase web app config. The apiKey isn't a secret: the Firestore rules decide who reads and writes what.
+  const FB_CONFIG = null;
+  const fbq = new URLSearchParams(location.search);
+  const FB = fbq.get("fbtest")   // tests point this at a local stand-in server
+    ? {apiKey: "test", projectId: "test", auth: fbq.get("fbtest") + "/auth", token: fbq.get("fbtest") + "/token", store: fbq.get("fbtest") + "/fs"}
+    : FB_CONFIG && FB_CONFIG.apiKey && FB_CONFIG.projectId
+      ? {apiKey: FB_CONFIG.apiKey, projectId: FB_CONFIG.projectId, auth: "https://identitytoolkit.googleapis.com/v1", token: "https://securetoken.googleapis.com/v1", store: "https://firestore.googleapis.com/v1"}
+      : null;
+  const LS_AUTH = "bounty:auth";
+  let auth = null;
+  try { auth = FB ? JSON.parse(localStorage.getItem(LS_AUTH) || "null") : null; } catch (e) { auth = null; }
+  function saveAuth(a) { auth = a; try { if (a) localStorage.setItem(LS_AUTH, JSON.stringify(a)); else localStorage.removeItem(LS_AUTH); } catch (e) {} }
+  function keepAuth(j, email) {
+    saveAuth({uid: j.localId || j.user_id, email: j.email || email || (auth && auth.email) || "", idToken: j.idToken || j.id_token,
+      refresh: j.refreshToken || j.refresh_token, exp: Date.now() + (+(j.expiresIn || j.expires_in) || 3600) * 1000 - 60000});
+  }
+  const AUTH_MSG = {
+    EMAIL_EXISTS: "There's already an account with that email. Sign in instead.",
+    INVALID_LOGIN_CREDENTIALS: "That email and password don't match an account.",
+    EMAIL_NOT_FOUND: "That email and password don't match an account.",
+    INVALID_PASSWORD: "That email and password don't match an account.",
+    WEAK_PASSWORD: "Use a password with at least 6 characters.",
+    INVALID_EMAIL: "That doesn't look like an email address.",
+    MISSING_EMAIL: "Enter your email address.",
+    MISSING_PASSWORD: "Enter a password.",
+    TOO_MANY_ATTEMPTS_TRY_LATER: "Too many tries. Wait a few minutes and try again.",
+    USER_DISABLED: "This account has been switched off."
+  };
+  async function authPost(path, body) {
+    let r, j = {};
+    try { r = await fetch(`${FB.auth}/${path}?key=${encodeURIComponent(FB.apiKey)}`, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)}); j = await r.json().catch(() => ({})); }
+    catch (e) { throw new Error("Couldn't reach the account service. Check your internet connection and try again."); }
+    if (!r.ok) {
+      const code = String((j.error && j.error.message) || "").split(" ")[0].split(":")[0];
+      const err = new Error(AUTH_MSG[code] || "Couldn't sign in right now. Try again in a moment."); err.code = code; throw err;
+    }
+    return j;
+  }
+  async function idToken() {
+    if (!auth) return null;
+    if (Date.now() < auth.exp) return auth.idToken;
+    const r = await fetch(`${FB.token}/token?key=${encodeURIComponent(FB.apiKey)}`, {method: "POST",
+      headers: {"Content-Type": "application/x-www-form-urlencoded"}, body: "grant_type=refresh_token&refresh_token=" + encodeURIComponent(auth.refresh)});
+    if (r.status === 400) { saveAuth(null); location.reload(); throw new Error("signed out"); }   // password changed or account removed
+    if (!r.ok) throw new Error("offline");
+    keepAuth(await r.json()); return auth.idToken;
+  }
+  window.bountyAccount = FB ? Object.freeze({
+    available: true,
+    user: () => auth ? {uid: auth.uid, email: auth.email} : null,
+    async signUp(email, password) { keepAuth(await authPost("accounts:signUp", {email, password, returnSecureToken: true}), email); },
+    async signIn(email, password) { keepAuth(await authPost("accounts:signInWithPassword", {email, password, returnSecureToken: true}), email); },
+    async reset(email) { await authPost("accounts:sendOobCode", {requestType: "PASSWORD_RESET", email}); },
+    signOut() { saveAuth(null); }
+  }) : null;
+
+  // Firestore's typed values <-> plain JSON
+  const fsv = v => v === null || v === undefined ? {nullValue: null} : typeof v === "boolean" ? {booleanValue: v}
+    : typeof v === "number" ? (Number.isInteger(v) ? {integerValue: String(v)} : {doubleValue: v}) : typeof v === "string" ? {stringValue: v}
+    : Array.isArray(v) ? {arrayValue: {values: v.map(fsv)}} : {mapValue: {fields: fsf(v)}};
+  const fsf = o => { const f = {}; for (const k of Object.keys(o || {})) if (o[k] !== undefined) f[k] = fsv(o[k]); return f; };
+  const jsv = v => !v ? null : "integerValue" in v ? Number(v.integerValue) : "doubleValue" in v ? Number(v.doubleValue) : "stringValue" in v ? v.stringValue
+    : "booleanValue" in v ? v.booleanValue : "mapValue" in v ? jsf(v.mapValue.fields) : "arrayValue" in v ? (v.arrayValue.values || []).map(jsv)
+    : "timestampValue" in v ? v.timestampValue : null;
+  const jsf = f => { const o = {}; for (const k of Object.keys(f || {})) o[k] = jsv(f[k]); return o; };
+  const fsUrl = path => `${FB.store}/projects/${encodeURIComponent(FB.projectId)}/databases/(default)/documents/${path.split("/").map(encodeURIComponent).join("/")}`;
+  async function fsFetch(path, opt, query) {
+    const t = await idToken().catch(() => null), h = Object.assign({}, (opt && opt.headers) || {});
+    if (t) h.Authorization = "Bearer " + t;
+    const r = await fetch(fsUrl(path) + (query || ""), Object.assign({}, opt || {}, {headers: h}));
+    if (!r.ok && r.status !== 404) throw {code: r.status === 403 ? "not_granted" : "unavailable", message: "Couldn't reach your account's saved data."};
+    return r;
+  }
+  const isCloud = path => !!FB && (path === "ranks" || path.startsWith("ranks/")
+    || (!!auth && (path === "data/users/" + auth.uid || path.startsWith("data/users/" + auth.uid + "/"))));
+  const cloudSubs = new Set();
+  const cloudNotify = path => cloudSubs.forEach(s => { if (s.path === path || (s.col && childOf(s.path, path))) s.refresh(); });
+  function cloudWatch(path, col, load, cb, err) {
+    const s = {path, col, refresh: () => load().then(x => { if (cloudSubs.has(s)) cb(x); }, e => { if (cloudSubs.has(s) && err) err(e); })};
+    cloudSubs.add(s); s.refresh();
+    const iv = setInterval(s.refresh, 60000);   // picks up changes made on another computer
+    return () => { cloudSubs.delete(s); clearInterval(iv); };
+  }
+  function cloudDocRef(path) {
+    const id = path.split("/").pop();
+    const snap = async () => { const r = await fsFetch(path); const d = r.status === 404 ? null : jsf((await r.json()).fields); return {id, exists: !!d, data: () => d ? clone(d) : undefined}; };
+    const set = async d => { await fsFetch(path, {method: "PATCH", headers: {"Content-Type": "application/json"}, body: JSON.stringify({fields: fsf(clone(d))})}); cloudNotify(path); };
+    return {
+      id, path, get: snap, set,
+      async update(d) { const cur = await snap(); await set(Object.assign(cur.exists ? cur.data() : {}, d)); },
+      async delete() { await fsFetch(path, {method: "DELETE"}); cloudNotify(path); },
+      onSnapshot: (cb, err) => cloudWatch(path, false, snap, cb, err)
+    };
+  }
+  function cloudColRef(path) {
+    const list = async () => {
+      const docs = []; let tok = "";
+      for (let i = 0; i < 10; i++) {
+        const r = await fsFetch(path, null, "?pageSize=300" + (tok ? "&pageToken=" + encodeURIComponent(tok) : ""));
+        const j = r.status === 404 ? {} : await r.json();
+        for (const d of j.documents || []) { const data = jsf(d.fields); docs.push({id: d.name.split("/").pop(), exists: true, data: () => clone(data)}); }
+        if (!j.nextPageToken) break; tok = j.nextPageToken;
+      }
+      return {docs, size: docs.length, empty: !docs.length};
+    };
+    return {path, doc: id => cloudDocRef(path + "/" + id), get: list, onSnapshot: (cb, err) => cloudWatch(path, true, list, cb, err)};
+  }
+  const dbNS = Object.freeze({
+    collection: path => isCloud(path) ? cloudColRef(path) : colRef(path),
+    doc: path => isCloud(path) ? cloudDocRef(path) : docRef(path)
+  });
 
   /* ------------------------------------------------------------------ */
   /* assets: card art kept in this browser's IndexedDB                    */
@@ -406,7 +522,7 @@
   });
   const userNS = Object.freeze({
     isOwner: () => owner(), canEdit: async () => owner(), can: () => owner(),
-    id: async () => null, me: async () => ({id: "local", name: ""}), profiles: async () => ({}), search: async () => []
+    id: async () => auth ? auth.uid : null, me: async () => ({id: auth ? auth.uid : "local", name: ""}), profiles: async () => ({}), search: async () => []
   });
 
   /* card art is served at _blob/<id> by the service worker */

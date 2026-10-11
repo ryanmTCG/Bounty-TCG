@@ -805,6 +805,11 @@ select.sbtn{font-family:var(--slab)}
 .pfcard{position:relative}
 .pfcard .card{--cw:100%;--ch:auto;width:100%;height:auto;aspect-ratio:5 / 7;margin:0;font-size:9px}
 .pfn{position:absolute;right:3px;bottom:3px;padding:0 7px;border-radius:999px;background:rgba(0,0,0,.8);color:#FFE9B8;font-weight:700;font-size:13px}
+.modal.homebg.accpage{grid-template-columns:minmax(0,500px);justify-content:center}
+.sheet input[type=email],.sheet input[type=password]{width:100%;padding:9px 12px;margin:4px 0 6px;border:2px solid rgba(255,240,205,.4);border-radius:12px;background:rgba(0,0,0,.3);color:var(--ink);font:inherit}
+.sheet input[type=email]:focus,.sheet input[type=password]:focus{outline:none;border-color:#F2B84B;box-shadow:0 0 0 3px rgba(242,184,75,.35)}
+.accmsg{min-height:1.3em;margin:8px 0 0;color:#F1DDB0}
+.accmsg.bad{color:#FF9A8A}
 </style>
 </head>
 <body>
@@ -1213,7 +1218,7 @@ async function rankDoc(){
 }
 async function rankLoad(){
   const ref = await rankDoc();
-  if (ref) { try { const sn = await ref.get(); if (sn.exists) RANK = rankFrom(sn.data() || {}, RANK.nick); } catch (e) {} }
+  if (ref) { try { const sn = await ref.get(); if (sn.exists) RANK = rankFrom(sn.data() || {}, RANK.nick); else if (RANK.w + RANK.l) rankSave(); } catch (e) {} }
   rankPendingCheck();
 }
 async function rankSave(){
@@ -1411,6 +1416,50 @@ function openProfile(){
   $("#modal").classList.add("homebg", "lobpage");
 }
 
+// ---------- account (desktop app) ----------
+function acctNote(t){ try { sessionStorage.setItem("bounty:acctnote", t); } catch (e) {} }
+function openAccount(){
+  modal = {type: "account"};
+  setTimeout(() => { if (modal && modal.type === "account") $("#modal").classList.add("homebg", "accpage"); }, 0);
+  const a = fbAcct(), u = a && a.user();
+  showModal(u ? `<h2>Account</h2>
+    <p class="hint">Signed in as <b>${esc(u.email)}</b>. Your decks, bounty and profile are saved to this account. Sign in with the same email on another computer to pick up where you left off.</p>
+    <div class="row end"><button class="btn" data-do="accout" type="button">Sign out</button><button class="btn pri" data-do="home" type="button">Back</button></div>`
+    : `<h2>Sign in</h2>
+    <p class="hint">Sign in to keep your decks, bounty and profile on every computer you play on. New here? Enter your email and pick a password, then press Create account.</p>
+    <label for="acc-email">Email</label><input type="email" id="acc-email" autocomplete="username" autocapitalize="off" spellcheck="false">
+    <label for="acc-pw">Password</label><input type="password" id="acc-pw" autocomplete="current-password" placeholder="At least 6 characters">
+    <p class="accmsg" id="acc-msg" aria-live="polite"></p>
+    <div class="row"><button class="linkbtn" data-do="accreset" type="button">Forgot your password?</button></div>
+    <div class="row end"><button class="btn" data-do="home" type="button">Back</button><button class="btn" data-do="accup" type="button">Create account</button><button class="btn pri" data-do="accin" type="button">Sign in</button></div>`);
+  $("#modal").classList.add("homebg", "accpage");
+  const em = $("#acc-email"); if (em) em.focus();
+  const pw = $("#acc-pw"); if (pw) pw.addEventListener("keydown", e => { if (e.key === "Enter") accountGo(false); });
+}
+function accMsg(t, bad){ const m = $("#acc-msg"); if (m) { m.textContent = t; m.classList.toggle("bad", !!bad); } }
+async function accountGo(create){
+  const a = fbAcct(); if (!a) return;
+  const email = ($("#acc-email") || {}).value.trim(), pw = ($("#acc-pw") || {}).value;
+  if (!email) { accMsg("Enter your email address.", true); return; }
+  if (!pw) { accMsg("Enter a password.", true); return; }
+  document.querySelectorAll('[data-do="accin"],[data-do="accup"]').forEach(b => { b.disabled = true; });
+  accMsg(create ? "Creating your account…" : "Signing in…");
+  try {
+    if (create) await a.signUp(email, pw); else await a.signIn(email, pw);
+    acctNote(create ? "Account created. Your decks, bounty and profile from this computer are now saved to it." : `Signed in as ${email}.`);
+    location.reload();   // everything that saves picks up the account on the way back in
+  } catch (e) {
+    accMsg((e && e.message) || "Couldn't sign in right now.", true);
+    document.querySelectorAll('[data-do="accin"],[data-do="accup"]').forEach(b => { b.disabled = false; });
+  }
+}
+async function accountReset(){
+  const a = fbAcct(), email = ($("#acc-email") || {}).value.trim();
+  if (!email) { accMsg("Enter your email above first, then press Forgot your password? again.", true); return; }
+  try { await a.reset(email); accMsg(`If there's an account for ${email}, a link to pick a new password is on its way. Check your inbox.`); }
+  catch (e) { accMsg((e && e.message) || "Couldn't send the email right now.", true); }
+}
+
 function openLobbies(){
   modal = {type: "lobbies"};
   showModal(`<h2>Lobbies</h2>
@@ -1606,8 +1655,8 @@ function renderStatus(){
 }
 
 // ---------- modals ----------
-function showModal(html){ lobbyUnwatch(); const m = $("#modal"); m.classList.remove("homebg", "lobpage"); m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`; m.hidden = false; }
-function closeModal(){ lobbyUnwatch(); modal = null; $("#modal").classList.remove("homebg", "lobpage"); $("#modal").hidden = true; $("#modal").innerHTML = ""; }
+function showModal(html){ lobbyUnwatch(); const m = $("#modal"); m.classList.remove("homebg", "lobpage", "accpage"); m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`; m.hidden = false; }
+function closeModal(){ lobbyUnwatch(); modal = null; $("#modal").classList.remove("homebg", "lobpage", "accpage"); $("#modal").hidden = true; $("#modal").innerHTML = ""; }
 function renderModal(){
   if (!modal || modal.type === "setup" || modal.type === "lobbies" || modal.type === "home" || modal.type === "art" || modal.type === "cardsdata" || modal.type === "reader") return;
   const close = `<div class="row end"><button class="btn" data-do="closemodal" type="button">Close</button></div>`;
@@ -1665,9 +1714,13 @@ async function diagnose(){
   else if (r.room) toast("Live play works, but saving to the account doesn't. (" + detail + ")");
   else toast("This page isn't letting this account in (" + detail + "). Ask the owner to invite this exact claude.ai email from Share with Contributor access, then reload.");
 }
+// the desktop app can offer its own email accounts (window.bountyAccount); on claude.ai the claude.ai account is used
+const fbAcct = () => window.bountyAccount && window.bountyAccount.available ? window.bountyAccount : null;
+function acctBtn(){ const a = fbAcct(); return a ? (a.user() ? "Account" : "Sign in") : "Sign in"; }
 function renderAcct(){
   const el = $("#home-acct"); if (!el) return;
-  el.innerHTML = acctState === "in" ? "<b>Signed in.</b> Your decks save to your account on any device."
+  const fu = fbAcct() && fbAcct().user();
+  el.innerHTML = fu ? `<b>Signed in</b> as ${esc(fu.email)}. Your decks, bounty and profile follow you to any computer.` : acctState === "in" ? "<b>Signed in.</b> Your decks save to your account on any device."
     : acctState === "out" ? "<b>Not connected.</b> Decks save in this browser only. To play live, sign in to claude.ai and ask the owner to invite your email from Share. Press Sign in below to see what's blocked."
     : "Checking your account…";
 }
@@ -1684,7 +1737,7 @@ function openHome(page){
       <button class="btn pri homeplay" data-do="homeplay" type="button">Play</button>
       <button class="btn" data-do="homebuilder" type="button">Deck editor</button>
       <button class="btn" data-do="homeprofile" type="button">Profile</button>
-      <button class="btn" data-do="homesign" type="button">Sign in</button>
+      <button class="btn" data-do="homesign" type="button">${acctBtn()}</button>
       ${back}`;
   showModal(`<div>
     <h2>Bounty TCG</h2>
@@ -2925,7 +2978,10 @@ function doAction(a){
     case "lbmake": openSetup({pub: true}); break;
     case "homebuilder": closeModal(); openBuilder(); break;
     case "homeprofile": closeModal(); openProfile(); break;
-    case "homesign": diagnose(); break;
+    case "homesign": if (fbAcct()) openAccount(); else diagnose(); break;
+    case "accin": case "accup": accountGo(a === "accup"); break;
+    case "accreset": accountReset(); break;
+    case "accout": fbAcct().signOut(); try { for (const k of ["bounty:rank", "bounty:stats"]) localStorage.removeItem(k); } catch (e) {} acctNote("You're signed out. Sign in again any time to get your decks and bounty back."); location.reload(); break;
     case "builder": openBuilder(); break;
     case "carddata": openCardData(); break;
     case "reader": openReader(); break;
@@ -3312,13 +3368,25 @@ async function initDecks(){
     if (db && uid) {
       deckRef = db.collection("data/users/" + uid);
       deckMode = "cloud";
+      let first = true;
       deckRef.onSnapshot(snap => {
         DECKS = snap.docs.map(d => cleanDeck(d.id, d.data())).filter(d => d.deck); sortDecks(); renderSaved();
+        if (first) { first = false; moveLocalDecks(uid); }
       }, () => useLocalDecks());
       return;
     }
   } catch (e) {}
   useLocalDecks();
+}
+// decks saved on this computer before signing in are copied into the account once, if it has none yet
+async function moveLocalDecks(uid){
+  const key = "bounty:decksmoved:" + uid;
+  try { if (localStorage.getItem(key) || DECKS.length) return; } catch (e) { return; }
+  const mine = localDecks(); if (!mine.length) return;
+  try {
+    for (const d of mine.slice(0, 30)) await deckRef.doc(d.id).set({name: d.name, leader: d.leader, deck: d.deck, life: d.life, sleeve: d.sleeve | 0, first: !!d.first, t: Date.now()});
+    localStorage.setItem(key, "1");
+  } catch (e) {}
 }
 function deckCount(txt){ return parseLines(txt).reduce((n, e) => n + e.count, 0); }
 function renderSaved(){
@@ -4673,6 +4741,7 @@ floatable("pwp", "pwslot"); floatable("cwp", "cwslot");
 
 // ---------- boot ----------
 initDecks();
+try { const n = sessionStorage.getItem("bounty:acctnote"); if (n) { sessionStorage.removeItem("bounty:acctnote"); setTimeout(() => toast(n), 1200); } } catch (e) {}
 statsLoad().then(rankLoad);   // stats first, so a ranked match left unfinished last time is added to them
 initNames();
 initSettings();

@@ -52,8 +52,8 @@ rep('''async function diagnose(){
   const r = {};''')
 rep('"<b>Signed in.</b> Your decks save to your account on any device."',
     '"<b>Ready to play.</b> Share a room code with a friend to play online. Your decks and card art save on this computer."')
-rep('<button class="btn" data-do="homesign" type="button">Sign in</button>',
-    '<button class="btn" data-do="homesign" type="button">How to play online</button>')
+rep('function acctBtn(){ const a = fbAcct(); return a ? (a.user() ? "Account" : "Sign in") : "Sign in"; }',
+    'function acctBtn(){ const a = fbAcct(); return a ? (a.user() ? "Account" : "Sign in") : "How to play online"; }')
 rep('"Saved in this browser only, because account storage isn\'t available here."', '"Saved on this computer."')
 rep('Images are shrunk to save space and shared with everyone at the table, so your opponent sees them too.',
     'Images are shrunk to save space and saved on this computer. Your opponent sees the art from their own copy of the game.')
