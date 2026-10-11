@@ -52,11 +52,25 @@ console.log("B toast", await toastText(B.page));
 for (const [n, x] of [["A", A], ["B", B]]) console.log(n, "table", JSON.stringify(await x.page.evaluate(() => ({ status: document.querySelector("#status").textContent, ranked: S.ranked, opprk: oppM && oppM.rk }))));
 await B.page.evaluate(() => { S.conceded = true; commit(); }); await wait(3000);
 for (const [n, x] of [["A", A], ["B", B]]) console.log(n, "after", JSON.stringify(await x.page.evaluate(() => RANK)), await toastText(x.page));
-// a loss counts even after the opponent has left: B starts a second match, A leaves, then B concedes
-await B.page.evaluate(() => { S.rankDone = false; S.conceded = false; S.rankOpp = true; oppM = null; S.conceded = true; commit(); }); await wait(1500);
-console.log("B loss with opponent gone", JSON.stringify(await B.page.evaluate(() => RANK)));
+// leaving counts as a loss: a second ranked match, then B closes the game mid-match
+for (const x of [A, B]) await x.page.evaluate(() => { RANK_GRACE = 4000; closeModal(); openRanked(); });
+await wait(2500);
+await A.page.click('[data-do="rkfind"]'); await wait(3000);
+await B.page.click('[data-do="rkfind"]'); await wait(5000);
+console.log("match 2", JSON.stringify(await A.page.evaluate(() => ({ ranked: S.ranked, opp: !!oppM, pend: localStorage.getItem("bounty:rankpend") }))), JSON.stringify(await B.page.evaluate(() => ({ ranked: S.ranked, opp: !!oppM, pend: localStorage.getItem("bounty:rankpend") }))));
+const bBefore = await B.page.evaluate(() => RANK);
+await B.app.close();
+await wait(26000);   // the desktop room notices a closed window within about 15 seconds, then the grace period runs
+console.log("A after B left", JSON.stringify(await A.page.evaluate(() => RANK)), await toastText(A.page));
+// B opens the game again: the match it walked out of costs bounty
+const B2 = await (async () => {
+  const app = await electron.launch({ executablePath: "node_modules/electron/dist/electron", args: ["--no-sandbox", "dist/kit/app"], env: { ...process.env, BOUNTY_PROFILE: "/tmp/bounty-prof-rkb", BOUNTY_QUERY: q } });
+  const page = await app.firstWindow(); await page.waitForTimeout(3500); return { app, page };
+})();
+console.log("B before", JSON.stringify(bBefore), "B reopened", JSON.stringify(await B2.page.evaluate(() => [RANK, localStorage.getItem("bounty:rankpend")])), await toastText(B2.page));
+await B2.app.close();
 await A.page.evaluate(() => { closeModal(); openRanked(); }); await wait(1500);
 console.log("A board", JSON.stringify(await rk(A.page)));
 await A.page.screenshot({ path: OUT + "/2-after.png" });
 console.log("errorsA", JSON.stringify(A.errs.slice(0, 5))); console.log("errorsB", JSON.stringify(B.errs.slice(0, 5)));
-await A.app.close(); await B.app.close(); peer.kill();
+await A.app.close(); peer.kill();

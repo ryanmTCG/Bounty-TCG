@@ -1058,6 +1058,7 @@ async function connect(code){
   render();
 }
 async function leaveRoom(){
+  rankForfeit();
   if (R) { try { await R.leave(); } catch (e) {} }
   R = null; oppPeer = null; oppM = null; PR = null;
   if (myLobby) { myLobby = null; lobbyUpdate(); }
@@ -1193,13 +1194,31 @@ async function rankDoc(){
   return rankRef;
 }
 async function rankLoad(){
-  const ref = await rankDoc(); if (!ref) return;
-  try { const sn = await ref.get(); if (sn.exists) RANK = rankFrom(sn.data() || {}, RANK.nick); } catch (e) {}
+  const ref = await rankDoc();
+  if (ref) { try { const sn = await ref.get(); if (sn.exists) RANK = rankFrom(sn.data() || {}, RANK.nick); } catch (e) {} }
+  rankPendingCheck();
 }
 async function rankSave(){
   try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {}
   const ref = await rankDoc();
   if (ref) { try { await ref.set({b: RANK.b, w: RANK.w, l: RANK.l, nick: clean(RANK.nick, 20) || "Player", t: Date.now()}); } catch (e) {} }
+}
+// Leaving counts as a loss. While a ranked match is on, a marker sits in this browser; it's cleared when the match
+// ends normally, so closing the window mid-match costs the bounty on the next visit. The player who stays wins once
+// the leaver has been gone for RANK_GRACE (a short drop-out that reconnects doesn't count).
+let RANK_GRACE = 60000;
+function rankPend(on){ try { if (on) localStorage.setItem("bounty:rankpend", "1"); else localStorage.removeItem("bounty:rankpend"); } catch (e) {} }
+function rankResult(won, why){
+  S.rankDone = true; rankPend(false);
+  const before = RANK.b, step = 25000 + Math.round(Math.random() * 50) * 100;   // ฿25,000 to ฿30,000 in ฿100 steps
+  RANK.b = Math.max(0, before + (won ? step : -Math.round(step * LOSS[rankName(before)] / 100) * 100));
+  if (won) RANK.w++; else RANK.l++;
+  RANK.nick = S.nick || RANK.nick;
+  rankSave();
+  const d = RANK.b - before, up = rankName(RANK.b) !== rankName(before);
+  const msg = (why ? why + " " : "") + (!d ? `Ranked loss. Your bounty is already ${berry(0)}, so it stays there.`
+    : `Ranked ${won ? "win" : "loss"}: bounty ${won ? "+" : "−"}${berry(Math.abs(d))}. It's now ${berry(RANK.b)}${up ? `, and you're a ${rankName(RANK.b)}${won ? "!" : "."}` : ` (${rankName(RANK.b)}).`}`);
+  setTimeout(() => toast(msg), 60);
 }
 function rankCheck(){
   if (!S.ranked || S.rankDone) return;
@@ -1207,17 +1226,32 @@ function rankCheck(){
   if (!S.rankOpp) return;
   // a loss counts the moment you lose, even if your opponent has already left; a win comes from the opponent's loss
   const lost = S.conceded, won = !lost && !!(oppM && oppM.cd);
-  if (!won && !lost) return;
-  S.rankDone = true;
-  const before = RANK.b, step = 25000 + Math.round(Math.random() * 50) * 100;   // ฿25,000 to ฿30,000 in ฿100 steps
-  RANK.b = Math.max(0, before + (won ? step : -Math.round(step * LOSS[rankName(before)] / 100) * 100));
-  if (won) RANK.w++; else RANK.l++;
-  RANK.nick = S.nick || RANK.nick;
+  if (won || lost) { rankResult(won); return; }
+  if (oppM) { S.rankGone = 0; if (!S.rankPend) { S.rankPend = true; rankPend(true); } return; }
+  // the opponent is gone: if they stay gone (and we're still connected), they've left and we win
+  if (status !== "online" || !R) { S.rankGone = 0; return; }
+  if (!S.rankGone) {
+    const g = S, t = S.rankGone = Date.now();
+    g.rankPend = false; rankPend(false);   // they left first, so our own window closing now isn't a loss
+    setTimeout(() => { if (S === g && g.rankGone === t && !g.rankDone && !oppM && status === "online" && R) { rankResult(true, "Your opponent left the ranked match, so you win."); render(); } }, RANK_GRACE);
+  }
+}
+// leaving a ranked match before it's over (starting another game, going offline) concedes it
+function rankForfeit(){
+  if (!S.ranked || S.rankDone || !S.rankOpp) return;
+  rankResult(false, "You left a ranked match, so it counts as a loss.");
+  S.conceded = true; S.atk = null; S.blk = null;   // tell the opponent, so they get their win straight away
+  try { commit(); } catch (e) {}
+}
+function rankPendingCheck(){
+  let p = null; try { p = localStorage.getItem("bounty:rankpend"); } catch (e) {}
+  if (!p) return;
+  rankPend(false);
+  const before = RANK.b, step = 25000 + Math.round(Math.random() * 50) * 100;
+  RANK.b = Math.max(0, before - Math.round(step * LOSS[rankName(before)] / 100) * 100); RANK.l++;
   rankSave();
-  const d = RANK.b - before, up = rankName(RANK.b) !== rankName(before);
-  const msg = !d ? `Ranked loss. Your bounty is already ${berry(0)}, so it stays there.`
-    : `Ranked ${won ? "win" : "loss"}: bounty ${won ? "+" : "−"}${berry(Math.abs(d))}. It's now ${berry(RANK.b)}${up ? `, and you're a ${rankName(RANK.b)}${won ? "!" : "."}` : ` (${rankName(RANK.b)}).`}`;
-  setTimeout(() => toast(msg), 60);
+  setTimeout(() => toast(before === RANK.b ? `You left a ranked match before it ended, so it counted as a loss. Your bounty is already ${berry(0)}, so it stays there.`
+    : `You left a ranked match before it ended, so it counted as a loss: bounty −${berry(before - RANK.b)}. It's now ${berry(RANK.b)}.`), 1500);
 }
 async function rankBoard(){
   const db = await getDb(); if (!db) return null;
@@ -1230,7 +1264,7 @@ function openRanked(){
   modal = {type: "ranked"};
   const v = loadSaved(), ld = parseLines(v.leader || "")[0], n = deckCount(v.deck || ""), bad = illegalNote(deckIllegal(v, "std"), "std");
   showModal(`<h2>Ranked</h2>
-    <p class="hint">Play a Standard match against someone else who's looking. Win and your bounty goes up by ฿25,000 to ฿30,000. Every ฿300,000 earns a new rank: Rookie, Supernova, Warlord, then Yonko. Losing costs a Rookie a quarter of that, a Supernova half, a Warlord three quarters and a Yonko the full amount. A result counts when the losing player concedes or takes damage at 0 Life.</p>
+    <p class="hint">Play a Standard match against someone else who's looking. Win and your bounty goes up by ฿25,000 to ฿30,000. Every ฿300,000 earns a new rank: Rookie, Supernova, Warlord, then Yonko. Losing costs a Rookie a quarter of that, a Supernova half, a Warlord three quarters and a Yonko the full amount. A result counts when the losing player concedes or takes damage at 0 Life. Leaving a ranked match early counts as a loss, and your opponent gets the win.</p>
     <div class="rkme"><span class="rkbadge">${esc(rankName(RANK.b))}</span><div><b>${berry(RANK.b)}</b> bounty<small>${RANK.w} win${RANK.w === 1 ? "" : "s"} · ${RANK.l} loss${RANK.l === 1 ? "" : "es"}</small></div></div>
     <div class="rkdeck">Your deck: ${ld ? `<b>${esc(ld.code)} ${esc(ld.name || nameOf(ld.code) || "")}</b>, ${n} cards` : "<b>none picked yet</b>"} <button class="linkbtn" data-do="homebuilder" type="button">Change it in the Deck editor</button>${bad ? `<div class="rkbad">${esc(bad)}</div>` : ""}</div>
     <div class="lbbar"><button class="btn pri" data-do="rkfind" type="button">Find a match</button><span class="sp"></span><span class="lbcount" id="lb-count"></span></div>
@@ -1652,6 +1686,7 @@ async function startGame(join){
 // ---------- game actions ----------
 let lastCfg = null;
 function newGame(c, join){
+  rankForfeit();
   lastCfg = c;
   const cards = []; let u = 1;
   for (const e of parseLines(c.deck)) for (let k = 0; k < e.count; k++) cards.push({u: u++, c: e.code, n: e.name});
