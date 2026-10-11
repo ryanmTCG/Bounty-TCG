@@ -852,7 +852,7 @@ select.sbtn{font-family:var(--slab)}
     <button class="btn" data-do="reader" type="button">Card reader</button>
     <span class="sp"></span>
     <button class="btn pri" data-do="bdplay" type="button">Use this deck</button>
-    <button class="btn" data-do="bdclose" type="button">Back to table</button>
+    <button class="btn" data-do="bdclose" type="button">Home</button>
   </header>
   <div class="bdtabs">
     <button class="btn" data-do="bdtab:cards" type="button">Cards</button>
@@ -2664,7 +2664,7 @@ function doAction(a){
     case "calsave": calSave(); break;
     case "cdfile": $("#cd-file").click(); break;
     case "cdgo": importCardData($("#cd-paste").value); break;
-    case "bdclose": closeBuilder(); if (S.phase === "none") openHome(); break;
+    case "bdclose": closeBuilder(); openHome(); break;
     case "bdsave": bdSave(); break;
     case "bdplay": bdPlay(); break;
     case "bdmore": bdShow += 60; renderLib(); break;
