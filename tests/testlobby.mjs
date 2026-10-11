@@ -55,6 +55,7 @@ await A.page.screenshot({ path: OUT + "/3-hosting.png" });
 await openPlay(C.page); await C.page.click('[data-do="homelobby"]');
 await wait(4000);
 console.log("C sees", JSON.stringify(await lobbies(C.page)));
+console.log("C deck", await C.page.evaluate(() => [document.querySelectorAll(".lbdc").length, (document.querySelector(".lbdhead") || {}).textContent, !!document.querySelector("#modal.lobpage")].join(" ")));
 await C.page.screenshot({ path: OUT + "/4-list.png" });
 // B: browse and join from the list
 await openPlay(B.page); await B.page.click('[data-do="homelobby"]');
