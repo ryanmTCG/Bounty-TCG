@@ -3,14 +3,3 @@
 The desktop app gets an update once 10 changes have piled up here, unless Ryan asks for one sooner.
 Add one line per change. `tools/publish_update.py` publishes them and empties this list.
 
-- Combat follows the rules: defenders counter by tapping cards in hand (no free +power buttons), each attack resolves once, no attacks on your first turn, and only rested Characters (or the Leader) can be attacked unless a card allows it.
-- Cards that let a card attack active Characters work: OP01-021, OP02-014, OP04-081, OP04-090, OP06-110 and OP01-112 by themselves, and EB03-008, EB04-050, OP04-080, OP11-010, OP11-014, OP11-082, OP11-084 and OP11-119 grant it to a card you pick.
-- Blockers show a tag and glow when they can block; tap one to block, then tap Counter cards to save it.
-- End of Turn abilities run when you end the turn, and you pick their order when there are several.
-- The battle log names the attacker, and End turn lights up when nothing is left to play or attack with.
-- Panels have a blue steel finish with gold corner scrollwork.
-- Buttons are steel or gold plate with gold trim, a shine on hover, and ornaments on the main menu buttons.
-- The card preview sits centered in its space without cutting off, and the defender's battle bar drops Attack done (Block, Abilities and the resolve button remain).
-- The table log shows only combat, turn changes, chat, cards revealed from searches and cards taken from the trash.
-- Abilities follow their timing: only On Your Opponent's Attack (and Counters) on the opponent's turn, and On Play never runs again by hand.
-- Effect targets respect limits like "4000 power or less", "cost of 3 or more", "{Type} type" and Leader-only or Character-only.

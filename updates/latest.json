@@ -1,8 +1,8 @@
 {
-  "version": "1.3.7",
+  "version": "1.3.8",
   "shell": 2,
-  "bundle": "web-1.3.7.json.gz",
-  "sha256": "2f3f148b0624f6155db2614df8d7204bf6a0cee76d24cef643d5d09f1d1e953b",
-  "size": 736238,
-  "notes": "New table layout like the playmat: Life sits on the board beside your Characters, the opponent's hand and the table log are on the left, and the card preview and turn buttons are on the right. Took out the Markers box and the Power and Cost counters now that card effects run by themselves. The..."
+  "bundle": "web-1.3.8.json.gz",
+  "sha256": "3ad5939c315e24df3e931d7f2dd04f328dea5843b4a58706aafe041d157a389f",
+  "size": 743466,
+  "notes": "Combat follows the rules: defenders counter by tapping cards in hand (no free +power buttons), each attack resolves once, no attacks on your first turn, and only rested Characters (or the Leader) can be attacked unless a card allows it. Cards that let a card attack active Characters work:..."
 }
