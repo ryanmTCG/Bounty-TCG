@@ -1202,8 +1202,11 @@ async function rankSave(){
   if (ref) { try { await ref.set({b: RANK.b, w: RANK.w, l: RANK.l, nick: clean(RANK.nick, 20) || "Player", t: Date.now()}); } catch (e) {} }
 }
 function rankCheck(){
-  if (!S.ranked || S.rankDone || !oppM || !oppM.rk) return;
-  const lost = S.conceded, won = !lost && oppM.cd;
+  if (!S.ranked || S.rankDone) return;
+  if (oppM && oppM.rk) S.rankOpp = true;   // a ranked opponent sat down, so this match counts
+  if (!S.rankOpp) return;
+  // a loss counts the moment you lose, even if your opponent has already left; a win comes from the opponent's loss
+  const lost = S.conceded, won = !lost && !!(oppM && oppM.cd);
   if (!won && !lost) return;
   S.rankDone = true;
   const before = RANK.b, step = 25000 + Math.round(Math.random() * 50) * 100;   // ฿25,000 to ฿30,000 in ฿100 steps

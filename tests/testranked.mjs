@@ -52,6 +52,9 @@ console.log("B toast", await toastText(B.page));
 for (const [n, x] of [["A", A], ["B", B]]) console.log(n, "table", JSON.stringify(await x.page.evaluate(() => ({ status: document.querySelector("#status").textContent, ranked: S.ranked, opprk: oppM && oppM.rk }))));
 await B.page.evaluate(() => { S.conceded = true; commit(); }); await wait(3000);
 for (const [n, x] of [["A", A], ["B", B]]) console.log(n, "after", JSON.stringify(await x.page.evaluate(() => RANK)), await toastText(x.page));
+// a loss counts even after the opponent has left: B starts a second match, A leaves, then B concedes
+await B.page.evaluate(() => { S.rankDone = false; S.conceded = false; S.rankOpp = true; oppM = null; S.conceded = true; commit(); }); await wait(1500);
+console.log("B loss with opponent gone", JSON.stringify(await B.page.evaluate(() => RANK)));
 await A.page.evaluate(() => { closeModal(); openRanked(); }); await wait(1500);
 console.log("A board", JSON.stringify(await rk(A.page)));
 await A.page.screenshot({ path: OUT + "/2-after.png" });
