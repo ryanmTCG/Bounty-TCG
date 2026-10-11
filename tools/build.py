@@ -47,7 +47,7 @@ rep('toast("Couldn\'t join a live room. Live play needs everyone signed in and i
     'toast("Couldn\'t reach the online table service. Check your internet connection and try again. Playing solo for now.");')
 rep('''async function diagnose(){
   const r = {};''', '''async function diagnose(){
-  toast("Pick a room code in Join table and send it to your friend. When they enter the same code, you're at the same table.");
+  toast("Open Play, then Friends only, make a table with a room code and send it to your friend. When they enter the same code, you're at the same table.");
   return;
   const r = {};''')
 rep('"<b>Signed in.</b> Your decks save to your account on any device."',

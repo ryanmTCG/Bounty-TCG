@@ -10,8 +10,9 @@ This is an unofficial fan project. It isn't affiliated with or endorsed by Banda
 
 The desktop app runs on Windows. Unzip the download and open **Play Bounty TCG** in the folder it makes. There's nothing to install and no account to make. The first time it opens, it puts a shortcut on your desktop.
 
-- **Join table:** pick a room code and send it to a friend. When they type the same code, you're at the same table.
+- **Friends only:** challenge a friend who has the game open, or pick a room code and send it to them. When they type the same code, you're at the same table. Reset board, Refresh and Undo are only in these matches and in practice.
 - **Lobbies:** make an open table that anyone playing can see and join.
+- **Ranked:** get matched with another player and earn bounty.
 - **Deck editor:** build decks, with banned and rotated cards marked for Standard and Extra.
 
 Players connect directly to each other. The free public PeerJS service only introduces the two computers.

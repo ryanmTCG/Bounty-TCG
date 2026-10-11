@@ -360,13 +360,10 @@ button,input,textarea,select{font:inherit;color:inherit}
 .menu button:hover{background:var(--btn2)}
 .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;z-index:100;max-width:min(92vw,460px);text-align:center}
 .toast[hidden]{display:none}
-.turnbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 10px 10px;order:3}
-.turnbar .btn{padding:10px 8px;font-size:15px}
+.turnbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 10px 10px;order:3}
+.turnbar .btn{flex:1 1 0;min-width:0;padding:10px 8px;font-size:15px}
 .turnbar .tb-concede{background:#8E1B24;color:#fff}
-.turnbar [data-do="undo"]{grid-column:1/span 1}
-.turnbar [data-do="endturn"]{grid-column:2/span 2}
-.turnbar #startfb{grid-column:1/-1}
-.turnbar .qcbtn:not([hidden]) + [data-do="endturn"]{grid-column:3/span 1}
+.turnbar [data-do="endturn"],.turnbar #startfb{flex-basis:100%}
 .qcbub{position:fixed;z-index:90;transform:translate(-50%,-100%);background:#FFF6E0;color:#12262D;border:3px solid #12262D;border-radius:18px;padding:8px 16px;font-weight:700;font-size:16px;box-shadow:0 5px 0 rgba(0,0,0,.4),0 12px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;max-width:min(80vw,360px);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qcbub.opp{transform:translate(-50%,0)}
 .qcbub.show{opacity:1}
@@ -991,8 +988,6 @@ select.sbtn{font-family:var(--slab)}
     </div>
   <div class="turnbar">
     <button class="btn tb-concede" data-do="concede" type="button" title="Give up this match">Concede</button>
-    <button class="btn" data-do="drawturn" type="button" title="Draw 1 card">Draw for turn</button>
-    <button class="btn" data-do="donturn" type="button" title="Add 2 DON!! from your DON!! deck (1 on the very first turn)">DON!! for turn</button>
     <button class="btn" data-do="undo" type="button" title="Undo your last move (Ctrl+Z)">Undo action</button>
     <button class="btn qcbtn" data-do="quickchat" id="qcbtn" type="button" hidden title="Send your opponent a quick message">💬 Chat</button>
     <button class="btn pri" data-do="endturn" type="button" title="End your turn and clear power and cost bonuses">End turn</button>
@@ -1001,7 +996,6 @@ select.sbtn{font-family:var(--slab)}
   <div id="banner"></div>
   <div class="tbopts">
     <label class="fxopt" title="Runs [On Play], [When Attacking], [On Block] and [On K.O.] abilities for you"><input type="checkbox" id="fx-auto" data-do="autofx" checked> Auto card effects</label>
-    <label class="fxopt" title="Stands your cards, draws and adds DON!! for you"><input type="checkbox" id="turn-auto" data-do="autoturn" checked> Auto start of turn</label>
     <label class="fxopt"><input type="checkbox" id="snd-on" data-do="sndon" checked> Sounds</label>
   </div>
   </aside>
@@ -1414,7 +1408,12 @@ function commit(){
 }
 function sendOpp(q){ q.id = ++S.mqn; S.mq.push(q); S.mqh = (S.mqh || []).concat(Object.assign({}, q)).slice(-30); }
 const OPP_BACK = {pwr: q => ({k: "pwr", v: -q.v}), rest: () => ({k: "stand"}), stand: () => ({k: "rest"})};
+// Reset board, Refresh and Undo would let someone take back moves against a stranger, so public lobby tables
+// (S.pubt) and ranked matches don't have them. Friends only tables and practice do.
+const boardTools = () => !S.ranked && !S.pubt;
+const NO_TOOLS = "Reset board, Refresh and Undo are only in Friends only matches and practice.";
 function undo(){
+  if (!boardTools()) { toast(NO_TOOLS); return; }
   if (!undoStack.length) { toast("Nothing to undo."); return; }
   const prev = JSON.parse(undoStack.pop());
   if (prev.phase !== S.phase) { toast("You can't undo back past the start of the match."); undoStack = []; return; }
@@ -1821,8 +1820,9 @@ function addFriend(code, nk){
 }
 function openFriends(){
   modal = {type: "friends"};
-  showModal(`<h2>Friends</h2>
-    <p class="hint">See which friends have the game open and challenge them to a match. You play with the deck you last saved in the Deck editor.</p>
+  showModal(`<h2>Friends only</h2>
+    <p class="hint">Matches just for you and your friends, so Reset board, Refresh and Undo are on. Challenge a friend who has the game open (you play with the deck you last saved in the Deck editor), or make a table with a room code and send them the code.</p>
+    <div class="row"><button class="btn pri" data-do="homejoin" type="button">Make or join a table with a room code</button></div>
     <div class="frtop">
       <div class="frcode"><small>Your friend code</small><b id="fr-me">${esc(myFC())}</b><button class="btn" data-do="frcopy" type="button">Copy</button></div>
       <div class="fradd"><small>Add a friend by their code</small><div class="row"><input id="fr-code" maxlength="8" placeholder="K7Q2MX" autocomplete="off" spellcheck="false"><button class="btn pri" data-do="fradd" type="button">Add</button></div></div>
@@ -2076,15 +2076,13 @@ function oppHandPanel(m){
 const EMPTY = () => ({nick:"Opponent", sl:0, tn:0, ld:null, ch:[], st:null, ev:null, ak:null, bk:null, rl:0, fc:null, cd:false, cdw:false, mq:[], ma:0, lf:0, dd:0, da:0, dr:0, dk:0, h:0, tr:[]});
 function render(){
   rankCheck(); statCheck();
-  { const on = S.phase === "play" && S.turn > 0 && S.myTurn;
-    const dr = $('[data-do="drawturn"]'), dn = $('[data-do="donturn"]'), fb = $("#startfb");
-    if (dr) dr.classList.toggle("due", on && S.tdr !== S.turn && !(S.first && S.turn === 1));
-    if (dn) dn.classList.toggle("due", on && S.tdn !== S.turn);
+  { const ok = boardTools(); for (const k of ["resetboard", "refresh", "undo"]) { const b = $(`[data-do="${k}"]`); if (b) b.hidden = !ok; } }
+  { const fb = $("#startfb");
     if (fb) fb.hidden = !(R && !PR && S.phase === "play" && oppM && oppM.et == null);
     const qb = $("#qcbtn"); if (qb) qb.hidden = !(R && !PR && oppM && S.phase !== "none");
     const db = $(".dicebtn"); if (db) db.classList.toggle("due", (S.phase === "roll" && !S.roll) || !!(PR && !PR.order && S.phase === "pre")); }
   { const sw = $("#pswitch"); if (sw) { sw.hidden = !PR; if (PR) sw.textContent = "Switch to Player " + (PR.cur === 0 ? 2 : 1); } }
-  { const fa = $("#fx-auto"); if (fa) fa.checked = autoFx; const ta = $("#turn-auto"); if (ta) ta.checked = autoTurn; const so = $("#snd-on"); if (so) so.checked = sndOn; }
+  { const fa = $("#fx-auto"); if (fa) fa.checked = autoFx; const so = $("#snd-on"); if (so) so.checked = sndOn; }
   $("#opp").innerHTML = side(oppM || EMPTY(), false);
   $("#oppHand").innerHTML = oppHandPanel(oppM || EMPTY());
   if (S.phase === "none") {
@@ -2217,10 +2215,9 @@ function openHome(page){
   modal = {type: "home", page: page || "main"};
   const back = S.phase !== "none" ? '<button class="btn" data-do="closemodal" type="button">Back to table</button>' : "";
   const btns = page === "play" ? `
-      <button class="btn pri" data-do="homejoin" type="button">Join table</button>
+      <button class="btn pri" data-do="homefriends" type="button">Friends only${(n => n ? ` <i class="frn">${n} online</i>` : "")(STATS.fr.filter(f => onlineMap().has(f.c)).length)}</button>
       <button class="btn" data-do="homelobby" type="button">Lobbies</button>
       <button class="btn" data-do="homeranked" type="button">Ranked</button>
-      <button class="btn" data-do="homefriends" type="button">Friends${(n => n ? ` <i class="frn">${n} online</i>` : "")(STATS.fr.filter(f => onlineMap().has(f.c)).length)}</button>
       <button class="btn" data-do="homeboth" type="button">Test a deck (play both sides)</button>
       <button class="btn" data-do="home" type="button">Back</button>` : `
       ${rejoinBtn()}<button class="btn pri homeplay" data-do="homeplay" type="button">Play</button>
@@ -2247,7 +2244,7 @@ function openSetup(opts){
   formSleeve = Math.min(6, Math.max(0, Math.floor(+v.sleeve) || 0));
   modal = {type: "setup", lobby: jl};
   showModal(`
-    <h2>${jl ? "Join a lobby" : opts.pub ? "Make a lobby" : "Deck &amp; room"}</h2>
+    <h2>${jl ? "Join a lobby" : opts.pub ? "Make a lobby" : opts.friends ? "Friends only table" : "Deck &amp; room"}</h2>
     ${jl ? `<p class="lbjoining">Joining <b>${esc(jl.n)}</b>, hosted by ${esc(jl.h)}. Format: ${LB_FMT[jl.f]}. Pick your deck, then press Join lobby.</p>` : ""}
     <label>Saved decks</label>
     <p class="hint" id="saved-note"></p>
@@ -2257,7 +2254,7 @@ function openSetup(opts){
     <label for="f-room">Room code</label>
     <div class="row"><input type="text" id="f-room" style="flex:1;min-width:160px" value="${esc(jl ? jl.c : opts.pub ? lobbyCode() : (v.room || randRoom()))}" autocapitalize="off" autocomplete="off"${jl ? " readonly" : ""}>${jl ? "" : '<button class="btn" data-do="newcode" type="button">New code</button>'}</div>
     ${jl ? "" : `<p class="hint">Share the code with your friend. You both type the same one and land at the same table.</p>
-    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="f-pub" ${opts.pub ? "checked" : ""}> List this table in Lobbies so anyone can join</label>
+    ${opts.friends ? "" : `<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="f-pub" ${opts.pub ? "checked" : ""}> List this table in Lobbies so anyone can join. Reset board, Refresh and Undo are off at listed tables.</label>`}
     <div class="row lbopts" id="f-pubopts" ${opts.pub ? "" : "hidden"}>
       <div style="flex:2;min-width:180px"><label for="f-lname">Lobby name</label><input type="text" id="f-lname" maxlength="40" value="${esc(v.lname || "")}" placeholder="Your name's table"></div>
       <div style="flex:1;min-width:140px"><label for="f-fmt">Format</label><select id="f-fmt">${Object.keys(LB_FMT).map(k => `<option value="${k}"${k === fmt0 ? " selected" : ""}>${LB_FMT[k]}${k === "any" ? " (any cards)" : ""}</option>`).join("")}</select></div>
@@ -2285,7 +2282,7 @@ function openSetup(opts){
     <p class="hint">One card per line, with the card number and a count. A name is optional and only for your own reference. Tiles show the card number, since card art isn't loaded.</p>
     <div class="row end">
       <button class="btn" data-do="sample" type="button">Load sample deck</button>
-      ${S.phase !== "none" ? '<button class="btn" data-do="closemodal" type="button">Cancel</button>' : `<button class="btn" data-do="${jl || opts.pub ? "homelobby" : "homeplay"}" type="button">Back</button>`}
+      ${S.phase !== "none" ? '<button class="btn" data-do="closemodal" type="button">Cancel</button>' : `<button class="btn" data-do="${jl || opts.pub ? "homelobby" : opts.friends ? "homefriends" : "homeplay"}" type="button">Back</button>`}
       <button class="btn" data-do="solo" type="button">Practice alone</button>
       <button class="btn" data-do="both" type="button" title="Play both sides of the table yourself to test a deck">Play both sides</button>
       <button class="btn pri" data-do="join" id="f-joinbtn" type="button">${jl ? "Join lobby" : opts.pub ? "Open lobby" : "Join room"}</button>
@@ -2319,6 +2316,7 @@ async function startGame(join){
   save(Object.assign({}, c, {pub: false}));
   if (join) { await leaveRoom(); status = "connecting"; }
   newGame(c, !!join);
+  S.pubt = !!(pub || jl);
   closeModal();
   if (jl && bad) toast("Heads up: " + bad);
   if (join) {
@@ -2456,8 +2454,8 @@ function applyMarkReqs(){
   return ch;
 }
 // ---------- card effects (read off the card art) ----------
-let autoFx = true, fxQueue = [], oppAtkKey = "", autoTurn = true;
-try { autoFx = localStorage.getItem("nakama:autofx") !== "0"; autoTurn = localStorage.getItem("bounty:autoturn") !== "0"; } catch (e) {}
+let autoFx = true, fxQueue = [], oppAtkKey = "";
+try { autoFx = localStorage.getItem("nakama:autofx") !== "0"; } catch (e) {}
 const EFX = new Map();
 try { const j = JSON.parse(localStorage.getItem("nakama:efx7") || "{}"); for (const k in j) EFX.set(k, j[k]); } catch (e) {}
 function saveEfx(){ try { localStorage.setItem("nakama:efx7", JSON.stringify(Object.fromEntries(EFX))); } catch (e) {} }
@@ -2781,16 +2779,17 @@ function startTurn(){
   S.donActive += S.donRested; S.donRested = 0;
   S.myTurn = true; S.tleft = TURN_MS; S.tw = false; if (R && !PR) snd("turn");
   addLog(`started turn ${S.turn}`);
-  if (autoTurn) {
+  {
     // Refresh, Draw and DON!! phases in one go: no draw for the first player's first turn, and 1 DON!! on it
     const noDraw = S.first && S.turn === 1, did = [];
     if (!noDraw && S.tdr !== S.turn) { S.tdr = S.turn; if (S.deck.length) { S.hand.push(S.deck.shift()); addLog("drew a card"); did.push("drew 1 card"); } else did.push("couldn't draw: your deck is empty"); }
     if (S.tdn !== S.turn) { const add = Math.min(noDraw ? 1 : 2, S.donDeck); if (add) { S.tdn = S.turn; S.donDeck -= add; S.donActive += add; addLog(`added ${add} DON!!`); did.push(`added ${add} DON!!`); } }
     toast("Your turn! Stood your cards" + (did.length ? (did.length > 1 ? ", " + did.slice(0, -1).join(", ") + " and " : " and ") + did[did.length - 1] : "") + ".");
-  } else toast(S.first && S.turn === 1 ? "Your turn! Add your DON!! (no draw on the first turn)." : "Your turn! Draw and add your DON!!.");
+  }
   commit();
 }
 function refreshAll(){
+  if (!boardTools()) { toast(NO_TOOLS); return; }
   if (S.phase !== "play") { toast("Set up your deck and Life first."); return; }
   const stand = f => { if (f.mk && f.mk.includes("na") && S.turn >= (f.nat || 0)) { f.mk = f.mk.filter(k => k !== "na"); addLog(`${lab(f.card)} can attack again`); } if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; };
   for (const f of S.chars) { stand(f); S.donRested += f.d; f.d = 0; }
@@ -3525,7 +3524,6 @@ function doAction(a){
   if (a === "fxlook" && fxCur) { const n = fxCur.steps[fxCur.i].n; fxNext(); modal = {type: "peek", n}; renderModal(); addLog(`looked at the top ${Math.min(n, S.deck.length)} cards of their deck`); return; }
   if (a.startsWith("fxdon:") && fxCur) { addDon(fxCur.steps[fxCur.i].n, a === "fxdon:a"); fxNext(); return; }
   if (a === "sndon") { sndOn = !sndOn; try { localStorage.setItem("bounty:snd", sndOn ? "1" : "0"); } catch (e) {} if (sndOn) snd("turn"); toast(sndOn ? "Sounds on." : "Sounds off."); return; }
-  if (a === "autoturn") { autoTurn = !autoTurn; try { localStorage.setItem("bounty:autoturn", autoTurn ? "1" : "0"); } catch (e) {} toast(autoTurn ? "Auto start of turn on: you'll draw and get DON!! automatically." : "Auto start of turn off: use Draw for turn and DON!! for turn."); return; }
   if (a === "autofx") { autoFx = !autoFx; try { localStorage.setItem("nakama:autofx", autoFx ? "1" : "0"); } catch (e) {} toast(autoFx ? "Auto card effects on." : "Auto card effects off."); return; }
   if (a.startsWith("cmbcnt:")) {
     const v = +a.slice(7), d = myDefender();
@@ -3552,7 +3550,7 @@ function doAction(a){
   if (a.startsWith("lbjoin:")) { const lb = lobbyList().find(x => x.c === a.slice(7)); if (lb && lb.s < 2) openSetup({join: lb}); else toast(lb ? "That table just filled up." : "That lobby just closed."); return; }
   switch (a) {
     case "home": closeModal(); if (builderOpen) closeBuilder(); openHome(); break;
-    case "homejoin": openSetup(); break;
+    case "homejoin": openSetup({friends: true}); break;
     case "homeplay": openHome("play"); break;
     case "homelobby": closeModal(); if (builderOpen) closeBuilder(); openLobbies(); break;
     case "homeranked": closeModal(); if (builderOpen) closeBuilder(); openRanked(); break;
@@ -3603,20 +3601,8 @@ function doAction(a){
     case "undo": undo(); break;
     case "quickchat": qcMenu(); break;
     case "prfirst:0": case "prfirst:1": practiceFirst(+a.slice(8)); break;
-    case "drawturn":
-      if (S.phase !== "play" || !S.turn) { toast("Your turn hasn't started yet."); break; }
-      if (S.first && S.turn === 1) { toast("The player going first doesn't draw on their first turn."); break; }
-      if (S.tdr === S.turn) { toast("You already drew for this turn."); break; }
-      S.tdr = S.turn; draw(1); break;
-    case "donturn": {
-      if (S.phase !== "play" || !S.turn) { toast("Your turn hasn't started yet."); break; }
-      if (S.tdn === S.turn) { toast("You already added DON!! this turn."); break; }
-      const add = Math.min(S.turn <= 1 && S.first ? 1 : 2, S.donDeck);
-      if (!add) { toast("Your DON!! deck is empty."); break; }
-      S.tdn = S.turn; S.donDeck -= add; S.donActive += add; addLog(`added ${add} DON!!`); commit(); break;
-    }
-    case "resetboard": if (S.phase === "none" || !lastCfg) { toast("Set up your deck first."); break; } modal = {type: "reset"}; renderModal(); break;
-    case "resetyes": { closeModal(); const first = S.first, wasRoom = S.phase !== "wait" && S.phase !== "roll"; newGame(lastCfg, false); S.first = first; addLog("reset their board"); commit(); } break;
+    case "resetboard": if (!boardTools()) { toast(NO_TOOLS); break; } if (S.phase === "none" || !lastCfg) { toast("Set up your deck first."); break; } modal = {type: "reset"}; renderModal(); break;
+    case "resetyes": { closeModal(); if (!boardTools()) break; const first = S.first, wasRoom = S.phase !== "wait" && S.phase !== "roll"; newGame(lastCfg, false); S.first = first; addLog("reset their board"); commit(); } break;
     case "concede": if (S.phase !== "pre" && S.phase !== "play") { toast("There's no match to concede yet."); break; } if (S.conceded) { toast("You already conceded."); break; } modal = {type: "concede"}; renderModal(); break;
     case "concedeyes": closeModal(); S.conceded = true; S.atk = null; S.blk = null; addLog("conceded the match"); commit(); break;
     case "rolld": if (S.phase === "roll" && !S.roll) { S.roll = 1 + Math.floor(Math.random() * 6); addLog(`rolled a ${S.roll} to see who goes first`); commit(); } break;

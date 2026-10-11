@@ -22,7 +22,7 @@ async function launch(n, keep) {
 }
 const deck = ["OP01-013","OP01-016","OP01-024","OP01-014","OP01-015","OP01-017","OP01-018","OP01-019","OP01-020","OP01-021","OP01-022","OP01-025","OP01-026"].map(c => "4x" + c).join("\n");
 async function join(p, nick) {
-  await openPlay(p); await p.click('[data-do="homejoin"]');
+  await openPlay(p); await p.click('[data-do="homefriends"]'); await p.click('[data-do="homejoin"]');
   await p.fill("#f-nick", nick);
   await p.fill("#f-room", "rejoin-room-1");
   await p.fill("#f-leader", "OP01-001");

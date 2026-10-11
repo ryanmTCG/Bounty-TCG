@@ -21,7 +21,7 @@ async function launch(n) {
 }
 const deck = ["OP01-013","OP01-016","OP01-024","OP01-014","OP01-015","OP01-017","OP01-018","OP01-019","OP01-020","OP01-021","OP01-022","OP01-025","OP01-026"].map(c => "4x" + c).join("\n");
 async function join(p, nick) {
-  await openPlay(p); await p.click('[data-do="homejoin"]');
+  await openPlay(p); await p.click('[data-do="homefriends"]'); await p.click('[data-do="homejoin"]');
   await p.fill("#f-nick", nick);
   await p.fill("#f-room", "battle-room-1");
   await p.fill("#f-leader", "OP01-001");
@@ -120,8 +120,11 @@ const t2 = await def.page.evaluate(() => ({mine: S.myTurn, hand: S.hand.length, 
 console.log("turn 2", JSON.stringify(t2));
 check(t2.mine && t2.hand === before.hand + 1 && t2.deck === before.deck - 1 && t2.don === before.don - 2 && t2.active === 2, "second player's turn drew 1 and added 2 DON!! by itself");
 check(/drew 1 card and added 2 DON!!/.test(t2.toast), "the turn toast says what happened");
-await def.page.click('[data-do="donturn"]'); await def.page.waitForTimeout(500);
-check(await def.page.evaluate(() => S.donActive) === 2, "DON!! for turn doesn't add a second time");
+// a room-code table is Friends only: Reset board, Refresh and Undo are there, and turns start by themselves (no Draw/DON!! for turn buttons)
+const tools = await def.page.evaluate(() => ({shown: ["resetboard", "refresh", "undo"].filter(k => !document.querySelector(`[data-do="${k}"]`).hidden), turnBtns: !!document.querySelector('[data-do="drawturn"], [data-do="donturn"], #turn-auto'), pubt: !!S.pubt}));
+console.log("tools", JSON.stringify(tools));
+check(tools.shown.length === 3 && !tools.pubt, "a Friends only table has Reset board, Refresh and Undo");
+check(!tools.turnBtns, "no Draw for turn, DON!! for turn or Auto start of turn switch");
 // playing from hand takes as many active DON!! as the card costs; an effect can play one for free
 const pay = await def.page.evaluate(() => {
   const ch = k => [...CARDDB.keys()].find(c => /^OP01-/.test(c) && /Character/.test((CARDDB.get(c) || {}).t || "") && (CARDDB.get(c) || {}).k === k);

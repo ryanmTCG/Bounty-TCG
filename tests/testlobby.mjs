@@ -72,6 +72,12 @@ await wait(5000);
 for (const [n, x] of [["A", A], ["B", B]]) {
   console.log(n, "table", JSON.stringify(await x.page.evaluate(() => ({ status: document.querySelector("#status").textContent, opp: [...document.querySelectorAll(".opp .nick, .ohandp .ohname")].map(e => e.textContent), banner: (document.querySelector("#banner") || {}).textContent }))));
 }
+// a table from Lobbies is public: no Reset board, Refresh or Undo for either player, and Ctrl+Z does nothing
+for (const [n, x] of [["A", A], ["B", B]]) {
+  const t = await x.page.evaluate(() => { const before = undoStack.length; document.dispatchEvent(new KeyboardEvent("keydown", {key: "z", ctrlKey: true, bubbles: true})); return {shown: ["resetboard", "refresh", "undo"].filter(k => !document.querySelector(`[data-do="${k}"]`).hidden), pubt: !!S.pubt, undone: undoStack.length !== before, toast: document.querySelector("#toast").textContent}; });
+  console.log(n, "tools", JSON.stringify(t));
+  console.log(!t.shown.length && t.pubt && !t.undone ? "ok  " : "FAIL", n, "public table has no Reset board, Refresh or Undo");
+}
 await B.page.screenshot({ path: OUT + "/6-B-table.png" });
 console.log("C after join", JSON.stringify(await lobbies(C.page)));
 await C.page.screenshot({ path: OUT + "/7-inmatch.png" });
