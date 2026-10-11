@@ -758,6 +758,12 @@ select.sbtn{font-family:var(--slab)}
 .fxc{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
 .mid.combat .cmbhit{color:#B8F5B0}
 .mid.combat .cmbmiss{color:#FFB3B3}
+.mid.combat .cmbbr{flex-basis:100%;height:0}
+.mid.combat .cmbpow{font-size:15px}
+.mid.combat .cmbpow b{margin-left:4px}
+.mid.combat .cmblbl{font-size:13px;opacity:.85}
+.mid.combat .btn.cmbctr{background:#2E6B3A;border-color:#8FD49C;color:#F2FFF0}
+.mid.combat .btn.cmbctr i{background:rgba(0,0,0,.3)}
 /* tidy filter bar: search and dropdowns on one row, colors, sort and checkboxes on the next */
 .bd-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
 .bd-search{flex:1 1 100%;flex-wrap:wrap}
@@ -1991,6 +1997,8 @@ async function startPractice(){
 }
 function applyMarkReqs(){
   let ch = false;
+  const akn = oppM && oppM.ak ? oppM.ak.n || -1 : 0;
+  if (akn !== (S.bcn || 0)) { S.bcn = akn; if (endBattle()) ch = true; }
   if (oppM) {
     for (const q of oppM.mq) {
       if (q.id <= S.ack) continue;
@@ -2344,9 +2352,9 @@ function startTurn(){
   if (S.phase !== "play") { toast(S.phase === "pre" ? "Keep your hand and set your Life first." : (S.phase === "wait" || S.phase === "roll") ? "The match hasn't started yet." : "Set up your deck first."); return; }
   S.turn++;
   const stand = f => { if (f.mk && f.mk.includes("na") && S.turn >= (f.nat || 0)) { f.mk = f.mk.filter(k => k !== "na"); addLog(`${lab(f.card)} can attack again`); } if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; f.mk = (f.mk || []).filter(k => k !== "au"); };
-  for (const f of S.chars) { stand(f); S.donRested += f.d; f.d = 0; f.pm = 0; f.cm = 0; }
+  for (const f of S.chars) { stand(f); S.donRested += f.d; f.d = 0; f.pm = 0; f.cm = 0; f.bc = 0; }
   if (S.stage) S.stage.r = false;
-  stand(S.leader); S.donRested += S.leader.d; S.leader.d = 0; S.leader.pm = 0; S.leader.cm = 0;
+  stand(S.leader); S.donRested += S.leader.d; S.leader.d = 0; S.leader.pm = 0; S.leader.cm = 0; S.leader.bc = 0;
   S.donActive += S.donRested; S.donRested = 0;
   S.myTurn = true;
   addLog(`started turn ${S.turn}`);
@@ -2367,7 +2375,7 @@ function endTurn(){
   if (S.phase !== "play") { toast("Set up your deck and Life first."); return; }
   if (!S.myTurn) { toast("It isn't your turn."); return; }
   S.pw = 0; S.cc = 0; S.atk = null; S.blk = null;
-  for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = 0; f.cm = 0; }
+  for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = 0; f.cm = 0; f.bc = 0; }
   S.myTurn = false; S.et = (S.et || 0) + 1;
   addLog(`ended turn ${S.turn || 0}`);
   commit();
@@ -2462,7 +2470,7 @@ function openCardMenu(src, x, y){
     items.push([f.r ? "Activate (stand)" : "Rest", () => { f.r = !f.r; addLog(`${f.r ? "rested" : "activated"} ${lab(f.card)}`); commit(); }]);
     if (k !== "st") {
       items.push(["Give DON!! (+1)", () => { if (!S.donActive) { toast("No active DON!! in your cost area."); return; } S.donActive--; f.d++; addLog(`gave DON!! to ${lab(f.card)} (+${f.d})`); commit(); }]);
-      if (f.pm) items.push([`Clear power bonus (${f.pm > 0 ? "+" : "\u2212"}${Math.abs(f.pm)})`, () => { f.pm = 0; addLog(`cleared the power bonus on ${lab(f.card)}`); commit(); }]);
+      if (f.pm) items.push([`Clear power bonus (${f.pm > 0 ? "+" : "\u2212"}${Math.abs(f.pm)})`, () => { f.pm = 0; f.bc = 0; addLog(`cleared the power bonus on ${lab(f.card)}`); commit(); }]);
       if (f.cm) items.push([`Clear cost bonus (${f.cm > 0 ? "+" : "\u2212"}${Math.abs(f.cm)})`, () => { f.cm = 0; addLog(`cleared the cost bonus on ${lab(f.card)}`); commit(); }]);
       if (f.d) items.push(["Take DON!! back", () => { f.d--; S.donRested++; commit(); }]);
     }
@@ -2618,7 +2626,7 @@ function movePm(from, to){
   const f = donHolder(from); if (!f || !f.pm) return;
   if (to === from) return;
   const t = to ? donHolder(to) : null, v = f.pm;
-  f.pm = 0;
+  f.pm = 0; f.bc = 0;
   if (t) { t.pm = Math.max(-60000, Math.min(60000, (t.pm || 0) + v)); addLog(`moved ${v > 0 ? "+" : "\u2212"}${Math.abs(v)} power from ${lab(f.card)} to ${lab(t.card)}`); }
   else addLog(`removed the power bonus from ${lab(f.card)}`);
   commit();
@@ -2669,7 +2677,7 @@ function defResolve(apply){
     if (i >= 0) { S.chars.splice(i, 1); S.donRested += r.f.d || 0; S.trash.unshift(r.f.card); addLog(`${lab(r.f.card)} lost the battle and was K.O.'d (${r.ap} vs ${r.tp})`); const kc = r.f.card, kd = r.f.d || 0; setTimeout(() => runAbility(kc, ["onKO"], false, kd), 0); }
   } else if (r) addLog(`the attack failed (${r.ap} vs ${r.tp})`);
   else addLog("finished the opponent's attack");
-  S.rs = oppM.ak.n || 0; S.blk = null; commit();
+  endBattle(); S.rs = oppM.ak.n || 0; S.blk = null; commit();
 }
 function combatResult(){
   // attacker's view: returns {ap, tp, hits, ref, code, onLeader} or null when power is unknown
@@ -2681,6 +2689,28 @@ function combatResult(){
   if (ap === null || tp === null) return null;
   return {ap, tp, hits: ap >= tp, ref, code: d.c, onLeader: ref === "ld"};
 }
+// Counters last for one battle: they come back off once the attack is resolved, cancelled or replaced
+function endBattle(){
+  let ch = false;
+  for (const f of [S.leader, ...S.chars]) if (f && f.bc) { f.pm = Math.max(-60000, Math.min(60000, (f.pm || 0) - f.bc)); f.bc = 0; ch = true; }
+  return ch;
+}
+// counter cards in hand, one entry per card, biggest first
+function handCounters(){
+  const g = new Map();
+  S.hand.forEach((c, i) => { const v = (CARDDB.get(c.c) || {}).ctr; if (!v) return; const e = g.get(c.c); if (e) e.n++; else g.set(c.c, {i, v, c, n: 1}); });
+  return [...g.values()].sort((a, b) => b.v - a.v);
+}
+// "7000 vs 5000" with what happens next, from the attacker's (def false) or defender's (def true) side
+function cmbPow(r, def){
+  if (!r) return "";
+  const up = r.hits ? Math.ceil((r.ap - r.tp + 1) / 1000) * 1000 : 0;
+  const what = def
+    ? (r.hits ? `${r.onLeader ? "You take 1 damage" : "Your Character is K.O.'d"} unless you add +${up}` : (r.onLeader ? "You take no damage" : "Your Character survives"))
+    : (r.hits ? (r.onLeader ? "Hits for 1 damage" : "K.O.") : `Needs +${r.tp - r.ap} more power`);
+  const good = def ? !r.hits : r.hits;
+  return `<span class="cmbpow"><i>${r.ap}</i> vs <i>${r.tp}</i> <b class="${good ? "cmbhit" : "cmbmiss"}">${what}</b></span>`;
+}
 function oppCardAt(ref){ return !oppM || !ref ? null : ref === "ld" ? oppM.ld : oppM.ch[+ref.slice(3)] || null; }
 function ownHolder(ref){ return !ref ? null : ref === "ld" ? S.leader : S.chars[+ref.slice(3)] || null; }
 function myDefender(){
@@ -2691,11 +2721,16 @@ function myDefender(){
 function combatHTML(){
   if (S.atk) {
     const a = ownHolder(S.atk.s), t = oppCardAt(S.atk.t), bi = oppM && oppM.bk != null ? oppM.ch[oppM.bk] : null;
-    if (a) return `<span>\u2694 <b>${esc(lab(a.card))}</b> attacks <b>${esc(t ? lab(t) : "a target")}</b></span>${bi ? `<span>\u21AA Redirected: <b>${esc(lab(bi))}</b> blocked</span>` : ""}${R ? `<span class="hint">Waiting for ${esc(oppM ? oppM.nick : "your opponent")} to resolve it\u2026</span><button class="btn" data-do="cmbdone" type="button">Cancel attack</button>` : `${combatResult() ? `<button class="btn pri" data-do="cmbapply" type="button">Resolve attack</button>` : `<span class="hint">Power unknown for one card, so resolve by hand.</span>`}<button class="btn" data-do="cmbdone" type="button">Attack done</button>`}`;
+    if (a) return `<span>\u2694 <b>${esc(lab(a.card))}</b> attacks <b>${esc(t ? lab(t) : "a target")}</b></span>${bi ? `<span>\u21AA Redirected: <b>${esc(lab(bi))}</b> blocked</span>` : ""}${cmbPow(combatResult(), false)}<span class="cmbbr"></span>${R ? `<span class="hint">Waiting for ${esc(oppM ? oppM.nick : "your opponent")} to resolve it\u2026</span><button class="btn" data-do="cmbdone" type="button">Cancel attack</button>` : `${combatResult() ? `<button class="btn pri" data-do="cmbapply" type="button">Resolve attack</button>` : `<span class="hint">Power unknown for one card, so resolve by hand.</span>`}<button class="btn" data-do="cmbdone" type="button">Attack done</button>`}`;
   }
   if (oppM && oppM.ak) {
     const a = oppCardAt(oppM.ak.s), t = ownHolder(oppM.ak.t), b = S.blk != null ? S.chars[S.blk] : null;
-    if (a && t) return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span><button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn" data-do="cmbblock" type="button">${b ? "Change block" : "Block"}</button><button class="btn" data-do="cmbcnt:1000" type="button">+1000</button><button class="btn" data-do="cmbcnt:2000" type="button">+2000</button><button class="btn" data-do="cmbcnt:4000" type="button">+4000</button>${defResult() ? `<button class="btn pri" data-do="dfresolve" type="button">Resolve attack</button>` : `<span class="hint">Power unknown, so resolve by hand.</span>`}<button class="btn" data-do="dfdone" type="button">Attack done</button>`;
+    if (a && t) {
+      const r = defResult(), d = myDefender(), hc = handCounters();
+      const ctrs = hc.map(e => { const nm = nameOf(e.c.c) || e.c.c; return `<button class="btn cmbctr" data-do="cmbhc:${e.i}" type="button" title="Trash ${esc(lab(e.c))} from your hand for +${e.v} power">+${e.v} ${esc(nm.length > 16 ? nm.slice(0, 15) + "\u2026" : nm)}${e.n > 1 ? ` <i>\u00D7${e.n}</i>` : ""}</button>`; }).join("");
+      const res = !r ? "Resolve attack" : r.hits ? (r.onLeader ? "Take 1 damage" : "Resolve: K.O.") : "Resolve: attack fails";
+      return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span>${cmbPow(r, true)}${d && d.bc ? `<span>Counters <i>+${d.bc}</i></span>` : ""}<span class="cmbbr"></span>${ctrs ? `<span class="cmblbl">Counter from hand:</span>${ctrs}<span class="cmbbr"></span>` : ""}<button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn" data-do="cmbblock" type="button">${b ? "Change block" : "Block"}</button><button class="btn" data-do="cmbcnt:1000" type="button" title="Add power by hand, for this battle">+1000</button><button class="btn" data-do="cmbcnt:2000" type="button" title="Add power by hand, for this battle">+2000</button><button class="btn" data-do="cmbcnt:4000" type="button" title="Add power by hand, for this battle">+4000</button>${r ? `<button class="btn pri" data-do="dfresolve" type="button">${res}</button>` : `<span class="hint">Power unknown, so resolve by hand.</span>`}<button class="btn" data-do="dfdone" type="button">Attack done</button>`;
+    }
   }
   return "";
 }
@@ -3022,8 +3057,15 @@ function doAction(a){
   if (a.startsWith("cmbcnt:")) {
     const v = +a.slice(7), d = myDefender();
     if (!d || !v) return;
-    d.pm = Math.max(-60000, Math.min(60000, (d.pm || 0) + v));
+    d.pm = Math.max(-60000, Math.min(60000, (d.pm || 0) + v)); d.bc = (d.bc || 0) + v;
     addLog(`countered +${v} on ${lab(d.card)}`); commit(); return;
+  }
+  if (a.startsWith("cmbhc:")) {
+    const i = +a.slice(6), c = S.hand[i], d = myDefender(), v = c ? (CARDDB.get(c.c) || {}).ctr : 0;
+    if (!c || !d || !v || !oppM || !oppM.ak) return;
+    S.hand.splice(i, 1); S.trash.unshift(c);
+    d.pm = Math.max(-60000, Math.min(60000, (d.pm || 0) + v)); d.bc = (d.bc || 0) + v;
+    addLog(`used ${lab(c)} from hand as a +${v} Counter on ${lab(d.card)}`); commit(); return;
   }
   if (a.startsWith("cc:")) { const v = +a.slice(3); S.cc = v === 0 ? 0 : Math.max(-20, Math.min(20, (S.cc || 0) + v)); commit(); return; }
   if (a.startsWith("pw:")) { const v = +a.slice(3); S.pw = v === 0 ? 0 : Math.max(-60000, Math.min(60000, (S.pw || 0) + v)); commit(); return; }
