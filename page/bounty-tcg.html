@@ -766,6 +766,10 @@ select.sbtn{font-family:var(--slab)}
 .mid.combat .cmbhit{color:#B8F5B0}
 .mid.combat .cmbmiss{color:#FFB3B3}
 .mid.combat .cmbbr{flex-basis:100%;height:0}
+.chip.tmr{background:#12262D;color:#FFE9B8;font-variant-numeric:tabular-nums}
+.chip.tmr.low,.mid.combat .tmr.low{background:#C0392B;color:#fff}
+.mid.combat .tmr{background:rgba(0,0,0,.35);border-radius:999px;padding:1px 10px;font-variant-numeric:tabular-nums}
+.tmr[hidden]{display:none}
 .mid.combat .cmbpow{font-size:15px}
 .mid.combat .cmbpow b{margin-left:4px}
 .mid.combat .cmblbl{font-size:13px;opacity:.85}
@@ -1111,12 +1115,63 @@ function onPeers(change){
   oppPeer = pickOpp(change.peers);
   oppM = oppPeer ? oppModel(oppPeer.presence) : null;
   if (!PR) qcCheck();
+  if (!oppM || oppM.tl == null) oppTl = null; else if (!oppTl || oppTl.s !== oppM.tl || oppTl.p !== oppM.tp) oppTl = {s: oppM.tl, p: oppM.tp, at: Date.now()};
   if (myLobby) lobbyUpdate();
   mergeLogs(change.peers);
   if (applyMarkReqs()) publish();
   if (advance()) publish();
   render();
 }
+// ---------- ranked turn timer: 3 minutes a turn, 45 seconds to answer an attack ----------
+// It pauses while you wait for your opponent to answer your attack. Running out ends your turn; the third time loses the match.
+const TURN_MS = 180000, RESP_MS = 45000, TIMEOUTS_MAX = 3;
+let tickLast = Date.now(), defN = null, defDl = 0, atkN = null, atkT0 = 0, oppTl = null;
+function timed(){ return !!(S.ranked && R && !PR && S.phase === "play" && oppM && oppM.rk && !S.conceded && !oppM.cd); }
+const fmtT = ms => { const t = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); };
+function turnTick(){
+  const now = Date.now(), dt = Math.min(now - tickLast, 60000); tickLast = now;
+  if (S.atk && S.atk.n !== atkN) { atkN = S.atk.n; atkT0 = now; }
+  if (oppM && oppM.ak && oppM.ak.n !== defN) { defN = oppM.ak.n; defDl = now + RESP_MS; }
+  if (timed()) {
+    if (S.myTurn && !S.atk) {
+      if (S.tleft == null) S.tleft = TURN_MS;
+      S.tleft -= dt;
+      if (S.tleft <= 30000 && !S.tw) { S.tw = true; toast("30 seconds left in your turn."); }
+      if (S.tleft <= 0) { S.tleft = 0; timeUp(); return; }
+    }
+    if (oppM.ak && S.rs !== oppM.ak.n && now >= defDl) {
+      if (modal) closeModal(); closeMenu();
+      const known = !!defResult(); defResolve(known);
+      toast(known ? "Time's up, so the attack resolved." : "Time's up, so the attack is over.");
+    }
+  }
+  updTimers();
+}
+function timeUp(){
+  if (modal) closeModal(); closeMenu();
+  S.tmo = (S.tmo || 0) + 1;
+  if (S.tmo >= TIMEOUTS_MAX) {
+    S.conceded = true; S.atk = null; S.blk = null;
+    addLog(`ran out of time ${TIMEOUTS_MAX} times and lost the match`); toast(`You ran out of time ${TIMEOUTS_MAX} times, so you lose the match.`); commit(); return;
+  }
+  addLog(`ran out of time (${S.tmo} of ${TIMEOUTS_MAX})`);
+  toast(`Time's up, so your turn ended. ${TIMEOUTS_MAX - S.tmo === 1 ? "One more timeout loses the match." : `${TIMEOUTS_MAX - S.tmo} more timeouts lose the match.`}`);
+  endTurn();
+}
+function updTimers(){
+  const on = timed(), now = Date.now();
+  const me = $("#tmr-me"), op = $("#tmr-opp"), cb = $("#tmr-cmb");
+  if (me) { const show = on && S.myTurn && S.tleft != null; me.hidden = !show; if (show) { me.textContent = "\u23F1 " + fmtT(S.tleft) + (S.atk ? " paused" : ""); me.classList.toggle("low", S.tleft <= 30000); } }
+  if (op) {
+    const show = on && !!oppTl; op.hidden = !show;
+    if (show) { const left = oppTl.p ? oppTl.s * 1000 : oppTl.s * 1000 - (now - oppTl.at); op.textContent = "\u23F1 " + fmtT(left) + (oppTl.p ? " paused" : ""); op.classList.toggle("low", left <= 30000); }
+  }
+  if (cb) {
+    const left = oppM && oppM.ak ? (S.rs !== oppM.ak.n ? defDl - now : null) : S.atk ? atkT0 + RESP_MS - now : null;
+    cb.hidden = !on || left == null; if (on && left != null) { cb.textContent = "\u23F1 " + fmtT(left) + (oppM && oppM.ak ? " to respond" : ""); cb.classList.toggle("low", left <= 15000); }
+  }
+}
+setInterval(turnTick, 1000);
 // ---------- quick chat: a fixed set of phrases and emotes, so there's nothing to moderate ----------
 const QC = ["\uD83D\uDC4B Hi, good luck!", "\uD83D\uDC4D Nice play!", "\uD83E\uDD14 Thinking\u2026", "\u23F3 One moment, please", "\u2705 Your turn", "\uD83D\uDE4F Thanks!", "\uD83D\uDE05 Oops!", "\uD83C\uDF89 Good game!", "\uD83D\uDE02", "\uD83D\uDE2E", "\uD83D\uDD25", "\uD83D\uDE24"];
 let myQc = null, qcLast = 0, qcSeen = null; const qcBubT = {};
@@ -1156,7 +1211,7 @@ function oppModel(x){
   return {
     nick: clean(x.nick, 20) || "Opponent", sl: num(x.sl, 6), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
     ld: f(x.ld), ch: (Array.isArray(x.ch) ? x.ch : []).slice(0, 12).map(f).filter(Boolean), st: f(x.st), ev: f(x.ev),
-    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2, rk: x.rk ? 1 : 0, qc: Array.isArray(x.qc) && Number.isInteger(x.qc[0]) && Number.isInteger(x.qc[1]) && QC[x.qc[1]] ? {id: x.qc[0], k: x.qc[1]} : null,
+    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2, rk: x.rk ? 1 : 0, tl: Number.isInteger(x.tl) && x.tl >= 0 && x.tl <= 3600 ? x.tl : null, tp: x.tp ? 1 : 0, to: num(x.to, 9), qc: Array.isArray(x.qc) && Number.isInteger(x.qc[0]) && Number.isInteger(x.qc[1]) && QC[x.qc[1]] ? {id: x.qc[0], k: x.qc[1]} : null,
     mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0))), u: q.u ? 1 : 0})), ma: num(x.ma, 1000000),
     lf: num(x.lf, 60), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
@@ -1166,7 +1221,7 @@ function oppModel(x){
 const donB = f => S.myTurn && f && f.d ? f.d * 1000 : 0;
 const fld = x => ({c: x.card.c, n: x.card.n, r: x.r ? 1 : 0, d: x.d || 0, pm: (x.pm || 0) + donB(x), cm: x.cm || 0, mk: x.mk || []});
 function pubFull(){
-  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, rk:S.ranked ? 1 : 0, qc:myQc, mq:S.mq.slice(-8), ma:S.ack || 0,
+  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, rk:S.ranked ? 1 : 0, qc:myQc, tl:S.myTurn && S.ranked && S.tleft != null ? Math.ceil(S.tleft / 1000) : null, tp:S.atk ? 1 : 0, to:S.tmo || 0, mq:S.mq.slice(-8), ma:S.ack || 0,
     lf:S.life.length, dd:S.donDeck, da:S.donActive, dr:S.donRested, dk:S.deck.length, h:S.hand.length,
     tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), lg:myLog.slice(-8)};
 }
@@ -1348,7 +1403,7 @@ function openRanked(){
   modal = {type: "ranked"};
   const v = loadSaved(), ld = parseLines(v.leader || "")[0], n = deckCount(v.deck || ""), bad = illegalNote(deckIllegal(v, "std"), "std");
   showModal(`<h2>Ranked</h2>
-    <p class="hint">Play a Standard match against someone else who's looking. Win and your bounty goes up by ฿25,000 to ฿30,000. Every ฿300,000 earns a new rank: Rookie, Supernova, Warlord, then Yonko. Losing costs a Rookie a quarter of that, a Supernova half, a Warlord three quarters and a Yonko the full amount. A result counts when the losing player concedes or takes damage at 0 Life. Leaving a ranked match early counts as a loss, and your opponent gets the win.</p>
+    <p class="hint">Play a Standard match against someone else who's looking. Win and your bounty goes up by ฿25,000 to ฿30,000. Every ฿300,000 earns a new rank: Rookie, Supernova, Warlord, then Yonko. Losing costs a Rookie a quarter of that, a Supernova half, a Warlord three quarters and a Yonko the full amount. A result counts when the losing player concedes or takes damage at 0 Life. Leaving a ranked match early counts as a loss, and your opponent gets the win. Each turn has a 3-minute clock (paused while your opponent answers an attack, and they get 45 seconds to do it). Running out of time ends your turn, and the third time loses the match.</p>
     <div class="rkme"><span class="rkbadge">${esc(rankName(RANK.b))}</span><div><b>${berry(RANK.b)}</b> bounty<small>${RANK.w} win${RANK.w === 1 ? "" : "s"} · ${RANK.l} loss${RANK.l === 1 ? "" : "es"}</small></div></div>
     <div class="rkdeck">Your deck: ${ld ? `<b>${esc(ld.code)} ${esc(ld.name || nameOf(ld.code) || "")}</b>, ${n} cards` : "<b>none picked yet</b>"} <button class="linkbtn" data-do="homebuilder" type="button">Change it in the Deck editor</button>${bad ? `<div class="rkbad">${esc(bad)}</div>` : ""}</div>
     <div class="lbbar"><button class="btn pri" data-do="rkfind" type="button">Find a match</button><span class="sp"></span><span class="lbcount" id="lb-count"></span></div>
@@ -1672,8 +1727,9 @@ function side(m, mine){
     tok += `<div class="card doncard ${act ? "" : "rest"}" style="--i:${i}" ${mine ? `data-don="${act ? "a" : "r"}" role="button" tabindex="0" aria-label="${act ? "Active" : "Rested"} DON!!"` : ""}><b>DON!!</b></div>`;
   }
   const donRow = `<div class="donrow"><div class="cost" ${mine ? 'data-dzone="cost"' : ""} style="--dn:${Math.max(total - 1, 1)}">${tok || lbl("Cost area")}${total ? `<em class="cnt">${m.da} active</em>` : ""}</div></div>`;
-  const head = `<div class="shead"><span class="nick">${esc(m.nick)}</span>${m.tn ? `<span class="chip">Turn ${m.tn}</span>` : ""}${!mine && m.cc ? `<span class="chip cwchip">Cost ${m.cc > 0 ? "+" : "\u2212"}${Math.abs(m.cc)}</span>` : ""}${!mine && m.pw ? `<span class="chip pwchip">Power ${m.pw > 0 ? "+" : "\u2212"}${Math.abs(m.pw)}</span>` : ""}<span class="chip">Hand ${m.h}</span><span class="chip">Deck ${m.dk}</span><span class="chip">Life ${m.lf}</span></div>`;
-  const ohead = (m.tn || m.cc || m.pw) ? `<div class="shead">${m.tn ? `<span class="chip">Turn ${m.tn}</span>` : ""}${m.cc ? `<span class="chip cwchip">Cost ${m.cc > 0 ? "+" : "\u2212"}${Math.abs(m.cc)}</span>` : ""}${m.pw ? `<span class="chip pwchip">Power ${m.pw > 0 ? "+" : "\u2212"}${Math.abs(m.pw)}</span>` : ""}</div>` : "";
+  const tmr = `<span class="chip tmr" id="tmr-${mine ? "me" : "opp"}" hidden></span>`;
+  const head = `<div class="shead"><span class="nick">${esc(m.nick)}</span>${m.tn ? `<span class="chip">Turn ${m.tn}</span>` : ""}${tmr}${!mine && m.cc ? `<span class="chip cwchip">Cost ${m.cc > 0 ? "+" : "\u2212"}${Math.abs(m.cc)}</span>` : ""}${!mine && m.pw ? `<span class="chip pwchip">Power ${m.pw > 0 ? "+" : "\u2212"}${Math.abs(m.pw)}</span>` : ""}<span class="chip">Hand ${m.h}</span><span class="chip">Deck ${m.dk}</span><span class="chip">Life ${m.lf}</span></div>`;
+  const ohead = (m.tn || m.cc || m.pw || m.tl != null) ? `<div class="shead">${m.tn ? `<span class="chip">Turn ${m.tn}</span>` : ""}${tmr}${m.cc ? `<span class="chip cwchip">Cost ${m.cc > 0 ? "+" : "\u2212"}${Math.abs(m.cc)}</span>` : ""}${m.pw ? `<span class="chip pwchip">Power ${m.pw > 0 ? "+" : "\u2212"}${Math.abs(m.pw)}</span>` : ""}</div>` : "";
   const parts = mine ? [head, `<div class="chars" ${Z("chars")}>${chars}</div>`, backRow, donRow] : [ohead, donRow, backRow, `<div class="chars">${chars}</div>`];
   return `<div class="side ${mine ? "me" : "opp"}">${parts.join("")}</div>`;
 }
@@ -1734,7 +1790,7 @@ function render(){
   const ch = res ? `<span>\u2691 ${res}</span>` : S.phase === "none" ? "" : combatHTML(), midEl = $("#mid");
   midEl.classList.toggle("combat", !!ch);
   if (ch) midEl.innerHTML = ch; else midEl.textContent = mid;
-  markCombat();
+  markCombat(); updTimers();
   $("#handn").textContent = S.hand.length ? `(${S.hand.length})` : "";
   renderStatus();
   renderModal();
@@ -2400,7 +2456,7 @@ function startTurn(){
   if (S.stage) S.stage.r = false;
   stand(S.leader); S.donRested += S.leader.d; S.leader.d = 0; S.leader.pm = 0; S.leader.cm = 0; S.leader.bc = 0;
   S.donActive += S.donRested; S.donRested = 0;
-  S.myTurn = true;
+  S.myTurn = true; S.tleft = TURN_MS; S.tw = false;
   addLog(`started turn ${S.turn}`);
   if (autoTurn) {
     // Refresh, Draw and DON!! phases in one go: no draw for the first player's first turn, and 1 DON!! on it
@@ -2771,7 +2827,7 @@ function myDefender(){
 function combatHTML(){
   if (S.atk) {
     const a = ownHolder(S.atk.s), t = oppCardAt(S.atk.t), bi = oppM && oppM.bk != null ? oppM.ch[oppM.bk] : null;
-    if (a) return `<span>\u2694 <b>${esc(lab(a.card))}</b> attacks <b>${esc(t ? lab(t) : "a target")}</b></span>${bi ? `<span>\u21AA Redirected: <b>${esc(lab(bi))}</b> blocked</span>` : ""}${cmbPow(combatResult(), false)}<span class="cmbbr"></span>${R ? `<span class="hint">Waiting for ${esc(oppM ? oppM.nick : "your opponent")} to resolve it\u2026</span><button class="btn" data-do="cmbdone" type="button">Cancel attack</button>` : `${combatResult() ? `<button class="btn pri" data-do="cmbapply" type="button">Resolve attack</button>` : `<span class="hint">Power unknown for one card, so resolve by hand.</span>`}<button class="btn" data-do="cmbdone" type="button">Attack done</button>`}`;
+    if (a) return `<span>\u2694 <b>${esc(lab(a.card))}</b> attacks <b>${esc(t ? lab(t) : "a target")}</b></span>${bi ? `<span>\u21AA Redirected: <b>${esc(lab(bi))}</b> blocked</span>` : ""}${cmbPow(combatResult(), false)}<span class="tmr" id="tmr-cmb" hidden></span><span class="cmbbr"></span>${R ? `<span class="hint">Waiting for ${esc(oppM ? oppM.nick : "your opponent")} to resolve it\u2026</span><button class="btn" data-do="cmbdone" type="button">Cancel attack</button>` : `${combatResult() ? `<button class="btn pri" data-do="cmbapply" type="button">Resolve attack</button>` : `<span class="hint">Power unknown for one card, so resolve by hand.</span>`}<button class="btn" data-do="cmbdone" type="button">Attack done</button>`}`;
   }
   if (oppM && oppM.ak) {
     const a = oppCardAt(oppM.ak.s), t = ownHolder(oppM.ak.t), b = S.blk != null ? S.chars[S.blk] : null;
@@ -2779,7 +2835,7 @@ function combatHTML(){
       const r = defResult(), d = myDefender(), hc = handCounters();
       const ctrs = hc.map(e => { const nm = nameOf(e.c.c) || e.c.c; return `<button class="btn cmbctr" data-do="cmbhc:${e.i}" type="button" title="Trash ${esc(lab(e.c))} from your hand for +${e.v} power">+${e.v} ${esc(nm.length > 16 ? nm.slice(0, 15) + "\u2026" : nm)}${e.n > 1 ? ` <i>\u00D7${e.n}</i>` : ""}</button>`; }).join("");
       const res = !r ? "Resolve attack" : r.hits ? (r.onLeader ? "Take 1 damage" : "Resolve: K.O.") : "Resolve: attack fails";
-      return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span>${cmbPow(r, true)}${d && d.bc ? `<span>Counters <i>+${d.bc}</i></span>` : ""}<span class="cmbbr"></span>${ctrs ? `<span class="cmblbl">Counter from hand:</span>${ctrs}<span class="cmbbr"></span>` : ""}<button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn" data-do="cmbblock" type="button">${b ? "Change block" : "Block"}</button><button class="btn" data-do="cmbcnt:1000" type="button" title="Add power by hand, for this battle">+1000</button><button class="btn" data-do="cmbcnt:2000" type="button" title="Add power by hand, for this battle">+2000</button><button class="btn" data-do="cmbcnt:4000" type="button" title="Add power by hand, for this battle">+4000</button>${r ? `<button class="btn pri" data-do="dfresolve" type="button">${res}</button>` : `<span class="hint">Power unknown, so resolve by hand.</span>`}<button class="btn" data-do="dfdone" type="button">Attack done</button>`;
+      return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span>${cmbPow(r, true)}${d && d.bc ? `<span>Counters <i>+${d.bc}</i></span>` : ""}<span class="tmr" id="tmr-cmb" hidden></span><span class="cmbbr"></span>${ctrs ? `<span class="cmblbl">Counter from hand:</span>${ctrs}<span class="cmbbr"></span>` : ""}<button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn" data-do="cmbblock" type="button">${b ? "Change block" : "Block"}</button><button class="btn" data-do="cmbcnt:1000" type="button" title="Add power by hand, for this battle">+1000</button><button class="btn" data-do="cmbcnt:2000" type="button" title="Add power by hand, for this battle">+2000</button><button class="btn" data-do="cmbcnt:4000" type="button" title="Add power by hand, for this battle">+4000</button>${r ? `<button class="btn pri" data-do="dfresolve" type="button">${res}</button>` : `<span class="hint">Power unknown, so resolve by hand.</span>`}<button class="btn" data-do="dfdone" type="button">Attack done</button>`;
     }
   }
   return "";
