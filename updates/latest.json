@@ -1,8 +1,8 @@
 {
-  "version": "1.3.4",
+  "version": "1.3.5",
   "shell": 2,
-  "bundle": "web-1.3.4.json.gz",
-  "sha256": "04689a318862c9d59941752a6df526e766237acb0812f2b6e4624193d710a55f",
-  "size": 694729,
-  "notes": "The table background is an old sea chart instead of water. The home screen and deck builder use the sea-chart background too. The home screen has three buttons (Play, Deck editor, Sign in); Play opens a page with the game modes. The deck editor's Back to table button is now Home. The deck..."
+  "bundle": "web-1.3.5.json.gz",
+  "sha256": "45f6fd61923ec4798a15f0ff093ba71b3cb8dc8d6e23c9fd7a645e7285a89208",
+  "size": 709615,
+  "notes": "Lobbies is its own full page, and each open table shows the host's leader. Ranked mode: a Ranked page with matchmaking, bounties, ranks (Rookie to Yonko) and a leaderboard. A Profile page on the home screen shows your win/loss record, most played decks and most played cards. Desktop accounts:..."
 }
