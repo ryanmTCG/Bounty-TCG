@@ -1,6 +1,8 @@
 import { _electron as electron } from "playwright-core";
 import { spawn } from "child_process";
 import fs from "fs";
+// the game modes sit behind the home screen's Play button
+const openPlay = async p => { const b = await p.$('[data-do="homeplay"]'); if (b && await b.isVisible()) { await b.click(); await p.waitForTimeout(300); } };
 const OUT = process.argv[2] || "shots-lobby";
 fs.mkdirSync(OUT, { recursive: true });
 const peer = spawn("node", ["node_modules/peer/dist/bin/peerjs.js", "--port", "9000", "--host", "127.0.0.1"], { stdio: "ignore" });
@@ -31,7 +33,7 @@ const toastText = p => p.evaluate(() => { const t = document.querySelector("#toa
 
 const A = await launch("a"), B = await launch("b"), C = await launch("c");
 // A: open Lobbies, nothing there yet
-await A.page.click('[data-do="homelobby"]');
+await openPlay(A.page); await A.page.click('[data-do="homelobby"]');
 await wait(4000);
 console.log("A empty", JSON.stringify(await lobbies(A.page)));
 await A.page.screenshot({ path: OUT + "/1-empty.png" });
@@ -50,12 +52,12 @@ console.log("A toast", await toastText(A.page));
 console.log("A banner", await A.page.evaluate(() => (document.querySelector("#banner") || {}).textContent));
 await A.page.screenshot({ path: OUT + "/3-hosting.png" });
 // C: browse
-await C.page.click('[data-do="homelobby"]');
+await openPlay(C.page); await C.page.click('[data-do="homelobby"]');
 await wait(4000);
 console.log("C sees", JSON.stringify(await lobbies(C.page)));
 await C.page.screenshot({ path: OUT + "/4-list.png" });
 // B: browse and join from the list
-await B.page.click('[data-do="homelobby"]');
+await openPlay(B.page); await B.page.click('[data-do="homelobby"]');
 await wait(4000);
 console.log("B sees", JSON.stringify(await lobbies(B.page)));
 await B.page.click('.lbrow [data-do^="lbjoin:"]');
@@ -76,7 +78,7 @@ await C.page.screenshot({ path: OUT + "/7-inmatch.png" });
 // A's own view of the lobby list
 await A.page.click('[data-do="home"]').catch(() => {});
 await wait(300);
-await A.page.click('[data-do="homelobby"]');
+await openPlay(A.page); await A.page.click('[data-do="homelobby"]');
 await wait(2500);
 console.log("A sees", JSON.stringify(await lobbies(A.page)));
 await A.page.click('[data-do="closemodal"]').catch(() => {});

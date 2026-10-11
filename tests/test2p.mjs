@@ -1,6 +1,8 @@
 import { _electron as electron } from "playwright-core";
 import { spawn } from "child_process";
 import fs from "fs";
+// the game modes sit behind the home screen's Play button
+const openPlay = async p => { const b = await p.$('[data-do="homeplay"]'); if (b && await b.isVisible()) { await b.click(); await p.waitForTimeout(300); } };
 const OUT = process.argv[2] || "shots";
 fs.mkdirSync(OUT, { recursive: true });
 const peer = spawn("node", ["node_modules/peer/dist/bin/peerjs.js", "--port", "9000", "--host", "127.0.0.1"], { stdio: "ignore" });
@@ -19,7 +21,7 @@ async function launch(n) {
 }
 const deck = ["OP01-013","OP01-016","OP01-024","OP01-014","OP01-015","OP01-017","OP01-018","OP01-019","OP01-020","OP01-021","OP01-022","OP01-025","OP01-026"].map(c => "4x" + c).join("\n");
 async function join(p, nick) {
-  await p.click('[data-do="homejoin"]');
+  await openPlay(p); await p.click('[data-do="homejoin"]');
   await p.fill("#f-nick", nick);
   await p.fill("#f-room", "test-room-1");
   await p.fill("#f-leader", "OP01-001");

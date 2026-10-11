@@ -5,3 +5,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 
 - The table background is an old sea chart instead of water.
 - The home screen and deck builder use the sea-chart background too.
+- The home screen has three buttons (Play, Deck editor, Sign in); Play opens a page with the game modes.
