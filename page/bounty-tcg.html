@@ -772,6 +772,21 @@ select.sbtn{font-family:var(--slab)}
 .modal.homebg.lobpage{grid-template-columns:minmax(0,1100px);justify-content:center;overflow:auto;align-items:start;padding:24px 16px}
 .sheet.lobsheet{width:100%;max-height:none}
 .lobpage .lbrow .card{--cw:72px;--ch:101px;font-size:11px}
+/* ranked page */
+.rkme{display:flex;gap:14px;align-items:center;margin:4px 0 10px;padding:12px 14px;border:2px solid rgba(242,184,75,.6);border-radius:16px;background:rgba(242,184,75,.1)}
+.rkme b{font-family:var(--slab);font-weight:400;font-size:30px;color:#FFE9B8;margin-right:4px}
+.rkme small{display:block;color:var(--muted);font-size:14px}
+.rkbadge{display:inline-block;padding:4px 14px;border-radius:999px;border:3px solid #12262D;background:linear-gradient(180deg,#FFD27A,#E8A72C);color:#2A1D00;font-family:var(--slab);font-size:18px}
+.rkbadge.sm{font-size:12px;padding:1px 9px;border-width:2px}
+.rkdeck{margin:0 0 8px;color:#F1DDB0}
+.rkbad{margin-top:4px;color:#FF9A8A;font-size:14px}
+.rkh{margin:14px 0 8px}
+.rklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rklist li{display:flex;gap:10px;align-items:center;padding:8px 12px;border:2px solid rgba(255,240,205,.25);border-radius:12px;background:rgba(0,0,0,.22)}
+.rklist b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#FFE9B8}
+.rkpos{width:24px;text-align:right;font-family:var(--slab);color:#F2B84B}
+.rkr{font-family:var(--slab);color:#FFE9B8;min-width:44px;text-align:right}
+.rklist small{color:var(--muted);min-width:40px;text-align:right}
 </style>
 </head>
 <body>
@@ -1066,7 +1081,7 @@ function oppModel(x){
   return {
     nick: clean(x.nick, 20) || "Opponent", sl: num(x.sl, 6), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
     ld: f(x.ld), ch: (Array.isArray(x.ch) ? x.ch : []).slice(0, 12).map(f).filter(Boolean), st: f(x.st), ev: f(x.ev),
-    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2,
+    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2, rk: Number.isFinite(+x.rk) && +x.rk > 0 && +x.rk < 5000 ? Math.round(+x.rk) : 0,
     mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0))), u: q.u ? 1 : 0})), ma: num(x.ma, 1000000),
     lf: num(x.lf, 60), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
@@ -1076,7 +1091,7 @@ function oppModel(x){
 const donB = f => S.myTurn && f && f.d ? f.d * 1000 : 0;
 const fld = x => ({c: x.card.c, n: x.card.n, r: x.r ? 1 : 0, d: x.d || 0, pm: (x.pm || 0) + donB(x), cm: x.cm || 0, mk: x.mk || []});
 function pubFull(){
-  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, mq:S.mq.slice(-8), ma:S.ack || 0,
+  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, rk:S.ranked ? S.myRk || Math.round(RANK.r) : 0, mq:S.mq.slice(-8), ma:S.ack || 0,
     lf:S.life.length, dd:S.donDeck, da:S.donActive, dr:S.donRested, dk:S.deck.length, h:S.hand.length,
     tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), lg:myLog.slice(-8)};
 }
@@ -1129,7 +1144,7 @@ function cleanLobby(x){
   if (!x || typeof x !== "object" || Array.isArray(x)) return null;
   const c = normRoom(x.c); if (!c) return null;
   const l = String(x.l || "").toUpperCase();
-  return {c, n: clean(x.n, 40) || "Open table", h: clean(x.h, 20) || "Player", l: /^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(l) ? l : "", f: LB_FMT[x.f] ? x.f : "any", s: x.s === 2 ? 2 : 1, t: Number.isFinite(+x.t) ? +x.t : 0};
+  return {c, n: clean(x.n, 40) || "Open table", h: clean(x.h, 20) || "Player", l: /^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(l) ? l : "", f: LB_FMT[x.f] ? x.f : "any", s: x.s === 2 ? 2 : 1, t: Number.isFinite(+x.t) ? +x.t : 0, r: x.r === 1 ? 1 : 0};
 }
 function lobbyList(){
   const out = [], codes = new Set();
@@ -1153,6 +1168,100 @@ function illegalNote(bad, fmt){
   if (!bad.length) return "";
   return `${bad.length} card${bad.length === 1 ? " isn't" : "s aren't"} legal in ${LB_FMT[fmt]}: ${bad.slice(0, 4).join(", ")}${bad.length > 4 ? " and more" : ""}.`;
 }
+// ---------- ranked ----------
+// Honor system: games are peer to peer, so each player keeps their own rating. A result counts only when the
+// loser's own game says so (they conceded or took damage at 0 Life), so a winner can't claim a win by themselves.
+const RANKS = [[1400, "Yonko"], [1250, "Warlord"], [1100, "Supernova"], [0, "Rookie"]];
+function rankName(r){ return RANKS.find(x => r >= x[0])[1]; }
+function rankLoadLocal(){
+  try { const x = JSON.parse(localStorage.getItem("bounty:rank") || "null"); if (x && Number.isFinite(+x.r)) return {r: Math.round(+x.r), w: x.w | 0, l: x.l | 0, nick: String(x.nick || "")}; } catch (e) {}
+  return {r: 1000, w: 0, l: 0, nick: ""};
+}
+let RANK = rankLoadLocal(), rankRef;
+async function rankDoc(){
+  if (rankRef !== undefined) return rankRef;
+  rankRef = null;
+  try {
+    const db = await getDb(), user = window.claude ? await window.claude.use("user") : null, uid = user ? await user.id() : null;
+    if (db && uid) rankRef = db.doc("ranks/" + uid);
+  } catch (e) {}
+  return rankRef;
+}
+async function rankLoad(){
+  const ref = await rankDoc(); if (!ref) return;
+  try { const sn = await ref.get(); if (sn.exists) { const x = sn.data() || {}; if (Number.isFinite(+x.r)) RANK = {r: Math.round(+x.r), w: x.w | 0, l: x.l | 0, nick: String(x.nick || RANK.nick)}; } } catch (e) {}
+}
+async function rankSave(){
+  try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {}
+  const ref = await rankDoc();
+  if (ref) { try { await ref.set({r: RANK.r, w: RANK.w, l: RANK.l, nick: clean(RANK.nick, 20) || "Player", t: Date.now()}); } catch (e) {} }
+}
+function rankCheck(){
+  if (!S.ranked || S.rankDone || !oppM || !oppM.rk) return;
+  if (!S.oppRk && !oppM.cd) S.oppRk = oppM.rk;
+  const lost = S.conceded, won = !lost && oppM.cd;
+  if (!won && !lost) return;
+  S.rankDone = true;
+  const before = RANK.r, exp = 1 / (1 + Math.pow(10, ((S.oppRk || oppM.rk) - (S.myRk || before)) / 400));
+  RANK.r = Math.max(100, before + Math.round(32 * ((won ? 1 : 0) - exp)));
+  if (won) RANK.w++; else RANK.l++;
+  RANK.nick = S.nick || RANK.nick;
+  rankSave();
+  const d = RANK.r - before;
+  setTimeout(() => toast(`Ranked ${won ? "win" : "loss"}: ${d >= 0 ? "+" : ""}${d}. Your rating is now ${RANK.r} (${rankName(RANK.r)}).`), 60);
+}
+async function rankBoard(){
+  const db = await getDb(); if (!db) return null;
+  try {
+    const sn = await db.collection("ranks").get();
+    return sn.docs.map(d => d.data() || {}).filter(x => Number.isFinite(+x.r) && ((x.w | 0) + (x.l | 0)) > 0).sort((a, b) => b.r - a.r).slice(0, 25);
+  } catch (e) { return null; }
+}
+function openRanked(){
+  modal = {type: "ranked"};
+  const v = loadSaved(), ld = parseLines(v.leader || "")[0], n = deckCount(v.deck || ""), bad = illegalNote(deckIllegal(v, "std"), "std");
+  showModal(`<h2>Ranked</h2>
+    <p class="hint">Play a Standard match against someone else who's looking. Win and your rating goes up, lose and it goes down. A result counts when the losing player concedes or takes damage at 0 Life.</p>
+    <div class="rkme"><span class="rkbadge">${esc(rankName(RANK.r))}</span><div><b>${RANK.r}</b> rating<small>${RANK.w} win${RANK.w === 1 ? "" : "s"} · ${RANK.l} loss${RANK.l === 1 ? "" : "es"}</small></div></div>
+    <div class="rkdeck">Your deck: ${ld ? `<b>${esc(ld.code)} ${esc(ld.name || nameOf(ld.code) || "")}</b>, ${n} cards` : "<b>none picked yet</b>"} <button class="linkbtn" data-do="homebuilder" type="button">Change it in the Deck editor</button>${bad ? `<div class="rkbad">${esc(bad)}</div>` : ""}</div>
+    <div class="lbbar"><button class="btn pri" data-do="rkfind" type="button">Find a match</button><span class="sp"></span><span class="lbcount" id="lb-count"></span></div>
+    <h3 class="rkh">Leaderboard</h3>
+    <div class="rkboard" id="rk-board"><div class="lbempty"><b>Loading…</b></div></div>
+    <div class="row end">${S.phase === "none" ? '<button class="btn" data-do="homeplay" type="button">Back</button>' : '<button class="btn" data-do="closemodal" type="button">Back to table</button>'}</div>`);
+  const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
+  $("#modal").classList.add("homebg", "lobpage");
+  lobbyWatch();
+  rankBoard().then(rows => {
+    const el = $("#rk-board"); if (!el || !modal || modal.type !== "ranked") return;
+    if (!rows || !rows.length) rows = RANK.w + RANK.l ? [{r: RANK.r, w: RANK.w, l: RANK.l, nick: RANK.nick || "You"}] : [];
+    el.innerHTML = rows.length ? `<ol class="rklist">${rows.map((x, i) => `<li><span class="rkpos">${i + 1}</span><b>${esc(clean(x.nick, 20) || "Player")}</b><span class="rkbadge sm">${esc(rankName(+x.r))}</span><span class="rkr">${Math.round(+x.r)}</span><small>${x.w | 0}–${x.l | 0}</small></li>`).join("")}</ol>`
+      : `<div class="lbempty"><b>No ranked games yet</b>Win a ranked match to be the first on the board.</div>`;
+  });
+}
+function rankedCount(){
+  const cnt = $("#lb-count"); if (!cnt) return;
+  const n = lobbyList().filter(l => l.r && l.s < 2 && !l.mine).length;
+  cnt.innerHTML = LBV.err ? "" : `<span class="dot${n ? " on" : ""}"></span>${n ? `${n} player${n === 1 ? "" : "s"} looking for a match` : "Nobody's looking right now"}`;
+}
+async function rankedFind(){
+  const v = loadSaved();
+  if (!parseLines(v.deck || "").length || !parseLines(v.leader || "").length) { toast("Pick a deck with a Leader first: open the Deck editor, build or load a deck, then press Play."); return; }
+  const bad = illegalNote(deckIllegal(v, "std"), "std");
+  if (bad) { toast("Ranked uses Standard rules. " + bad); return; }
+  const n = deckCount(v.deck);
+  if (n !== 50) { toast(`Ranked needs a 50-card deck. Yours has ${n}.`); return; }
+  const open = lobbyList().find(l => l.r && l.s < 2 && !l.mine);
+  const room = open ? open.c : "ranked-" + lobbyCode();
+  const c = Object.assign({}, v, {room, nick: v.nick || RANK.nick || "Player", life: v.life || 5, sleeve: v.sleeve | 0, first: !!v.first});
+  status = "connecting";
+  newGame(c, true); S.ranked = true; S.myRk = RANK.r;   // ratings are fixed for the whole match
+  closeModal();
+  await connect(room);
+  if (!open && R && roomCode === room && status === "online") { myLobby = {c: room, n: "Ranked match", f: "std", t: Date.now(), r: 1}; lobbyUpdate(); }
+  render();
+  toast(open ? `Found a ranked match with ${open.h}.` : "Looking for a ranked opponent. Stay at the table and they'll join you.");
+}
+
 function openLobbies(){
   modal = {type: "lobbies"};
   showModal(`<h2>Lobbies</h2>
@@ -1186,6 +1295,7 @@ function lobbyUnwatch(){
   for (const k of ["unsub", "unconn"]) { if (LBV[k]) { try { LBV[k](); } catch (e) {} } LBV[k] = null; }
 }
 function renderLobbies(){
+  if (modal && modal.type === "ranked") { rankedCount(); return; }
   const el = $("#lb-list"), cnt = $("#lb-count");
   if (!el || !modal || modal.type !== "lobbies") return;
   if (LBV.err) {
@@ -1195,7 +1305,7 @@ function renderLobbies(){
   }
   const n = LBV.peers.filter(p => p && p.kind === "viewer").length;
   if (cnt) cnt.innerHTML = n && LBV.conn !== false ? `<span class="dot on"></span>${n} player${n === 1 ? "" : "s"} here now` : `<span class="dot"></span>Connecting…`;
-  const list = lobbyList();
+  const list = lobbyList().filter(l => !l.r);
   if (!list.length) {
     const early = Date.now() - LBV.since < 2500;
     el.innerHTML = LBV.conn === false && !early ? `<div class="lbempty"><b>Connecting to the lobby…</b>If this doesn't clear up, check your internet connection.</div>`
@@ -1210,7 +1320,7 @@ function renderLobbies(){
   }).join("");
 }
 async function lobbyUpdate(){
-  const lb = myLobby && R && roomCode === myLobby.c ? {c: myLobby.c, n: myLobby.n, h: S.nick || "Player", l: S.leader && S.leader.card ? S.leader.card.c : "", f: myLobby.f, s: oppPeer || (S.phase !== "wait" && S.phase !== "roll") ? 2 : 1, t: myLobby.t} : null;
+  const lb = myLobby && R && roomCode === myLobby.c ? {c: myLobby.c, n: myLobby.n, h: S.nick || "Player", l: S.leader && S.leader.card ? S.leader.card.c : "", f: myLobby.f, r: myLobby.r ? 1 : 0, s: oppPeer || (S.phase !== "wait" && S.phase !== "roll") ? 2 : 1, t: myLobby.t} : null;
   const key = JSON.stringify(lb);
   if (key === lbSent) return;
   lbSent = key;
@@ -1281,6 +1391,7 @@ const EMPTY = () => ({nick:"Opponent", sl:0, tn:0, ld:null, ch:[], st:null, ev:n
 function renderPw(){ const v = $("#pwval"); if (!v) return; const n = S.pw || 0; v.textContent = (n > 0 ? "+" : n < 0 ? "\u2212" : "") + Math.abs(n); v.classList.toggle("neg", n < 0); v.classList.toggle("pos", n > 0); }
 function renderCc(){ const v = $("#cwval"); if (!v) return; const n = S.cc || 0; v.textContent = (n > 0 ? "+" : n < 0 ? "\u2212" : "") + Math.abs(n); v.classList.toggle("neg", n < 0); v.classList.toggle("pos", n > 0); }
 function render(){
+  rankCheck();
   renderPw(); renderCc();
   { const on = S.phase === "play" && S.turn > 0 && S.myTurn;
     const dr = $('[data-do="drawturn"]'), dn = $('[data-do="donturn"]'), fb = $("#startfb");
@@ -1418,6 +1529,7 @@ function openHome(page){
   const btns = page === "play" ? `
       <button class="btn pri" data-do="homejoin" type="button">Join table</button>
       <button class="btn" data-do="homelobby" type="button">Lobbies</button>
+      <button class="btn" data-do="homeranked" type="button">Ranked</button>
       <button class="btn" data-do="homeboth" type="button">Test a deck (play both sides)</button>
       <button class="btn" data-do="home" type="button">Back</button>` : `
       <button class="btn pri homeplay" data-do="homeplay" type="button">Play</button>
@@ -2656,6 +2768,8 @@ function doAction(a){
     case "homejoin": openSetup(); break;
     case "homeplay": openHome("play"); break;
     case "homelobby": closeModal(); if (builderOpen) closeBuilder(); openLobbies(); break;
+    case "homeranked": closeModal(); if (builderOpen) closeBuilder(); openRanked(); break;
+    case "rkfind": rankedFind(); break;
     case "lbmake": openSetup({pub: true}); break;
     case "homebuilder": closeModal(); openBuilder(); break;
     case "homesign": diagnose(); break;
@@ -4406,6 +4520,7 @@ floatable("pwp", "pwslot"); floatable("cwp", "cwslot");
 
 // ---------- boot ----------
 initDecks();
+rankLoad();
 initNames();
 initSettings();
 initArt();
