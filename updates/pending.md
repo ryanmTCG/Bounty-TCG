@@ -11,3 +11,6 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - Panels have a blue steel finish with gold corner scrollwork.
 - Buttons are steel or gold plate with gold trim, a shine on hover, and ornaments on the main menu buttons.
 - The card preview sits centered in its space without cutting off, and the defender's battle bar drops Attack done (Block, Abilities and the resolve button remain).
+- The table log shows only combat, turn changes, chat, cards revealed from searches and cards taken from the trash.
+- Abilities follow their timing: only On Your Opponent's Attack (and Counters) on the opponent's turn, and On Play never runs again by hand.
+- Effect targets respect limits like "4000 power or less", "cost of 3 or more", "{Type} type" and Leader-only or Character-only.

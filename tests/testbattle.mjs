@@ -157,6 +157,22 @@ const eo = await eotP.evaluate(async () => {
 });
 console.log("end of turn", JSON.stringify(eo));
 check(eo.codes.length === 2 && eo.items >= 2 && eo.still, "with two End of Turn abilities, the player picks which goes first");
+// timing, target limits and the public log
+const tl = await eotP.evaluate(() => {
+  const ld = {c: "OP01-001"}, field = S.leader.card;
+  const was = S.myTurn; S.myTurn = false;
+  const oppTurn = ["activateMain", "onPlay", "main", "whenAttacking"].map(t => abilityNow(field, {t}));
+  S.myTurn = was;
+  const lim = fxLimits({a: "pwr", ld: true, n: 1000, power: 4000, who: "own", text: "Up to 1 of your Leader with 4000 power or less gains +1000 power during this turn."});
+  const save = S.leader.pm; S.leader.pm = 0; const c0 = fxCands({a: "pwr", ld: true, n: 1000, power: 4000, who: "own", text: "Up to 1 of your Leader with 4000 power or less gains +1000 power during this turn."}).map(x => x.ref);
+  S.leader.pm = save;
+  const pub = [pubLog("attacked X with Y"), pubLog("ended turn 2"), pubLog("revealed X from a search and added it to hand"), pubLog("added X from the trash to hand"), !pubLog("played OP01-004 (rested 2 DON!!)"), !pubLog("drew a card")];
+  return {oppTurn, lim: {leader: lim.leader, chars: lim.chars, maxP: lim.maxP}, c0, pub, onPlayMine: abilityNow(field, {t: "onPlay"})};
+});
+console.log("timing", JSON.stringify(tl));
+check(tl.oppTurn.every(x => !x) && !tl.onPlayMine, "only allowed abilities can be used, and On Play never by hand");
+check(tl.lim.leader && !tl.lim.chars && tl.lim.maxP === 4000 && tl.c0.length === 0, "a 5000 power Leader isn't a target for a 4000 or less effect");
+check(tl.pub.every(Boolean), "the log keeps combat, turns, searches and trash pickups, and hides the rest");
 await def.page.evaluate(() => { S.chars[S.chars.length - 1].r = true; commit(); });
 await A.page.waitForTimeout(2000);
 await atk.page.evaluate(() => { S.leader.r = false; S.turn = Math.max(S.turn, 2); attackWith("ld", "ch:0"); });

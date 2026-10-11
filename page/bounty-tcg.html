@@ -1173,8 +1173,11 @@ function addLog(m){
   LOG.push({who: S.nick || "You", mine: true, m});
   renderLog();
 }
+// the table log shows only what both players need to see: combat, turn changes, cards revealed from a search, and cards taken back from the trash
+const PUB_LOG = /attack|damage|K\.O|block|Counter|ended turn|started turn|goes first|going first|revealed|from the trash|returned to hand by|lost the game|lost the match|conceded|ran out of time|Trigger|^says \u201C/i;
+const pubLog = m => PUB_LOG.test(String(m || ""));
 function renderLog(){
-  const items = LOG.slice(-60).reverse();
+  const items = LOG.filter(e => pubLog(e.m)).slice(-60).reverse();
   $("#log").innerHTML = items.length ? items.map(e => `<p class="${e.mine ? "mine" : "theirs"}"><b>${esc(e.who)}</b> ${esc(e.m)}</p>`).join("") : '<p class="tips">Nothing yet.</p>';
 }
 const fxPeers = new Set();   // the first batch of a player's log is history, not news
@@ -1412,7 +1415,7 @@ const fld = x => ({c: x.card.c, n: x.card.n, r: x.r ? 1 : 0, d: x.d || 0, pm: (x
 function pubFull(){
   return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, rk:S.ranked ? 1 : 0, fc:myFC(), qc:myQc, tl:S.myTurn && S.ranked && S.tleft != null ? Math.ceil(S.tleft / 1000) : null, tp:S.atk ? 1 : 0, to:S.tmo || 0, mq:S.mq.slice(-8), ma:S.ack || 0,
     lf:S.life.length, dd:S.donDeck, da:S.donActive, dr:S.donRested, dk:S.deck.length, h:S.hand.length,
-    tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), lg:myLog.slice(-8)};
+    tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), lg:myLog.filter(e => pubLog(e[1])).slice(-8)};
 }
 let pubT = null;
 function publish(){ if (!R) return; clearTimeout(pubT); pubT = setTimeout(doPublish, 80); }
@@ -2595,6 +2598,22 @@ async function runAbility(card, trigs, manual, don){
 }
 const runOnPlay = (card, ev) => runAbility(card, ev ? (oppM && oppM.ak && S.rs !== oppM.ak.n ? ["counter"] : ["onPlay", "main"]) : ["onPlay"]);
 // pick any ability on a card and run it (Activate: Main, Counter, Trigger, On K.O., etc.)
+// whether an ability's timing lets the player use it by hand right now
+function abilityNow(card, a){
+  const onField = [S.leader, S.stage, ...S.chars].some(f => f && f.card === card), inHand = S.hand.includes(card), def = defending();
+  const myMain = S.myTurn && S.phase === "play" && !S.atk && !def;
+  switch (a.t) {
+    case "onOppAttack": return def && onField;
+    case "counter": return def && inHand;
+    case "activateMain": return myMain && onField;
+    case "main": return myMain && (inHand || onField);
+    case "whenAttacking": { const h = S.atk && donHolder(S.atk.s); return !!(S.myTurn && h && h.card === card); }
+    case "onBlock": return !!(def && S.blk != null && S.chars[S.blk] && S.chars[S.blk].card === card);
+    case "trigger": return !onField && !inHand;
+    case "onPlay": case "onKO": case "endOfTurn": return false;
+    default: return S.myTurn && onField;
+  }
+}
 async function useAbility(card, x, y){
   if (!canRead(card.c)) { toast("This card's text isn't available."); return; }
   try {
@@ -2602,7 +2621,9 @@ async function useAbility(card, x, y){
     const fx = await readEffect(card.c); $("#toast").hidden = true;
     if (!fx || !fx.ab.length) { toast(`No abilities found on ${lab(card)}.`); return; }
     const have = (() => { const hs = [S.leader, S.stage, ...S.chars]; const h = hs.find(f => f && f.card === card); return h ? h.d || 0 : 0; })();
-    const usable = fx.ab.filter(a => (a.don || 0) <= have && (a.donMinus || 0) <= fieldDon());
+    const timed = fx.ab.filter(a => abilityNow(card, a));
+    if (!timed.length) { toast(S.myTurn ? `${lab(card)} has no ability you can use right now. On Play, On K.O. and End of Turn abilities run by themselves.` : `On your opponent's turn you can only use [On Your Opponent's Attack] abilities while they attack, and Counters from your hand.`); return; }
+    const usable = timed.filter(a => (a.don || 0) <= have && (a.donMinus || 0) <= fieldDon());
     if (!usable.length) { toast(`${lab(card)} doesn't meet the DON!! requirement for its ability.`); return; }
     if (usable.every(a => optUsed(card, a))) { toast(`${lab(card)} already used its Once Per Turn ability this turn.`); return; }
     usable.splice(0, usable.length, ...usable.filter(a => !optUsed(card, a)));
@@ -2645,15 +2666,41 @@ async function offerOppAttack(){
     renderModal();
   } catch (e) { $("#toast").hidden = true; }
 }
+// the limits a target must meet, read from the step and its wording: "with 4000 power or less", "with a cost of 3 or more", "{Navy} type", Leader only / Characters only
+function fxLimits(st){
+  const t = String(st.text || ""), num = re => { const m = re.exec(t); return m ? +m[1] : null; };
+  const lim = {
+    maxP: num(/(\d+) power or less/i) ?? (Number.isFinite(st.power) ? st.power : null), minP: num(/(\d+) power or more/i),
+    maxK: num(/cost of (\d+) or less/i) ?? (Number.isFinite(st.cost) ? st.cost : null), minK: num(/cost of (\d+) or more/i),
+    type: (/\{([^}]+)\} type (?:Leader|Character)/i.exec(t) || [])[1] || null,
+    noType: (/other than (?:the )?\{([^}]+)\} type/i.exec(t) || [])[1] || null
+  };
+  const L = /\bLeader\b/i.test(t), C = /\bCharacters?\b/i.test(t);
+  lim.leader = ["rest", "stand", "pwr", "giveDon"].includes(st.a) && (st.ld === true || (st.ld == null && L)) && !(C && !L);
+  lim.chars = !(L && !C && st.ld === true);
+  return lim;
+}
 function fxCands(st){
-  const own = st.who === "own", out = [];
-  const src = own ? S.chars.map((f, i) => ({ref: "ch:" + i, c: Object.assign({}, f.card, {pm: (f.pm || 0) + donB(f)}), k: (CARDDB.get(f.card.c) || {}).k, p: (CARDDB.get(f.card.c) || {}).p})) : (oppM ? oppM.ch.map((f, i) => ({ref: "ch:" + i, c: f, k: (CARDDB.get(f.c) || {}).k, p: (CARDDB.get(f.c) || {}).p})) : []);
-  for (const x of src) {
-    if (st.cost !== null && Number.isFinite(x.k) && x.k > st.cost) continue;
-    if (st.power !== null && Number.isFinite(x.p) && x.p > st.power) continue;
-    out.push(x);
+  const own = st.who === "own", out = [], lim = fxLimits(st);
+  const pow = (code, pm) => { const b = basePow(code); return Number.isFinite(b) ? b + (pm || 0) : null; };
+  const cost = (code, cm) => { const k = (CARDDB.get(code) || {}).k; return Number.isFinite(k) ? Math.max(0, k + (cm || 0)) : null; };
+  const ok = x => {
+    if (lim.maxP != null && Number.isFinite(x.p) && x.p > lim.maxP) return false;
+    if (lim.minP != null && Number.isFinite(x.p) && x.p < lim.minP) return false;
+    if (lim.maxK != null && Number.isFinite(x.k) && x.k > lim.maxK) return false;
+    if (lim.minK != null && Number.isFinite(x.k) && x.k < lim.minK) return false;
+    if (lim.type && !hasType(x.code, lim.type)) return false;
+    if (lim.noType && hasType(x.code, lim.noType)) return false;
+    return true;
+  };
+  const src = !lim.chars ? [] : own
+    ? S.chars.map((f, i) => { const pm = (f.pm || 0) + donB(f); return {ref: "ch:" + i, code: f.card.c, c: Object.assign({}, f.card, {pm}), k: cost(f.card.c, f.cm), p: pow(f.card.c, pm)}; })
+    : (oppM ? oppM.ch.map((f, i) => ({ref: "ch:" + i, code: f.c, c: f, k: cost(f.c, f.cm), p: pow(f.c, f.pm)})) : []);
+  for (const x of src) if (ok(x)) out.push(x);
+  if (lim.leader) {
+    const l = own ? S.leader : (oppM && oppM.ld);
+    if (l) { const code = own ? l.card.c : l.c, pm = own ? (l.pm || 0) + donB(l) : l.pm, x = {ref: "ld", code, c: own ? l.card : l, k: null, p: pow(code, pm)}; if (ok(x)) out.unshift(x); }
   }
-  if (["rest", "stand", "pwr", "giveDon"].includes(st.a) && (st.ld === true || (st.ld == null && /leader/i.test(st.text || "")))) { const l = own ? S.leader : (oppM && oppM.ld); if (l) out.unshift({ref: "ld", c: own ? l.card : l, k: null, p: null}); }
   return out;
 }
 function fxStepHTML(m){
@@ -3014,7 +3061,7 @@ function moveCard(src, dest, free, pay){
   if (r.d) S.donRested += r.d;
   const c = r.card, nm = lab(c), wasPublic = k === "ch" || k === "st" || k === "ev" || k === "tr";
   let msg = "";
-  if (dest === "hand") { S.hand.push(c); msg = k === "lf" ? `took damage (Life ${S.life.length})` : wasPublic ? `returned ${nm} to hand` : k === "dk" ? "took a card from the deck to hand" : "moved a card to hand"; }
+  if (dest === "hand") { S.hand.push(c); msg = k === "lf" ? `took damage (Life ${S.life.length})` : k === "tr" ? `added ${nm} from the trash to hand` : wasPublic ? `returned ${nm} to hand` : k === "dk" ? (modal && modal.type === "peek" ? `revealed ${nm} from a search and added it to hand` : "took a card from the deck to hand") : "moved a card to hand"; }
   else if (dest === "chars") { S.chars.push({card: c, r: false, d: 0, pt: S.turn}); msg = `played ${nm}`; if (S.chars.length > 5) toast("That's more than 5 Characters. Trash one to stay within the limit."); }
   else if (dest === "stage") { if (S.stage) { S.trash.unshift(S.stage.card); msg = `replaced their Stage (trashed ${lab(S.stage.card)}), then `; } S.stage = {card: c, r: false, d: 0}; msg += `played ${nm} as Stage`; }
   else if (dest === "event") { if (S.ev) { S.trash.unshift(S.ev.card); msg = `replaced their Event (trashed ${lab(S.ev.card)}), then `; } S.ev = {card: c, r: false, d: 0}; msg += `played ${nm} as Event`; }
