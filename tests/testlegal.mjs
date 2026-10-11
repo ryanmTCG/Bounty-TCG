@@ -7,7 +7,7 @@ const app = await electron.launch({ executablePath: "node_modules/electron/dist/
 const page = await app.firstWindow();
 const errs = [];
 page.on("pageerror", e => errs.push(String(e)));
-page.on("console", m => { if (m.type() === "error") errs.push(m.text()); });
+page.on("console", m => { if (m.type() === "error" && !/0\.peerjs\.com/.test(m.text())) errs.push(m.text()); });   // no internet here: the lobby can't reach the public PeerJS server
 await page.setViewportSize({ width: 1500, height: 950 }).catch(() => {});
 await page.waitForLoadState("load");
 await page.waitForTimeout(1500);
@@ -56,6 +56,7 @@ await page.evaluate(() => {
 });
 await page.waitForTimeout(400);
 console.log("deck chips", JSON.stringify(await page.evaluate(() => [...document.querySelectorAll("#bd-deck .bd-stats .chip")].map(e => [e.textContent, e.title]))));
+console.log("deck stats", JSON.stringify(await page.evaluate(() => ({open: (document.querySelector("#bd-anal") || {}).open, bars: [...document.querySelectorAll("#bd-anal .bdc-n")].map(e => e.textContent), nums: [...document.querySelectorAll("#bd-anal .bdn div")].map(e => e.innerText.replace(/\s+/g, " ")), expect: (() => { let k = 0, c = 0; for (const [code, v] of BD.cards) { const e = CARDDB.get(code) || {}; k += v.count; c += (e.ctr || 0) * v.count; } return {cards: k, ctr: c}; })() }))));
 console.log("deck labels", JSON.stringify(await page.evaluate(() => [...document.querySelectorAll("#bd-deck .bdctl span")].map(e => [e.textContent, e.className, e.title]))));
 await page.check("#bd-showban"); await page.check("#bd-showrot");
 await page.selectOption("#bd-set", "OP01");

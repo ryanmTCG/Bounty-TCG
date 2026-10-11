@@ -41,6 +41,8 @@ for (let i = 0; i < 12; i++) {
   }
 }
 await A.page.waitForTimeout(1500);
+// record the effects that pop up over the board
+for (const x of [A, B]) await x.page.evaluate(() => { window.__fx = []; new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.classList && (n.classList.contains("fxf") || n.classList.contains("fxsvg"))) window.__fx.push((n.getAttribute("class") || "") + "|" + (n.textContent || "")); }).observe(document.body, {childList: true, subtree: true}); });
 const aTurn = await A.page.evaluate(() => S.myTurn);
 const [atk, def] = aTurn ? [A, B] : [B, A];
 // make sure the defender holds a 1000 counter card and know the leaders' power
@@ -93,6 +95,21 @@ await atk.page.click('#mid [data-do="cmbdone"]');
 await def.page.waitForTimeout(3000);
 const d5 = await def.page.evaluate(() => ({pm: S.leader.pm || 0, bc: S.leader.bc || 0}));
 check(d5.pm === 0 && d5.bc === 0, "cancelled attack takes counters back off");
+// a K.O.: the defender has a small Character, the attacker's Leader beats it
+await def.page.evaluate(() => { const code = [...CARDDB.keys()].find(k => /^OP01-/.test(k) && /Character/.test((CARDDB.get(k) || {}).t || "") && (CARDDB.get(k) || {}).p > 0 && CARDDB.get(k).p <= 3000); S.chars.push({card: {u: 999, c: code, n: ""}, r: false, d: 0}); commit(); });
+await A.page.waitForTimeout(2000);
+await atk.page.evaluate(() => { S.leader.r = false; attackWith("ld", "ch:0"); });
+await def.page.waitForTimeout(3000);
+await def.page.click('#mid [data-do="dfresolve"]');
+await A.page.waitForTimeout(3000);
+check(await def.page.evaluate(() => S.chars.length) === 0, "the beaten Character is K.O.'d");
+// effects: the attack slash on both screens, the counter, and the Life lost on both screens
+const fxA = await atk.page.evaluate(() => window.__fx), fxD = await def.page.evaluate(() => window.__fx);
+console.log("fx", JSON.stringify(fxA), JSON.stringify(fxD));
+check(fxA.some(f => /fxsvg/.test(f)) && fxD.some(f => /fxsvg/.test(f)), "attack slash shows on both screens");
+check(fxD.some(f => /fxf ctr\|\+1000/.test(f)), "counter pops up on the defender");
+check(fxD.some(f => /fxf ko\|K\.O\.!/.test(f)) && fxA.some(f => /fxf ko\|K\.O\.!/.test(f)), "K.O. shows on both screens");
+check(fxD.some(f => /fxf dmg\|\u22121 Life/.test(f)) && fxA.some(f => /fxf dmg\|\u22121 Life/.test(f)), "Life lost shows on both screens");
 // automatic start of turn: going first gets 1 DON!! and no draw; the other player then gets a card and 2 DON!! when the turn passes
 const t1 = await atk.page.evaluate(() => ({don: S.donActive, deck: S.donDeck, hand: S.hand.length}));
 check(t1.don === 1 && t1.deck === 9 && t1.hand === 5, "first turn added 1 DON!! and skipped the draw");

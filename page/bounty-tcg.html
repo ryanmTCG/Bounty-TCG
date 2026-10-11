@@ -156,6 +156,44 @@ button,input,textarea,select{font:inherit;color:inherit}
 .bd-leader{display:flex;gap:12px;align-items:center;margin-bottom:10px}
 .bd-leader .card{--cw:72px;--ch:101px}
 .bd-stats{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.bd-anal{margin:0 0 10px;border:2px solid rgba(255,240,205,.22);border-radius:12px;background:rgba(0,0,0,.2);padding:6px 10px}
+.bd-anal summary{cursor:pointer;font-family:var(--slab,inherit);font-size:14px;color:#FFE9B8}
+.bd-anal-in{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin-top:6px}
+.bdc{display:flex;gap:4px;align-items:flex-end;height:96px;flex:1 1 200px;min-width:180px}
+.bdc-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:2px}
+.bdc-bar{width:100%;max-width:26px;min-height:2px;border-radius:5px 5px 2px 2px;background:linear-gradient(180deg,#FFD27A,#E8A72C)}
+.bdc-n{font-size:11px;color:#FFE9B8;min-height:13px}
+.bdc-k{font-size:11px;color:var(--muted)}
+.bdn{display:grid;grid-template-columns:repeat(2,minmax(110px,1fr));gap:6px 12px;flex:1 1 220px}
+.bdn b{display:block;font-family:var(--slab,inherit);font-weight:400;font-size:17px;color:#FFE9B8}
+.bdn small{display:block;font-size:11px;color:var(--muted)}
+.bd-anal .hint{margin:6px 0 0;font-size:12px}
+.banner .mhint{display:block;font-size:13px;opacity:.85;margin-top:2px}
+#fxl{position:fixed;inset:0;pointer-events:none;z-index:95}
+.fxsvg{position:fixed;left:0;top:0;overflow:visible}
+.fxline{stroke:#FFE9B8;stroke-width:5;stroke-linecap:round;filter:drop-shadow(0 0 6px #FF8A3D);stroke-dasharray:var(--len);stroke-dashoffset:0;opacity:0}
+.fxring{position:fixed;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:4px solid #FFB347;opacity:0}
+.fxf{position:fixed;transform:translate(-50%,-50%);font-family:"Alfa Slab One",Georgia,serif;font-size:30px;color:#FFE9B8;text-shadow:0 3px 0 #12262D,0 0 14px rgba(0,0,0,.6);white-space:nowrap;opacity:0}
+.fxf.dmg{color:#FF8A80;font-size:26px}
+.fxf.ko{color:#FFD27A;font-size:44px}
+.fxf.ctr{color:#9BE39F;font-size:26px}
+.fxf.win{color:#FFD27A;font-size:56px}
+.fxf.lose{color:#FFB3B3;font-size:48px}
+.fxflash{position:fixed;inset:0;box-shadow:inset 0 0 90px 30px rgba(220,40,40,.55);opacity:0}
+@media (prefers-reduced-motion:no-preference){
+  .fxline{animation:fxline .8s ease-out forwards}
+  .fxring{animation:fxring .7s ease-out .18s forwards}
+  .fxf{animation:fxrise 1.25s ease-out forwards}
+  .fxf.ko,.fxf.win,.fxf.lose{animation:fxpop 1.25s ease-out forwards}
+  .fxflash{animation:fxflash .55s ease-out forwards}
+}
+@media (prefers-reduced-motion:reduce){ .fxf{animation:fxfade 1.25s forwards} .fxline,.fxring{display:none} .fxflash{animation:fxflash .55s forwards} }
+@keyframes fxline{0%{stroke-dashoffset:var(--len);opacity:1}45%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+@keyframes fxring{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(4.5)}}
+@keyframes fxrise{0%{opacity:0;transform:translate(-50%,-30%)}15%{opacity:1}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-150%)}}
+@keyframes fxpop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}30%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%) scale(1)}}
+@keyframes fxfade{0%,80%{opacity:1}100%{opacity:0}}
+@keyframes fxflash{0%{opacity:1}100%{opacity:0}}
 .chip.good{background:#2FA66A;color:#fff}
 .chip.bad{background:var(--coral);color:#fff}
 .bdrow .thumb{display:block}
@@ -828,6 +866,29 @@ select.sbtn{font-family:var(--slab)}
 .pfh.win .pfres{color:#9BE39F}
 .pfh.loss .pfres{color:#FFA9A6}
 .pfh .pfinfo b{font-size:16px}
+.frtop{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:6px 0 4px}
+.frcode,.fradd{padding:12px 14px;border:2px solid rgba(255,240,205,.25);border-radius:14px;background:rgba(0,0,0,.22)}
+.frcode small,.fradd small{display:block;color:var(--muted);font-size:12px;margin-bottom:4px}
+.frcode{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.frcode small{flex-basis:100%;margin:0}
+.frcode b{font-family:var(--slab);font-weight:400;font-size:28px;letter-spacing:.18em;color:#FFE9B8}
+.fradd .row{gap:8px;flex-wrap:nowrap}
+.fradd input{flex:1;min-width:0;font-size:18px;letter-spacing:.12em;text-transform:uppercase;padding:6px 10px}
+.frlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.frrow{display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid rgba(255,240,205,.25);border-radius:14px;background:rgba(0,0,0,.22)}
+.frrow.on{border-color:rgba(93,187,99,.6)}
+.frrow .sp{flex:1}
+.frrow .dot{flex:0 0 auto}
+.frinfo b{display:block;color:#FFE9B8;font-family:var(--slab);font-weight:400;font-size:16px}
+.frinfo small{display:block;color:var(--muted);font-size:12px}
+.frrow .btn{font-size:13px;padding:5px 10px}
+.homebtns .frn{font-style:normal;font-size:13px;vertical-align:middle;background:#2E6B3A;color:#F2FFF0;border-radius:999px;padding:2px 9px;margin-left:6px;font-family:var(--body,inherit)}
+.invite{position:fixed;top:14px;right:14px;z-index:120;max-width:min(92vw,380px);background:#FFF6E0;color:#12262D;border:3px solid #12262D;border-radius:18px;padding:12px 14px;box-shadow:0 5px 0 rgba(0,0,0,.4),0 12px 24px rgba(0,0,0,.45)}
+.invite[hidden]{display:none}
+.invite .invt{font-weight:700;font-size:16px}
+.invite .invs{font-size:12px;margin-top:3px;opacity:.8}
+.invite .invb{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+@media (prefers-reduced-motion:no-preference){.invite:not([hidden]){animation:qcpop .3s ease-out}}
 .pfcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px}
 .pfcard{position:relative}
 .pfcard .card{--cw:100%;--ch:auto;width:100%;height:auto;aspect-ratio:5 / 7;margin:0;font-size:9px}
@@ -862,7 +923,7 @@ select.sbtn{font-family:var(--slab)}
     <button class="mkb au" data-mk="au" type="button" title="Drag onto a card">Ability used</button>
     <button class="mkb nk" data-mk="nk" type="button" title="Drag onto a card">No K.O.</button>
     <button class="mkb na" data-mk="na" type="button" title="Drag onto a card">No Attack</button>
-  </div><label class="fxopt"><input type="checkbox" id="fx-auto" data-do="autofx" checked> Auto card effects (runs [On Play], [When Attacking], [On Block] and [On K.O.] abilities for you)</label><label class="fxopt"><input type="checkbox" id="turn-auto" data-do="autoturn" checked> Auto start of turn (stands your cards, draws and adds DON!! for you)</label><p class="mkhint">Drag a marker onto any Leader or Character. Tap a marker on your own card to remove it.</p></aside>
+  </div><label class="fxopt"><input type="checkbox" id="fx-auto" data-do="autofx" checked> Auto card effects (runs [On Play], [When Attacking], [On Block] and [On K.O.] abilities for you)</label><label class="fxopt"><input type="checkbox" id="turn-auto" data-do="autoturn" checked> Auto start of turn (stands your cards, draws and adds DON!! for you)</label><label class="fxopt"><input type="checkbox" id="snd-on" data-do="sndon" checked> Sounds</label><p class="mkhint">Drag a marker onto any Leader or Character. Tap a marker on your own card to remove it.</p></aside>
   <div class="panrow">
   <div class="pccol"><div class="fxpanel" id="fxpanel" hidden></div><div class="pcrow">
   <div class="pwslot" id="pwslot" data-empty="Power spot. Drag the counter back here."><aside class="pwp" id="pwp" aria-label="Power counter">
@@ -1060,6 +1121,7 @@ function save(c){ try { localStorage.setItem("nakama:setup", JSON.stringify(c));
 
 // ---------- log ----------
 function addLog(m){
+  fxLogLine(m, true);
   const e = [logSeq++, m];
   myLog.push(e); if (myLog.length > 20) myLog.shift();
   LOG.push({who: S.nick || "You", mine: true, m});
@@ -1069,6 +1131,7 @@ function renderLog(){
   const items = LOG.slice(-60).reverse();
   $("#log").innerHTML = items.length ? items.map(e => `<p class="${e.mine ? "mine" : "theirs"}"><b>${esc(e.who)}</b> ${esc(e.m)}</p>`).join("") : '<p class="tips">Nothing yet.</p>';
 }
+const fxPeers = new Set();   // the first batch of a player's log is history, not news
 function mergeLogs(peers){
   let changed = false;
   for (const p of peers) {
@@ -1080,8 +1143,10 @@ function mergeLogs(peers){
       if (seen.has(key)) continue;
       seen.add(key);
       LOG.push({who: clean(p.presence.nick, 20) || "Opponent", mine: false, m: clean(e[1], 120)});
+      if (fxPeers.has(p.peer)) fxLogLine(clean(e[1], 120), false);
       changed = true;
     }
+    fxPeers.add(p.peer);
   }
   if (changed) renderLog();
 }
@@ -1114,6 +1179,7 @@ async function leaveRoom(){
   rankForfeit(); matchForget();
   if (R) { try { await R.leave(); } catch (e) {} }
   R = null; oppPeer = null; oppM = null; PR = null; myQc = null; qcSeen = null;
+  if (myChal) { myChal = null; clearTimeout(chalT); }
   if (myLobby) { myLobby = null; lobbyUpdate(); }
 }
 function pickOpp(peers){
@@ -1182,6 +1248,73 @@ function updTimers(){
   }
 }
 setInterval(turnTick, 1000);
+// ---------- sounds and little animations: attacks, K.O.s, Life lost, counters, wins ----------
+// Sounds are made on the fly with Web Audio, so there are no sound files. Effects sit in an overlay above the board,
+// so the board redrawing underneath doesn't cut them short.
+let sndOn = true, AC = null; try { sndOn = localStorage.getItem("bounty:snd") !== "0"; } catch (e) {}
+function snd(kind){
+  if (!sndOn) return;
+  try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === "suspended") AC.resume(); } catch (e) { return; }
+  const t = AC.currentTime, out = AC.destination;
+  const tone = (f0, f1, dur, type, vol, at = 0) => {
+    const o = AC.createOscillator(), g = AC.createGain(); o.type = type; o.frequency.setValueAtTime(f0, t + at);
+    if (f1) o.frequency.exponentialRampToValueAtTime(f1, t + at + dur);
+    g.gain.setValueAtTime(0.0001, t + at); g.gain.exponentialRampToValueAtTime(vol, t + at + .012); g.gain.exponentialRampToValueAtTime(0.0001, t + at + dur);
+    o.connect(g); g.connect(out); o.start(t + at); o.stop(t + at + dur + .05);
+  };
+  const noise = (dur, vol, freq, at = 0) => {
+    const n = Math.floor(AC.sampleRate * dur), b = AC.createBuffer(1, n, AC.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+    const src = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
+    src.buffer = b; f.type = "bandpass"; f.frequency.value = freq; f.Q.value = .8; g.gain.value = vol;
+    src.connect(f); f.connect(g); g.connect(out); src.start(t + at);
+  };
+  if (kind === "atk") { noise(.28, .5, 1400); tone(260, 620, .2, "triangle", .07); }
+  else if (kind === "hit") { tone(190, 55, .3, "square", .1); noise(.15, .6, 380); }
+  else if (kind === "ko") { tone(420, 45, .5, "sawtooth", .09); noise(.4, .7, 260, .03); }
+  else if (kind === "ctr") { tone(620, 980, .14, "triangle", .12); tone(980, 1320, .12, "triangle", .08, .08); }
+  else if (kind === "win") [523, 659, 784, 1047].forEach((f, i) => tone(f, 0, .26, "triangle", .13, i * .13));
+  else if (kind === "lose") [392, 330, 262, 196].forEach((f, i) => tone(f, 0, .34, "triangle", .11, i * .2));
+  else if (kind === "turn") { tone(880, 0, .12, "sine", .09); tone(1320, 0, .16, "sine", .07, .1); }
+  else if (kind === "chat") tone(1150, 1500, .09, "sine", .06);
+}
+function fxLayer(){ let l = $("#fxl"); if (!l) { l = document.createElement("div"); l.id = "fxl"; l.setAttribute("aria-hidden", "true"); document.body.appendChild(l); } return l; }
+function fxCenter(el){ const r = el.getBoundingClientRect(); return r.width ? {x: r.left + r.width / 2, y: r.top + r.height / 2, r} : null; }
+// floating text over an element (or a side of the board), e.g. "K.O.!" or "-1 Life"
+function fxFloat(el, text, cls){
+  const c = el && fxCenter(el); if (!c) return;
+  const d = document.createElement("div"); d.className = "fxf " + (cls || ""); d.textContent = text;
+  d.style.left = c.x + "px"; d.style.top = c.y + "px";
+  fxLayer().appendChild(d); setTimeout(() => d.remove(), 1300);
+}
+// a slash from the attacker to the target
+function fxAttack(srcSel, tgtSel){
+  snd("atk");
+  const a = $(srcSel), b = $(tgtSel), ca = a && fxCenter(a), cb = b && fxCenter(b); if (!ca || !cb) return;
+  const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg"), ln = document.createElementNS(ns, "line");
+  svg.setAttribute("class", "fxsvg"); svg.setAttribute("width", innerWidth); svg.setAttribute("height", innerHeight);
+  for (const [k, v] of [["x1", ca.x], ["y1", ca.y], ["x2", cb.x], ["y2", cb.y]]) ln.setAttribute(k, v);
+  const len = Math.hypot(cb.x - ca.x, cb.y - ca.y); ln.style.setProperty("--len", len);
+  ln.setAttribute("class", "fxline"); svg.appendChild(ln); fxLayer().appendChild(svg);
+  const ring = document.createElement("div"); ring.className = "fxring"; ring.style.left = cb.x + "px"; ring.style.top = cb.y + "px"; fxLayer().appendChild(ring);
+  setTimeout(() => { svg.remove(); ring.remove(); }, 900);
+}
+function fxFlash(){ const f = document.createElement("div"); f.className = "fxflash"; fxLayer().appendChild(f); setTimeout(() => f.remove(), 600); }
+let fxSeen = {life: null, olife: null, res: "", who: ""};
+// called from render: Life counts going down and the match result
+function fxWatch(){
+  const play = S.phase === "play";
+  if (S.nick !== fxSeen.who) { fxSeen = {life: null, olife: null, res: S.conceded ? "l" : oppM && oppM.cd ? "w" : "", who: S.nick}; }   // practice switched sides
+  const ml = play ? S.life.length : null, ol = play && oppM && oppM.ready ? oppM.lf : null;
+  if (ml != null && fxSeen.life != null && ml < fxSeen.life) { snd("hit"); fxFloat($("#myLife"), `−${fxSeen.life - ml} Life`, "dmg"); fxFlash(); }
+  if (ol != null && fxSeen.olife != null && ol < fxSeen.olife) { snd("hit"); fxFloat($("#oppLife"), `−${fxSeen.olife - ol} Life`, "dmg"); }
+  fxSeen.life = ml; fxSeen.olife = ol;
+  const res = S.conceded ? "l" : oppM && oppM.cd ? "w" : "";
+  if (res && res !== fxSeen.res && play) { snd(res === "w" ? "win" : "lose"); fxFloat($(res === "w" ? "#opp" : "#me"), res === "w" ? "Victory!" : "Defeat", res === "w" ? "win" : "lose"); }
+  fxSeen.res = res;
+}
+// a log line about a K.O., from either side
+function fxLogLine(m, mine){ if (/was K\.O\.'d/.test(m)) setTimeout(() => { snd("ko"); fxFloat($(mine ? "#me" : "#opp"), "K.O.!", "ko"); }, 30); }
 // ---------- quick chat: a fixed set of phrases and emotes, so there's nothing to moderate ----------
 const QC = ["\uD83D\uDC4B Hi, good luck!", "\uD83D\uDC4D Nice play!", "\uD83E\uDD14 Thinking\u2026", "\u23F3 One moment, please", "\u2705 Your turn", "\uD83D\uDE4F Thanks!", "\uD83D\uDE05 Oops!", "\uD83C\uDF89 Good game!", "\uD83D\uDE02", "\uD83D\uDE2E", "\uD83D\uDD25", "\uD83D\uDE24"];
 let myQc = null, qcLast = 0, qcSeen = null; const qcBubT = {};
@@ -1213,7 +1346,7 @@ function qcBubble(opp, text){
 function qcCheck(){
   const id = oppM ? (oppM.qc ? oppM.qc.id : 0) : null;
   if (id === null || id === qcSeen) return;
-  if (qcSeen !== null && id) { qcBubble(true, QC[oppM.qc.k]); LOG.push({who: oppM.nick, mine: false, m: `says \u201C${QC[oppM.qc.k]}\u201D`}); renderLog(); }
+  if (qcSeen !== null && id) { snd("chat"); qcBubble(true, QC[oppM.qc.k]); LOG.push({who: oppM.nick, mine: false, m: `says \u201C${QC[oppM.qc.k]}\u201D`}); renderLog(); }
   qcSeen = id;
 }
 function oppModel(x){
@@ -1221,7 +1354,7 @@ function oppModel(x){
   return {
     nick: clean(x.nick, 20) || "Opponent", sl: num(x.sl, 6), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
     ld: f(x.ld), ch: (Array.isArray(x.ch) ? x.ch : []).slice(0, 12).map(f).filter(Boolean), st: f(x.st), ev: f(x.ev),
-    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2, rk: x.rk ? 1 : 0, tl: Number.isInteger(x.tl) && x.tl >= 0 && x.tl <= 3600 ? x.tl : null, tp: x.tp ? 1 : 0, to: num(x.to, 9), qc: Array.isArray(x.qc) && Number.isInteger(x.qc[0]) && Number.isInteger(x.qc[1]) && QC[x.qc[1]] ? {id: x.qc[0], k: x.qc[1]} : null,
+    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2, rk: x.rk ? 1 : 0, fc: FC_RE.test(x.fc) ? x.fc : "", tl: Number.isInteger(x.tl) && x.tl >= 0 && x.tl <= 3600 ? x.tl : null, tp: x.tp ? 1 : 0, to: num(x.to, 9), qc: Array.isArray(x.qc) && Number.isInteger(x.qc[0]) && Number.isInteger(x.qc[1]) && QC[x.qc[1]] ? {id: x.qc[0], k: x.qc[1]} : null,
     mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0))), u: q.u ? 1 : 0})), ma: num(x.ma, 1000000),
     lf: num(x.lf, 60), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
@@ -1231,7 +1364,7 @@ function oppModel(x){
 const donB = f => S.myTurn && f && f.d ? f.d * 1000 : 0;
 const fld = x => ({c: x.card.c, n: x.card.n, r: x.r ? 1 : 0, d: x.d || 0, pm: (x.pm || 0) + donB(x), cm: x.cm || 0, mk: x.mk || []});
 function pubFull(){
-  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, rk:S.ranked ? 1 : 0, qc:myQc, tl:S.myTurn && S.ranked && S.tleft != null ? Math.ceil(S.tleft / 1000) : null, tp:S.atk ? 1 : 0, to:S.tmo || 0, mq:S.mq.slice(-8), ma:S.ack || 0,
+  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, rk:S.ranked ? 1 : 0, fc:myFC(), qc:myQc, tl:S.myTurn && S.ranked && S.tleft != null ? Math.ceil(S.tleft / 1000) : null, tp:S.atk ? 1 : 0, to:S.tmo || 0, mq:S.mq.slice(-8), ma:S.ack || 0,
     lf:S.life.length, dd:S.donDeck, da:S.donActive, dr:S.donRested, dk:S.deck.length, h:S.hand.length,
     tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), lg:myLog.slice(-8)};
 }
@@ -1277,7 +1410,7 @@ function undo(){
 // Every open copy of the game shares one lobby (the page-wide room). A host puts their open table in their
 // lobby presence; the Lobbies page lists everyone's. Presence clears by itself when the host leaves.
 const LB_FMT = {std: "Standard", ext: "Extra", any: "Casual"};
-let myLobby = null, lbSent = "null";
+let myLobby = null, lbSent = "";
 const LBV = {unsub: null, unconn: null, peers: [], conn: null, err: "", since: 0, tick: null, tok: 0};
 async function lobbyRoom(){ try { return window.claude && window.claude.use ? await window.claude.use("room") : null; } catch (e) { return null; } }
 function lobbyCode(){ const w = ["sunny","merry","grandline","redline","wano","alabasta","sabaody","skypiea","dressrosa","egghead"]; return w[Math.floor(Math.random() * w.length)] + "-" + (1000 + Math.floor(Math.random() * 9000)); }
@@ -1458,8 +1591,9 @@ async function rankedFind(){
 // ---------- profile ----------
 // Win/loss record, most played decks (by Leader) and most played cards, counted from online matches against
 // another player. Kept in this browser and, when signed in to claude.ai, in the player's own private storage.
-const HIST_MAX = 20;
-function statsBlank(){ return {g: 0, w: 0, l: 0, ld: {}, cd: {}, h: []}; }
+const HIST_MAX = 20, FR_MAX = 50;
+function statsBlank(){ return {g: 0, w: 0, l: 0, ld: {}, cd: {}, h: [], fc: "", fr: []}; }
+const FC_RE = /^[A-HJ-NP-Z2-9]{6}$/;
 function statsFrom(x){
   const o = statsBlank(); if (!x || typeof x !== "object") return o;
   o.g = x.g | 0; o.w = x.w | 0; o.l = x.l | 0;
@@ -1467,7 +1601,9 @@ function statsFrom(x){
   if (x.ld && typeof x.ld === "object") for (const k of Object.keys(x.ld).slice(0, 200)) if (code(k)) { const v = x.ld[k] || {}; o.ld[k] = {n: v.n | 0, w: v.w | 0, l: v.l | 0}; }
   if (x.cd && typeof x.cd === "object") for (const k of Object.keys(x.cd).slice(0, 600)) if (code(k)) o.cd[k] = x.cd[k] | 0;
   // match history, newest first: time, my Leader, their Leader and name, result, ranked, bounty change, how it ended
-  if (Array.isArray(x.h)) o.h = x.h.slice(0, HIST_MAX).filter(e => e && typeof e === "object").map(e => ({t: +e.t || 0, me: code(e.me) ? e.me : "", op: code(e.op) ? e.op : "", on: clean(e.on, 20), r: e.r === "w" ? "w" : "l", rk: e.rk ? 1 : 0, b: Math.max(-99999, Math.min(99999, Math.round(+e.b || 0))), y: ["cd", "dmg", "left", "time"].includes(e.y) ? e.y : ""}));
+  if (Array.isArray(x.h)) o.h = x.h.slice(0, HIST_MAX).filter(e => e && typeof e === "object").map(e => ({t: +e.t || 0, me: code(e.me) ? e.me : "", op: code(e.op) ? e.op : "", on: clean(e.on, 20), fc: FC_RE.test(e.fc) ? e.fc : "", r: e.r === "w" ? "w" : "l", rk: e.rk ? 1 : 0, b: Math.max(-99999, Math.min(99999, Math.round(+e.b || 0))), y: ["cd", "dmg", "left", "time"].includes(e.y) ? e.y : ""}));
+  o.fc = FC_RE.test(x.fc) ? x.fc : "";
+  if (Array.isArray(x.fr)) o.fr = x.fr.slice(0, FR_MAX).filter(f => f && FC_RE.test(f.c)).map(f => ({c: f.c, n: clean(f.n, 20)}));
   return o;
 }
 function statsLoadLocal(){ try { return statsFrom(JSON.parse(localStorage.getItem("bounty:stats") || "null")); } catch (e) { return statsBlank(); } }
@@ -1485,7 +1621,13 @@ async function statsLoad(){
   const ref = await statsDoc(); if (!ref) return;
   try {
     const sn = await ref.get();
-    if (sn.exists) { STATS = statsFrom(sn.data()); try { localStorage.setItem("bounty:stats", JSON.stringify(STATS)); } catch (e) {} }
+    if (sn.exists) {
+      const loc = STATS; STATS = statsFrom(sn.data());
+      // stats saved before friends existed: keep the code and friends made in this browser
+      if (!STATS.fc && loc.fc) { STATS.fc = loc.fc; STATS.fr = loc.fr; statsSave(); }
+      try { localStorage.setItem("bounty:stats", JSON.stringify(STATS)); } catch (e) {}
+      lobbyUpdate();
+    }
     else if (STATS.g || STATS.w || STATS.l) statsSave();
   } catch (e) {}
 }
@@ -1500,7 +1642,7 @@ function statHist(e){ STATS.h = [Object.assign({t: Date.now()}, e), ...(STATS.h 
 function statLd(code){ if (!/^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(code || "")) return null; return STATS.ld[code] || (STATS.ld[code] = {n: 0, w: 0, l: 0}); }
 function statCheck(){
   if (PR || S.statDone || S.phase === "none") return;
-  if (oppM && R) { if (oppM.ld && oppM.ld.c) S.statOpLd = oppM.ld.c; S.statOpNick = oppM.nick; }
+  if (oppM && R) { if (oppM.ld && oppM.ld.c) S.statOpLd = oppM.ld.c; S.statOpNick = oppM.nick; if (oppM.fc) S.statOpFc = oppM.fc; }
   if (!S.statOpp) {
     if (!(R && oppM && S.phase !== "wait")) return;
     S.statOpp = true; STATS.g++;           // an opponent sat down: this game counts toward the Leader's games played
@@ -1513,7 +1655,7 @@ function statCheck(){
   const e = statLd(S.leader && S.leader.card && S.leader.card.c);
   if (won) { STATS.w++; if (e) e.w++; } else { STATS.l++; if (e) e.l++; }
   const y = lost ? (S.lostDmg ? "dmg" : S.tmo >= TIMEOUTS_MAX ? "time" : S.rankLeft ? "left" : "cd") : (oppM && oppM.cd ? (oppM.cdw ? "dmg" : (oppM.to || 0) >= TIMEOUTS_MAX ? "time" : "cd") : "left");
-  statHist({me: (S.leader && S.leader.card && S.leader.card.c) || "", op: S.statOpLd || "", on: S.statOpNick || "", r: won ? "w" : "l", rk: S.ranked && S.rankOpp ? 1 : 0, b: S.rankD || 0, y});
+  statHist({me: (S.leader && S.leader.card && S.leader.card.c) || "", op: S.statOpLd || "", on: S.statOpNick || "", fc: S.statOpFc || "", r: won ? "w" : "l", rk: S.ranked && S.rankOpp ? 1 : 0, b: S.rankD || 0, y});
   statsSave();
 }
 function statLoss(code, info){ STATS.l++; const e = statLd(code); if (e) e.l++; statHist({me: code || "", op: (info && info.op) || "", on: (info && info.on) || "", r: "l", rk: 1, b: (info && info.b) || 0, y: "left"}); statsSave(); }
@@ -1560,6 +1702,128 @@ function openProfile(){
     <div class="row end"><button class="btn" data-do="home" type="button">Back</button></div>`);
   const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
   $("#modal").classList.add("homebg", "lobpage");
+}
+
+// ---------- friends: a friend code each, a list kept with your profile, and challenges through the lobby ----------
+// Everyone with the game open sits in the lobby with their code, name and what they're doing, so friends can see
+// each other online. A challenge is a note in your lobby presence naming a friend and a table; you wait at that table.
+const FC_ABC = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const ST = {home: "Online", solo: "Playing solo", table: "At a table", match: "In a match"};
+const FRV = {peers: [], on: false};
+let myChal = null, myDc = null, chalT = null, curInv = null; const chalSeen = new Set();
+function myFC(){
+  if (!STATS.fc) { const b = crypto.getRandomValues(new Uint8Array(6)); STATS.fc = Array.from(b, x => FC_ABC[x % FC_ABC.length]).join(""); statsSave(); }
+  return STATS.fc;
+}
+function myStatus(){ return !R || PR ? (S.phase === "none" ? "home" : "solo") : oppM ? "match" : "table"; }
+const isFriend = c => STATS.fr.some(f => f.c === c);
+async function friendsWatch(){
+  if (FRV.on) return; FRV.on = true;
+  const rm = await lobbyRoom();
+  if (!rm || typeof rm.onPeers !== "function") { FRV.on = false; return; }
+  rm.onPeers(ch => { FRV.peers = Array.from((ch && ch.peers) || []); chalCheck(); if (modal && modal.type === "friends") renderFriends(); });
+  lobbyUpdate();
+}
+// friend code -> {nk, st} for everyone else in the lobby right now
+function onlineMap(){
+  const m = new Map();
+  for (const p of FRV.peers) {
+    if (!p || p.isMe || !p.presence || !FC_RE.test(p.presence.fc) || p.presence.fc === STATS.fc) continue;
+    m.set(p.presence.fc, {nk: clean(p.presence.nk, 20) || "Player", st: ST[p.presence.st] ? p.presence.st : "home"});
+  }
+  return m;
+}
+function chalCheck(){
+  if (!STATS.fc) return;
+  let inv = null;
+  for (const p of FRV.peers) {
+    if (!p || p.isMe || !p.presence) continue;
+    const c = p.presence.ch, fc = p.presence.fc;
+    if (c && c.to === STATS.fc && FC_RE.test(fc) && Number.isInteger(c.id) && /^friend-[a-z]+-\d{4}$/.test(c.r || "") && !chalSeen.has(c.id) && (!myChal || myChal.to !== fc))
+      { inv = {id: c.id, r: c.r, fc, nk: clean(p.presence.nk, 20) || "A player"}; break; }
+    if (myChal && p.presence.dc === myChal.id) { toast(`${myChal.n} can't play right now.`); clearTimeout(chalT); myChal = null; lobbyUpdate(); render(); }
+  }
+  if (inv && R && oppM && !PR) inv = null;        // busy in a match: they see you're in one anyway
+  showInvite(inv);
+}
+function showInvite(inv){
+  curInv = inv;
+  let el = $("#invite");
+  if (!inv) { if (el) el.hidden = true; return; }
+  if (!el) { el = document.createElement("div"); el.id = "invite"; el.className = "invite"; el.setAttribute("role", "alert"); document.body.appendChild(el); }
+  const fr = isFriend(inv.fc);
+  el.innerHTML = `<div class="invt">⚔ <b>${esc(inv.nk)}</b> challenges you to a match!</div>${fr ? "" : `<div class="invs">${esc(inv.nk)} isn't on your friends list (code ${esc(inv.fc)}).</div>`}<div class="invb"><button class="btn pri" data-do="invyes" type="button">Accept</button><button class="btn" data-do="invno" type="button">Decline</button>${fr ? "" : '<button class="btn" data-do="invadd" type="button">Add friend</button>'}</div>`;
+  el.hidden = false;
+}
+function deckReady(){
+  const v = loadSaved();
+  if (!parseLines(v.deck || "").length || !parseLines(v.leader || "").length) { toast("Pick a deck with a Leader first: open the Deck editor, build or load a deck, then press Play."); return null; }
+  return v;
+}
+async function sitAt(room, v){
+  const c = Object.assign({}, v, {room, nick: v.nick || RANK.nick || "Player", life: v.life || 5, sleeve: v.sleeve | 0, first: !!v.first});
+  closeModal(); if (builderOpen) closeBuilder();
+  await leaveRoom(); status = "connecting";
+  newGame(c, true);
+  await connect(room);
+  render();
+}
+async function challenge(code){
+  const on = onlineMap().get(code), f = STATS.fr.find(x => x.c === code), name = (on && on.nk) || (f && f.n) || "Your friend";
+  if (!on) { toast(`${name} isn't online right now.`); return; }
+  if (on.st === "match") { toast(`${name} is in a match right now.`); return; }
+  const v = deckReady(); if (!v) return;
+  const room = "friend-" + lobbyCode();
+  await sitAt(room, v);
+  if (!R || roomCode !== room) return;
+  const id = Date.now() % 1e9;
+  myChal = {to: code, r: room, id, n: name}; lobbyUpdate(); render();
+  toast(`Challenge sent to ${name}. Wait here at the table for them to accept.`);
+  clearTimeout(chalT);
+  chalT = setTimeout(() => { if (myChal && myChal.id === id && !oppM) { myChal = null; lobbyUpdate(); render(); toast(`${name} didn't answer your challenge.`); } }, 180000);
+}
+function addFriend(code, nk){
+  code = String(code || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (!FC_RE.test(code)) { toast("Friend codes are 6 letters and numbers, like K7Q2MX."); return false; }
+  if (code === myFC()) { toast("That's your own code. Send it to a friend so they can add you."); return false; }
+  if (isFriend(code)) { toast("They're already on your friends list."); return false; }
+  if (STATS.fr.length >= FR_MAX) { toast(`Your friends list is full (${FR_MAX}). Remove someone first.`); return false; }
+  const on = onlineMap().get(code);
+  STATS.fr.push({c: code, n: clean(nk || (on && on.nk), 20)}); statsSave();
+  toast(`Added ${(on && on.nk) || nk || code} to your friends.`);
+  return true;
+}
+function openFriends(){
+  modal = {type: "friends"};
+  showModal(`<h2>Friends</h2>
+    <p class="hint">See which friends have the game open and challenge them to a match. You play with the deck you last saved in the Deck editor.</p>
+    <div class="frtop">
+      <div class="frcode"><small>Your friend code</small><b id="fr-me">${esc(myFC())}</b><button class="btn" data-do="frcopy" type="button">Copy</button></div>
+      <div class="fradd"><small>Add a friend by their code</small><div class="row"><input id="fr-code" maxlength="8" placeholder="K7Q2MX" autocomplete="off" spellcheck="false"><button class="btn pri" data-do="fradd" type="button">Add</button></div></div>
+    </div>
+    <h3 class="rkh">Your friends</h3>
+    <div class="frlist" id="fr-list"></div>
+    <div id="fr-recent"></div>
+    <div class="row end">${S.phase === "none" ? '<button class="btn" data-do="homeplay" type="button">Back</button>' : '<button class="btn" data-do="closemodal" type="button">Back to table</button>'}</div>`);
+  const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
+  $("#modal").classList.add("homebg", "lobpage");
+  const i = $("#fr-code"); if (i) i.addEventListener("keydown", e => { if (e.key === "Enter") doAction("fradd"); });
+  friendsWatch(); renderFriends();
+}
+function renderFriends(){
+  const el = $("#fr-list"), rc = $("#fr-recent"); if (!el) return;
+  const on = onlineMap(); let named = false;
+  const rows = STATS.fr.map(f => {
+    const o = on.get(f.c); if (o && o.nk !== f.n) { f.n = o.nk; named = true; }
+    return {f, o};
+  }).sort((a, b) => (!!b.o - !!a.o) || (a.f.n || a.f.c).localeCompare(b.f.n || b.f.c));
+  if (named) statsSave();
+  el.innerHTML = rows.length ? rows.map(({f, o}) => `<div class="frrow${o ? " on" : ""}"><span class="dot${o ? " on" : ""}"></span><div class="frinfo"><b>${esc(f.n || "Friend")}</b><small>${esc(f.c)} · ${o ? esc(ST[o.st]) : "Offline"}</small></div><span class="sp"></span>${o && o.st !== "match" ? `<button class="btn pri" data-do="frch:${f.c}" type="button"${myChal && myChal.to === f.c ? " disabled" : ""}>${myChal && myChal.to === f.c ? "Challenge sent" : "Challenge"}</button>` : ""}<button class="btn" data-do="frrm:${f.c}" type="button" aria-label="Remove ${esc(f.n || f.c)}">Remove</button></div>`).join("")
+    : `<div class="lbempty"><b>No friends yet</b>Send a friend your code, or add theirs above. People you've played show up below too.</div>`;
+  if (!rc) return;
+  const seen = new Set(), recent = [];
+  for (const e of STATS.h || []) { if (!e.fc || seen.has(e.fc) || isFriend(e.fc) || e.fc === STATS.fc) continue; seen.add(e.fc); recent.push(e); if (recent.length >= 6) break; }
+  rc.innerHTML = recent.length ? `<h3 class="rkh">Recent opponents</h3><div class="frlist">${recent.map(e => `<div class="frrow"><span class="dot${on.has(e.fc) ? " on" : ""}"></span><div class="frinfo"><b>${esc(e.on || "Player")}</b><small>${esc(e.fc)} · ${e.r === "w" ? "you won" : "you lost"} ${e.t ? esc(ago(e.t)) : ""}</small></div><span class="sp"></span><button class="btn" data-do="fradd:${e.fc}" type="button">Add friend</button></div>`).join("")}</div>` : "";
 }
 
 // ---------- account (desktop app) ----------
@@ -1714,12 +1978,13 @@ function renderLobbies(){
 }
 async function lobbyUpdate(){
   const lb = myLobby && R && roomCode === myLobby.c ? {c: myLobby.c, n: myLobby.n, h: S.nick || "Player", l: S.leader && S.leader.card ? S.leader.card.c : "", f: myLobby.f, r: myLobby.r ? 1 : 0, s: oppPeer || (S.phase !== "wait" && S.phase !== "roll") ? 2 : 1, t: myLobby.t} : null;
-  const key = JSON.stringify(lb);
+  const pres = {lb, fc: myFC(), nk: clean(S.nick || loadSaved().nick || RANK.nick, 20) || "Player", st: myStatus(), ch: myChal ? {to: myChal.to, r: myChal.r, id: myChal.id} : null, dc: myDc};
+  const key = JSON.stringify(pres);
   if (key === lbSent) return;
   lbSent = key;
   const rm = await lobbyRoom();
   if (!rm || typeof rm.presence !== "function") return;
-  try { await rm.presence({lb}); } catch (e) { if (lbSent === key) lbSent = ""; }
+  try { await rm.presence(pres); } catch (e) { if (lbSent === key) lbSent = ""; }
 }
 
 // ---------- rendering ----------
@@ -1795,7 +2060,7 @@ function render(){
     const qb = $("#qcbtn"); if (qb) qb.hidden = !(R && !PR && oppM && S.phase !== "none");
     const db = $(".dicebtn"); if (db) db.classList.toggle("due", (S.phase === "roll" && !S.roll) || !!(PR && !PR.order && S.phase === "pre")); }
   { const sw = $("#pswitch"); if (sw) { sw.hidden = !PR; if (PR) sw.textContent = "Switch to Player " + (PR.cur === 0 ? 2 : 1); } }
-  { const fa = $("#fx-auto"); if (fa) fa.checked = autoFx; const ta = $("#turn-auto"); if (ta) ta.checked = autoTurn; }
+  { const fa = $("#fx-auto"); if (fa) fa.checked = autoFx; const ta = $("#turn-auto"); if (ta) ta.checked = autoTurn; const so = $("#snd-on"); if (so) so.checked = sndOn; }
   $("#opp").innerHTML = side(oppM || EMPTY(), false);
   $("#oppLife").innerHTML = lifePanel(oppM || EMPTY(), false);
   $("#myLife").innerHTML = lifePanel(pubFull(), true);
@@ -1808,20 +2073,22 @@ function render(){
     $("#hand").innerHTML = (S.phase === "wait" || S.phase === "roll" || (PR && !PR.order && S.phase === "pre")) ? `<span class="empty">Your hand is dealt when the match starts</span>` : S.hand.length ? S.hand.map((c, i) => tile(c, `data-src="hand:${i}"`, false, 0)).join("") : `<span class="empty">Your hand is empty</span>`;
     fitHand();
     $("#banner").innerHTML = (S.phase === "wait" || S.phase === "roll") ? matchBannerHTML() : (PR && !PR.order && S.phase === "pre") ? practiceRollHTML() : S.phase === "pre"
-      ? `<div class="banner"><span>Opening hand. Keep it and set ${S.lifeN} Life cards${S.mull ? "." : ", or mulligan once."}</span><button class="btn pri" data-do="keep" type="button">Keep and set Life</button>${S.mull ? "" : '<button class="btn" data-do="mulligan" type="button">Mulligan</button>'}</div>` : (S.phase === "play" && !S.turn && oppM && oppM.kp === 0) ? `<div class="banner"><span>Waiting for ${esc(oppM.nick)} to keep their hand and set Life\u2026</span></div>` : "";
+      ? `<div class="banner"><span>Opening hand. Keep it and set ${S.lifeN} Life cards${S.mull ? "." : ", or mulligan once."}${handSummary()}</span><button class="btn pri" data-do="keep" type="button">Keep and set Life</button>${S.mull ? "" : '<button class="btn" data-do="mulligan" type="button">Mulligan</button>'}</div>` : (S.phase === "play" && !S.turn && oppM && oppM.kp === 0) ? `<div class="banner"><span>Waiting for ${esc(oppM.nick)} to keep their hand and set Life\u2026</span></div>` : "";
   }
   let mid = "The Grand Line";
   if (R && !oppM) mid = "Waiting for an opponent to join the room…";
   else if (oppM && !oppM.ready) mid = oppM.nick + " is setting up their deck…";
   if (S.blk != null && !(oppM && oppM.ak)) { S.blk = null; publish(); }
-  { const k = oppM && oppM.ak ? oppM.ak.s + ">" + oppM.ak.t : ""; if (k !== oppAtkKey) { oppAtkKey = k; if (k) offerOppAttack(); } }
+  { const k = oppM && oppM.ak ? oppM.ak.s + ">" + oppM.ak.t : ""; if (k !== oppAtkKey) { oppAtkKey = k; if (k) { offerOppAttack(); const ak = oppM.ak; setTimeout(() => fxAttack(`#opp [data-opp="${ak.s}"]`, `#me [data-src="${ak.t}"]`), 0); } } }
   const cdMsg = oppM && oppM.cd ? (oppM.cdw ? `${oppM.nick} took damage at 0 Life. You win!` : `${oppM.nick} conceded. You win!`) : "";
   const res = S.conceded ? (S.lostDmg ? "You took damage at 0 Life. You lose!" : "You conceded the match.") : (oppM && oppM.cd ? esc(cdMsg) : "");
   if (oppM && oppM.cd && !oppCdSeen) { oppCdSeen = true; toast(cdMsg); } else if (!(oppM && oppM.cd)) oppCdSeen = false;
   const ch = res ? `<span>\u2691 ${res}</span>` : S.phase === "none" ? "" : combatHTML(), midEl = $("#mid");
   midEl.classList.toggle("combat", !!ch);
   if (ch) midEl.innerHTML = ch; else midEl.textContent = mid;
-  markCombat(); updTimers();
+  markCombat(); updTimers(); fxWatch();
+  if (myChal && oppM) { myChal = null; clearTimeout(chalT); }
+  lobbyUpdate();
   $("#handn").textContent = S.hand.length ? `(${S.hand.length})` : "";
   renderStatus();
   renderModal();
@@ -1930,6 +2197,7 @@ function openHome(page){
       <button class="btn pri" data-do="homejoin" type="button">Join table</button>
       <button class="btn" data-do="homelobby" type="button">Lobbies</button>
       <button class="btn" data-do="homeranked" type="button">Ranked</button>
+      <button class="btn" data-do="homefriends" type="button">Friends${(n => n ? ` <i class="frn">${n} online</i>` : "")(STATS.fr.filter(f => onlineMap().has(f.c)).length)}</button>
       <button class="btn" data-do="homeboth" type="button">Test a deck (play both sides)</button>
       <button class="btn" data-do="home" type="button">Back</button>` : `
       ${rejoinBtn()}<button class="btn pri homeplay" data-do="homeplay" type="button">Play</button>
@@ -2443,12 +2711,23 @@ function advance(){
   return ch;
 }
 function matchBannerHTML(){
+  if (S.phase === "wait" && myChal) return `<div class="banner"><span>Challenge sent to <b>${esc(myChal.n)}</b>. Waiting for them to accept\u2026</span><button class="btn" data-do="home" type="button">Cancel</button></div>`;
   if (S.phase === "wait") return `<div class="banner"><span>Waiting for an opponent to join room <b>${esc(roomCode || "")}</b>.${myLobby && myLobby.c === roomCode ? " Your table is listed in Lobbies, so anyone can join." : ""} The match starts when two players are at the table.</span></div>`;
   const o = oppM ? oppM.nick : "Opponent";
   if (!S.roll) return `<div class="banner"><span>${esc(o)} is here. Roll a die to see who chooses who goes first.</span><button class="btn pri" data-do="rolld" type="button">Roll die</button></div>`;
   if (!oppM || !oppM.rl) return `<div class="banner"><span>You rolled a <b>${S.roll}</b>. Waiting for ${esc(o)} to roll\u2026</span></div>`;
   if (S.roll > oppM.rl) return S.fc ? "" : `<div class="banner"><span>You rolled <b>${S.roll}</b> to ${esc(o)}'s <b>${oppM.rl}</b>. You choose:</span><button class="btn pri" data-do="fcf" type="button">Go first</button><button class="btn" data-do="fcs" type="button">Go second</button></div>`;
   return `<div class="banner"><span>You rolled <b>${S.roll}</b> to ${esc(o)}'s <b>${oppM.rl}</b>. ${esc(o)} is choosing who goes first\u2026</span></div>`;
+}
+// a quick read of the opening hand: who goes first, the costs, and the counters in it
+function handSummary(){
+  if (!S.hand.length) return "";
+  const ks = [], first = R && !PR ? (S.first ? "You go first" : "You go second") : "";
+  let ctrN = 0, ctrV = 0;
+  for (const c of S.hand) { const e = CARDDB.get(c.c) || {}; if (Number.isFinite(e.k)) ks.push(e.k); if (e.ctr) { ctrN++; ctrV += e.ctr; } }
+  ks.sort((a, b) => a - b);
+  const bits = [first, ks.length ? "Costs " + ks.join(", ") : "", `${ctrN} counter${ctrN === 1 ? "" : "s"}${ctrV ? " (+" + ctrV.toLocaleString("en-US") + ")" : ""}`].filter(Boolean);
+  return `<small class="mhint">${esc(bits.join(" \u00B7 "))}</small>`;
 }
 function keepHand(){
   if (S.phase !== "pre") return;
@@ -2487,7 +2766,7 @@ function startTurn(){
   if (S.stage) S.stage.r = false;
   stand(S.leader); S.donRested += S.leader.d; S.leader.d = 0; S.leader.pm = 0; S.leader.cm = 0; S.leader.bc = 0;
   S.donActive += S.donRested; S.donRested = 0;
-  S.myTurn = true; S.tleft = TURN_MS; S.tw = false;
+  S.myTurn = true; S.tleft = TURN_MS; S.tw = false; if (R && !PR) snd("turn");
   addLog(`started turn ${S.turn}`);
   if (autoTurn) {
     // Refresh, Draw and DON!! phases in one go: no draw for the first player's first turn, and 1 DON!! on it
@@ -2777,6 +3056,7 @@ function attackWith(src, target){
   S.atk = {s: src, t: target, n: Date.now() % 1e9}; S.blk = null;
   addLog(tg ? `attacked ${lab(tg)} with ${lab(me.card)}` : `attacked with ${lab(me.card)}`);
   commit();
+  fxAttack(`#me [data-src="${src}"]`, `#opp [data-opp="${target}"]`);
   runAbility(me.card, ["whenAttacking"], false, me.d || 0);
 }
 // ---------- combat ----------
@@ -3190,20 +3470,29 @@ function doAction(a){
   if (a === "fxdraw" && fxCur) { const n = fxCur.steps[fxCur.i].n; draw(n); fxNext(); return; }
   if (a === "fxlook" && fxCur) { const n = fxCur.steps[fxCur.i].n; fxNext(); modal = {type: "peek", n}; renderModal(); addLog(`looked at the top ${Math.min(n, S.deck.length)} cards of their deck`); return; }
   if (a.startsWith("fxdon:") && fxCur) { addDon(fxCur.steps[fxCur.i].n, a === "fxdon:a"); fxNext(); return; }
+  if (a === "sndon") { sndOn = !sndOn; try { localStorage.setItem("bounty:snd", sndOn ? "1" : "0"); } catch (e) {} if (sndOn) snd("turn"); toast(sndOn ? "Sounds on." : "Sounds off."); return; }
   if (a === "autoturn") { autoTurn = !autoTurn; try { localStorage.setItem("bounty:autoturn", autoTurn ? "1" : "0"); } catch (e) {} toast(autoTurn ? "Auto start of turn on: you'll draw and get DON!! automatically." : "Auto start of turn off: use Draw for turn and DON!! for turn."); return; }
   if (a === "autofx") { autoFx = !autoFx; try { localStorage.setItem("nakama:autofx", autoFx ? "1" : "0"); } catch (e) {} toast(autoFx ? "Auto card effects on." : "Auto card effects off."); return; }
   if (a.startsWith("cmbcnt:")) {
     const v = +a.slice(7), d = myDefender();
     if (!d || !v) return;
     d.pm = Math.max(-60000, Math.min(60000, (d.pm || 0) + v)); d.bc = (d.bc || 0) + v;
-    addLog(`countered +${v} on ${lab(d.card)}`); commit(); return;
+    addLog(`countered +${v} on ${lab(d.card)}`); commit(); snd("ctr"); fxFloat($(`#me [data-src="${d === S.leader ? "ld" : "ch:" + S.chars.indexOf(d)}"]`), `+${v}`, "ctr"); return;
   }
+  if (a.startsWith("frch:")) { challenge(a.slice(5)); return; }
+  if (a.startsWith("frrm:")) { const c = a.slice(5), f = STATS.fr.find(x => x.c === c); STATS.fr = STATS.fr.filter(x => x.c !== c); statsSave(); renderFriends(); if (f) toast(`Removed ${f.n || f.c} from your friends.`); return; }
+  if (a.startsWith("fradd:")) { const c = a.slice(6), e = (STATS.h || []).find(x => x.fc === c); if (addFriend(c, e && e.on)) renderFriends(); return; }
+  if (a === "fradd") { const i = $("#fr-code"); if (i && addFriend(i.value)) { i.value = ""; renderFriends(); } return; }
+  if (a === "frcopy") { const c = myFC(); try { navigator.clipboard.writeText(c).then(() => toast("Friend code copied: " + c), () => toast("Your friend code: " + c)); } catch (e) { toast("Your friend code: " + c); } return; }
+  if (a === "invyes" && curInv) { const inv = curInv, v = deckReady(); if (!v) return; chalSeen.add(inv.id); showInvite(null); sitAt(inv.r, v).then(() => toast(`You joined ${inv.nk}'s table.`)); return; }
+  if (a === "invno" && curInv) { chalSeen.add(curInv.id); myDc = curInv.id; showInvite(null); lobbyUpdate(); return; }
+  if (a === "invadd" && curInv) { if (addFriend(curInv.fc, curInv.nk)) showInvite(curInv); return; }
   if (a.startsWith("cmbhc:")) {
     const i = +a.slice(6), c = S.hand[i], d = myDefender(), v = c ? (CARDDB.get(c.c) || {}).ctr : 0;
     if (!c || !d || !v || !oppM || !oppM.ak) return;
     S.hand.splice(i, 1); S.trash.unshift(c);
     d.pm = Math.max(-60000, Math.min(60000, (d.pm || 0) + v)); d.bc = (d.bc || 0) + v;
-    addLog(`used ${lab(c)} from hand as a +${v} Counter on ${lab(d.card)}`); commit(); return;
+    addLog(`used ${lab(c)} from hand as a +${v} Counter on ${lab(d.card)}`); commit(); snd("ctr"); fxFloat($(`#me [data-src="${d === S.leader ? "ld" : "ch:" + S.chars.indexOf(d)}"]`), `+${v}`, "ctr"); return;
   }
   if (a.startsWith("cc:")) { const v = +a.slice(3); S.cc = v === 0 ? 0 : Math.max(-20, Math.min(20, (S.cc || 0) + v)); commit(); return; }
   if (a.startsWith("pw:")) { const v = +a.slice(3); S.pw = v === 0 ? 0 : Math.max(-60000, Math.min(60000, (S.pw || 0) + v)); commit(); return; }
@@ -3215,6 +3504,7 @@ function doAction(a){
     case "homeplay": openHome("play"); break;
     case "homelobby": closeModal(); if (builderOpen) closeBuilder(); openLobbies(); break;
     case "homeranked": closeModal(); if (builderOpen) closeBuilder(); openRanked(); break;
+    case "homefriends": closeModal(); if (builderOpen) closeBuilder(); openFriends(); break;
     case "rkfind": rankedFind(); break;
     case "lbmake": openSetup({pub: true}); break;
     case "homebuilder": closeModal(); openBuilder(); break;
@@ -4176,10 +4466,33 @@ function renderBdDeck(){
         return `<div class="bdcell"><div class="bdstack" style="--n:${v.count}">${cards}<em class="bdcnt">${v.count}x</em></div><div class="bdctl"><button type="button" data-bd="-:${esc(k)}" aria-label="Remove one ${esc(k)}">−</button><span${(lg => lg ? ` class="lg-${lg}" title="${esc(legalNote(k))}"` : "")(legalOf(k))}>${esc(k)}</span><button type="button" data-bd="+:${esc(k)}" aria-label="Add one ${esc(k)}">+</button></div></div>`;
       }).join("")}</div>`
     : `<p class="hint" style="padding:10px 4px">Your deck is empty. Tap a card to add it.</p>`;
-  el.innerHTML = lead + stats + list;
+  el.innerHTML = lead + stats + bdStatsHTML(rows) + list;
   const txt = $("#bd-text"); if (txt) txt.value = (L ? "// Leader: " + bdLeaderStr() + "\n" : "") + bdText();
   const td = $("#bd-tabdeck"); if (td) td.textContent = `Deck (${t})`;
 }
+// cost curve, counter total and card types for the deck being built
+let bdStatsOpen = true; try { bdStatsOpen = localStorage.getItem("bounty:bdstats") !== "0"; } catch (e) {}
+function bdStatsHTML(rows){
+  if (!rows.length) return "";
+  const curve = new Array(8).fill(0), ty = {Character: 0, Event: 0, Stage: 0}, ctr = {1000: 0, 2000: 0};
+  let unknown = 0, ctrSum = 0, costSum = 0, costN = 0, total = 0;
+  for (const k of rows) {
+    const n = BD.cards.get(k).count, e = CARDDB.get(k) || {}; total += n;
+    if (Number.isFinite(e.k)) { curve[Math.min(7, e.k)] += n; costSum += e.k * n; costN += n; } else unknown += n;
+    if (e.ctr) { ctrSum += e.ctr * n; ctr[e.ctr >= 2000 ? 2000 : 1000] += n; }
+    const t = e.t || ""; if (/Event/.test(t)) ty.Event += n; else if (/Stage/.test(t)) ty.Stage += n; else if (/Character/.test(t)) ty.Character += n;
+  }
+  const max = Math.max(1, ...curve);
+  const bars = curve.map((n, i) => `<div class="bdc-col" title="${n} card${n === 1 ? "" : "s"} costing ${i === 7 ? "7 or more" : i}"><span class="bdc-n">${n || ""}</span><span class="bdc-bar" style="height:${Math.round(n / max * 100)}%"></span><span class="bdc-k">${i === 7 ? "7+" : i}</span></div>`).join("");
+  const nums = [
+    [costN ? (costSum / costN).toFixed(1) : "–", "Average cost"],
+    [ctrSum ? "+" + ctrSum.toLocaleString("en-US") : "0", "Counter total"],
+    [`${ctr[1000]} / ${ctr[2000]}`, "+1000 / +2000 counters"],
+    [`${ty.Character} / ${ty.Event}${ty.Stage ? " / " + ty.Stage : ""}`, ty.Stage ? "Characters / Events / Stages" : "Characters / Events"]
+  ].map(([v, l]) => `<div><b>${esc(String(v))}</b><small>${esc(l)}</small></div>`).join("");
+  return `<details class="bd-anal" id="bd-anal"${bdStatsOpen ? " open" : ""}><summary>Deck stats</summary><div class="bd-anal-in"><div class="bdc" role="img" aria-label="Cost curve: ${curve.map((n, i) => `${n} at cost ${i === 7 ? "7 or more" : i}`).join(", ")}">${bars}</div><div class="bdn">${nums}</div></div>${unknown ? `<p class="hint">${unknown} card${unknown === 1 ? "" : "s"} without card data ${unknown === 1 ? "isn't" : "aren't"} counted.</p>` : ""}</details>`;
+}
+document.addEventListener("toggle", e => { if (e.target && e.target.id === "bd-anal") { bdStatsOpen = e.target.open; try { localStorage.setItem("bounty:bdstats", bdStatsOpen ? "1" : "0"); } catch (x) {} } }, true);
 function refreshBdLoad(){
   const s = $("#bd-load"); if (!s) return;
   s.innerHTML = '<option value="">Load saved deck…</option>' + DECKS.map(d => `<option value="${esc(d.id)}">${esc(d.name)}</option>`).join("");
@@ -4985,7 +5298,8 @@ floatable("pwp", "pwslot"); floatable("cwp", "cwslot");
 // ---------- boot ----------
 initDecks();
 try { const n = sessionStorage.getItem("bounty:acctnote"); if (n) { sessionStorage.removeItem("bounty:acctnote"); setTimeout(() => toast(n), 1200); } } catch (e) {}
-statsLoad().then(rankLoad);   // stats first, so a ranked match left unfinished last time is added to them
+statsLoad().then(rankLoad);
+setTimeout(friendsWatch, 1500);   // stats first, so a ranked match left unfinished last time is added to them
 initNames();
 initSettings();
 initArt();

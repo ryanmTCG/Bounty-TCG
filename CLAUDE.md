@@ -32,5 +32,6 @@ Whatever is on `main` in `updates/latest.json` reaches every player, so only pub
 ## Rules
 
 - Never commit card art, `*.webp`, or Bandai's DON!!/sleeve images. `private/static/` holds the latter locally and is gitignored. Update bundles skip them too.
-- Run the tests in `tests/` against `dist/kit/app` after building: `xvfb-run -a node tests/testupdate.mjs`, `testlobby.mjs`, `testlegal.mjs`, `test2p.mjs`, `testranked.mjs`, `testaccount.mjs` (accounts against a local stand-in for Firebase), `testrejoin.mjs`, `testbattle.mjs`, `testtimer.mjs`. The multiplayer tests start a local PeerJS server from the `peer` package.
+- Run the tests in `tests/` against `dist/kit/app` after building: `xvfb-run -a node tests/testupdate.mjs`, `testlobby.mjs`, `testlegal.mjs`, `test2p.mjs`, `testranked.mjs`, `testaccount.mjs` (accounts against a local stand-in for Firebase), `testrejoin.mjs`, `testbattle.mjs`, `testtimer.mjs`, `testfriends.mjs`. The multiplayer tests start a local PeerJS server from the `peer` package.
+- Every open copy of the game sits in the shared lobby with its friend code, name and status (`lobbyUpdate`), so friends can see each other online. A challenge is a `ch` note in that presence naming a friend code and a `friend-...` table, and a decline is a `dc` note. Tests run offline, so a launch without the local PeerJS server logs failed connections to the public one.
 - After changing the page, the claude.ai artifact needs republishing separately; the desktop app gets it through an update.
