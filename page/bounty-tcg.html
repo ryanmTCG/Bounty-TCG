@@ -328,6 +328,12 @@ button,input,textarea,select{font:inherit;color:inherit}
 .turnbar [data-do="undo"]{grid-column:1/span 1}
 .turnbar [data-do="endturn"]{grid-column:2/span 2}
 .turnbar #startfb{grid-column:1/-1}
+.turnbar .qcbtn:not([hidden]) + [data-do="endturn"]{grid-column:3/span 1}
+.qcbub{position:fixed;z-index:90;transform:translate(-50%,-100%);background:#FFF6E0;color:#12262D;border:3px solid #12262D;border-radius:18px;padding:8px 16px;font-weight:700;font-size:16px;box-shadow:0 5px 0 rgba(0,0,0,.4),0 12px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;max-width:min(80vw,360px);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qcbub.opp{transform:translate(-50%,0)}
+.qcbub.show{opacity:1}
+@media (prefers-reduced-motion:no-preference){.qcbub{transition:opacity .25s}.qcbub.show{animation:qcpop .3s ease-out}}
+@keyframes qcpop{0%{scale:.6}70%{scale:1.08}100%{scale:1}}
 .turnbar .btn.due{background:#F2B84B;color:#2A1D00;box-shadow:0 0 0 3px rgba(242,184,75,.45),0 3px 0 #7A5200}
 .fxpanel{position:absolute;top:0;left:0;right:0;z-index:40;max-height:380px;overflow:auto;border:2px solid #E9B949;border-radius:14px;background:rgba(10,30,45,.97);padding:10px 12px;font-size:13px;line-height:1.35;box-shadow:0 12px 30px rgba(0,0,0,.6)}
 .fxpanel .fxtext{font-size:12px;opacity:.8}
@@ -869,6 +875,7 @@ select.sbtn{font-family:var(--slab)}
     <button class="btn" data-do="drawturn" type="button" title="Draw 1 card">Draw for turn</button>
     <button class="btn" data-do="donturn" type="button" title="Add 2 DON!! from your DON!! deck (1 on the very first turn)">DON!! for turn</button>
     <button class="btn" data-do="undo" type="button" title="Undo your last move (Ctrl+Z)">Undo action</button>
+    <button class="btn qcbtn" data-do="quickchat" id="qcbtn" type="button" hidden title="Send your opponent a quick message">💬 Chat</button>
     <button class="btn pri" data-do="endturn" type="button" title="End your turn and clear power and cost bonuses">End turn</button>
     <button class="btn" data-do="startturn" id="startfb" type="button" hidden title="Your opponent's copy is older and doesn't say when their turn ends">Start my turn</button>
   </div>
@@ -1092,7 +1099,7 @@ async function leaveRoom(){
   if (rejoining) return;
   rankForfeit(); matchForget();
   if (R) { try { await R.leave(); } catch (e) {} }
-  R = null; oppPeer = null; oppM = null; PR = null;
+  R = null; oppPeer = null; oppM = null; PR = null; myQc = null; qcSeen = null;
   if (myLobby) { myLobby = null; lobbyUpdate(); }
 }
 function pickOpp(peers){
@@ -1103,18 +1110,53 @@ function pickOpp(peers){
 function onPeers(change){
   oppPeer = pickOpp(change.peers);
   oppM = oppPeer ? oppModel(oppPeer.presence) : null;
+  if (!PR) qcCheck();
   if (myLobby) lobbyUpdate();
   mergeLogs(change.peers);
   if (applyMarkReqs()) publish();
   if (advance()) publish();
   render();
 }
+// ---------- quick chat: a fixed set of phrases and emotes, so there's nothing to moderate ----------
+const QC = ["\uD83D\uDC4B Hi, good luck!", "\uD83D\uDC4D Nice play!", "\uD83E\uDD14 Thinking\u2026", "\u23F3 One moment, please", "\u2705 Your turn", "\uD83D\uDE4F Thanks!", "\uD83D\uDE05 Oops!", "\uD83C\uDF89 Good game!", "\uD83D\uDE02", "\uD83D\uDE2E", "\uD83D\uDD25", "\uD83D\uDE24"];
+let myQc = null, qcLast = 0, qcSeen = null; const qcBubT = {};
+function quickChat(k){
+  if (!R || PR || !QC[k]) return;
+  const now = Date.now(); if (now - qcLast < 1500) { toast("Give it a second before the next one."); return; }
+  qcLast = now; myQc = [now % 1e9, k];
+  LOG.push({who: S.nick || "You", mine: true, m: `says \u201C${QC[k]}\u201D`}); renderLog();
+  qcBubble(false, QC[k]); publish();
+}
+function qcMenu(){
+  const btn = $("#qcbtn"); if (!btn) return; const r = btn.getBoundingClientRect();
+  showMenu("Quick chat", QC.map((t, k) => [t, () => quickChat(k)]), r.left, r.top);
+  const m = $("#menu"); if (m) m.style.top = Math.max(8, r.top - m.getBoundingClientRect().height - 6) + "px";
+}
+function qcBubble(opp, text){
+  const host = $(opp ? "#opp" : "#me"); if (!host || !text) return;
+  const id = opp ? "qcopp" : "qcme";
+  let b = document.getElementById(id);
+  if (!b) { b = document.createElement("div"); b.id = id; b.className = "qcbub" + (opp ? " opp" : ""); b.setAttribute("role", "status"); document.body.appendChild(b); }
+  b.textContent = (opp && oppM ? oppM.nick + ": " : "") + text;
+  const r = host.getBoundingClientRect();
+  b.style.left = Math.round(r.left + r.width / 2) + "px";
+  b.style.top = Math.round(opp ? r.top + 10 : r.bottom - 10) + "px";
+  b.classList.remove("show"); void b.offsetWidth; b.classList.add("show");
+  clearTimeout(qcBubT[id]); qcBubT[id] = setTimeout(() => b.classList.remove("show"), 4500);
+}
+// show the opponent's newest message once; one already there when we meet is old news
+function qcCheck(){
+  const id = oppM ? (oppM.qc ? oppM.qc.id : 0) : null;
+  if (id === null || id === qcSeen) return;
+  if (qcSeen !== null && id) { qcBubble(true, QC[oppM.qc.k]); LOG.push({who: oppM.nick, mine: false, m: `says \u201C${QC[oppM.qc.k]}\u201D`}); renderLog(); }
+  qcSeen = id;
+}
 function oppModel(x){
   const f = o => o && typeof o === "object" ? {c: clean(o.c, 16), n: clean(o.n, 24), r: o.r ? 1 : 0, d: num(o.d, 20), pm: Math.max(-60000, Math.min(60000, Math.round(+o.pm || 0))), cm: Math.max(-20, Math.min(20, Math.round(+o.cm || 0))), mk: Array.isArray(o.mk) ? o.mk.filter(k => MK[k]).slice(0, 5) : []} : null;
   return {
     nick: clean(x.nick, 20) || "Opponent", sl: num(x.sl, 6), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
     ld: f(x.ld), ch: (Array.isArray(x.ch) ? x.ch : []).slice(0, 12).map(f).filter(Boolean), st: f(x.st), ev: f(x.ev),
-    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2, rk: x.rk ? 1 : 0,
+    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2, rk: x.rk ? 1 : 0, qc: Array.isArray(x.qc) && Number.isInteger(x.qc[0]) && Number.isInteger(x.qc[1]) && QC[x.qc[1]] ? {id: x.qc[0], k: x.qc[1]} : null,
     mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0))), u: q.u ? 1 : 0})), ma: num(x.ma, 1000000),
     lf: num(x.lf, 60), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
@@ -1124,7 +1166,7 @@ function oppModel(x){
 const donB = f => S.myTurn && f && f.d ? f.d * 1000 : 0;
 const fld = x => ({c: x.card.c, n: x.card.n, r: x.r ? 1 : 0, d: x.d || 0, pm: (x.pm || 0) + donB(x), cm: x.cm || 0, mk: x.mk || []});
 function pubFull(){
-  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, rk:S.ranked ? 1 : 0, mq:S.mq.slice(-8), ma:S.ack || 0,
+  return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, rk:S.ranked ? 1 : 0, qc:myQc, mq:S.mq.slice(-8), ma:S.ack || 0,
     lf:S.life.length, dd:S.donDeck, da:S.donActive, dr:S.donRested, dk:S.deck.length, h:S.hand.length,
     tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), lg:myLog.slice(-8)};
 }
@@ -1663,6 +1705,7 @@ function render(){
     if (dr) dr.classList.toggle("due", on && S.tdr !== S.turn && !(S.first && S.turn === 1));
     if (dn) dn.classList.toggle("due", on && S.tdn !== S.turn);
     if (fb) fb.hidden = !(R && !PR && S.phase === "play" && oppM && oppM.et == null);
+    const qb = $("#qcbtn"); if (qb) qb.hidden = !(R && !PR && oppM && S.phase !== "none");
     const db = $(".dicebtn"); if (db) db.classList.toggle("due", (S.phase === "roll" && !S.roll) || !!(PR && !PR.order && S.phase === "pre")); }
   { const sw = $("#pswitch"); if (sw) { sw.hidden = !PR; if (PR) sw.textContent = "Switch to Player " + (PR.cur === 0 ? 2 : 1); } }
   { const fa = $("#fx-auto"); if (fa) fa.checked = autoFx; const ta = $("#turn-auto"); if (ta) ta.checked = autoTurn; }
@@ -3129,6 +3172,7 @@ function doAction(a){
       break;
     case "startturn": startTurn(); break;
     case "undo": undo(); break;
+    case "quickchat": qcMenu(); break;
     case "prfirst:0": case "prfirst:1": practiceFirst(+a.slice(8)); break;
     case "drawturn":
       if (S.phase !== "play" || !S.turn) { toast("Your turn hasn't started yet."); break; }

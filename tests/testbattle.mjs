@@ -105,6 +105,16 @@ check(t2.mine && t2.hand === before.hand + 1 && t2.deck === before.deck - 1 && t
 check(/drew 1 card and added 2 DON!!/.test(t2.toast), "the turn toast says what happened");
 await def.page.click('[data-do="donturn"]'); await def.page.waitForTimeout(500);
 check(await def.page.evaluate(() => S.donActive) === 2, "DON!! for turn doesn't add a second time");
+// quick chat: a phrase from the menu shows up on the other player's screen and in the table log
+check(await A.page.isVisible("#qcbtn"), "chat button shows in a match");
+await A.page.click("#qcbtn"); await A.page.waitForTimeout(300);
+await A.page.evaluate(() => [...document.querySelectorAll("#menu button")].find(b => /Good game/.test(b.textContent)).click());
+await B.page.waitForTimeout(2500);
+const qc = await B.page.evaluate(() => { const b = document.querySelector("#qcopp"); return {text: b && b.textContent, show: !!(b && b.classList.contains("show")), log: document.querySelector("#log") ? document.querySelector("#log").textContent : document.body.textContent}; });
+console.log("chat", JSON.stringify({text: qc.text, show: qc.show}));
+check(qc.show && qc.text === "Ryan: \u{1F389} Good game!", "opponent sees the message bubble");
+check(/says \u201C\u{1F389} Good game!\u201D/u.test(qc.log), "message is in the table log");
+await B.page.screenshot({ path: OUT + "/chat.png" });
 console.log("errorsA", A.errs.slice(0, 5)); console.log("errorsB", B.errs.slice(0, 5));
 await A.app.close(); await B.app.close(); peer.kill();
 console.log(fail ? `${fail} FAILED` : "all passed");
