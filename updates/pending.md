@@ -10,3 +10,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - The battle log names the attacker, and End turn lights up when nothing is left to play or attack with.
 - Panels have a blue steel finish with gold corner scrollwork.
 - Buttons are steel or gold plate with gold trim, a shine on hover, and ornaments on the main menu buttons.
+- The card preview sits centered in its space without cutting off, and the defender's battle bar drops Attack done (Block, Abilities and the resolve button remain).

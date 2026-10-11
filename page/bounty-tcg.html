@@ -398,6 +398,8 @@ button,input,textarea,select{font:inherit;color:inherit}
 .lifep.opp{order:0}.table{order:1}.lifep.me{order:2}.handp{order:3}.logp{order:4}.sidep{order:5}
 .card.zoomed{--cw:var(--zw,240px);--ch:calc(var(--zw,240px)*1.4);font-size:calc(var(--zw,240px)*.16);margin:0;transform:none;display:flex;box-shadow:0 12px 30px rgba(0,0,0,.5)}
 .card.zoomed .nm{-webkit-line-clamp:8}
+.card.zoomed{width:var(--zw,240px);height:calc(var(--zw,240px)*1.4);max-width:100%;flex:0 0 auto}
+.card.zoomed img.art{object-fit:contain}
 @media (min-width:1100px){
   :root{--cw:clamp(46px,min(calc((100vw - 600px) / 7),calc((100vh - 265px) / 8.73)),106px);
     --zw:max(240px,min(calc(var(--cw)*7.5),calc((100vw - var(--cw)*7 - 60px) / 2 - 32px),calc((100vh - 90px) / 1.4)))}
@@ -958,8 +960,8 @@ select.sbtn{font-family:var(--slab)}
   .sidep{justify-self:stretch;min-width:0;display:flex;flex-direction:column;gap:10px;width:auto;overflow:auto;position:sticky;top:calc(58px + env(safe-area-inset-top,0px));height:calc(100vh - 78px - env(safe-area-inset-top,0px))}
   .sidep>*,.sidep>#banner{flex:0 0 auto;order:0}
   .sidep>.fxhost{position:relative;height:0;margin-bottom:-10px}
-  .sidep>.zoomp{flex:1 1 0;min-height:180px;container-type:size;display:flex;justify-content:center;align-items:flex-start}
-  .sidep #zoom{--zw:min(100cqw,calc(100cqh / 1.4));width:var(--zw);height:calc(var(--zw)*1.4);min-height:0}
+  .sidep>.zoomp{flex:1 1 0;min-height:180px;container-type:size;display:flex;justify-content:center;align-items:center;overflow:hidden}
+  .sidep #zoom{--zw:min(calc(100cqw - 16px),calc((100cqh - 16px) / 1.4));flex:0 0 auto;width:var(--zw);height:calc(var(--zw)*1.4);min-height:0}
   .sidep .zoomempty{width:100%;height:100%}
   .sidep .tbopts{margin:0}
   .sidep .turnbar{gap:6px}
@@ -3426,7 +3428,7 @@ function combatHTML(){
       const ctrs = hc.map(e => { const nm = nameOf(e.c.c) || e.c.c; return `<button class="btn cmbctr" data-do="cmbhc:${e.i}" type="button" title="Trash ${esc(lab(e.c))} from your hand for +${e.v} power">+${e.v} ${esc(nm.length > 16 ? nm.slice(0, 15) + "\u2026" : nm)}${e.n > 1 ? ` <i>\u00D7${e.n}</i>` : ""}</button>`; }).join("");
       const evs = counterEvents().map(e => `<button class="btn cmbctr" data-do="cmbev:${e.i}" type="button" title="Play this Counter Event for ${e.cost} DON!!">${esc(lab(e.c))} <i>(${e.cost} DON!!)</i></button>`).join("");
       const res = !r ? "Resolve attack" : r.hits ? (r.onLeader ? "Take 1 damage" : "Resolve: K.O.") : "Resolve: attack fails";
-      return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span>${cmbPow(r, true)}${d && d.bc ? `<span>Counters <i>+${d.bc}</i></span>` : ""}<span class="tmr" id="tmr-cmb" hidden></span><span class="cmbbr"></span>${ctrs || evs ? `<span class="hint">${b ? `Tap Counter cards in your hand to save ${esc(lab(b.card))}.` : "Tap a Counter card in your hand to use it."}</span><span class="cmbbr"></span>` : ""}${!b && S.chars.some(f => !f.r && isBlocker(f.card.c)) ? `<span class="hint">Tap a glowing Blocker to block.</span>` : ""}<button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn" data-do="cmbblock" type="button">${b ? "Change block" : "Block"}</button>${r ? `<button class="btn pri" data-do="dfresolve" type="button">${res}</button>` : `<span class="hint">Power unknown, so resolve by hand.</span>`}<button class="btn" data-do="dfdone" type="button">Attack done</button>`;
+      return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span>${cmbPow(r, true)}${d && d.bc ? `<span>Counters <i>+${d.bc}</i></span>` : ""}<span class="tmr" id="tmr-cmb" hidden></span><span class="cmbbr"></span>${ctrs || evs ? `<span class="hint">${b ? `Tap Counter cards in your hand to save ${esc(lab(b.card))}.` : "Tap a Counter card in your hand to use it."}</span><span class="cmbbr"></span>` : ""}${!b && S.chars.some(f => !f.r && isBlocker(f.card.c)) ? `<span class="hint">Tap a glowing Blocker to block.</span>` : ""}<button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn" data-do="cmbblock" type="button">${b ? "Change block" : "Block"}</button><button class="btn pri" data-do="${r ? "dfresolve" : "dfdone"}" type="button">${res}</button>`;
     }
   }
   return "";
