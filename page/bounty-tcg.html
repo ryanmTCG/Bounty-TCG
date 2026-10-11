@@ -851,7 +851,7 @@ select.sbtn{font-family:var(--slab)}
     <button class="btn" data-do="carddata" type="button">Card data</button>
     <button class="btn" data-do="reader" type="button">Card reader</button>
     <span class="sp"></span>
-    <button class="btn pri" data-do="bdplay" type="button">Use this deck</button>
+    <button class="btn pri" data-do="bdplay" type="button">Play</button>
     <button class="btn" data-do="bdclose" type="button">Home</button>
   </header>
   <div class="bdtabs">
@@ -3620,7 +3620,7 @@ function bdPlay(){
   const v = loadSaved();
   v.deck = bdText(); v.leader = bdLeaderStr(); v.life = Math.min(10, Math.max(1, Math.floor(+$("#bd-life").value) || 5));
   save(v);
-  closeBuilder(); openSetup();
+  closeBuilder(); openHome("play");
   if (bdTotal() !== 50) toast(`This deck has ${bdTotal()} cards. A full deck has 50.`);
 }
 

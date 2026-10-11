@@ -7,3 +7,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - The home screen and deck builder use the sea-chart background too.
 - The home screen has three buttons (Play, Deck editor, Sign in); Play opens a page with the game modes.
 - The deck editor's Back to table button is now Home.
+- The deck editor's Use this deck button is now Play: it saves the deck and opens the Play page.
