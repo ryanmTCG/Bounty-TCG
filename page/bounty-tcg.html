@@ -768,17 +768,10 @@ select.sbtn{font-family:var(--slab)}
 .bd-checks .bdshow{gap:10px}
 /* cards scrolled far off screen skip layout and paint */
 .bd-lib .lcell{content-visibility:auto;contain-intrinsic-size:auto 160px auto 230px}
-/* Lobbies is its own page: the sea chart behind a wide panel, each table showing the host's deck */
+/* Lobbies is its own page: the sea chart behind a wide panel, each table showing the host's leader */
 .modal.homebg.lobpage{grid-template-columns:minmax(0,1100px);justify-content:center;overflow:auto;align-items:start;padding:24px 16px}
 .sheet.lobsheet{width:100%;max-height:none}
-.lobpage .lbrow{flex-wrap:wrap}
-.lbdeck{flex:1 1 100%;border-top:1px solid rgba(255,240,205,.2);padding-top:8px}
-.lbdeck.none{color:var(--muted);font-size:13px}
-.lbdhead{font-size:13px;color:#F1DDB0;margin-bottom:6px;font-weight:700}
-.lbdgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
-.lbdc{position:relative}
-.lbdc .card{--cw:100%;--ch:auto;width:100%;height:auto;aspect-ratio:5 / 7;margin:0;font-size:8px}
-.lbdn{position:absolute;right:2px;bottom:2px;padding:0 6px;border-radius:999px;background:rgba(0,0,0,.8);color:#FFE9B8;font-weight:700;font-size:12px}
+.lobpage .lbrow .card{--cw:72px;--ch:101px;font-size:11px}
 </style>
 </head>
 <body>
@@ -1136,13 +1129,7 @@ function cleanLobby(x){
   if (!x || typeof x !== "object" || Array.isArray(x)) return null;
   const c = normRoom(x.c); if (!c) return null;
   const l = String(x.l || "").toUpperCase();
-  return {c, n: clean(x.n, 40) || "Open table", h: clean(x.h, 20) || "Player", l: /^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(l) ? l : "", f: LB_FMT[x.f] ? x.f : "any", s: x.s === 2 ? 2 : 1, t: Number.isFinite(+x.t) ? +x.t : 0, d: lbDeck(x.d)};
-}
-// a deck travels in the listing as "4xOP01-013,2xOP01-016"; anything else is dropped
-function lbDeck(d){
-  const out = [];
-  String(d || "").slice(0, 900).split(",").forEach(x => { const m = /^(\d{1,2})X([A-Z]{1,4}\d{0,3}-\d{2,4})$/.exec(x.trim().toUpperCase()); if (m && out.length < 60) out.push({n: Math.min(+m[1], 9), c: m[2]}); });
-  return out;
+  return {c, n: clean(x.n, 40) || "Open table", h: clean(x.h, 20) || "Player", l: /^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(l) ? l : "", f: LB_FMT[x.f] ? x.f : "any", s: x.s === 2 ? 2 : 1, t: Number.isFinite(+x.t) ? +x.t : 0};
 }
 function lobbyList(){
   const out = [], codes = new Set();
@@ -1219,16 +1206,11 @@ function renderLobbies(){
   el.innerHTML = list.map(lb => {
     const ld = lb.l ? {c: lb.l, n: nameOf(lb.l)} : null, full = lb.s >= 2, age = lbAge(lb.t);
     const act = lb.mine ? `<span class="chip lbstate">Your lobby</span>` : full ? `<span class="chip lbstate">In a match</span>` : `<button class="btn pri" data-do="lbjoin:${esc(lb.c)}" type="button">Join</button>`;
-    return `<div class="lbrow${lb.mine ? " mine" : ""}${full ? " full" : ""}">${ld ? tile(ld, "", false, 0) : backCard("")}<div class="lbinfo"><b>${esc(lb.n)}</b><small>Host ${esc(lb.h)}${ld ? ` · Leader ${esc(ld.c)}${ld.n ? " " + esc(ld.n) : ""}` : ""}</small><span class="lbchips"><span class="chip f${lb.f}">${LB_FMT[lb.f]}</span>${full ? '<span class="chip">2/2 players</span>' : '<span class="chip open">1/2 players</span>'}${age ? `<span class="chip">${age}</span>` : ""}</span></div>${act}${lbDeckHTML(lb)}</div>`;
+    return `<div class="lbrow${lb.mine ? " mine" : ""}${full ? " full" : ""}">${ld ? tile(ld, "", false, 0) : backCard("")}<div class="lbinfo"><b>${esc(lb.n)}</b><small>Host ${esc(lb.h)}${ld ? ` · Leader ${esc(ld.c)}${ld.n ? " " + esc(ld.n) : ""}` : ""}</small><span class="lbchips"><span class="chip f${lb.f}">${LB_FMT[lb.f]}</span>${full ? '<span class="chip">2/2 players</span>' : '<span class="chip open">1/2 players</span>'}${age ? `<span class="chip">${age}</span>` : ""}</span></div>${act}</div>`;
   }).join("");
 }
-function lbDeckHTML(lb){
-  if (!lb.d || !lb.d.length) return `<div class="lbdeck none">The host's deck shows here once they open a lobby with this version of the game.</div>`;
-  const total = lb.d.reduce((n, e) => n + e.n, 0);
-  return `<div class="lbdeck"><div class="lbdhead">Host's deck · ${total} cards</div><div class="lbdgrid">${lb.d.map(e => `<div class="lbdc" title="${esc(e.c + (nameOf(e.c) ? " " + nameOf(e.c) : ""))}">${tile({c: e.c, n: nameOf(e.c)}, "", false, 0)}<span class="lbdn">${e.n}x</span></div>`).join("")}</div></div>`;
-}
 async function lobbyUpdate(){
-  const lb = myLobby && R && roomCode === myLobby.c ? {c: myLobby.c, n: myLobby.n, h: S.nick || "Player", l: S.leader && S.leader.card ? S.leader.card.c : "", f: myLobby.f, d: myLobby.d || "", s: oppPeer || (S.phase !== "wait" && S.phase !== "roll") ? 2 : 1, t: myLobby.t} : null;
+  const lb = myLobby && R && roomCode === myLobby.c ? {c: myLobby.c, n: myLobby.n, h: S.nick || "Player", l: S.leader && S.leader.card ? S.leader.card.c : "", f: myLobby.f, s: oppPeer || (S.phase !== "wait" && S.phase !== "roll") ? 2 : 1, t: myLobby.t} : null;
   const key = JSON.stringify(lb);
   if (key === lbSent) return;
   lbSent = key;
@@ -1538,7 +1520,7 @@ async function startGame(join){
   if (join) {
     await connect(c.room);
     if (pub && R && roomCode === c.room && status === "online") {
-      myLobby = {c: c.room, n: c.lname || clean(c.nick + "'s table", 40), f: c.fmt, t: Date.now(), d: parseLines(c.deck).map(e => e.count + "x" + e.code).join(",").slice(0, 900)};
+      myLobby = {c: c.room, n: c.lname || clean(c.nick + "'s table", 40), f: c.fmt, t: Date.now()};
       lobbyUpdate(); render();
       toast(bad ? "Your lobby is open. Heads up: " + bad : "Your lobby is open. Anyone on the Lobbies page can join.");
     }
