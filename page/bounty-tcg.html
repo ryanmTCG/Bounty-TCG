@@ -766,6 +766,8 @@ select.sbtn{font-family:var(--slab)}
 .bd-checks{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;margin-left:auto}
 .bd-checks .bdart,.bd-checks .bdshow,.bd-checks .bdshow label{display:flex;align-items:center;gap:5px;font-size:13px}
 .bd-checks .bdshow{gap:10px}
+/* cards scrolled far off screen skip layout and paint */
+.bd-lib .lcell{content-visibility:auto;contain-intrinsic-size:auto 160px auto 230px}
 </style>
 </head>
 <body>
@@ -3365,7 +3367,7 @@ function legalNote(code){
 }
 
 // ---------- deck builder ----------
-let builderOpen = false, bdShow = 60, bdMoreBusy = false, BD = {name: "", leader: null, cards: new Map(), life: 5};
+let builderOpen = false, bdShow = 60, bdMoreBusy = false, bdLast = null, BD = {name: "", leader: null, cards: new Map(), life: 5};
 const NAMES = new Map();
 function nameOf(code){ return NAMES.get(code) || (CARDDB.get(code) || {}).n || ""; }
 const natural = (a, b) => a.localeCompare(b, undefined, {numeric: true});
@@ -3495,7 +3497,7 @@ document.addEventListener("scroll", e => {
   if (!lib || lib.id !== "bd-lib" || bdMoreBusy || !lib.querySelector(".bdmore")) return;
   if (lib.scrollTop + lib.clientHeight < lib.scrollHeight - 1500) return;
   bdMoreBusy = true;
-  requestAnimationFrame(() => { bdShow += 120; renderLib(); bdMoreBusy = false; });
+  requestAnimationFrame(() => { bdAppend(); bdMoreBusy = false; });
 }, true);
 function renderLib(){
   const el = $("#bd-lib"); if (!el) return;
@@ -3544,23 +3546,31 @@ function renderLib(){
     codes.forEach(c => groupOf.set(c, colorGroup(c)));
     codes.sort((a, b) => { const ga = groupOf.get(a), gb = groupOf.get(b); return ga.rank - gb.rank || (ga.label < gb.label ? -1 : ga.label > gb.label ? 1 : 0); });   // stable: keeps the chosen sort inside each colour
   }
-  const shown = codes.slice(0, bdShow);
-  let html = "";
-  if (grouped) {
-    const counts = new Map(); codes.forEach(c => { const l = groupOf.get(c).label; counts.set(l, (counts.get(l) || 0) + 1); });
-    let last = null;
-    shown.forEach(c => {
-      const g = groupOf.get(c);
-      if (g.label !== last) { html += `<div class="grp"><span class="gdot" style="background:${g.hex}"></span>${esc(g.label)}<small>${counts.get(g.label)}</small></div>`; last = g.label; }
-      html += cell(c);
-    });
-  } else html = shown.map(cell).join("");
-  if (codes.length > shown.length) html += `<div class="empty bdmore">Loading more cards… (${codes.length - shown.length} left)</div>`;
+  const counts = new Map(); if (grouped) codes.forEach(c => { const l = groupOf.get(c).label; counts.set(l, (counts.get(l) || 0) + 1); });
+  bdLast = {codes, grouped, groupOf, counts, last: null, done: 0};
+  let html = bdCells(bdShow);
   if (!codes.length) html = `<div class="empty">${all.length ? "No cards match." : "No cards to browse yet. Add cards by number above, upload card art, or import a card list with the Card data button."}</div>`;
   let hasNames = false; for (const v of CARDDB.values()) if (v.n) { hasNames = true; break; }
   const qraw = $("#bd-q").value.trim(), nameish = /[a-z]{3,}/i.test(qraw) && !/\d/.test(qraw);
   const notice = (!hasNames && nameish) ? `<div class="empty" style="padding:8px 0 10px;text-align:left;color:var(--gold-fill)">No card names are saved yet, so only card numbers, colors and sets can be searched. <button class="linkbtn" type="button" data-do="reader" style="display:inline">Read names from the cards</button> or <button class="linkbtn" type="button" data-do="carddata" style="display:inline">import a card list</button>.</div>` : "";
   el.innerHTML = notice + ((toks.length || set || bdColors.size || ty || !showBan || !showRot) && codes.length ? `<div class="empty" style="padding:0 0 4px;text-align:left">${codes.length} card${codes.length === 1 ? "" : "s"} found</div>` + html : html);
+}
+// the next n cards of the last search as HTML; scrolling adds these to the end instead of redrawing the list
+function bdCells(n){
+  const L = bdLast; if (!L) return "";
+  const end = Math.min(L.codes.length, L.done + n); let html = "";
+  for (let i = L.done; i < end; i++) {
+    const c = L.codes[i];
+    if (L.grouped) { const g = L.groupOf.get(c); if (g.label !== L.last) { html += `<div class="grp"><span class="gdot" style="background:${g.hex}"></span>${esc(g.label)}<small>${L.counts.get(g.label)}</small></div>`; L.last = g.label; } }
+    html += cell(c);
+  }
+  L.done = end; bdShow = Math.max(bdShow, end);
+  if (end < L.codes.length) html += `<div class="empty bdmore">Loading more cards… (${L.codes.length - end} left)</div>`;
+  return html;
+}
+function bdAppend(){
+  const el = $("#bd-lib"), more = el && el.querySelector(".bdmore"); if (!more) return;
+  more.remove(); el.insertAdjacentHTML("beforeend", bdCells(120));
 }
 function refreshLibCounts(){
   document.querySelectorAll("#bd-lib [data-lc]").forEach(e => { const n = BD.cards.get(e.dataset.lc), c = n ? n.count : 0; e.textContent = c; e.classList.toggle("zero", !c); });

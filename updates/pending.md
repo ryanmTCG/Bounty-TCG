@@ -11,3 +11,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - The deck editor's filter bar is tidier: search and dropdowns on one row, colors and sort below, checkboxes in their own row.
 - The deck editor hides banned and rotated cards by default.
 - The deck editor's card list loads more cards by itself as you scroll, so there's no Show more button.
+- The deck editor scrolls smoothly: new cards are added to the end instead of redrawing the whole list.
