@@ -3365,7 +3365,7 @@ function legalNote(code){
 }
 
 // ---------- deck builder ----------
-let builderOpen = false, bdShow = 60, BD = {name: "", leader: null, cards: new Map(), life: 5};
+let builderOpen = false, bdShow = 60, bdMoreBusy = false, BD = {name: "", leader: null, cards: new Map(), life: 5};
 const NAMES = new Map();
 function nameOf(code){ return NAMES.get(code) || (CARDDB.get(code) || {}).n || ""; }
 const natural = (a, b) => a.localeCompare(b, undefined, {numeric: true});
@@ -3489,6 +3489,14 @@ function fillSel(sel, label, values){
   sel.value = values.includes(cur) ? cur : "";
   sel.dataset.sig = sig;
 }
+// the card list grows by itself as you scroll, so there's no Show more button to press
+document.addEventListener("scroll", e => {
+  const lib = e.target;
+  if (!lib || lib.id !== "bd-lib" || bdMoreBusy || !lib.querySelector(".bdmore")) return;
+  if (lib.scrollTop + lib.clientHeight < lib.scrollHeight - 1500) return;
+  bdMoreBusy = true;
+  requestAnimationFrame(() => { bdShow += 120; renderLib(); bdMoreBusy = false; });
+}, true);
 function renderLib(){
   const el = $("#bd-lib"); if (!el) return;
   const all = libCodes();
@@ -3547,7 +3555,7 @@ function renderLib(){
       html += cell(c);
     });
   } else html = shown.map(cell).join("");
-  if (codes.length > shown.length) html += `<div class="empty"><button class="btn" data-do="bdmore" type="button">Show ${Math.min(60, codes.length - shown.length)} more (${codes.length - shown.length} left)</button></div>`;
+  if (codes.length > shown.length) html += `<div class="empty bdmore">Loading more cards… (${codes.length - shown.length} left)</div>`;
   if (!codes.length) html = `<div class="empty">${all.length ? "No cards match." : "No cards to browse yet. Add cards by number above, upload card art, or import a card list with the Card data button."}</div>`;
   let hasNames = false; for (const v of CARDDB.values()) if (v.n) { hasNames = true; break; }
   const qraw = $("#bd-q").value.trim(), nameish = /[a-z]{3,}/i.test(qraw) && !/\d/.test(qraw);

@@ -10,3 +10,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - The deck editor's Use this deck button is now Play: it saves the deck and opens the Play page.
 - The deck editor's filter bar is tidier: search and dropdowns on one row, colors and sort below, checkboxes in their own row.
 - The deck editor hides banned and rotated cards by default.
+- The deck editor's card list loads more cards by itself as you scroll, so there's no Show more button.
