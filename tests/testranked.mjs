@@ -50,6 +50,7 @@ console.log("B page", JSON.stringify(await rk(B.page)));
 await B.page.click('[data-do="rkfind"]'); await wait(5000);
 console.log("B toast", await toastText(B.page));
 for (const [n, x] of [["A", A], ["B", B]]) console.log(n, "table", JSON.stringify(await x.page.evaluate(() => ({ status: document.querySelector("#status").textContent, ranked: S.ranked, opprk: oppM && oppM.rk }))));
+await A.page.evaluate(() => { const c = S.hand[0].c; moveCard("hand:0", "chars"); commit(); window.__played = c; });
 await B.page.evaluate(() => { S.conceded = true; commit(); }); await wait(3000);
 for (const [n, x] of [["A", A], ["B", B]]) console.log(n, "after", JSON.stringify(await x.page.evaluate(() => RANK)), await toastText(x.page));
 // leaving counts as a loss: a second ranked match, then B closes the game mid-match
@@ -71,6 +72,11 @@ console.log("B before", JSON.stringify(bBefore), "B reopened", JSON.stringify(aw
 await B2.app.close();
 await A.page.evaluate(() => { closeModal(); openRanked(); }); await wait(1500);
 console.log("A board", JSON.stringify(await rk(A.page)));
+console.log("A stats", JSON.stringify(await A.page.evaluate(() => [STATS, window.__played])));
+await A.page.evaluate(() => { closeModal(); openHome(); }); await wait(300);
+await A.page.click('[data-do="homeprofile"]'); await wait(800);
+console.log("A profile", JSON.stringify(await A.page.evaluate(() => document.querySelector("#modal .sheet").innerText.replace(/\s+/g, " "))));
+await A.page.screenshot({ path: OUT + "/3-profile.png" });
 await A.page.screenshot({ path: OUT + "/2-after.png" });
 console.log("errorsA", JSON.stringify(A.errs.slice(0, 5))); console.log("errorsB", JSON.stringify(B.errs.slice(0, 5)));
 await A.app.close(); peer.kill();
