@@ -418,7 +418,7 @@
     if (!r.ok && r.status !== 404) throw {code: r.status === 403 ? "not_granted" : "unavailable", message: "Couldn't reach your account's saved data."};
     return r;
   }
-  const isCloud = path => !!FB && (path === "ranks" || path.startsWith("ranks/")
+  const isCloud = path => !!FB && (path === "ranks" || path.startsWith("ranks/") || path.startsWith("results/")
     || (!!auth && (path === "data/users/" + auth.uid || path.startsWith("data/users/" + auth.uid + "/"))));
   const cloudSubs = new Set();
   const cloudNotify = path => cloudSubs.forEach(s => { if (s.path === path || (s.col && childOf(s.path, path))) s.refresh(); });

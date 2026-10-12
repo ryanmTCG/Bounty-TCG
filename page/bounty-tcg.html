@@ -1402,6 +1402,7 @@ function oppModel(x){
   const f = o => o && typeof o === "object" ? {c: clean(o.c, 16), n: clean(o.n, 24), r: o.r ? 1 : 0, d: num(o.d, 20), pm: Math.max(-60000, Math.min(60000, Math.round(+o.pm || 0))), cm: Math.max(-20, Math.min(20, Math.round(+o.cm || 0))), mk: Array.isArray(o.mk) ? o.mk.filter(k => MK[k]).slice(0, 5) : []} : null;
   return {
     nick: clean(x.nick, 20) || "Opponent", sl: num(x.sl, 6), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
+    uid: typeof x.uid === "string" && /^[A-Za-z0-9_-]{4,64}$/.test(x.uid) ? x.uid : "", mk: typeof x.mk === "string" && /^[a-z0-9]{4,16}$/.test(x.mk) ? x.mk : "",
     ld: f(x.ld), ch: (Array.isArray(x.ch) ? x.ch : []).slice(0, 12).map(f).filter(Boolean), st: f(x.st), ev: f(x.ev),
     ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2, rk: x.rk ? 1 : 0, fc: FC_RE.test(x.fc) ? x.fc : "", tl: Number.isInteger(x.tl) && x.tl >= 0 && x.tl <= 3600 ? x.tl : null, tp: x.tp ? 1 : 0, to: num(x.to, 9), qc: Array.isArray(x.qc) && Number.isInteger(x.qc[0]) && Number.isInteger(x.qc[1]) && QC[x.qc[1]] ? {id: x.qc[0], k: x.qc[1]} : null,
     mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0))), u: q.u ? 1 : 0})), ma: num(x.ma, 1000000),
@@ -1415,7 +1416,7 @@ const fld = x => ({c: x.card.c, n: x.card.n, r: x.r ? 1 : 0, d: x.d || 0, pm: (x
 function pubFull(){
   return {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? {s:S.atk.s, t:S.atk.t, n:S.atk.n || 0} : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, rk:S.ranked ? 1 : 0, fc:myFC(), qc:myQc, tl:S.myTurn && S.ranked && S.tleft != null ? Math.ceil(S.tleft / 1000) : null, tp:S.atk ? 1 : 0, to:S.tmo || 0, mq:S.mq.slice(-8), ma:S.ack || 0,
     lf:S.life.length, dd:S.donDeck, da:S.donActive, dr:S.donRested, dk:S.deck.length, h:S.hand.length,
-    tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), lg:myLog.filter(e => pubLog(e[1])).slice(-8)};
+    tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), uid:S.ranked ? acctUid() : "", mk:S.ranked ? (S.mk || (S.mk = Math.random().toString(36).slice(2, 12))) : "", lg:myLog.filter(e => pubLog(e[1])).slice(-8)};
 }
 let pubT = null;
 function publish(){ if (!R) return; clearTimeout(pubT); pubT = setTimeout(doPublish, 80); }
@@ -1523,8 +1524,38 @@ async function rankDoc(){
 async function rankLoad(){
   const ref = await rankDoc();
   if (ref) { try { const sn = await ref.get(); if (sn.exists) RANK = rankFrom(sn.data() || {}, RANK.nick); else if (RANK.w + RANK.l) rankSave(); } catch (e) {} }
-  rankPendingCheck();
+  rankPendingCheck(); rankClaimRetry();
 }
+// Ranked results are cross-checked: the loser's own game writes results/<match> naming the winner, and a win only
+// counts on the shared leaderboard once that record exists. The winner then marks it used, so it counts once.
+const acctUid = () => { try { const u = window.bountyAccount && window.bountyAccount.user(); return u ? u.uid : ""; } catch (e) { return ""; } };
+const matchId = () => S.mk && oppM && oppM.mk ? [S.mk, oppM.mk].sort().join("-") : "";
+async function rankLossRecord(mid, winner){
+  const me = acctUid(); if (!mid || !winner || !me || winner === me) return;
+  try { const db = await getDb(); const ref = db.doc("results/" + mid); const sn = await ref.get(); if (!sn.exists) await ref.set({w: winner, l: me, c: 0, t: Date.now()}); } catch (e) {}
+}
+function rankClaims(){ try { const x = JSON.parse(localStorage.getItem("bounty:claims") || "[]"); return Array.isArray(x) ? x.filter(c => c && c.mid && Date.now() - c.t < 7 * 864e5) : []; } catch (e) { return []; } }
+function rankClaimsSave(x){ try { localStorage.setItem("bounty:claims", JSON.stringify(x.slice(-20))); } catch (e) {} }
+// returns true when the win now counts on the leaderboard
+async function rankClaim(mid, step){
+  const me = acctUid(), ref = await rankDoc(); if (!me || !ref || !mid) return false;
+  try {
+    const db = await getDb(), rr = db.doc("results/" + mid), rs = await rr.get(), r = rs.exists ? rs.data() : null;
+    if (!r || r.w !== me) return false;
+    if (r.c) return true;
+    const cur = await ref.get(), x = cur.exists ? rankFrom(cur.data() || {}) : {b: 0, w: 0, l: 0};
+    await rr.set(Object.assign({}, r, {c: x.w + 1}));
+    await ref.set({b: x.b + step, w: x.w + 1, l: x.l, lw: mid, nick: clean(RANK.nick, 20) || "Player", t: Date.now()});
+    RANK = rankFrom({b: x.b + step, w: x.w + 1, l: x.l, nick: RANK.nick}); try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {}
+    return true;
+  } catch (e) { return false; }
+}
+async function rankClaimRetry(){
+  const left = [];
+  for (const c of rankClaims()) if (!(await rankClaim(c.mid, c.step))) left.push(c);
+  rankClaimsSave(left);
+}
+setInterval(() => { if (rankClaims().length) rankClaimRetry(); }, 60000);
 async function rankSave(){
   try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {}
   const ref = await rankDoc();
@@ -1541,7 +1572,10 @@ function rankResult(won, why){
   RANK.b = Math.max(0, before + (won ? step : -Math.round(step * LOSS[rankName(before)] / 100) * 100));
   if (won) RANK.w++; else RANK.l++;
   RANK.nick = S.nick || RANK.nick;
-  rankSave();
+  const mid = S.mid || matchId(), ou = S.oppUid || (oppM && oppM.uid) || "";
+  if (!acctUid()) rankSave();
+  else if (won) { const st = RANK.b - before; try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {} rankClaim(mid, st).then(ok => { if (!ok && mid) { rankClaimsSave(rankClaims().concat([{mid, step: st, t: Date.now()}])); toast("Your win is saved. It goes on the leaderboard once your opponent's game confirms it."); } }); }
+  else { rankSave(); rankLossRecord(mid, ou); }
   const d = RANK.b - before, up = rankName(RANK.b) !== rankName(before); S.rankD = d;
   const msg = (why ? why + " " : "") + (!d ? `Ranked loss. Your bounty is already ${berry(0)}, so it stays there.`
     : `Ranked ${won ? "win" : "loss"}: bounty ${won ? "+" : "−"}${berry(Math.abs(d))}. It's now ${berry(RANK.b)}${up ? `, and you're a ${rankName(RANK.b)}${won ? "!" : "."}` : ` (${rankName(RANK.b)}).`}`);
@@ -1550,11 +1584,13 @@ function rankResult(won, why){
 function rankCheck(){
   if (!S.ranked || S.rankDone) return;
   if (oppM && oppM.rk) S.rankOpp = true;   // a ranked opponent sat down, so this match counts
+  if (oppM && oppM.uid) S.oppUid = oppM.uid;
+  if (matchId()) S.mid = matchId();
   if (!S.rankOpp) return;
   // a loss counts the moment you lose, even if your opponent has already left; a win comes from the opponent's loss
   const lost = S.conceded, won = !lost && !!(oppM && oppM.cd);
   if (won || lost) { rankResult(won); return; }
-  if (oppM) { S.rankGone = 0; if (!S.rankPend) { S.rankPend = true; rankPend(JSON.stringify({ld: (S.leader && S.leader.card && S.leader.card.c) || "", op: (oppM.ld && oppM.ld.c) || "", on: oppM.nick})); } return; }
+  if (oppM) { S.rankGone = 0; if (!S.rankPend) { S.rankPend = true; rankPend(JSON.stringify({ld: (S.leader && S.leader.card && S.leader.card.c) || "", op: (oppM.ld && oppM.ld.c) || "", on: oppM.nick, mid: matchId(), ou: oppM.uid || ""})); } return; }
   // the opponent is gone: if they stay gone (and we're still connected), they've left and we win
   if (status !== "online" || !R) { S.rankGone = 0; return; }
   if (!S.rankGone) {
@@ -1585,7 +1621,7 @@ function rankPendingCheck(){
   let info = {}; try { if (p[0] === "{") info = JSON.parse(p) || {}; else info = {ld: p}; } catch (e) {}
   const before = RANK.b, step = 25000 + Math.round(Math.random() * 50) * 100;
   RANK.b = Math.max(0, before - Math.round(step * LOSS[rankName(before)] / 100) * 100); RANK.l++;
-  rankSave();
+  rankSave(); rankLossRecord(String(info.mid || ""), String(info.ou || ""));
   statLoss(String(info.ld || ""), {op: String(info.op || ""), on: clean(info.on, 20), b: RANK.b - before});
   setTimeout(() => toast(before === RANK.b ? `You left a ranked match before it ended, so it counted as a loss. Your bounty is already ${berry(0)}, so it stays there.`
     : `You left a ranked match before it ended, so it counted as a loss: bounty −${berry(before - RANK.b)}. It's now ${berry(RANK.b)}.`), 1500);

@@ -32,7 +32,11 @@ const server = http.createServer((req, res) => {
     // the same rules as tools/firestore.rules
     const owner = segs[0] === "data" ? segs[2] : segs[0] === "ranks" ? segs[1] : null;
     const write = req.method === "PATCH" || req.method === "DELETE";
-    if (segs[0] === "data" ? owner !== who : segs[0] === "ranks" ? (write && owner !== who) : true) return send(403, { error: { message: "PERMISSION_DENIED" } });
+    if (segs[0] === "results") {   // the loser creates the record; only the winner may mark it used
+      const cur = docs.get(p), nw = j.fields || {}, sv = f => f && (f.stringValue || f.integerValue);
+      if (!who) return send(403, { error: { message: "PERMISSION_DENIED" } });
+      if (req.method === "PATCH" && (cur ? sv(cur.w) !== who || +sv(cur.c) !== 0 : sv(nw.l) !== who || sv(nw.w) === who)) return send(403, { error: { message: "PERMISSION_DENIED" } });
+    } else if (segs[0] === "data" ? owner !== who : segs[0] === "ranks" ? (write && owner !== who) : true) return send(403, { error: { message: "PERMISSION_DENIED" } });
     if (segs.length % 2 === 1) {   // a collection: list its documents
       const out = [...docs.keys()].filter(k => k.startsWith(p + "/") && !k.slice(p.length + 1).includes("/")).map(k => ({ name: "projects/test/databases/(default)/documents/" + k, fields: docs.get(k) }));
       return send(200, { documents: out });
@@ -96,6 +100,15 @@ console.log("B decks", JSON.stringify(await state(B.page)), "server", [...docs.k
 await B.page.evaluate(() => { closeModal(); openRanked(); }); await wait(2000);
 console.log("B leaderboard", JSON.stringify(await B.page.evaluate(() => document.querySelector("#rk-board").innerText.replace(/\s+/g, " "))));
 await B.page.screenshot({ path: OUT + "/2-ranked.png" });
+// ranked wins need the loser's own record: no record, no win; with one, the win counts once
+const before = await A.page.evaluate(() => ({w: RANK.w, b: RANK.b, uid: acctUid()}));
+const noRec = await A.page.evaluate(() => rankClaim("m1-m2", 26000));
+docs.set("results/m1-m2", { w: { stringValue: before.uid }, l: { stringValue: "uid99" }, c: { integerValue: "0" }, t: { integerValue: "1" } });
+const withRec = await A.page.evaluate(() => rankClaim("m1-m2", 26000));
+const again = await A.page.evaluate(async () => { await rankClaim("m1-m2", 26000); return {w: RANK.w, b: RANK.b}; });
+const fake = await A.page.evaluate(async () => { try { const db = await getDb(); await db.doc("results/x-y").set({w: acctUid(), l: "uid99", c: 0, t: 1}); return "written"; } catch (e) { return "refused"; } });
+console.log("ranked claims", JSON.stringify({before, noRec, withRec, again, fake}));
+if (noRec !== false || withRec !== true || again.w !== before.w + 1 || again.b !== before.b + 26000 || fake !== "refused") { console.log("FAIL ranked wins are cross-checked"); process.exitCode = 1; } else console.log("ok   ranked wins are cross-checked");
 // sign out on B: back to this computer's own (empty) data
 await B.page.evaluate(() => { closeModal(); openHome(); }); await wait(300);
 await B.page.click('[data-do="homesign"]'); await wait(300);

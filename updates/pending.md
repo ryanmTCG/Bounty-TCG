@@ -7,3 +7,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - Blocking is done by tapping a glowing Blocker (no Block button), and the Blocker tag is orange.
 - Characters can't attack the turn they're played unless they have [Rush] or a card lets them (OP11-001 and similar let them attack Characters only).
 - The game checks card "If ..." conditions itself (about 85% of wordings): abilities whose condition isn't met don't run, and conditional Rush is decided without asking.
+- Ranked wins are cross-checked: a win reaches the shared leaderboard only once the loser's own game records it (needs the new Firestore rules).

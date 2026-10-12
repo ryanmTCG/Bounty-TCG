@@ -1,15 +1,38 @@
 rules_version = '2';
 // Rules for the desktop app's accounts (Firebase project set up by Ryan). Paste into Firestore > Rules.
-// Each player's decks and profile (data/users/<uid>/...) are theirs alone; the ranked leaderboard
-// (ranks/<uid>) is readable by everyone and writable only by its owner.
+// Each player's decks and profile (data/users/<uid>/...) are theirs alone. The ranked leaderboard (ranks/<uid>) is
+// readable by everyone; its owner can only change it one game at a time: a loss lowers the bounty by at most 30,000,
+// and a win raises it by 25,000 to 30,000 only with a match record (results/<match>) that the loser's own game wrote
+// naming this player as the winner, which the winner marks as used so it counts once.
 service cloud.firestore {
   match /databases/{database}/documents {
     match /data/users/{uid}/{doc} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
+    match /results/{mid} {
+      allow read: if request.auth != null;
+      // only the loser writes the record, naming someone else as the winner
+      allow create: if request.auth != null && request.resource.data.l == request.auth.uid
+        && request.resource.data.w is string && request.resource.data.w != request.auth.uid && request.resource.data.c == 0;
+      // the winner marks it used, with the win count it becomes
+      allow update: if request.auth != null && resource.data.w == request.auth.uid && resource.data.c == 0
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['c'])
+        && request.resource.data.c == get(/databases/$(database)/documents/ranks/$(request.auth.uid)).data.w + 1;
+    }
     match /ranks/{uid} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.b is int && request.resource.data.b >= 0 && request.resource.data.b <= 300000;
+      allow update: if request.auth != null && request.auth.uid == uid && (isLoss() || isWin() || nameOnly());
+    }
+    function d() { return request.resource.data; }
+    function o() { return resource.data; }
+    function nameOnly() { return d().b == o().b && d().w == o().w && d().l == o().l; }
+    function isLoss() { return d().w == o().w && d().l == o().l + 1 && d().b <= o().b && d().b >= o().b - 30000 && d().b >= 0; }
+    function isWin() {
+      return d().l == o().l && d().w == o().w + 1 && d().b >= o().b + 25000 && d().b <= o().b + 30000
+        && get(/databases/$(database)/documents/results/$(d().lw)).data.w == request.auth.uid
+        && get(/databases/$(database)/documents/results/$(d().lw)).data.c == d().w;
     }
   }
 }
