@@ -1547,11 +1547,19 @@ async function rankClaim(mid, step){
     if (!r || r.w !== me) return false;
     if (r.c) return true;
     const cur = await ref.get(), x = cur.exists ? rankFrom(cur.data() || {}) : {b: 0, w: 0, l: 0};
+    if (!cur.exists) await ref.set({b: 0, w: 0, l: 0, nick: clean(RANK.nick, 20) || "Player", t: Date.now()});
     await rr.set(Object.assign({}, r, {c: x.w + 1}));
     await ref.set({b: x.b + step, w: x.w + 1, l: x.l, lw: mid, nick: clean(RANK.nick, 20) || "Player", t: Date.now()});
     RANK = rankFrom({b: x.b + step, w: x.w + 1, l: x.l, nick: RANK.nick}); try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {}
     return true;
   } catch (e) { return false; }
+}
+async function rankLossCloud(amount){
+  const ref = await rankDoc(); if (!ref) return;
+  try {
+    const cur = await ref.get(), x = cur.exists ? rankFrom(cur.data() || {}) : {b: 0, w: 0, l: 0};
+    await ref.set({b: Math.max(0, x.b - Math.min(30000, Math.max(0, amount))), w: x.w, l: x.l + 1, nick: clean(RANK.nick, 20) || "Player", t: Date.now()});
+  } catch (e) {}
 }
 async function rankClaimRetry(){
   const left = [];
@@ -1578,7 +1586,7 @@ function rankResult(won, why){
   const mid = S.mid || matchId(), ou = S.oppUid || (oppM && oppM.uid) || "";
   if (!acctUid()) rankSave();
   else if (won) { const st = RANK.b - before; try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {} rankClaim(mid, st).then(ok => { if (!ok && mid) { rankClaimsSave(rankClaims().concat([{mid, step: st, t: Date.now()}])); toast("Your win is saved. It goes on the leaderboard once your opponent's game confirms it."); } }); }
-  else { rankSave(); rankLossRecord(mid, ou); }
+  else { try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {} rankLossCloud(before - RANK.b); rankLossRecord(mid, ou); }
   const d = RANK.b - before, up = rankName(RANK.b) !== rankName(before); S.rankD = d;
   const msg = (why ? why + " " : "") + (!d ? `Ranked loss. Your bounty is already ${berry(0)}, so it stays there.`
     : `Ranked ${won ? "win" : "loss"}: bounty ${won ? "+" : "−"}${berry(Math.abs(d))}. It's now ${berry(RANK.b)}${up ? `, and you're a ${rankName(RANK.b)}${won ? "!" : "."}` : ` (${rankName(RANK.b)}).`}`);
@@ -1624,7 +1632,8 @@ function rankPendingCheck(){
   let info = {}; try { if (p[0] === "{") info = JSON.parse(p) || {}; else info = {ld: p}; } catch (e) {}
   const before = RANK.b, step = 25000 + Math.round(Math.random() * 50) * 100;
   RANK.b = Math.max(0, before - Math.round(step * LOSS[rankName(before)] / 100) * 100); RANK.l++;
-  rankSave(); rankLossRecord(String(info.mid || ""), String(info.ou || ""));
+  if (acctUid()) { try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {} rankLossCloud(before - RANK.b); } else rankSave();
+  rankLossRecord(String(info.mid || ""), String(info.ou || ""));
   statLoss(String(info.ld || ""), {op: String(info.op || ""), on: clean(info.on, 20), b: RANK.b - before});
   setTimeout(() => toast(before === RANK.b ? `You left a ranked match before it ended, so it counted as a loss. Your bounty is already ${berry(0)}, so it stays there.`
     : `You left a ranked match before it ended, so it counted as a loss: bounty −${berry(before - RANK.b)}. It's now ${berry(RANK.b)}.`), 1500);

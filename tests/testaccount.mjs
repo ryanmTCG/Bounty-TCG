@@ -108,6 +108,9 @@ const withRec = await A.page.evaluate(() => rankClaim("m1-m2", 26000));
 const again = await A.page.evaluate(async () => { await rankClaim("m1-m2", 26000); return {w: RANK.w, b: RANK.b}; });
 const fake = await A.page.evaluate(async () => { try { const db = await getDb(); await db.doc("results/x-y").set({w: acctUid(), l: "uid99", c: 0, t: 1}); return "written"; } catch (e) { return "refused"; } });
 console.log("ranked claims", JSON.stringify({before, noRec, withRec, again, fake}));
+const lossT = await A.page.evaluate(async () => { const b0 = RANK.b; await rankLossCloud(20000); const sn = await (await rankDoc()).get(); return sn.data(); });
+console.log("cloud loss", JSON.stringify(lossT));
+if (lossT.l !== 1 || lossT.b !== again.b - 20000 || lossT.w !== again.w) { console.log("FAIL a loss counts once against the saved bounty"); process.exitCode = 1; } else console.log("ok   a loss counts once against the saved bounty");
 if (noRec !== false || withRec !== true || again.w !== before.w + 1 || again.b !== before.b + 26000 || fake !== "refused") { console.log("FAIL ranked wins are cross-checked"); process.exitCode = 1; } else console.log("ok   ranked wins are cross-checked");
 // sign out on B: back to this computer's own (empty) data
 await B.page.evaluate(() => { closeModal(); openHome(); }); await wait(300);
