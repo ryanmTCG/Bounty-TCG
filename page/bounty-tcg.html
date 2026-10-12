@@ -940,6 +940,8 @@ select.sbtn{font-family:var(--slab)}
 .ohandp .ohname{color:var(--coral)}
 .hand .card.canplay{box-shadow:0 0 0 3px #5BE07A,0 0 12px rgba(91,224,122,.7)}
 .card.isblk::after{content:"Blocker";position:absolute;left:50%;bottom:2px;transform:translateX(-50%);font:700 9px/1.4 system-ui,sans-serif;background:#F07A1A;color:#fff;padding:0 5px;border-radius:6px;pointer-events:none;z-index:3}
+body.watching #me,body.watching #hand,body.watching .turnbar,body.watching .tbopts{pointer-events:none}
+body.watching .turnbar,body.watching .tbopts{opacity:.4}
 .card.canblk{box-shadow:0 0 0 3px #F07A1A,0 0 12px rgba(240,122,26,.75)}
 .turnbar .endglow{box-shadow:0 0 0 3px #FFD23F,0 0 14px rgba(255,210,63,.8)}
 .card.canatk{box-shadow:0 0 0 3px #FF8A3D,0 0 12px rgba(255,138,61,.7)}
@@ -1225,6 +1227,7 @@ async function connect(code){
 }
 async function leaveRoom(){
   if (rejoining) return;
+  if (WATCH) { WATCH = null; document.body.classList.remove("watching"); }
   rankForfeit(); matchForget();
   if (R) { try { await R.leave(); } catch (e) {} }
   R = null; oppPeer = null; oppM = null; PR = null; myQc = null; qcSeen = null;
@@ -1805,6 +1808,43 @@ function myFC(){
   if (!STATS.fc) { const b = crypto.getRandomValues(new Uint8Array(6)); STATS.fc = Array.from(b, x => FC_ABC[x % FC_ABC.length]).join(""); statsSave(); }
   return STATS.fc;
 }
+// watching a friend's table: join its room without a seat and show both players' boards
+let WATCH = null;
+async function watchTable(room, who){
+  closeModal(); if (builderOpen) closeBuilder();
+  await leaveRoom();
+  try {
+    const rm = await window.claude.use("room"); if (!rm) throw new Error("no room");
+    const r = await rm.join(room);
+    R = r; roomCode = room; status = "online"; WATCH = {room, who, a: null, b: null};
+    r.onPeers(ch => { if (R !== r || !WATCH) return; const ps = ch.peers.filter(p => !p.isMe && p.presence && p.presence.p !== undefined).sort((x, y) => x.peer < y.peer ? -1 : 1); const mm = q => { if (!q) return null; const m = oppModel(q.presence); m.lg = Array.isArray(q.presence.lg) ? q.presence.lg.slice(0, 10) : []; return m; }; WATCH.a = mm(ps[0]); WATCH.b = mm(ps[1]); render(); });
+    try { await r.presence({w: 1, nick: clean(S.nick || RANK.nick, 20) || "Player"}); } catch (e) {}
+    document.body.classList.add("watching");
+    toast(`Watching ${who || "your friend"}'s match.`);
+  } catch (e) { WATCH = null; R = null; toast("Couldn't join that table to watch."); }
+  render(); renderStatus();
+}
+async function stopWatch(){
+  WATCH = null; document.body.classList.remove("watching");
+  if (R) { try { await R.leave(); } catch (e) {} }
+  R = null; status = "offline"; openHome();
+}
+function renderWatch(){
+  const a = WATCH.a, b = WATCH.b;
+  $("#opp").innerHTML = side(b || EMPTY(), false);
+  $("#oppHand").innerHTML = oppHandPanel(b || EMPTY());
+  $("#me").innerHTML = a ? side(a, true) : `<div class="wait">Waiting for the players…</div>`;
+  $("#hand").innerHTML = `<span class="empty">${a ? `${esc(a.nick)} has ${a.h || 0} cards in hand` : ""}</span>`;
+  $("#banner").innerHTML = "";
+  const atk = a && a.ak ? [a, b, a.ak] : b && b.ak ? [b, a, b.ak] : null;
+  const at = x => x === "ld" ? atk[0].ld : atk[0].ch[+x.slice(3)], tg = x => x === "ld" ? (atk[1] || {}).ld : ((atk[1] || {}).ch || [])[+x.slice(3)];
+  const res = a && a.cd ? `${a.nick} lost. ${b ? b.nick : "Their opponent"} wins!` : b && b.cd ? `${b.nick} lost. ${a ? a.nick : "Their opponent"} wins!` : "";
+  const mid = $("#mid"); mid.classList.toggle("combat", !!(atk && !res));
+  mid.innerHTML = `<span>\u{1F441} Watching ${esc(a ? a.nick : "")}${b ? " vs " + esc(b.nick) : ""}</span>${res ? `<span>⚑ ${esc(res)}</span>` : atk ? `<span>⚔ ${esc(atk[0].nick)}'s <b>${esc(at(atk[2].s) ? lab(at(atk[2].s)) : "card")}</b> attacks <b>${esc(tg(atk[2].t) ? lab(tg(atk[2].t)) : "a target")}</b></span>` : ""}<button class="btn" data-do="stopwatch" type="button">Stop watching</button>`;
+  const lg = [];
+  for (const [m, mine] of [[a, true], [b, false]]) if (m && Array.isArray(m.lg)) for (const e of m.lg) if (Array.isArray(e) && pubLog(e[1])) lg.push({who: m.nick, mine, m: String(e[1])});
+  $("#log").innerHTML = lg.length ? lg.slice(-30).reverse().map(e => `<p class="${e.mine ? "mine" : "theirs"}"><b>${esc(e.who)}</b> ${esc(e.m)}</p>`).join("") : '<p class="tips">Nothing yet.</p>';
+}
 function myStatus(){ return !R || PR ? (S.phase === "none" ? "home" : "solo") : oppM ? "match" : "table"; }
 const isFriend = c => STATS.fr.some(f => f.c === c);
 async function friendsWatch(){
@@ -1819,7 +1859,7 @@ function onlineMap(){
   const m = new Map();
   for (const p of FRV.peers) {
     if (!p || p.isMe || !p.presence || !FC_RE.test(p.presence.fc) || p.presence.fc === STATS.fc) continue;
-    m.set(p.presence.fc, {nk: clean(p.presence.nk, 20) || "Player", st: ST[p.presence.st] ? p.presence.st : "home"});
+    m.set(p.presence.fc, {nk: clean(p.presence.nk, 20) || "Player", st: ST[p.presence.st] ? p.presence.st : "home", w: typeof p.presence.w === "string" && /^[A-Za-z0-9-]{3,40}$/.test(p.presence.w) ? p.presence.w : ""});
   }
   return m;
 }
@@ -1909,7 +1949,7 @@ function renderFriends(){
     return {f, o};
   }).sort((a, b) => (!!b.o - !!a.o) || (a.f.n || a.f.c).localeCompare(b.f.n || b.f.c));
   if (named) statsSave();
-  el.innerHTML = rows.length ? rows.map(({f, o}) => `<div class="frrow${o ? " on" : ""}"><span class="dot${o ? " on" : ""}"></span><div class="frinfo"><b>${esc(f.n || "Friend")}</b><small>${esc(f.c)} · ${o ? esc(ST[o.st]) : "Offline"}</small></div><span class="sp"></span>${o && o.st !== "match" ? `<button class="btn pri" data-do="frch:${f.c}" type="button"${myChal && myChal.to === f.c ? " disabled" : ""}>${myChal && myChal.to === f.c ? "Challenge sent" : "Challenge"}</button>` : ""}<button class="btn" data-do="frrm:${f.c}" type="button" aria-label="Remove ${esc(f.n || f.c)}">Remove</button></div>`).join("")
+  el.innerHTML = rows.length ? rows.map(({f, o}) => `<div class="frrow${o ? " on" : ""}"><span class="dot${o ? " on" : ""}"></span><div class="frinfo"><b>${esc(f.n || "Friend")}</b><small>${esc(f.c)} · ${o ? esc(ST[o.st]) : "Offline"}</small></div><span class="sp"></span>${o && o.st === "match" && o.w && !WATCH ? `<button class="btn pri" data-do="frwatch:${f.c}" type="button">Watch</button>` : ""}${o && o.st !== "match" ? `<button class="btn pri" data-do="frch:${f.c}" type="button"${myChal && myChal.to === f.c ? " disabled" : ""}>${myChal && myChal.to === f.c ? "Challenge sent" : "Challenge"}</button>` : ""}<button class="btn" data-do="frrm:${f.c}" type="button" aria-label="Remove ${esc(f.n || f.c)}">Remove</button></div>`).join("")
     : `<div class="lbempty"><b>No friends yet</b>Send a friend your code, or add theirs above. People you've played show up below too.</div>`;
   if (!rc) return;
   const seen = new Set(), recent = [];
@@ -2069,7 +2109,7 @@ function renderLobbies(){
 }
 async function lobbyUpdate(){
   const lb = myLobby && R && roomCode === myLobby.c ? {c: myLobby.c, n: myLobby.n, h: S.nick || "Player", l: S.leader && S.leader.card ? S.leader.card.c : "", f: myLobby.f, r: myLobby.r ? 1 : 0, s: oppPeer || (S.phase !== "wait" && S.phase !== "roll") ? 2 : 1, t: myLobby.t} : null;
-  const pres = {lb, fc: myFC(), nk: clean(S.nick || loadSaved().nick || RANK.nick, 20) || "Player", st: myStatus(), ch: myChal ? {to: myChal.to, r: myChal.r, id: myChal.id} : null, dc: myDc};
+  const pres = {lb, fc: myFC(), nk: clean(S.nick || loadSaved().nick || RANK.nick, 20) || "Player", st: myStatus(), w: myStatus() === "match" && !S.ranked && !S.pubt && roomCode ? roomCode : "", ch: myChal ? {to: myChal.to, r: myChal.r, id: myChal.id} : null, dc: myDc};
   const key = JSON.stringify(pres);
   if (key === lbSent) return;
   lbSent = key;
@@ -2140,6 +2180,7 @@ function oppHandPanel(m){
 }
 const EMPTY = () => ({nick:"Opponent", sl:0, tn:0, ld:null, ch:[], st:null, ev:null, ak:null, bk:null, rl:0, fc:null, cd:false, cdw:false, mq:[], ma:0, lf:0, dd:0, da:0, dr:0, dk:0, h:0, tr:[]});
 function render(){
+  if (WATCH) { renderWatch(); return; }
   rankCheck(); statCheck();
   { const ok = boardTools(); for (const k of ["resetboard", "refresh", "undo"]) { const b = $(`[data-do="${k}"]`); if (b) b.hidden = !ok; } }
   { const fb = $("#startfb");
@@ -3908,6 +3949,8 @@ function doAction(a){
   if (a === "sndon") { sndOn = !sndOn; try { localStorage.setItem("bounty:snd", sndOn ? "1" : "0"); } catch (e) {} if (sndOn) snd("turn"); toast(sndOn ? "Sounds on." : "Sounds off."); return; }
   if (a === "autofx") { autoFx = !autoFx; try { localStorage.setItem("nakama:autofx", autoFx ? "1" : "0"); } catch (e) {} toast(autoFx ? "Auto card effects on." : "Auto card effects off."); return; }
   if (a.startsWith("frch:")) { challenge(a.slice(5)); return; }
+  if (a.startsWith("frwatch:")) { const o = onlineMap().get(a.slice(8)); if (o && o.w) watchTable(o.w, o.nk); else toast("That match just ended."); return; }
+  if (a === "stopwatch") { stopWatch(); return; }
   if (a.startsWith("frrm:")) { const c = a.slice(5), f = STATS.fr.find(x => x.c === c); STATS.fr = STATS.fr.filter(x => x.c !== c); statsSave(); renderFriends(); if (f) toast(`Removed ${f.n || f.c} from your friends.`); return; }
   if (a.startsWith("fradd:")) { const c = a.slice(6), e = (STATS.h || []).find(x => x.fc === c); if (addFriend(c, e && e.on)) renderFriends(); return; }
   if (a === "fradd") { const i = $("#fr-code"); if (i && addFriend(i.value)) { i.value = ""; renderFriends(); } return; }

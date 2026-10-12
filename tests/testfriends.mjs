@@ -68,6 +68,26 @@ check(ra.room === rb.room && ra.opp === "Friend" && rb.opp === "Ryan" && !ra.cha
 await wait(2000);
 const st = await A.page.evaluate(() => myStatus());
 check(st === "match", "status shows the match");
+// a third friend watches the match
+const C = await launch("c");
+await C.page.evaluate(n => localStorage.setItem("nakama:setup", JSON.stringify({nick: n})), "Watcher");
+await C.page.reload(); await wait(1500);
+await C.page.evaluate(code => { addFriend(code, "Ryan"); }, fa);
+await wait(6000);
+await C.page.evaluate(() => { closeModal(); openFriends(); }); await wait(1500);
+const wrow = await C.page.evaluate(() => [...document.querySelectorAll("#fr-list .frrow")].map(r => r.textContent));
+console.log("C friends", JSON.stringify(wrow));
+check(wrow.some(r => /In a match/.test(r) && /Watch/.test(r)), "a friend in a match shows a Watch button");
+await C.page.click('[data-do^="frwatch:"]'); await wait(6000);
+const cw = await C.page.evaluate(() => ({watch: !!WATCH, mid: document.querySelector("#mid").textContent, me: document.querySelectorAll("#me .card").length, opp: document.querySelectorAll("#opp .card").length, peersA: 0}));
+const aOpp = await A.page.evaluate(() => oppM && oppM.nick);
+console.log("watching", JSON.stringify(cw), aOpp);
+check(cw.watch && /Watching/.test(cw.mid) && /Ryan|Friend/.test(cw.mid) && /vs/.test(cw.mid), "the watcher sees both players");
+check(aOpp === "Friend", "a watcher doesn't take a player's seat");
+await C.page.screenshot({ path: OUT + "/watch.png" });
+await C.page.click('[data-do="stopwatch"]'); await wait(1000);
+check(await C.page.evaluate(() => !WATCH && !R), "Stop watching leaves the table");
+console.log("errorsC", C.errs.slice(0, 5)); await C.app.close();
 console.log("errorsA", A.errs.slice(0, 5)); console.log("errorsB", B.errs.slice(0, 5));
 await A.app.close(); await B.app.close(); peer.kill();
 console.log(fail ? `${fail} FAILED` : "all passed");
