@@ -2589,8 +2589,10 @@ async function runAbility(card, trigs, manual, don){
     if (list.every(x => optUsed(card, x))) { toast(`${lab(card)} already used its Once Per Turn ability this turn.`); return; }
     list.splice(0, list.length, ...list.filter(x => !optUsed(card, x)));
     if (!list.length) { if (manual) toast(`No ${trigs.map(t => TRIG[t]).join(" / ")} ability found on ${lab(card)}.`); return; }
-    list.forEach(x => fxEnqueue(fxJob(card, x)));
-    list.forEach(x => grantActiveAtk(card, x.text || ""));
+    const self = [S.leader, S.stage, ...S.chars].find(f => f && f.card === card);
+    const met = list.filter(x => { const c = leadCond(x.text); if (c && condCheck(c, self) === false) { toast(`${lab(card)}: its condition isn't met (${c}), so the ability does nothing.`); addLog(`${lab(card)}'s ability didn't apply (${c})`); return false; } return true; });
+    met.forEach(x => fxEnqueue(fxJob(card, x)));
+    met.forEach(x => grantActiveAtk(card, x.text || ""));
   } catch (e) {
     $("#toast").hidden = true;
     if (!fxFailed) { fxFailed = true; toast("Couldn't read the card text (" + ((e && e.code) || "error") + "). Turn off Auto card effects under the turn buttons if you don't want this."); }
@@ -2627,7 +2629,7 @@ async function useAbility(card, x, y){
     if (!usable.length) { toast(`${lab(card)} doesn't meet the DON!! requirement for its ability.`); return; }
     if (usable.every(a => optUsed(card, a))) { toast(`${lab(card)} already used its Once Per Turn ability this turn.`); return; }
     usable.splice(0, usable.length, ...usable.filter(a => !optUsed(card, a)));
-    const items = usable.map(a => [`${a.text.slice(0, 70)}${a.text.length > 70 ? "…" : ""}`, () => { fxEnqueue(fxJob(card, a)); grantActiveAtk(card, a.text || ""); }]);
+    const items = usable.map(a => [`${a.text.slice(0, 70)}${a.text.length > 70 ? "…" : ""}`, () => { const c = leadCond(a.text), self = [S.leader, S.stage, ...S.chars].find(f => f && f.card === card); if (c && condCheck(c, self) === false) { toast(`${lab(card)}: its condition isn't met (${c}).`); return; } fxEnqueue(fxJob(card, a)); grantActiveAtk(card, a.text || ""); }]);
     if (items.length === 1) { items[0][1](); return; }
     showMenu(`${lab(card)} abilities`, items, x || innerWidth / 2 - 100, y || innerHeight / 2 - 80);
   } catch (e) { $("#toast").hidden = true; toast("Couldn't read the card text (" + ((e && e.code) || "error") + ")."); }
@@ -2972,6 +2974,51 @@ function costCond(t){
   }
   if (t === "the turn in which a card in your hand is trashed by an effect") return !!S.myTurn && S.htr === S.turn;
   return null;
+}
+// the game checks a card's "If ..." condition itself: true, false, or null when the wording isn't one it knows
+function condCheck(t, self){
+  t = String(t || "").trim().replace(/^if\s+/i, "").replace(/[.,:]$/, "");
+  const known = costCond(t); if (known !== null) return known;
+  // "A and B": both parts must hold
+  if (/ and (you|your|this|there|the)\b/i.test(t)) { const parts = t.split(/ and (?=you|your|this|there|the\b)/i); if (parts.length > 1) { const r = parts.map(x => condCheck(x, self)); return r.includes(false) ? false : r.includes(null) ? null : true; } }
+  let m; const L = S.leader && S.leader.card.c, oppCh = oppM ? (oppM.ch || []) : [];
+  const nm = c => nameOf(c) || "", cost = c => (CARDDB.get(c) || {}).k;
+  if ((m = t.match(/^your Leader is \[([^\]]+)\](?: or \[([^\]]+)\])?$/i))) return !!L && (nm(L) === m[1] || nm(L) === m[2]);
+  if ((m = t.match(/^your Leader has the \{([^}]+)\} or \{([^}]+)\} type$/i))) return !!L && (hasType(L, m[1]) || hasType(L, m[2]));
+  if ((m = t.match(/^your Leader's type includes "([^"]+)"$/i))) return !!L && typesOf(L).some(y => y.includes(m[1]));
+  if (/^your Leader is multicolored$/i.test(t)) return !!L && /\//.test((CARDDB.get(L) || {}).c || "");
+  if ((m = t.match(/^you have (\d+) or (less|more) cards in your hand$/i))) return atLeast(S.hand.length, +m[1], m[2]);
+  if ((m = t.match(/^your opponent has (\d+) or (less|more) cards in their hand$/i))) return !!oppM && atLeast(oppM.h || 0, +m[1], m[2]);
+  if ((m = t.match(/^your opponent has (\d+) or (less|more) DON!! cards on their field$/i))) return !!oppM && atLeast(oppDonField(), +m[1], m[2]);
+  if ((m = t.match(/^you have (\d+) DON!! cards on your field$/i))) return myDonField() === +m[1];
+  if (/^the number of DON!! cards on your field is equal to or less than the number on your opponent's field$/i.test(t)) return !!oppM && myDonField() <= oppDonField();
+  if (/^your opponent has more DON!! cards on their field than you$/i.test(t)) return !!oppM && oppDonField() > myDonField();
+  if (/^you have less Life cards than your opponent$/i.test(t)) return !!oppM && S.life.length < (oppM.lf || 0);
+  if ((m = t.match(/^you have (\d+) or more rested (?:\{([^}]+)\} type )?Characters$/i))) return S.chars.filter(f => f.r && (!m[2] || hasType(f.card.c, m[2]))).length >= +m[1];
+  if ((m = t.match(/^the only Characters on your field are \{([^}]+)\} type Characters$/i))) return S.chars.every(f => hasType(f.card.c, m[1]));
+  if ((m = t.match(/^you have (\d+) or (less|more) cards in your deck$/i))) return atLeast(S.deck.length, +m[1], m[2]);
+  if ((m = t.match(/^you have (\d+) Life cards?$/i))) return S.life.length === +m[1];
+  if ((m = t.match(/^you have (\d+) or more Characters with a base cost of (\d+) or more$/i))) return S.chars.filter(f => ((CARDDB.get(f.card.c) || {}).k || 0) >= +m[2]).length >= +m[1];
+  if ((m = t.match(/^there is a Character with a cost of (\d+) or with a cost of (\d+) or more$/i))) return [...S.chars.map(f => f.card.c), ...(oppM ? oppM.ch || [] : []).map(x => x.c)].some(c => { const k = (CARDDB.get(c) || {}).k; return k === +m[1] || k >= +m[2]; });
+  if ((m = t.match(/^you have (\d+) or more (?:\{([^}]+)\} type )?Characters$/i))) return S.chars.filter(f => !m[2] || hasType(f.card.c, m[2])).length >= +m[1];
+  if (/^you have any DON!! cards given$/i.test(t)) return [S.leader, ...S.chars].some(f => f && f.d);
+  if ((m = t.match(/^you have a total of (\d+) or more given DON!! cards$/i))) return [S.leader, ...S.chars].reduce((n, f) => n + ((f && f.d) || 0), 0) >= +m[1];
+  if ((m = t.match(/^(you have|your opponent has|there is) an? Character with a cost of (\d+)(?: or (less|more))?$/i))) {
+    const list = m[1] === "you have" ? S.chars.map(f => f.card.c) : m[1] === "there is" ? S.chars.map(f => f.card.c).concat(oppCh.map(x => x.c)) : oppCh.map(x => x.c);
+    return list.some(c => Number.isFinite(cost(c)) && (m[3] ? atLeast(cost(c), +m[2], m[3]) : cost(c) === +m[2]));
+  }
+  if ((m = t.match(/^you (don't )?have \[([^\]]+)\]$/i))) { const has = [S.leader, S.stage, ...S.chars].some(f => f && nm(f.card.c) === m[2]); return m[1] ? !has : has; }
+  if ((m = t.match(/^this Character has (\d+) power or (less|more)$/i))) return self ? atLeast(myPow(self), +m[1], m[2]) : null;
+  if (/^this Character was played on this turn$/i.test(t)) return self ? self.pt === S.turn : null;
+  if (/^this Character is rested$/i.test(t)) return self ? !!self.r : null;
+  if (/^this Character is active$/i.test(t)) return self ? !self.r : null;
+  return null;
+}
+// the "If ..." an ability starts with (after its timing tags and cost), e.g. "[On Play] DON!! −1: If your Leader has ..., draw 1"
+function leadCond(text){
+  const t = String(text || "").replace(/\([^)]*\)/g, "").replace(/^(\s*\[[^\]]+\]\s*)+/, "").replace(/^[^:]{0,80}:\s*/, m => /\bIf\b/i.test(m) ? m : "");
+  const m = /^\s*If ([^,]+),/i.exec(t);
+  return m ? m[1] : null;
 }
 // which cards an effect's wording allows, e.g. "{Straw Hat Crew} type Character card with a cost of 3 or less other
 // than [Nami]". Returns a test on a card number, or null when nothing in the wording narrows it down.
@@ -3381,7 +3428,8 @@ function rushNow(f){
     const t = a.text || ""; if (!RUSH_RX.test(t) || !/This Character/i.test(t)) continue;
     if (a.t === "other" || a.t === "yourTurn") {
       const m = /DON!! x(\d+)/.exec(t); if (m && (f.d || 0) < +m[1]) continue;
-      if (/\bIf\b/i.test(t)) { maybe = maybe || rushKind(t); by = by || code; } else return rushKind(t);
+      const ok = /\bIf\b/i.test(t) ? condCheck((/\bIf ([^,]+),/i.exec(t) || [])[1], f) : true;
+      if (ok === true) return rushKind(t); if (ok === null) { maybe = maybe || rushKind(t); by = by || code; }
     } else { maybe = maybe || rushKind(t); by = by || code; }
   }
   // other cards: "Your {SWORD} type Characters can attack Characters on the turn in which they are played", Leaders and effects that grant [Rush]
@@ -3391,8 +3439,9 @@ function rushNow(f){
     const ty = (/\{([^}]+)\} type Characters?/i.exec(t) || [])[1]; if (ty && !hasType(code, ty)) continue;
     if ((a.t === "other" || a.t === "yourTurn") && [S.leader, S.stage, ...S.chars].some(g => g && g.card === c)) {
       const lc = /If your Leader has the \{([^}]+)\} type/i.exec(t);
-      if (lc) { if (S.leader && hasType(S.leader.card.c, lc[1]) && !/\bIf\b[\s\S]*\bIf\b/i.test(t)) return rushKind(t); continue; }
-      if (!/\bIf\b/i.test(t) && !/other than|with a cost|red|green|blue|purple|black|yellow/i.test(t)) return rushKind(t);
+      const ok = /\bIf\b/i.test(t) ? condCheck((/\bIf ([^,]+),/i.exec(t) || [])[1], null) : true;
+      if (ok === false) continue;
+      if (lc || ok === true) { if (!/other than|with a cost|red|green|blue|purple|black|yellow/i.test(t)) return rushKind(t); }
     }
     maybe = maybe || rushKind(t); by = by || c.c;
   }

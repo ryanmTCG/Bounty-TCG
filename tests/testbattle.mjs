@@ -196,6 +196,19 @@ const rs = await eotP.evaluate(() => {
 console.log("rush", JSON.stringify(rs));
 check(rs.a === false && rs.b === "all", "a Character played this turn can't attack without [Rush]");
 check(!rs.swordType || (rs.c === "chars" && rs.d === false), "OP11-001 lets {SWORD} Characters attack Characters the turn they're played");
+// the game checks "If ..." conditions on cards itself
+const cc = await eotP.evaluate(() => {
+  let lead = 0, known = 0; const miss = new Map();
+  for (const k of CARDDB.keys()) for (const a of fxAb(k)) { const c = leadCond(a.text); if (!c) continue; lead++; if (condCheck(c, null) !== null || /this Character/i.test(c)) known++; else { const key = c.replace(/\d+/g, "N").replace(/\{[^}]+\}/g, "{T}").replace(/\[[^\]]+\]/g, "[X]"); miss.set(key, (miss.get(key) || 0) + 1); } }
+  const life0 = S.life.length;
+  const r = {lead, known, top: [...miss].sort((a, b) => b[1] - a[1]).slice(0, 8),
+    lifeLess: condCheck(`you have ${life0} or less Life cards`), lifeMore: condCheck(`you have ${life0 + 1} or more Life cards`),
+    hand: condCheck(`you have ${S.hand.length} or less cards in your hand`), both: condCheck(`you have ${life0} or less Life cards and you have ${life0 + 1} or more Life cards`)};
+  return r;
+});
+console.log("conditions", JSON.stringify(cc));
+check(cc.lifeLess === true && cc.lifeMore === false && cc.hand === true && cc.both === false, "card conditions are checked against the game");
+check(cc.known / cc.lead > 0.7, "most card conditions are understood");
 await def.page.evaluate(() => { S.chars[S.chars.length - 1].r = true; commit(); });
 await A.page.waitForTimeout(2000);
 await atk.page.evaluate(() => { S.leader.r = false; S.turn = Math.max(S.turn, 2); attackWith("ld", "ch:0"); });
