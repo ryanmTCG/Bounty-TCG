@@ -112,6 +112,19 @@ const lossT = await A.page.evaluate(async () => { const b0 = RANK.b; await rankL
 console.log("cloud loss", JSON.stringify(lossT));
 if (lossT.l !== 1 || lossT.b !== again.b - 20000 || lossT.w !== again.w) { console.log("FAIL a loss counts once against the saved bounty"); process.exitCode = 1; } else console.log("ok   a loss counts once against the saved bounty");
 if (noRec !== false || withRec !== true || again.w !== before.w + 1 || again.b !== before.b + 26000 || fake !== "refused") { console.log("FAIL ranked wins are cross-checked"); process.exitCode = 1; } else console.log("ok   ranked wins are cross-checked");
+// a nickname set on the profile reaches the leaderboard entry (name only) and the account, and comes back on a new device
+const nk = await A.page.evaluate(async () => {
+  const r0 = (await (await rankDoc()).get()).data();
+  closeModal(); openProfile(true); document.querySelector("#pf-nick").value = "Captain Ryan"; doAction("pfnick");
+  await new Promise(r => setTimeout(r, 2500));
+  const r1 = (await (await rankDoc()).get()).data();
+  const v = loadSaved(); delete v.nick; save(v); STATS.nk = ""; await statsLoad();
+  return {r0, r1, back: loadSaved().nick, my: myNick(), head: document.querySelector(".pfhead b").textContent};
+});
+const stDoc = [...docs.entries()].find(([k]) => /^data\/users\/[^/]+\/_stats$/.test(k) && k.includes(before.uid));
+console.log("nickname", JSON.stringify(nk), stDoc ? JSON.stringify(stDoc[1].nk) : "no stats doc");
+if (nk.r1.nick !== "Captain Ryan" || nk.r1.b !== nk.r0.b || nk.r1.w !== nk.r0.w || nk.r1.l !== nk.r0.l || nk.head !== "Captain Ryan") { console.log("FAIL the nickname updates the leaderboard entry and nothing else"); process.exitCode = 1; } else console.log("ok   the nickname updates the leaderboard entry and nothing else");
+if (!stDoc || !stDoc[1].nk || stDoc[1].nk.stringValue !== "Captain Ryan" || nk.back !== "Captain Ryan" || nk.my !== "Captain Ryan") { console.log("FAIL the nickname is saved with the account and comes back on sign-in"); process.exitCode = 1; } else console.log("ok   the nickname is saved with the account and comes back on sign-in");
 // sign out on B: back to this computer's own (empty) data
 await B.page.evaluate(() => { closeModal(); openHome(); }); await wait(300);
 await B.page.click('[data-do="homesign"]'); await wait(300);

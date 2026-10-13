@@ -868,6 +868,8 @@ select.sbtn{font-family:var(--slab)}
 /* profile page */
 .pfhead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:2px 0 12px}
 .pfhead b{font-family:var(--slab);font-weight:400;font-size:26px;color:#FFE9B8}
+.pfnick{display:flex;gap:8px;margin:0 0 4px;flex-wrap:wrap}.pfnick input{flex:1;min-width:160px;max-width:320px}
+.homenick{margin:-6px 0 12px;font-size:14px}.homenick b{color:#FFE9B8}
 .pfbounty{font-family:var(--slab);color:#F2B84B;font-size:18px}
 .pfstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
 .pfstats div{padding:10px 12px;border:2px solid rgba(242,184,75,.5);border-radius:14px;background:rgba(0,0,0,.22);text-align:center}
@@ -1694,7 +1696,7 @@ async function rankedFind(){
   if (n !== 50) { toast(`Ranked needs a 50-card deck. Yours has ${n}.`); return; }
   const open = lobbyList().find(l => l.r && l.s < 2 && !l.mine);
   const room = open ? open.c : "ranked-" + lobbyCode();
-  const c = Object.assign({}, v, {room, nick: v.nick || RANK.nick || "Player", life: v.life || 5, sleeve: v.sleeve | 0, first: !!v.first});
+  const c = Object.assign({}, v, {room, nick: myNick(), life: v.life || 5, sleeve: v.sleeve | 0, first: !!v.first});
   await leaveRoom(); status = "connecting";
   newGame(c, true); S.ranked = true;
   closeModal();
@@ -1708,7 +1710,7 @@ async function rankedFind(){
 // Win/loss record, most played decks (by Leader) and most played cards, counted from online matches against
 // another player. Kept in this browser and, when signed in to claude.ai, in the player's own private storage.
 const HIST_MAX = 20, FR_MAX = 50;
-function statsBlank(){ return {g: 0, w: 0, l: 0, ld: {}, cd: {}, h: [], fc: "", fr: []}; }
+function statsBlank(){ return {g: 0, w: 0, l: 0, ld: {}, cd: {}, h: [], fc: "", fr: [], nk: ""}; }
 const FC_RE = /^[A-HJ-NP-Z2-9]{6}$/;
 function statsFrom(x){
   const o = statsBlank(); if (!x || typeof x !== "object") return o;
@@ -1719,6 +1721,7 @@ function statsFrom(x){
   // match history, newest first: time, my Leader, their Leader and name, result, ranked, bounty change, how it ended
   if (Array.isArray(x.h)) o.h = x.h.slice(0, HIST_MAX).filter(e => e && typeof e === "object").map(e => ({t: +e.t || 0, me: code(e.me) ? e.me : "", op: code(e.op) ? e.op : "", on: clean(e.on, 20), fc: FC_RE.test(e.fc) ? e.fc : "", r: e.r === "w" ? "w" : "l", rk: e.rk ? 1 : 0, b: Math.max(-99999, Math.min(99999, Math.round(+e.b || 0))), y: ["cd", "dmg", "left", "time"].includes(e.y) ? e.y : ""}));
   o.fc = FC_RE.test(x.fc) ? x.fc : "";
+  o.nk = clean(x.nk, 20);
   if (Array.isArray(x.fr)) o.fr = x.fr.slice(0, FR_MAX).filter(f => f && FC_RE.test(f.c)).map(f => ({c: f.c, n: clean(f.n, 20)}));
   return o;
 }
@@ -1741,6 +1744,10 @@ async function statsLoad(){
       const loc = STATS; STATS = statsFrom(sn.data());
       // stats saved before friends existed: keep the code and friends made in this browser
       if (!STATS.fc && loc.fc) { STATS.fc = loc.fc; STATS.fr = loc.fr; statsSave(); }
+      // the nickname saved with the account wins; one picked before signing in moves into the account
+      const ln = clean(loadSaved().nick, 20);
+      if (STATS.nk && STATS.nk !== ln) { const v = loadSaved(); v.nick = STATS.nk; save(v); RANK.nick = STATS.nk; }
+      else if (!STATS.nk && ln && ln !== NICK_DEF) { STATS.nk = ln; statsSave(); }
       try { localStorage.setItem("bounty:stats", JSON.stringify(STATS)); } catch (e) {}
       lobbyUpdate();
     }
@@ -1753,6 +1760,33 @@ function statsSave(){
   try { localStorage.setItem("bounty:stats", JSON.stringify(STATS)); } catch (e) {}
   clearTimeout(statsTimer);
   statsTimer = setTimeout(async () => { const ref = await statsDoc(); if (ref) { try { await ref.set(Object.assign({t: Date.now()}, STATS)); } catch (e) {} } }, 1500);
+}
+// ---------- nickname: one name everyone sees (the table, the lobby, friends' lists, the Ranked leaderboard) ----------
+const NICK_DEF = "Player";
+function myNick(){ return clean(loadSaved().nick || STATS.nk || RANK.nick, 20) || NICK_DEF; }
+const nickSet = () => { const n = clean(loadSaved().nick || STATS.nk, 20); return !!n && n !== NICK_DEF; };
+function setNick(raw, quiet){
+  const n = clean(raw, 20);
+  if (!n) { if (!quiet) toast("Type a nickname first: up to 20 letters, numbers and simple punctuation."); return false; }
+  const v = loadSaved(); if (v.nick !== n) { v.nick = n; save(v); }
+  if (n === NICK_DEF && !STATS.nk) return true;
+  if (STATS.nk !== n) { STATS.nk = n; statsSave(); }
+  if (RANK.nick !== n) { RANK.nick = n; try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {} rankNick(n); }
+  lobbyUpdate();
+  if (quiet) return true;
+  // at an online table, the opponent sees the new name right away
+  if (R && !PR && S.phase !== "none" && S.nick !== n) { S.nick = n; commit(); }
+  toast(`Nickname saved. Everyone now sees you as ${n}.`);
+  return true;
+}
+// the Ranked leaderboard entry: only the name changes; the bounty and record stay as stored
+async function rankNick(n){
+  const ref = await rankDoc(); if (!ref) return;
+  try {
+    const sn = await ref.get(); if (!sn.exists) return;
+    const x = sn.data() || {}; if (x.nick === n) return;
+    await ref.set({b: Math.round(+x.b || 0), w: x.w | 0, l: x.l | 0, nick: n, t: Date.now()});
+  } catch (e) {}
 }
 function statHist(e){ STATS.h = [Object.assign({t: Date.now()}, e), ...(STATS.h || [])].slice(0, HIST_MAX); }
 function statLd(code){ if (!/^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(code || "")) return null; return STATS.ld[code] || (STATS.ld[code] = {n: 0, w: 0, l: 0}); }
@@ -1790,14 +1824,16 @@ function histRow(e){
   return `<div class="pfh ${e.r === "w" ? "win" : "loss"}"><span class="pfres">${e.r === "w" ? "Win" : "Loss"}</span>${e.op ? tile({c: e.op, n: nameOf(e.op)}, "", false, 0) : `<div class="card pfnone"></div>`}<div class="pfinfo"><b>vs ${esc(e.on || "Opponent")}</b><small>${esc(opn)}${e.op ? " (" + esc(e.op) + ")" : ""}${men ? ` against your ${esc(men)}` : ""}</small><span class="pfline">${esc(bits.join(" \u00B7 "))}</span></div></div>`;
 }
 function pct(w, l){ return w + l ? Math.round(100 * w / (w + l)) + "%" : "–"; }
-function openProfile(){
+function openProfile(focusNick){
   modal = {type: "profile"};
-  const nick = loadSaved().nick || RANK.nick || "Player";
+  const nick = myNick();
   const decks = Object.entries(STATS.ld).filter(([, v]) => v.n > 0).sort((a, b) => b[1].n - a[1].n || b[1].w - a[1].w).slice(0, 6);
   const cards = Object.entries(STATS.cd).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]).slice(0, 12);
   const tileOf = c => tile({c, n: nameOf(c)}, "", false, 0);
   showModal(`<h2>Profile</h2>
     <div class="pfhead"><b>${esc(nick)}</b><span class="rkbadge sm">${esc(rankName(RANK.b))}</span><span class="pfbounty">${berry(RANK.b)} bounty</span></div>
+    <div class="row pfnick"><input type="text" id="pf-nick" maxlength="20" value="${esc(nickSet() ? nick : "")}" placeholder="Pick a nickname" aria-label="Nickname" autocomplete="nickname" spellcheck="false"><button class="btn pri" data-do="pfnick" type="button">Save nickname</button></div>
+    <p class="hint">Everyone sees your nickname: your opponent at the table, the lobby, your friends' lists and the Ranked leaderboard.${acctUid() ? " It's saved with your account." : ""}</p>
     <div class="pfstats">
       <div><b>${STATS.w + STATS.l}</b><small>Matches finished</small></div>
       <div><b>${STATS.w}</b><small>Wins</small></div>
@@ -1818,6 +1854,8 @@ function openProfile(){
     <div class="row end"><button class="btn" data-do="home" type="button">Back</button></div>`);
   const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
   $("#modal").classList.add("homebg", "lobpage");
+  const pi = $("#pf-nick");
+  if (pi) { pi.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); doAction("pfnick"); } }); if (focusNick) { pi.focus(); pi.select(); } }
 }
 
 // ---------- friends: a friend code each, a list kept with your profile, and challenges through the lobby ----------
@@ -1841,7 +1879,7 @@ async function watchTable(room, who){
     const r = await rm.join(room);
     R = r; roomCode = room; status = "online"; WATCH = {room, who, a: null, b: null};
     r.onPeers(ch => { if (R !== r || !WATCH) return; const ps = ch.peers.filter(p => !p.isMe && p.presence && p.presence.p !== undefined).sort((x, y) => x.peer < y.peer ? -1 : 1); const mm = q => { if (!q) return null; const m = oppModel(q.presence); m.lg = Array.isArray(q.presence.lg) ? q.presence.lg.slice(0, 10) : []; return m; }; WATCH.a = mm(ps[0]); WATCH.b = mm(ps[1]); render(); });
-    try { await r.presence({w: 1, nick: clean(S.nick || RANK.nick, 20) || "Player"}); } catch (e) {}
+    try { await r.presence({w: 1, nick: myNick()}); } catch (e) {}
     document.body.classList.add("watching");
     toast(`Watching ${who || "your friend"}'s match.`);
   } catch (e) { WATCH = null; R = null; toast("Couldn't join that table to watch."); }
@@ -1914,7 +1952,7 @@ function deckReady(){
   return v;
 }
 async function sitAt(room, v){
-  const c = Object.assign({}, v, {room, nick: v.nick || RANK.nick || "Player", life: v.life || 5, sleeve: v.sleeve | 0, first: !!v.first});
+  const c = Object.assign({}, v, {room, nick: myNick(), life: v.life || 5, sleeve: v.sleeve | 0, first: !!v.first});
   closeModal(); if (builderOpen) closeBuilder();
   await leaveRoom(); status = "connecting";
   newGame(c, true);
@@ -2132,7 +2170,7 @@ function renderLobbies(){
 }
 async function lobbyUpdate(){
   const lb = myLobby && R && roomCode === myLobby.c ? {c: myLobby.c, n: myLobby.n, h: S.nick || "Player", l: S.leader && S.leader.card ? S.leader.card.c : "", f: myLobby.f, r: myLobby.r ? 1 : 0, s: oppPeer || (S.phase !== "wait" && S.phase !== "roll") ? 2 : 1, t: myLobby.t} : null;
-  const pres = {lb, fc: myFC(), nk: clean(S.nick || loadSaved().nick || RANK.nick, 20) || "Player", st: myStatus(), w: myStatus() === "match" && !S.ranked && !S.pubt && roomCode ? roomCode : "", ch: myChal ? {to: myChal.to, r: myChal.r, id: myChal.id} : null, dc: myDc};
+  const pres = {lb, fc: myFC(), nk: R && !PR && S.phase !== "none" && S.nick ? clean(S.nick, 20) : myNick(), st: myStatus(), w: myStatus() === "match" && !S.ranked && !S.pubt && roomCode ? roomCode : "", ch: myChal ? {to: myChal.to, r: myChal.r, id: myChal.id} : null, dc: myDc};
   const key = JSON.stringify(pres);
   if (key === lbSent) return;
   lbSent = key;
@@ -2367,6 +2405,7 @@ function openHome(page){
   showModal(`<div>
     <h2>Bounty TCG</h2>
     <p class="tag">One Piece card game tabletop</p>
+    <p class="homenick">${nickSet() ? `Playing as <b>${esc(myNick())}</b> <button class="chip link" data-do="homenick" type="button">Change</button>` : `<button class="chip link" data-do="homenick" type="button">Pick a nickname</button> so other players know who you are.`}</p>
     <p class="acct bub" id="home-acct"></p>
     <div class="homebtns">
       ${btns}
@@ -2388,8 +2427,8 @@ function openSetup(opts){
     <label>Saved decks</label>
     <p class="hint" id="saved-note"></p>
     <div id="saved-list"></div>
-    <label for="f-nick">Your name</label>
-    <input type="text" id="f-nick" maxlength="20" value="${esc(v.nick || "")}" autocomplete="nickname">
+    <label for="f-nick">Your nickname</label>
+    <input type="text" id="f-nick" maxlength="20" value="${esc(nickSet() ? myNick() : "")}" placeholder="Player" autocomplete="nickname">
     <label for="f-room">Room code</label>
     <div class="row"><input type="text" id="f-room" style="flex:1;min-width:160px" value="${esc(jl ? jl.c : opts.pub ? lobbyCode() : (v.room || randRoom()))}" autocapitalize="off" autocomplete="off"${jl ? " readonly" : ""}>${jl ? "" : '<button class="btn" data-do="newcode" type="button">New code</button>'}</div>
     ${jl ? "" : `<p class="hint">Share the code with your friend. You both type the same one and land at the same table.</p>
@@ -2452,6 +2491,7 @@ function readForm(){
 }
 async function startGame(join){
   const c = readForm();
+  if (clean($("#f-nick").value, 20)) setNick(c.nick, true);
   if (!parseLines(c.deck).length) { toast("Paste a decklist or load the sample deck first."); return; }
   const jl = join && modal && modal.type === "setup" ? modal.lobby : null, pub = !!(join && c.pub && !jl);
   const fmt = pub ? c.fmt : jl ? jl.f : "", bad = fmt ? illegalNote(deckIllegal(c, fmt), fmt) : "";
@@ -2552,6 +2592,7 @@ function practiceSwitch(){
 }
 async function startPractice(bot, cfg){
   const c = cfg || readForm();
+  if (bot && !cfg && clean($("#f-nick").value, 20)) setNick(c.nick, true);
   if (!parseLines(c.deck).length) { toast("Paste a decklist or load the sample deck first."); return; }
   const d2 = cfg ? "" : ($("#f-deck2") || {value: ""}).value.trim(), l2 = cfg ? "" : ($("#f-leader2") || {value: ""}).value.trim();
   if (d2 && !parseLines(d2).length) { toast("The other deck has no card numbers I can read."); return; }
@@ -4222,6 +4263,8 @@ function doAction(a){
     case "lbmake": openSetup({pub: true}); break;
     case "homebuilder": closeModal(); openBuilder(); break;
     case "homeprofile": closeModal(); openProfile(); break;
+    case "homenick": closeModal(); openProfile(true); break;
+    case "pfnick": if (setNick(($("#pf-nick") || {}).value)) openProfile(); break;
     case "rejoin": rejoinMatch(); break;
     case "homesign": if (fbAcct()) openAccount(); else diagnose(); break;
     case "accin": case "accup": accountGo(a === "accup"); break;
