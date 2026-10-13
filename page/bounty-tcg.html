@@ -2561,7 +2561,7 @@ async function startPractice(bot, cfg){
   R = null; PR = {cur: 1, sides: [null, null], pres: [null, null], busy: false, bot: bot ? 1 : 0};
   newGame(Object.assign({}, c, {nick: bot ? "Computer" : "Player 2", first: false, deck: d2 || c.deck, leader: l2 || c.leader}), false);
   PR.pres[1] = JSON.parse(JSON.stringify(pubFull())); practiceStash();
-  newGame(Object.assign({}, c, {nick: bot ? c.nick || "You" : "Player 1", first: true}), false);
+  newGame(Object.assign({}, c, {nick: bot ? c.nick || "Player" : "Player 1", first: true}), false);
   PR.pres[0] = JSON.parse(JSON.stringify(pubFull())); PR.cur = 0;
   R = practiceR(); roomCode = "practice"; status = "online";
   oppM = oppModel(PR.pres[1]);
@@ -2576,7 +2576,7 @@ const tutSeen = () => { try { return localStorage.getItem("bounty:tut") === "1";
 function tutMark(){ try { localStorage.setItem("bounty:tut", "1"); } catch (e) {} }
 async function startTutorial(){
   const v = loadSaved();
-  await startPractice(true, {nick: clean(v.nick, 20) || "You", leader: "OP01-001 Roronoa Zoro", deck: TUT_DECK, life: 5, first: true, sleeve: Math.min(6, Math.max(0, Math.floor(+v.sleeve) || 0))});
+  await startPractice(true, {nick: clean(v.nick, 20) || "Player", leader: "OP01-001 Roronoa Zoro", deck: TUT_DECK, life: 5, first: true, sleeve: Math.min(6, Math.max(0, Math.floor(+v.sleeve) || 0))});
   if (!PR) return;
   PR.roll = [6, 1]; practiceFirst(0);
   // Nami for the first turn, Fossa (a Blocker) for the second, and Counter cards for defending
