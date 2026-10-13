@@ -372,6 +372,14 @@ button,input,textarea,select{font:inherit;color:inherit}
 .turnbar .btn.due{background:#F2B84B;color:#2A1D00;box-shadow:0 0 0 3px rgba(242,184,75,.45),0 3px 0 #7A5200}
 .fxpanel{position:absolute;top:0;left:0;right:0;z-index:40;max-height:380px;overflow:auto;border:2px solid #E9B949;border-radius:14px;background:rgba(10,30,45,.97);padding:10px 12px;font-size:13px;line-height:1.35;box-shadow:0 12px 30px rgba(0,0,0,.6)}
 .fxpanel .fxtext{font-size:12px;opacity:.8}
+.coach{position:absolute;top:0;left:0;right:0;z-index:39;border:2px solid #4FC3E0;border-radius:14px;background:rgba(8,32,48,.97);padding:12px 14px;font-size:14px;line-height:1.45;box-shadow:0 12px 30px rgba(0,0,0,.6)}
+.coach .cstep{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8FD8EE;margin:0 0 2px}
+.coach h3{margin:0 0 6px;font-size:16px;color:#F5C451}
+.coach p{margin:0 0 8px}
+.coach .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;align-items:center}
+.coach .skip{background:none;border:0;color:#8FD8EE;text-decoration:underline;cursor:pointer;font:inherit;font-size:12px;margin-right:auto;padding:0}
+.coachhl{outline:3px solid #4FC3E0;outline-offset:3px;border-radius:10px;animation:coachpulse 1.2s ease-in-out infinite}
+@keyframes coachpulse{0%,100%{outline-color:rgba(79,195,224,.95)}50%{outline-color:rgba(79,195,224,.25)}}
 .fxpanel .fxdo{font-weight:700;font-size:14px;color:#fff}
 .fxpanel .fxcol{display:flex;flex-direction:column;gap:6px;margin:0 0 8px}
 .fxtarget{outline:3px dashed #F2B84B;outline-offset:2px;cursor:pointer;animation:fxpulse 1.2s ease-in-out infinite}
@@ -1010,7 +1018,7 @@ body.watching .turnbar,body.watching .tbopts{opacity:.4}
     <section id="me"></section>
   </main>
   <aside class="sidep">
-  <div class="fxhost"><div class="fxpanel" id="fxpanel" hidden></div></div>
+  <div class="fxhost"><div class="coach" id="coach" hidden></div><div class="fxpanel" id="fxpanel" hidden></div></div>
     <div class="zoomp">
       <div id="zoom"><div class="zoomempty">Hover over a card to read it here</div></div>
     </div>
@@ -1103,9 +1111,9 @@ body.watching .turnbar,body.watching .tbopts{opacity:.4}
           <select id="bd-target" aria-label="Add to"><option value="deck">Main deck</option><option value="leader">Leader</option></select>
           <button class="btn" data-do="bdaddgo" type="button">Add</button>
         </div>
-        <textarea id="bd-paste" spellcheck="false" placeholder="4xOP01-013 Nami&#10;OP01-016 x4"></textarea>
+        <textarea id="bd-paste" spellcheck="false" placeholder="1xOP01-001&#10;4xOP01-013&#10;4 Nami (OP01-016)"></textarea>
         <div class="row"><button class="btn" data-do="bdimport" type="button">Replace deck with this list</button></div>
-        <p class="hint">Decklist text for your current deck:</p>
+        <p class="hint">Your deck as text, Leader first, in the 1xOP01-001 / 4xOP01-016 format deck sites and simulators use. Lists copied from them can be pasted above.</p>
         <textarea id="bd-text" readonly spellcheck="false"></textarea>
       </details>
     </aside>
@@ -1129,14 +1137,14 @@ for (const k in MK) ACTK["x" + k] = 1;
 const lab = c => c.n ? c.c + " " + c.n : c.c;
 function shuffle(a){ for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 let toastT;
-function toast(m){ const t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
+function toast(m){ if (botQuiet) return; const t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
 
 // ---------- state ----------
 const blank = () => ({nick:"",deck:[],hand:[],life:[],chars:[],stage:null,ev:null,atk:null,blk:null,roll:0,fc:null,conceded:false,lostDmg:false,mq:[],mqn:0,ack:0,leader:null,donDeck:10,donActive:0,donRested:0,trash:[],phase:"none",turn:0,first:false,mull:false,lifeN:5,sleeve:0,pw:0,cc:0});
 let S = blank();
 let LOG = [], seen = new Set(), myLog = [], logSeq = 0;
 let R = null, roomCode = "", status = "offline";
-let oppPeer = null, oppM = null, PR = null;
+let oppPeer = null, oppM = null, PR = null, botQuiet = false, TUT = null;
 let modal = null;
 const ZONE = {hand:"hand", ch:"chars", st:"stage", ev:"event", tr:"trash", lf:"life", dk:"deck"};
 
@@ -1149,15 +1157,18 @@ function parseLines(txt){
     let count = null;
     const lead = line.match(/^(?:(\d+)\s*[x×]?|[x×]\s*(\d+))\s*(?=[A-Za-z]{1,4}\d{0,3}-\d)/i);
     if (lead) { count = +(lead[1] || lead[2]); line = line.slice(lead[0].length); }
+    else { const nb = line.match(/^(\d{1,2})\s*[x×]?\s+(?=[^\d\s])/i); if (nb && /[A-Za-z]{1,4}\d{0,3}-\d{2,4}/.test(line.slice(nb[0].length))) { count = +nb[1]; line = line.slice(nb[0].length); } }
     const m = line.match(/([A-Za-z]{1,4}\d{0,3}-\d{2,4})/);
     if (!m) continue;
-    const code = m[1].toUpperCase();
+    const code = m[1].toUpperCase(), pre = line.slice(0, m.index);
     let rest = line.slice(m.index + m[0].length);
     if (count === null) {
-      const ma = rest.match(/^\s*[,;:]?\s*[x×]\s*(\d+)/i);
+      const ma = rest.match(/^\s*[)\]]?\s*[,;:]?\s*[x×]\s*(\d+)/i);
       if (ma) { count = +ma[1]; rest = rest.slice(ma[0].length); }
     }
-    out.push({code, name: clean(rest.replace(/^[\s,;:\-–—|]+/, ""), 24), count: Math.min(Math.max(count || 1, 1), 50)});
+    let name = rest.replace(/^[\s,;:\-–—|)\]]+/, "");
+    if (!clean(name)) name = pre.replace(/[\s(\[,;:\-–—|]+$/, "");
+    out.push({code, name: clean(name, 24), count: Math.min(Math.max(count || 1, 1), 50)});
   }
   return out;
 }
@@ -1169,10 +1180,10 @@ function save(c){ try { localStorage.setItem("nakama:setup", JSON.stringify(c));
 
 // ---------- log ----------
 function addLog(m){
-  fxLogLine(m, true);
+  fxLogLine(m, !botQuiet);
   const e = [logSeq++, m];
   myLog.push(e); if (myLog.length > 20) myLog.shift();
-  LOG.push({who: S.nick || "You", mine: true, m});
+  LOG.push({who: S.nick || "You", mine: !botQuiet, m});
   renderLog();
 }
 // the table log shows only what both players need to see: combat, turn changes, cards revealed from a search, and cards taken back from the trash
@@ -1230,7 +1241,7 @@ async function leaveRoom(){
   if (WATCH) { WATCH = null; document.body.classList.remove("watching"); }
   rankForfeit(); matchForget();
   if (R) { try { await R.leave(); } catch (e) {} }
-  R = null; oppPeer = null; oppM = null; PR = null; myQc = null; qcSeen = null;
+  R = null; oppPeer = null; oppM = null; PR = null; TUT = null; myQc = null; qcSeen = null;
   if (myChal) { myChal = null; clearTimeout(chalT); }
   if (myLobby) { myLobby = null; lobbyUpdate(); }
 }
@@ -1341,6 +1352,7 @@ function fxFloat(el, text, cls){
 }
 // a slash from the attacker to the target
 function fxAttack(srcSel, tgtSel){
+  if (botQuiet) return;
   snd("atk");
   const a = $(srcSel), b = $(tgtSel), ca = a && fxCenter(a), cb = b && fxCenter(b); if (!ca || !cb) return;
   const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg"), ln = document.createElementNS(ns, "line");
@@ -1422,7 +1434,7 @@ function pubFull(){
     tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), uid:S.ranked ? acctUid() : "", mk:S.ranked ? (S.mk || (S.mk = Math.random().toString(36).slice(2, 12))) : "", lg:myLog.filter(e => pubLog(e[1])).slice(-8)};
 }
 let pubT = null;
-function publish(){ if (!R) return; clearTimeout(pubT); pubT = setTimeout(doPublish, 80); }
+function publish(){ if (!R || botQuiet) return; clearTimeout(pubT); pubT = setTimeout(doPublish, 80); }
 function doPublish(){
   if (!R) return;
   matchSave();
@@ -1494,6 +1506,8 @@ function deckIllegal(c, fmt){
   const codes = new Set(parseLines(c.leader).concat(parseLines(c.deck)).map(e => e.code)), bad = [];
   codes.forEach(x => { const lg = legalOf(x); if (lg === "ban" || (fmt === "std" && lg === "rot")) bad.push(x); });
   BAN_PAIRS.forEach(([a, b]) => { if (codes.has(a) && codes.has(b)) bad.push(a + " with " + b); });
+  const L = parseLines(c.leader)[0];
+  if (L) offColor([...codes], L.code).forEach(x => bad.push(x + " (not the Leader's color)"));
   return bad;
 }
 function illegalNote(bad, fmt){
@@ -2189,6 +2203,7 @@ function oppHandPanel(m){
 }
 const EMPTY = () => ({nick:"Opponent", sl:0, tn:0, ld:null, ch:[], st:null, ev:null, ak:null, bk:null, rl:0, fc:null, cd:false, cdw:false, mq:[], ma:0, lf:0, dd:0, da:0, dr:0, dk:0, h:0, tr:[]});
 function render(){
+  if (botQuiet) return;
   if (WATCH) { renderWatch(); return; }
   rankCheck(); statCheck();
   { const ok = boardTools(); for (const k of ["resetboard", "refresh", "undo"]) { const b = $(`[data-do="${k}"]`); if (b) b.hidden = !ok; } }
@@ -2196,7 +2211,7 @@ function render(){
     if (fb) fb.hidden = !(R && !PR && S.phase === "play" && oppM && oppM.et == null);
     const qb = $("#qcbtn"); if (qb) qb.hidden = !(R && !PR && oppM && S.phase !== "none");
     const db = $(".dicebtn"); if (db) db.classList.toggle("due", (S.phase === "roll" && !S.roll) || !!(PR && !PR.order && S.phase === "pre")); }
-  { const sw = $("#pswitch"); if (sw) { sw.hidden = !PR; if (PR) sw.textContent = "Switch to Player " + (PR.cur === 0 ? 2 : 1); } }
+  { const sw = $("#pswitch"); if (sw) { sw.hidden = !PR || !!PR.bot; if (PR) sw.textContent = "Switch to Player " + (PR.cur === 0 ? 2 : 1); } }
   { const fa = $("#fx-auto"); if (fa) fa.checked = autoFx; const so = $("#snd-on"); if (so) so.checked = sndOn; }
   $("#opp").innerHTML = side(oppM || EMPTY(), false);
   $("#oppHand").innerHTML = oppHandPanel(oppM || EMPTY());
@@ -2222,7 +2237,7 @@ function render(){
   const ch = res ? `<span>\u2691 ${res}</span>` : S.phase === "none" ? "" : combatHTML(), midEl = $("#mid");
   midEl.classList.toggle("combat", !!ch);
   if (ch) midEl.innerHTML = ch; else midEl.textContent = mid;
-  markCombat(); updTimers(); fxWatch(); markTargets(); markPlayable(); markOppNew(); quickResolve();
+  markCombat(); updTimers(); fxWatch(); markTargets(); markPlayable(); markOppNew(); quickResolve(); renderCoach();
   if (myChal && oppM) { myChal = null; clearTimeout(chalT); }
   lobbyUpdate();
   $("#handn").textContent = S.hand.length ? `(${S.hand.length})` : "";
@@ -2244,7 +2259,7 @@ window.addEventListener("resize", fitHand);
 function renderStatus(){
   const el = $("#status");
   if (PR) {
-    el.innerHTML = `<span class="dot on"></span><span>Practice: playing as <b>${esc(S.nick)}</b></span>`;
+    el.innerHTML = PR.bot ? `<span class="dot on"></span><span>Practice against the computer</span>` : `<span class="dot on"></span><span>Practice: playing as <b>${esc(S.nick)}</b></span>`;
   } else if (status === "online") {
     el.innerHTML = `<span class="dot on"></span><span>Room</span><button class="chip link" data-do="copyroom" type="button" title="Copy room code">${esc(roomCode)}</button>`;
   } else if (status === "connecting" || status === "reconnecting") {
@@ -2255,7 +2270,7 @@ function renderStatus(){
 }
 
 // ---------- modals ----------
-function showModal(html){ lobbyUnwatch(); const m = $("#modal"); m.classList.remove("homebg", "lobpage", "accpage"); m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`; m.hidden = false; }
+function showModal(html){ if (botQuiet) return; lobbyUnwatch(); const m = $("#modal"); m.classList.remove("homebg", "lobpage", "accpage"); m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`; m.hidden = false; }
 function peekRest(){
   const k = Math.min(modal.n, S.deck.length);
   if (k) { S.deck.push(...S.deck.splice(0, k)); addLog(`put ${k} card${k === 1 ? "" : "s"} on the bottom of their deck`); }
@@ -2339,9 +2354,12 @@ function openHome(page){
       <button class="btn pri" data-do="homefriends" type="button">Friends only${(n => n ? ` <i class="frn">${n} online</i>` : "")(STATS.fr.filter(f => onlineMap().has(f.c)).length)}</button>
       <button class="btn" data-do="homelobby" type="button">Lobbies</button>
       <button class="btn" data-do="homeranked" type="button">Ranked</button>
+      <button class="btn" data-do="homebot" type="button">Practice against the computer</button>
+      <button class="btn" data-do="tutorial" type="button">Learn to play (tutorial)</button>
       <button class="btn" data-do="homeboth" type="button">Test a deck (play both sides)</button>
       <button class="btn" data-do="home" type="button">Back</button>` : `
       ${rejoinBtn()}<button class="btn pri homeplay" data-do="homeplay" type="button">Play</button>
+      ${tutSeen() || STATS.g ? "" : '<button class="btn" data-do="tutorial" type="button">New here? Learn to play</button>'}
       <button class="btn" data-do="homebuilder" type="button">Deck editor</button>
       <button class="btn" data-do="homeprofile" type="button">Profile</button>
       <button class="btn" data-do="homesign" type="button">${acctBtn()}</button>
@@ -2396,7 +2414,7 @@ function openSetup(opts){
       <button class="btn" data-do="savedeck" type="button">Save deck</button>
     </div>
     <details style="margin-top:8px"><summary>Test against a different deck (optional)</summary>
-      <p class="hint">For "Play both sides", the other player uses this deck and Leader. Leave them empty to play your deck against itself.</p>
+      <p class="hint">For "Play both sides" and "Play the computer", the other player uses this deck and Leader. Leave them empty to play your deck against itself.</p>
       <input type="text" id="f-leader2" placeholder="Other Leader, e.g. OP01-001 Roronoa Zoro">
       <textarea id="f-deck2" spellcheck="false" placeholder="Other decklist"></textarea>
     </details>
@@ -2406,12 +2424,15 @@ function openSetup(opts){
       ${S.phase !== "none" ? '<button class="btn" data-do="closemodal" type="button">Cancel</button>' : `<button class="btn" data-do="${jl || opts.pub ? "homelobby" : opts.friends ? "homefriends" : "homeplay"}" type="button">Back</button>`}
       <button class="btn" data-do="solo" type="button">Practice alone</button>
       <button class="btn" data-do="both" type="button" title="Play both sides of the table yourself to test a deck">Play both sides</button>
-      <button class="btn pri" data-do="join" id="f-joinbtn" type="button">${jl ? "Join lobby" : opts.pub ? "Open lobby" : "Join room"}</button>
+      <button class="btn${opts.bot ? " pri" : ""}" data-do="vsbot" type="button" title="Play a match against a simple computer opponent">Play the computer</button>
+      <button class="btn${opts.bot ? "" : " pri"}" data-do="join" id="f-joinbtn" type="button">${jl ? "Join lobby" : opts.pub ? "Open lobby" : "Join room"}</button>
     </div>
     ${S.phase !== "none" ? '<p class="hint">Starting again resets your side of the table.</p>' : ""}`);
   renderSaved();
 }
 function readDeckFields(){
+  const sp = splitLeader($("#f-deck").value), ld = $("#f-leader").value.trim();
+  if (sp.leader) { $("#f-deck").value = sp.deck; if (!ld) $("#f-leader").value = sp.leader.code + (sp.leader.name ? " " + sp.leader.name : ""); }
   return {
     leader: $("#f-leader").value.trim(),
     life: Math.min(10, Math.max(1, Math.floor(+$("#f-life").value) || 5)),
@@ -2482,17 +2503,24 @@ function practiceDeliver(){
     if (PR.pres[cur] && PR.sides[o]) {            // the other side takes in what I did (K.O.s, markers, ...)
       practiceStash(); practiceLoad(o);
       oppM = oppModel(PR.pres[cur]);
-      if (applyMarkReqs()) PR.pres[o] = pubFull();
+      const q = !!PR.bot; if (q) botQuiet = true;
+      try { if (applyMarkReqs()) PR.pres[o] = pubFull(); } finally { if (q) botQuiet = false; }
       practiceStash(); practiceLoad(cur);
     }
     oppM = PR.pres[o] ? oppModel(PR.pres[o]) : null;
     if (applyMarkReqs()) PR.pres[cur] = pubFull();
     render();
   } finally { PR.busy = false; }
+  if (PR && PR.bot) botSoon();
 }
 // practice: roll for both players first; the higher roll picks who goes first
 function practiceRollHTML(){
   const o = PR.roll;
+  if (PR.bot) {
+    if (!o) return `<div class="banner"><span>Roll a die to see who chooses who goes first: you or the computer.</span><button class="btn pri" data-do="prroll" type="button">Roll die</button></div>`;
+    if (o[0] < o[1]) return `<div class="banner"><span>You rolled <b>${o[0]}</b>, the computer rolled <b>${o[1]}</b>. The computer is choosing…</span></div>`;
+    return `<div class="banner"><span>You rolled <b>${o[0]}</b>, the computer rolled <b>${o[1]}</b>. You choose:</span><button class="btn pri" data-do="prfirst:0" type="button">Go first</button><button class="btn" data-do="prfirst:1" type="button">Go second</button></div>`;
+  }
   if (!o) return `<div class="banner"><span>Roll a die for each player to see who chooses who goes first.</span><button class="btn pri" data-do="prroll" type="button">Roll die</button></div>`;
   const w = o[0] > o[1] ? 0 : 1;
   return `<div class="banner"><span>Player 1 rolled <b>${o[0]}</b>, Player 2 rolled <b>${o[1]}</b>. Player ${w + 1} chooses:</span><button class="btn pri" data-do="prfirst:${w}" type="button">Player ${w + 1} goes first</button><button class="btn" data-do="prfirst:${1 - w}" type="button">Player ${w + 1} goes second</button></div>`;
@@ -2500,18 +2528,21 @@ function practiceRollHTML(){
 function practiceRoll(){
   if (!PR || PR.order) return;
   let a, b; do { a = 1 + Math.floor(Math.random() * 6); b = 1 + Math.floor(Math.random() * 6); } while (a === b);
-  PR.roll = [a, b]; addLog(`rolled for who goes first: Player 1 ${a}, Player 2 ${b}`); commit();
+  PR.roll = [a, b]; addLog(PR.bot ? `rolled for who goes first: ${a} to the computer's ${b}` : `rolled for who goes first: Player 1 ${a}, Player 2 ${b}`); commit();
+  // the computer won the roll: it chooses to go first
+  if (PR.bot && b > a) setTimeout(() => { if (PR && PR.bot && !PR.order) { practiceFirst(1); toast("The computer won the roll and goes first."); } }, 1200);
 }
 function practiceFirst(i){
   if (!PR || PR.order || !PR.roll) return;
   practiceStash();
   for (const k of [0, 1]) if (PR.sides[k]) PR.sides[k].S.first = k === i;
   PR.order = {first: i};
-  addLog(`Player ${i + 1} goes first`); commit();
-  if (PR.cur !== i) practiceSwitch();
+  addLog(PR.bot ? (i ? "goes second (the computer goes first)" : "goes first") : `Player ${i + 1} goes first`); commit();
+  if (PR.bot) botSoon(500);
+  else if (PR.cur !== i) practiceSwitch();
 }
 function practiceSwitch(){
-  if (!PR) return;
+  if (!PR || PR.bot) return;
   closeMenu(); if (modal && modal.type !== "home") closeModal();
   practiceStash(); practiceLoad(1 - PR.cur);
   oppM = PR.pres[1 - PR.cur] ? oppModel(PR.pres[1 - PR.cur]) : null;
@@ -2519,22 +2550,215 @@ function practiceSwitch(){
   renderStatus(); renderLog(); render();
   toast(`Now playing as ${S.nick}.`);
 }
-async function startPractice(){
-  const c = readForm();
+async function startPractice(bot, cfg){
+  const c = cfg || readForm();
   if (!parseLines(c.deck).length) { toast("Paste a decklist or load the sample deck first."); return; }
-  const d2 = ($("#f-deck2") || {value: ""}).value.trim(), l2 = ($("#f-leader2") || {value: ""}).value.trim();
+  const d2 = cfg ? "" : ($("#f-deck2") || {value: ""}).value.trim(), l2 = cfg ? "" : ($("#f-leader2") || {value: ""}).value.trim();
   if (d2 && !parseLines(d2).length) { toast("The other deck has no card numbers I can read."); return; }
-  save(c);
+  if (!cfg) save(c);
+  TUT = null;
   await leaveRoom();
-  R = null; PR = {cur: 1, sides: [null, null], pres: [null, null], busy: false};
-  newGame(Object.assign({}, c, {nick: "Player 2", first: false, deck: d2 || c.deck, leader: l2 || c.leader}), false);
+  R = null; PR = {cur: 1, sides: [null, null], pres: [null, null], busy: false, bot: bot ? 1 : 0};
+  newGame(Object.assign({}, c, {nick: bot ? "Computer" : "Player 2", first: false, deck: d2 || c.deck, leader: l2 || c.leader}), false);
   PR.pres[1] = JSON.parse(JSON.stringify(pubFull())); practiceStash();
-  newGame(Object.assign({}, c, {nick: "Player 1", first: true}), false);
+  newGame(Object.assign({}, c, {nick: bot ? c.nick || "You" : "Player 1", first: true}), false);
   PR.pres[0] = JSON.parse(JSON.stringify(pubFull())); PR.cur = 0;
   R = practiceR(); roomCode = "practice"; status = "online";
   oppM = oppModel(PR.pres[1]);
   closeModal(); renderStatus(); renderLog(); render();
-  toast("Practice table ready. Roll to see who goes first.");
+  toast(bot ? "Practice against the computer. Roll to see who goes first." : "Practice table ready. Roll to see who goes first.");
+}
+// ---------- tutorial: a guided first game against the computer ----------
+// The Zoro starter list with Blockers in it, a fixed opening hand, and you going first. A panel over the card
+// preview says what to do next and lights up where to do it; each step moves on once you've done it.
+const TUT_DECK = SAMPLE.replace("4xOP01-029", "4xOP03-010");
+const tutSeen = () => { try { return localStorage.getItem("bounty:tut") === "1"; } catch (e) { return false; } };
+function tutMark(){ try { localStorage.setItem("bounty:tut", "1"); } catch (e) {} }
+async function startTutorial(){
+  const v = loadSaved();
+  await startPractice(true, {nick: clean(v.nick, 20) || "You", leader: "OP01-001 Roronoa Zoro", deck: TUT_DECK, life: 5, first: true, sleeve: Math.min(6, Math.max(0, Math.floor(+v.sleeve) || 0))});
+  if (!PR) return;
+  PR.roll = [6, 1]; practiceFirst(0);
+  // Nami for the first turn, Fossa (a Blocker) for the second, and Counter cards for defending
+  S.deck.push(...S.hand); S.hand = [];
+  for (const code of ["OP01-016", "OP03-010", "OP01-004", "OP01-013", "OP01-015"]) { const i = S.deck.findIndex(c => c.c === code); if (i >= 0) S.hand.push(S.deck.splice(i, 1)[0]); }
+  shuffle(S.deck);
+  while (S.hand.length < 5 && S.deck.length) S.hand.push(S.deck.shift());
+  TUT = {i: 0};
+  commit();
+}
+const tutHand = code => S.hand.map((c, i) => c.c === code ? `#hand [data-src="hand:${i}"]` : "").filter(Boolean).join(",");
+const TUT_STEPS = [
+  {t: "Welcome aboard", x: () => "This short game against the computer walks you through a turn: DON!!, playing Characters, attacking, blocking and counters. The computer's side is at the top of the table, yours is at the bottom.", btn: "Start"},
+  {t: "Your opening hand", x: () => `These 5 cards are your hand. Your Leader, ${esc(nameOf("OP01-001") || "Zoro")}, has 5000 power. Tap Keep to set 5 Life cards face down: each hit on your Leader takes one, and a hit when you have none left loses the game.`, hl: () => '[data-do="keep"]', done: () => S.phase === "play" && S.myTurn},
+  {t: "DON!! pay for cards", x: () => "Going first, you get 1 DON!! this turn and don't draw. A card's cost is in its top-left corner. Tap Nami (cost 1) in your hand and choose Play to Character area. Her [On Play] lets you look at 5 cards and take a Straw Hat Crew card.", hl: () => tutHand("OP01-016") || "#hand .canplay", done: () => S.chars.length > 0 && !modal && !fxCur},
+  {t: "End your turn", x: () => "Nobody can attack on their first turn. Tap End turn, and the computer takes its turn.", hl: () => '.turnbar [data-do="endturn"]', done: () => !S.myTurn},
+  {t: "The computer's turn", x: () => "Watch the top of the table: the computer draws, gets 2 DON!! and plays Characters. It can't attack on its first turn either.", done: () => S.myTurn && S.turn >= 2},
+  {t: "Play a Blocker", x: () => "You drew a card and got 2 more DON!!, so you have 3. Play Fossa (cost 2). The orange Blocker tag means that on the computer's turn it can take a hit meant for your Leader.", hl: () => tutHand("OP03-010") || "#hand .canplay", done: () => (S.chars.some(f => f.card.c === "OP03-010") || S.donActive < 2) && !modal && !fxCur},
+  {t: "Give DON!! for power", x: () => "Drag your active DON!! onto your Leader (or tap your Leader and choose Give DON!!). Each one adds +1000 power during your turn, and they all come back at the start of your next turn.", hl: () => '#me [data-don="a"],#me [data-src="ld"]', done: () => S.leader.d > 0 || !S.donActive},
+  {t: "Attack!", x: () => `Tap your Leader, choose Attack, then tap the computer's Leader. Your attack hits when its power is equal to or higher than the target's. You can attack a Leader any time, but only rested Characters.`, hl: () => atkPick ? '#opp [data-opp="ld"]' : '#me [data-src="ld"]', done: () => (S.atk && (TUT.ak = 1, TUT.olf == null && (TUT.olf = oppM ? oppM.lf : 5)), TUT.ak && !S.atk)},
+  {t: "", x: () => oppM && oppM.lf < (TUT.olf || 5) ? "Hit! Your Leader's power beat the computer's, so it took 1 damage: its top Life card went to its hand. Take all its Life, then land one more hit to win." : "Blocked! The computer defended with a Counter card from its hand or a Blocker, so your attack didn't land. You'll do the same on its turn.", tt: () => oppM && oppM.lf < (TUT.olf || 5) ? "A hit" : "The computer defended", btn: "Next"},
+  {t: "End your turn", x: () => "Your Characters played this turn can't attack yet: only cards with [Rush] can. Tap End turn.", hl: () => '.turnbar [data-do="endturn"]', done: () => !S.myTurn},
+  {t: "Defend", x: () => defending()
+      ? "The computer is attacking! Before it resolves, tap a Counter card in your hand (the +1000 or +2000 on its side goes to the card being attacked), or tap your glowing Blocker so it takes the hit instead. Then tap the button in the middle to resolve the attack."
+      : "Now it's the computer's turn. Wait for its attack.",
+    hl: () => defending() ? [S.hand.map((c, i) => (CARDDB.get(c.c) || {}).ctr ? `#hand [data-src="hand:${i}"]` : "").filter(Boolean).join(","), "#me .canblk", '#mid [data-do="dfresolve"],#mid [data-do="dfdone"]'].filter(Boolean).join(",") : "",
+    done: () => (defending() && (TUT.def = oppM.ak.n), !!TUT.def && S.rs === TUT.def)},
+  {t: "You've got the basics", x: () => "That's a full turn each. A few more rules: Life cards with [Trigger] can be used for free when they're taken as damage, rested Characters can be attacked, and End turn glows when there's nothing left to do. Keep playing to beat the computer.", btn: "Finish tutorial"}
+];
+function renderCoach(){
+  const el = $("#coach"); if (!el) return;
+  document.querySelectorAll(".coachhl").forEach(e => e.classList.remove("coachhl"));
+  if (!TUT || !PR || !PR.bot) { if (!el.hidden) { el.hidden = true; el.innerHTML = ""; } return; }
+  while (TUT.i < TUT_STEPS.length && TUT_STEPS[TUT.i].done && TUT_STEPS[TUT.i].done()) TUT.i++;
+  const st = TUT_STEPS[TUT.i]; if (!st) { TUT = null; tutMark(); el.hidden = true; return; }
+  const key = TUT.i + "|" + st.x();
+  if (el.dataset.k !== key) {
+    el.dataset.k = key;
+    el.innerHTML = `<p class="cstep">Tutorial · step ${TUT.i + 1} of ${TUT_STEPS.length}</p><h3>${esc(st.tt ? st.tt() : st.t)}</h3><p>${st.x()}</p><div class="row">${TUT.i === TUT_STEPS.length - 1 ? "" : '<button class="skip" data-do="tutskip" type="button">Skip tutorial</button>'}${st.btn ? `<button class="btn pri" data-do="tutnext" type="button">${esc(st.btn)}</button>` : ""}</div>`;
+  }
+  el.hidden = false;
+  const sel = st.hl ? st.hl() : "";
+  if (sel) document.querySelectorAll(sel).forEach(e => e.classList.add("coachhl"));
+}
+function tutNext(){ if (!TUT) return; TUT.i++; if (TUT.i >= TUT_STEPS.length) { TUT = null; tutMark(); toast("Tutorial done. Keep playing, or head Home to find a real opponent."); } render(); }
+function tutSkip(){ TUT = null; tutMark(); render(); toast("Tutorial closed. The game against the computer goes on."); }
+// ---------- practice: the computer opponent (Player 2) ----------
+// It plays its side between your actions: keeps a playable hand, plays the biggest Characters it can pay for,
+// gives its DON!! to the cards that attack, attacks your Leader or a rested Character it can K.O., and defends
+// with Blockers and counter cards. Its own card abilities don't run.
+let botT = null;
+function botSoon(ms){ if (!PR || !PR.bot || botT) return; botT = setTimeout(botTick, ms == null ? 700 : ms); }
+// run fn as the computer, then show what it did from your side
+function botSide(fn){
+  if (!PR || !PR.bot || PR.cur !== 0 || botQuiet) return 0;
+  let out = 0;
+  practiceStash(); practiceLoad(1);
+  oppM = PR.pres[0] ? oppModel(PR.pres[0]) : null;
+  botQuiet = true;
+  try { applyMarkReqs(); advance(); out = fn(); }
+  catch (e) { console.warn("computer opponent:", e); out = 0; }
+  finally {
+    PR.pres[1] = JSON.parse(JSON.stringify(pubFull()));
+    botQuiet = false;
+    practiceStash(); practiceLoad(0);
+    oppM = oppModel(PR.pres[1]);
+  }
+  const ch = applyMarkReqs();
+  if (PR.botEnd) { PR.botEnd = 0; startTurn(); }
+  else if (ch || advance()) commit();
+  else render();
+  return out;
+}
+function botTick(){
+  botT = null;
+  if (!PR || !PR.bot || PR.cur !== 0 || WATCH) return;
+  if (S.conceded || (oppM && oppM.cd) || S.phase === "none") return;
+  // wait while you're in the middle of a card effect, a search or a choice
+  if (fxCur || fxQueue.length || modal || document.getElementById("menu")) { botSoon(800); return; }
+  const next = botSide(botStep);
+  if (next) botSoon(next);
+}
+// a short pause before acting on something new, so you can see what's happening
+function botHold(k, ms){
+  if (PR.bh && PR.bh.k === k) return Date.now() < PR.bh.t ? Math.max(100, PR.bh.t - Date.now()) : 0;
+  PR.bh = {k, t: Date.now() + ms}; return ms;
+}
+const botPow = f => powNum({c: f.card.c, pm: (f.pm || 0) + donB(f)});
+function botStep(){
+  if (S.conceded || !oppM || oppM.cd) return 0;
+  if (S.phase === "pre") {
+    if (!PR.order) return 0;
+    // mulligan once a hand with fewer than two cheap Characters
+    const cheap = S.hand.filter(c => { const e = CARDDB.get(c.c) || {}; return e.t === "Character" && e.k >= 1 && e.k <= 4; }).length;
+    if (!S.mull && cheap < 2) { mulligan(); return 700; }
+    keepHand();
+    // you kept first: whoever goes first starts now
+    if (oppM.kp === 1 && !S.first) PR.botEnd = 1;
+    return S.first ? 600 : 0;
+  }
+  if (S.phase !== "play") return 0;
+  if (defending()) return botDefend();
+  if (!S.myTurn) {
+    if ((oppM.et || 0) > (S.seenEt || 0) || (!S.turn && S.first && oppM.kp === 1)) { S.seenEt = oppM.et || 0; startTurn(); return 1100; }
+    return 0;
+  }
+  if (S.atk) return 0;                                   // you're answering its attack
+  return botMain();
+}
+function botAttackers(){
+  if (!(S.turn > 1)) return [];
+  if (PR.bt !== S.turn) { PR.bt = S.turn; PR.bskip = []; }
+  return [["ld", S.leader], ...S.chars.map((f, i) => ["ch:" + i, f])]
+    .filter(([r, f]) => f && !f.r && !(f.mk || []).includes("na") && !PR.bskip.includes(f) && typeof rushNow(f) === "string")
+    .map(([r, f]) => ({r, f, k: rushNow(f)}));
+}
+// your Leader when the attack lands, or a rested Character it can K.O. (bigger ones first)
+function botTarget(a){
+  const ap = botPow(a.f); if (ap == null) return null;
+  const lp = oppM.ld ? powNum(oppM.ld) : null, hitLd = a.k === "all" && lp != null && ap >= lp, act = canHitActive(a.f);
+  const kos = (oppM.ch || []).map((c, i) => ({i, p: powNum(c), k: (CARDDB.get(c.c) || {}).k || 0, r: c.r})).filter(x => (x.r || act) && x.p != null && ap >= x.p).sort((x, y) => y.k - x.k || y.p - x.p);
+  if (hitLd && (a.f === S.leader || oppM.lf <= 1)) return "ld";
+  if (kos.length && (kos[0].k >= 4 || !hitLd)) return "ch:" + kos[0].i;
+  return hitLd ? "ld" : null;
+}
+function botGiveDon(atks){
+  const lp = oppM.ld ? powNum(oppM.ld) || 5000 : 5000, give = (a, n) => { for (let j = 0; j < n && S.donActive > 0; j++) moveDon({pool: "a"}, a.r); };
+  // first enough to reach your Leader's power, cheapest first, then the rest on the Leader
+  const need = atks.filter(a => a.k === "all").map(a => ({a, n: Math.max(0, Math.ceil((lp - (botPow(a.f) || 0)) / 1000))})).sort((x, y) => x.n - y.n);
+  for (const x of need) if (x.n > 0 && x.n <= S.donActive) give(x.a, x.n);
+  if (S.donActive > 0) give(atks.find(a => a.f === S.leader) || atks[0], S.donActive);
+}
+function botMain(){
+  // 1. play the most expensive Character the active DON!! pay for
+  if (S.chars.length < 5) {
+    const opts = S.hand.map((c, i) => ({i, hc: handCost(c), e: CARDDB.get(c.c) || {}})).filter(x => x.e.t === "Character" && x.hc && x.hc.cost <= S.donActive).sort((a, b) => b.hc.cost - a.hc.cost || (b.e.p || 0) - (a.e.p || 0));
+    if (opts.length) { moveCard("hand:" + opts[0].i, "chars", false, opts[0].hc.cost); return 1000; }
+  }
+  const atks = botAttackers();
+  // 2. give the DON!! left over to the cards that will attack
+  if (S.donActive > 0 && atks.length) { botGiveDon(atks); return 1000; }
+  // 3. attack one at a time; you answer each one
+  for (const a of atks) {
+    const t = botTarget(a);
+    if (!t) { PR.bskip.push(a.f); continue; }
+    attackWith(a.r, t);
+    if (!S.atk) PR.bskip.push(a.f);
+    return 900;
+  }
+  // 4. end the turn (its End of Turn abilities don't run)
+  S.eot = S.turn; endTurn(); return 0;
+}
+// the computer defends: a Blocker that survives, any Blocker at 1 Life or less, and counters when the hit matters
+function botDefend(){
+  const n = oppM.ak.n, w = botHold("def" + n, 1500); if (w) return w;
+  const r0 = defResult();
+  if (r0 && r0.hits) {
+    const life = S.life.length, cost = f => (CARDDB.get(f.card.c) || {}).k || 0;
+    if (r0.onLeader && S.blk == null) {
+      const bl = S.chars.map((f, i) => ({f, i, p: powNum({c: f.card.c, pm: f.pm || 0})})).filter(x => !x.f.r && isBlocker(x.f.card.c));
+      const b = bl.filter(x => x.p != null && x.p > r0.ap).sort((x, y) => cost(x.f) - cost(y.f))[0] || (life <= 1 ? bl.sort((x, y) => cost(x.f) - cost(y.f))[0] : null);
+      if (b) doBlock(b.i);
+    }
+    const r = defResult();
+    if (r && r.hits) {
+      const amt = r.ap - r.tp + 1, ctrs = S.hand.map((c, i) => ({c, i, v: (CARDDB.get(c.c) || {}).ctr || 0})).filter(x => x.v > 0);
+      const one = ctrs.filter(x => x.v >= amt).sort((x, y) => x.v - y.v)[0];
+      let set = one ? [one] : null;
+      if (!set) { set = []; let sum = 0; for (const x of ctrs.slice().sort((x, y) => y.v - x.v)) { if (sum >= amt) break; set.push(x); sum += x.v; } if (sum < amt) set = null; }
+      const want = set && (r.onLeader ? life === 0 || life <= 2 || (set.length === 1 && S.hand.length >= 5) : cost(r.f) >= 4 && set.length === 1);
+      if (want) {
+        const d = myDefender();
+        for (const x of set.sort((x, y) => y.i - x.i)) {
+          S.hand.splice(x.i, 1); S.trash.unshift(x.c);
+          d.pm = Math.max(-60000, Math.min(60000, (d.pm || 0) + x.v)); d.bc = (d.bc || 0) + x.v;
+          addLog(`used ${lab(x.c)} from hand as a +${x.v} Counter on ${lab(d.card)}`);
+        }
+        commit();
+      }
+    }
+  }
+  defResolve(true); return 0;
 }
 function applyMarkReqs(){
   let ch = false;
@@ -2663,7 +2887,9 @@ function fxTap(t){
   clearTimeout(menuT); closeMenu(); fxPick(ref); return true;
 }
 // trigs: array of trigger keys. manual: show a message when nothing matches
+const ownCard = card => [S.leader, S.stage, S.ev, ...S.chars].some(f => f && f.card === card) || [S.hand, S.trash, S.life, S.deck].some(z => z.includes(card));
 async function runAbility(card, trigs, manual, don){
+  if (botQuiet || (PR && !ownCard(card))) return;
   if ((!autoFx && !manual) || !canRead(card.c)) { if (manual) toast("This card's text isn't available."); return; }
   try {
     if (!fxKnown(card.c)) toast(`Reading ${card.c}…`);
@@ -2722,7 +2948,7 @@ async function useAbility(card, x, y){
 }
 // a Life card that was just taken as damage: offer its [Trigger] ability
 async function offerTrigger(card, tries){
-  if (!autoFx || !card || !canRead(card.c)) return;
+  if (botQuiet || !autoFx || !card || !canRead(card.c)) return;
   try {
     if (!fxKnown(card.c)) toast("Checking " + card.c + " for a [Trigger]\u2026");
     const fx = await readEffect(card.c); $("#toast").hidden = true;
@@ -2925,6 +3151,7 @@ function keepHand(){
   commit();
   // the first turn starts by itself once both players are ready
   if (!R) startTurn();
+  else if (PR && PR.bot) { if (!botQuiet && oppM && oppM.kp === 1) { PR.pres[0] = JSON.parse(JSON.stringify(pubFull())); if (S.first) startTurn(); else botSoon(600); } }
   else if (PR) { if (oppM && oppM.kp === 1) { PR.pres[PR.cur] = JSON.parse(JSON.stringify(pubFull())); if (!S.first) practiceSwitch(); startTurn(); } }
   else if (S.first && oppM && oppM.kp === 1) startTurn();
 }
@@ -3000,7 +3227,8 @@ function endTurn(){
   S.myTurn = false; S.et = (S.et || 0) + 1;
   addLog(`ended turn ${S.turn || 0}`);
   commit();
-  if (PR) { practiceSwitch(); if (S.phase === "play") startTurn(); }
+  if (PR && PR.bot) { if (botQuiet) PR.botEnd = 1; else botSoon(900); }
+  else if (PR) { practiceSwitch(); if (S.phase === "play") startTurn(); }
   else if (!R) startTurn();
 }
 function askCount(mode){
@@ -3225,6 +3453,7 @@ function moveCard(src, dest, free, pay){
 // ---------- menus ----------
 function closeMenu(){ const m = $("#menu"); if (m) m.remove(); }
 function showMenu(title, items, x, y){
+  if (botQuiet) return;
   closeMenu();
   const m = document.createElement("div");
   m.className = "menu"; m.id = "menu";
@@ -3456,6 +3685,7 @@ function markOppNew(){
 // [On Your Opponent's Attack] ability), the attack resolves by itself after a moment instead of waiting on you
 let qrKey = null;
 function quickResolve(){
+  if (TUT) return;
   if (!oppM || !oppM.ak || S.rs === oppM.ak.n || S.blk != null || fxCur || modal || qrKey === oppM.ak.n) return;
   const n = oppM.ak.n;
   if (handCounters().length) return;
@@ -4025,9 +4255,9 @@ function doAction(a){
     case "bdmore": bdShow += 60; renderLib(); break;
     case "bdaddgo": bdAddByNumber(); break;
     case "bdclear": BD.cards = new Map(); BD.leader = null; BD.life = 5; $("#bd-name").value = ""; $("#bd-life").value = 5; { const ld = $("#bd-load"); if (ld) ld.value = ""; } renderBdDeck(); renderLib(); toast("Deck cleared. Ready for a new one."); break;
-    case "bdimport": { const txt = $("#bd-paste").value; if (!parseLines(txt).length) { toast("Paste a decklist first."); break; } learnNames(txt); bdImport(txt); renderBdDeck(); renderLib(); toast("Deck replaced from your list."); break; }
+    case "bdimport": { const txt = $("#bd-paste").value; if (!parseLines(txt).length) { toast("Paste a decklist first."); break; } learnNames(txt); const had = BD.leader && BD.leader.c; bdImport(txt); renderBdDeck(); renderLib(); toast(`Deck replaced from your list${BD.leader && BD.leader.c !== had ? `, with ${BD.leader.c} as Leader` : ""}. ${bdTotal()} cards.`); break; }
     case "bdcopy":
-      try { navigator.clipboard.writeText((BD.leader ? "// Leader: " + bdLeaderStr() + "\n" : "") + bdText()).then(() => toast("Decklist copied."), () => toast("Open Paste or copy a decklist and copy the text there.")); }
+      try { navigator.clipboard.writeText(deckExport()).then(() => toast("Decklist copied."), () => toast("Open Paste or copy a decklist and copy the text there.")); }
       catch (err) { toast("Open Paste or copy a decklist and copy the text there."); }
       break;
     case "startturn": startTurn(); break;
@@ -4094,6 +4324,11 @@ function doAction(a){
     case "solo": startGame(false); break;
     case "both": startPractice(); break;
     case "homeboth": openSetup(); break;
+    case "homebot": openSetup({bot: true}); break;
+    case "tutorial": closeModal(); if (builderOpen) closeBuilder(); startTutorial(); break;
+    case "tutnext": tutNext(); break;
+    case "tutskip": tutSkip(); break;
+    case "vsbot": startPractice(true); break;
     case "pswitch": practiceSwitch(); break;
     case "closemodal": closeModal(); break;
     case "keep": keepHand(); break;
@@ -4702,6 +4937,24 @@ function legalOf(code){
   if (BANNED.has(code)) { const from = BANNED.get(code); return !from || new Date().toLocaleDateString("en-CA") >= from ? "ban" : "soon"; }
   return BLOCK1.test(code) && !BLOCK1_KEPT.has(code) ? "rot" : "";
 }
+// a list pasted from a deck site or simulator usually starts with its Leader ("1xOP01-001", or a "Leader: OP01-001" line):
+// take it out of the main deck
+const isLeaderCode = code => /Leader/i.test((CARDDB.get(code) || {}).t || "");
+function splitLeader(txt){
+  let leader = null; const keep = [];
+  for (const raw of String(txt || "").split(/\r?\n/)) {
+    const lm = /^\s*(?:\/\/\s*)?Leader\b\s*[:\-–]?\s*(.*)$/i.exec(raw), e = parseLines(lm ? lm[1] : raw)[0];
+    if (e && (lm || isLeaderCode(e.code))) { if (!leader) leader = e; continue; }
+    keep.push(raw);
+  }
+  return {leader, deck: keep.join("\n")};
+}
+// every card in a deck shares at least one color with its Leader
+const colorsOf = code => String((CARDDB.get(code) || {}).c || "").split("/").map(x => x.trim().toLowerCase()).filter(Boolean);
+function offColor(codes, leader){
+  const lc = colorsOf(leader); if (!lc.length) return [];
+  return codes.filter(k => k !== leader && !isLeaderCode(k) && (cc => cc.length && !cc.some(x => lc.includes(x)))(colorsOf(k)));
+}
 function legalTag(code){
   const lg = legalOf(code);
   if (!lg) return "";
@@ -4749,9 +5002,15 @@ function bdText(){
   return Array.from(BD.cards.keys()).sort(natural).map(k => { const v = BD.cards.get(k); return `${v.count}x${k}${v.n ? " " + v.n : ""}`; }).join("\n");
 }
 const bdLeaderStr = () => BD.leader ? BD.leader.c + (BD.leader.n ? " " + BD.leader.n : "") : "";
+// the format deck sites and simulators share: the Leader as 1x first, then one "4xOP01-016" line per card
+function deckExport(){
+  return (BD.leader ? `1x${BD.leader.c}\n` : "") + Array.from(BD.cards.keys()).sort(natural).map(k => `${BD.cards.get(k).count}x${k}`).join("\n");
+}
 function bdImport(txt){
   BD.cards = new Map();
-  for (const e of parseLines(txt)) {
+  const sp = splitLeader(txt);
+  if (sp.leader) BD.leader = {c: sp.leader.code, n: sp.leader.name || nameOf(sp.leader.code) || ""};
+  for (const e of parseLines(sp.deck)) {
     const cur = BD.cards.get(e.code);
     if (e.name) NAMES.set(e.code, e.name);
     BD.cards.set(e.code, {n: e.name || (cur && cur.n) || nameOf(e.code) || "", count: Math.min(4, (cur ? cur.count : 0) + e.count)});
@@ -4926,11 +5185,12 @@ function renderBdDeck(){
   const t = bdTotal(), rows = Array.from(BD.cards.keys()).sort(natural), L = BD.leader;
   const lead = `<div class="bd-leader"><div class="bd-lthumb">${L ? tile({c: L.c, n: L.n}, "", false, 0, "leader") : "?"}</div><div class="bd-ltext"><div class="bd-ltitle">Leader</div>${L ? `<div><b>${esc(L.c)}</b> ${esc(L.n)}</div><button class="btn" type="button" data-bd="LX:x">Remove</button>` : `<div class="hint">None yet. Press Leader under a card.</div>`}</div></div>`;
   const used = L ? rows.concat(L.c) : rows, banned = used.filter(k => legalOf(k) === "ban"), rotated = used.filter(k => legalOf(k) === "rot");
-  const pairs = BAN_PAIRS.filter(p => used.includes(p[0]) && used.includes(p[1]));
+  const pairs = BAN_PAIRS.filter(p => used.includes(p[0]) && used.includes(p[1])), off = L ? offColor(rows, L.c) : [];
   const stats = `<div class="bd-stats"><span class="chip ${t === 50 ? "good" : t > 50 ? "bad" : ""}">${t} of 50 cards</span>${L ? "" : '<span class="chip bad">Needs a Leader</span>'}`
     + (banned.length ? `<span class="chip bad" title="${esc(banned.join(", "))}">${banned.length} banned</span>` : "")
     + (rotated.length ? `<span class="chip" title="${esc(rotated.join(", "))}">${rotated.length} not in Standard</span>` : "")
-    + pairs.map(p => `<span class="chip bad" title="These two can't be in the same deck">Banned pair: ${esc(p[0])} + ${esc(p[1])}</span>`).join("") + `</div>`;
+    + pairs.map(p => `<span class="chip bad" title="These two can't be in the same deck">Banned pair: ${esc(p[0])} + ${esc(p[1])}</span>`).join("")
+    + (off.length ? `<span class="chip bad" title="${esc(off.join(", "))}">${off.length} not in the Leader's color${colorsOf(L.c).length > 1 ? "s" : ""}</span>` : "") + `</div>`;
   const list = rows.length
     ? `<div class="bd-stacks">${rows.map(k => {
         const v = BD.cards.get(k);
@@ -4940,7 +5200,7 @@ function renderBdDeck(){
       }).join("")}</div>`
     : `<p class="hint" style="padding:10px 4px">Your deck is empty. Tap a card to add it.</p>`;
   el.innerHTML = lead + stats + bdStatsHTML(rows) + list;
-  const txt = $("#bd-text"); if (txt) txt.value = (L ? "// Leader: " + bdLeaderStr() + "\n" : "") + bdText();
+  const txt = $("#bd-text"); if (txt) txt.value = deckExport();
   const td = $("#bd-tabdeck"); if (td) td.textContent = `Deck (${t})`;
 }
 // cost curve, counter total and card types for the deck being built
@@ -4948,9 +5208,10 @@ let bdStatsOpen = true; try { bdStatsOpen = localStorage.getItem("bounty:bdstats
 function bdStatsHTML(rows){
   if (!rows.length) return "";
   const curve = new Array(8).fill(0), ty = {Character: 0, Event: 0, Stage: 0}, ctr = {1000: 0, 2000: 0};
-  let unknown = 0, ctrSum = 0, costSum = 0, costN = 0, total = 0;
+  let unknown = 0, ctrSum = 0, costSum = 0, costN = 0, total = 0, blk = 0, trg = 0;
   for (const k of rows) {
     const n = BD.cards.get(k).count, e = CARDDB.get(k) || {}; total += n;
+    if (isBlocker(k)) blk += n; if (fxAb(k).some(a => a.t === "trigger")) trg += n;
     if (Number.isFinite(e.k)) { curve[Math.min(7, e.k)] += n; costSum += e.k * n; costN += n; } else unknown += n;
     if (e.ctr) { ctrSum += e.ctr * n; ctr[e.ctr >= 2000 ? 2000 : 1000] += n; }
     const t = e.t || ""; if (/Event/.test(t)) ty.Event += n; else if (/Stage/.test(t)) ty.Stage += n; else if (/Character/.test(t)) ty.Character += n;
@@ -4961,7 +5222,8 @@ function bdStatsHTML(rows){
     [costN ? (costSum / costN).toFixed(1) : "–", "Average cost"],
     [ctrSum ? "+" + ctrSum.toLocaleString("en-US") : "0", "Counter total"],
     [`${ctr[1000]} / ${ctr[2000]}`, "+1000 / +2000 counters"],
-    [`${ty.Character} / ${ty.Event}${ty.Stage ? " / " + ty.Stage : ""}`, ty.Stage ? "Characters / Events / Stages" : "Characters / Events"]
+    [`${ty.Character} / ${ty.Event}${ty.Stage ? " / " + ty.Stage : ""}`, ty.Stage ? "Characters / Events / Stages" : "Characters / Events"],
+    [`${blk} / ${trg}`, "Blockers / Triggers"]
   ].map(([v, l]) => `<div><b>${esc(String(v))}</b><small>${esc(l)}</small></div>`).join("");
   return `<details class="bd-anal" id="bd-anal"${bdStatsOpen ? " open" : ""}><summary>Deck stats</summary><div class="bd-anal-in"><div class="bdc" role="img" aria-label="Cost curve: ${curve.map((n, i) => `${n} at cost ${i === 7 ? "7 or more" : i}`).join(", ")}">${bars}</div><div class="bdn">${nums}</div></div>${unknown ? `<p class="hint">${unknown} card${unknown === 1 ? "" : "s"} without card data ${unknown === 1 ? "isn't" : "aren't"} counted.</p>` : ""}</details>`;
 }
