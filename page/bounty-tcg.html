@@ -1006,6 +1006,7 @@ body.watching .turnbar,body.watching .tbopts{opacity:.4}
       <li>Drag the gold +N badge on a card to move that DON!! to another card, back to your cost area, or to the DON!! deck.</li>
       <li>Drag a power or cost badge on a card onto another card to move it, or off the card to remove it.</li>
       <li>Tap your Deck, Life, Trash or DON!! deck for actions.</li>
+      <li>In public and ranked matches, drawing, looking at your deck or Life, healing, DON!!, resting and moving cards by hand only work while a card's ability calls for them.</li>
     </ul></details>
     <div class="logbox" id="log"></div>
   </aside>
@@ -1424,6 +1425,7 @@ function oppModel(x){
     ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0, u: x.ak.u ? 1 : 0, ub: Number.isFinite(+x.ak.ub) && x.ak.ub !== null ? Math.max(0, Math.min(60000, Math.round(+x.ak.ub))) : null} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2, rk: x.rk ? 1 : 0, fc: FC_RE.test(x.fc) ? x.fc : "", tl: Number.isInteger(x.tl) && x.tl >= 0 && x.tl <= 3600 ? x.tl : null, tp: x.tp ? 1 : 0, to: num(x.to, 9), qc: Array.isArray(x.qc) && Number.isInteger(x.qc[0]) && Number.isInteger(x.qc[1]) && QC[x.qc[1]] ? {id: x.qc[0], k: x.qc[1]} : null,
     mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0))), u: q.u ? 1 : 0})), ma: num(x.ma, 1000000),
     ox: Array.isArray(x.ox) ? [Math.max(-20000, Math.min(20000, Math.round(+x.ox[0] || 0))), Math.max(-10, Math.min(10, Math.round(+x.ox[1] || 0)))] : null,
+    mf: x.mf && typeof x.mf === "object" && /^[A-Z0-9]{1,8}-\d{2,4}$/.test(x.mf.c) ? {c: x.mf.c, a: num(x.mf.a, 30), s: num(x.mf.s, 30), n: num(x.mf.n, 1e6)} : null,
     lf: num(x.lf, 60), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
   };
@@ -1437,6 +1439,7 @@ function pubFull(){
     lf:S.life.length, dd:S.donDeck, da:S.donActive, dr:S.donRested, dk:S.deck.length, h:S.hand.length,
     tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), uid:S.ranked ? acctUid() : "", mk:S.ranked ? (S.mk || (S.mk = Math.random().toString(36).slice(2, 12))) : "", lg:myLog.filter(e => pubLog(e[1])).slice(-8)};
   const ox = statOpp(); if (ox[0] || ox[1]) o.ox = ox;
+  if (S.mf) o.mf = S.mf;
   return o;
 }
 let pubT = null;
@@ -1463,6 +1466,43 @@ const OPP_BACK = {pwr: q => ({k: "pwr", v: -q.v}), pwb: q => ({k: "pwb", v: -q.v
 // (S.pubt) and ranked matches don't have them. Friends only tables and practice do.
 const boardTools = () => !S.ranked && !S.pubt;
 const NO_TOOLS = "Reset board, Refresh and Undo are only in Friends only matches and practice.";
+// The other free tools (drawing, looking at the deck or Life, healing, taking damage, moving cards between zones,
+// DON!!, resting and standing, power and cost badges) work at those tables only while a card's ability is left to
+// the player ("Do this one yourself") and its wording names that thing: a searcher can look at the deck, a healer
+// can add Life. Playing cards on your turn, attacks, blocks, Counters and the turn's own steps work as always.
+const FAIR = {don: /DON!!/i, rest: /\brest|\bactive\b|\bstand/i, draw: /\bdraws?\b/i, deck: /\bdeck\b/i, look: /\blook at\b|\breveal/i,
+  search: /\bfrom your deck\b|\bshuffle your deck\b/i, life: /\bLife\b/i, hand: /\bhand\b/i, trash: /\btrash|\bK\.O\./i, play: /\bplay/i,
+  power: /\bpower\b/i, cost: /\bcost\b/i, shuffle: /\bshuffle/i};
+const NO_FREE = "In public and ranked matches, that only works while a card's ability calls for it.";
+const fairText = () => fxCur && fxCur.manual ? `${fxCur.text || ""} ${(fxCur.steps[fxCur.i] || {}).text || ""}` : "";
+function fair(kinds, text, quiet){
+  if (boardTools()) return true;
+  const t = text != null ? text : fairText();
+  if (t && kinds.every(k => FAIR[k].test(t))) return true;
+  if (!quiet) toast(t ? "This card's ability doesn't let you do that." : NO_FREE);
+  return false;
+}
+// moving a card by hand (menu, drag, double-click) at a public or ranked table
+function fairMove(src, dest){
+  if (boardTools()) return true;
+  const [k, s] = src.split(":"), i = +s;
+  if (k === "hand" && ["chars", "stage", "event"].includes(dest)) {
+    if (S.myTurn || (dest === "event" && defending()) || fair(["play", "hand"], null, true)) return true;
+    toast("You can play cards on your own turn, and Counter Events while you're attacked."); return false;
+  }
+  if (k === "ev" && dest === "trash") return true;                       // an Event that's done
+  if (k === "ch" && dest === "trash" && S.chars.length > 5) return true;  // back down to 5 Characters
+  const to = {hand: "hand", trash: "trash", deck: "deck", deckbot: "deck", life: "life", chars: "play", stage: "play", event: "play"}[dest];
+  const from = {hand: "hand", lf: "life", tr: "trash", dk: "deck"}[k];
+  const need = [...new Set([to, from].filter(Boolean))];
+  // inside a look at the deck that an effect opened: what it lets you take, and where the rest go
+  const pk = k === "dk" && modal && modal.type === "peek" && modal.fx != null ? modal : null;
+  if (pk) {
+    if (dest === "hand" && pk.lim) { const c = S.deck[i]; if (pk.take > 0 && c && (!pk.pred || pk.pred(c.c))) return true; toast(pk.take > 0 ? "The effect doesn't let you take that card." : "You've taken what the effect allows."); return false; }
+    return fair(need, pk.fx);
+  }
+  return fair(need);
+}
 function undo(){
   if (!boardTools()) { toast(NO_TOOLS); return; }
   if (!undoStack.length) { toast("Nothing to undo."); return; }
@@ -2254,7 +2294,7 @@ function render(){
     const qb = $("#qcbtn"); if (qb) qb.hidden = !(R && !PR && oppM && S.phase !== "none");
     const db = $(".dicebtn"); if (db) db.classList.toggle("due", (S.phase === "roll" && !S.roll) || !!(PR && !PR.order && S.phase === "pre")); }
   { const sw = $("#pswitch"); if (sw) { sw.hidden = !PR || !!PR.bot; if (PR) sw.textContent = "Switch to Player " + (PR.cur === 0 ? 2 : 1); } }
-  { const fa = $("#fx-auto"); if (fa) fa.checked = autoFx; const so = $("#snd-on"); if (so) so.checked = sndOn; }
+  { const fa = $("#fx-auto"); if (fa) { fa.checked = fxOn(); fa.disabled = !boardTools(); } const so = $("#snd-on"); if (so) so.checked = sndOn; }
   $("#opp").innerHTML = side(oppM || EMPTY(), false);
   $("#oppHand").innerHTML = oppHandPanel(oppM || EMPTY());
   if (S.phase === "none") {
@@ -2815,6 +2855,12 @@ function applyMarkReqs(){
   const akn = oppM && oppM.ak ? oppM.ak.n || -1 : 0;
   if (akn !== (S.bcn || 0)) { S.bcn = akn; if (endBattle()) ch = true; }
   if (oppM) {
+    const mf = oppM.mf;
+    if (mf && mf.n && mf.n !== S.mfSeen) {
+      S.mfSeen = mf.n; ch = true;
+      const ab = fxAb(mf.c)[mf.a], st = ab && mf.s ? ab.steps[mf.s - 1] : null;
+      if (ab && !boardTools()) S.pfx = (S.pfx || []).concat([{by: mf.c, st: {a: "other", who: "own", n: 1, text: (st && st.text) || ab.text}}]).slice(-6);
+    }
     for (const q of oppM.mq) {
       if (q.id <= S.ack) continue;
       S.ack = Math.max(S.ack, q.id); ch = true;
@@ -2880,6 +2926,7 @@ function pendFx(){
 }
 // ---------- card effects (read off the card art) ----------
 let autoFx = true, fxQueue = [], oppAtkKey = "";
+const fxOn = () => autoFx || !boardTools();
 try { autoFx = localStorage.getItem("nakama:autofx") !== "0"; } catch (e) {}
 const EFX = new Map();
 try { const j = JSON.parse(localStorage.getItem("nakama:efx7") || "{}"); for (const k in j) EFX.set(k, j[k]); } catch (e) {}
@@ -2981,17 +3028,30 @@ function renderFx(){
   document.querySelectorAll(".fxtarget,.fxpicked").forEach(e => { if (!e.closest("#modal")) e.classList.remove("fxtarget", "fxpicked"); });
   if (!fxCur) { el.hidden = true; el.innerHTML = ""; return; }
   el.hidden = false; el.innerHTML = fxStepHTML(fxCur);
+  if (fxCur.manual) fxTellOpp(fxCur);
   const st = fxCur.steps[fxCur.i]; if (!st) return;
   const glow = (e, ref) => { if (e) e.classList.add(fxCur.pick.includes(ref) ? "fxpicked" : "fxtarget"); };
   if (HAND_PICK[st.a]) { const pr = fxHandPred(st); S.hand.forEach((c, i) => { if (!pr || pr(c.c)) glow(document.querySelector(`#hand [data-src="hand:${i}"]`), "hand:" + i); }); }
   else if (fxCur.play && fxCur.play.from === "hand") S.hand.forEach((c, i) => { if (fxCur.play.pred(c.c)) glow(document.querySelector(`#hand [data-src="hand:${i}"]`), "hand:" + i); });
   else if (!st.self && fxVerb(st, "it")) fxCands(st).forEach(x => glow(document.querySelector(x.mine ? `#me [data-src="${x.ref.replace(/^m:/, "")}"]` : `#opp [data-opp="${x.ref}"]`), x.ref));
 }
+// a step left to the player that the opponent carries out ("your opponent places 3 cards from their trash ..."):
+// at public and ranked tables they can't use the free tools otherwise, so their side gets it as an effect to do
+const OPP_DOES = /\byour opponent (?:chooses|may|places|trashes|returns|adds|reveals|must|rests|draws|looks|plays|sets|gives|shuffles|K\.O\.s)\b/i;
+function fxTellOpp(m){
+  if (boardTools() || m.forced || m.told === m.i) return;
+  const st = m.steps[m.i] || {}, t = st.text || m.text || "";
+  if (!OPP_DOES.test(t)) return;
+  const ab = fxAb(m.card.c), a = ab.findIndex(x => x.text === m.text); if (a < 0) return;
+  m.told = m.i; S.mfn = (S.mfn || 0) + 1;
+  S.mf = {c: m.card.c, a, s: ab[a].steps.findIndex(x => x.text === st.text) + 1, n: S.mfn};
+  setTimeout(commit, 0);
+}
 function fxFinish(done){
   const m = fxCur; if (!m) return;
   if (done) { const uf = [S.leader, S.stage, ...S.chars].find(f => f && f.card === m.card); if (uf && /once\s*per\s*turn/i.test(m.text || "")) { uf.mk = uf.mk || []; if (!uf.mk.includes("au")) uf.mk.push("au"); } addLog(`resolved ${lab(m.card)}'s ${m.tl || "On Play"}`); }
   else addLog(`cancelled ${lab(m.card)}'s ability`);
-  fxCur = fxQueue.shift() || null; if (fxCur) fxSettle(); commit(); renderFx();
+  S.mf = null; fxCur = fxQueue.shift() || null; if (fxCur) fxSettle(); commit(); renderFx();
 }
 const fxOwn = st => st.who === "own" || st.a === "giveDon" || st.a === "kw";
 const fxLim = st => st.all ? 99 : st.a === "pwr" || st.a === "cost" ? st.cnt || 1 : st.a === "giveDon" ? 1 : Math.max(1, st.n || 1);
@@ -3035,7 +3095,7 @@ function fxTap(t){
 const ownCard = card => [S.leader, S.stage, S.ev, ...S.chars].some(f => f && f.card === card) || [S.hand, S.trash, S.life, S.deck].some(z => z.includes(card));
 async function runAbility(card, trigs, manual, don){
   if (botQuiet || (PR && !ownCard(card))) return;
-  if ((!autoFx && !manual) || !canRead(card.c)) { if (manual) toast("This card's text isn't available."); return; }
+  if ((!fxOn() && !manual) || !canRead(card.c)) { if (manual) toast("This card's text isn't available."); return; }
   try {
     if (!fxKnown(card.c)) toast(`Reading ${card.c}…`);
     const fx = await readEffect(card.c);
@@ -3069,7 +3129,7 @@ function abilityNow(card, a){
     case "main": return myMain && (inHand || onField);
     case "whenAttacking": { const h = S.atk && donHolder(S.atk.s); return !!(S.myTurn && h && h.card === card); }
     case "onBlock": return !!(def && S.blk != null && S.chars[S.blk] && S.chars[S.blk].card === card);
-    case "trigger": return !onField && !inHand;
+    case "trigger": return boardTools() && !onField && !inHand;
     case "onPlay": case "onKO": case "endOfTurn": return false;
     default: return S.myTurn && onField;
   }
@@ -3094,7 +3154,7 @@ async function useAbility(card, x, y){
 }
 // a Life card that was just taken as damage: offer its [Trigger] ability
 async function offerTrigger(card, tries){
-  if (botQuiet || !autoFx || !card || !canRead(card.c)) return;
+  if (botQuiet || !fxOn() || !card || !canRead(card.c)) return;
   try {
     if (!fxKnown(card.c)) toast("Checking " + card.c + " for a [Trigger]\u2026");
     const fx = await readEffect(card.c); $("#toast").hidden = true;
@@ -3106,7 +3166,7 @@ async function offerTrigger(card, tries){
 }
 // when the opponent attacks, offer the defender's [On Your Opponent's Attack] abilities
 async function offerOppAttack(){
-  if (!autoFx || !oppM || !oppM.ak || modal) return;
+  if (!fxOn() || !oppM || !oppM.ak || modal) return;
   const ak = oppM.ak, tgt = ownHolder(ak.t), src = oppCardAt(ak.s);
   const holders = [S.leader, ...S.chars, S.stage].filter(f => f && canRead(f.card.c));
   if (!holders.length) return;
@@ -3179,6 +3239,7 @@ function fxCands(st){
   return out;
 }
 function fxStepHTML(m){
+  m.manual = false;
   const st = m.steps[m.i]; if (!st) return "";
   const cancel = m.forced ? "" : `<button class="btn" data-do="fxcancel" type="button">${st.pay ? "Don't use it" : "Cancel"}</button>`, skip = m.forced || st.pay || st.must ? "" : `<button class="btn" data-do="fxskip:no" type="button">Skip</button>`;
   const go = (label, act) => `<button class="btn pri" data-do="${act || "fxgo"}" type="button">${label}</button>`, next = cancel + go("Next", "fxskip:no");
@@ -3244,18 +3305,19 @@ function fxStepHTML(m){
   }
   if (st.a === "act") { const ab = fxAb(m.card.c).find(a => a.t === st.k); return ab ? say(`Use its [${esc(TRIG[st.k] || st.k)}] effect: ${esc(ab.text.replace(/^(\s*\[[^\]]+\]\s*)+/, ""))}`, cancel + skip + go("Use it")) : say("This card has no such effect.", next); }
   if (st.a === "noBlock") return say(`Your opponent can't use [Blocker]${st.power != null ? ` Characters with ${st.power} power or less` : ""} ${S.atk ? "in this battle" : "this turn"}.`, cancel + go("OK"));
-  if (st.a === "kw") return say(`Give a card [${esc(KW_NAME[st.k] || st.k)}].`, cancel + go("Next", "fxskip"));
+  if (st.a === "kw") { m.manual = true; return say(`Give a card [${esc(KW_NAME[st.k] || st.k)}].`, cancel + go("Next", "fxskip")); }
   const ps = st.a === "other" || st.a === "play" ? (m.play || (m.play = playSpec(st.text || m.text))) : null;
   if (ps) {
     const pool = ps.from === "hand" ? S.hand : S.trash, ok = pool.filter(c => ps.pred(c.c)).length;
     return say(ok ? `Tap a glowing card in your ${ps.from} to play it${ps.rested ? " rested" : ""} for free (up to ${ps.n}).` : `No card in your ${ps.from} fits this effect.`,
       `${cancel}${ps.from === "trash" && ok ? '<button class="btn" data-do="fxtrash" type="button">Open trash</button>' : ""}<button class="btn pri" data-do="fxskip" type="button">${ok ? "Done" : "Next"}</button>`);
   }
-  return say(`Do this one yourself on the board, then tap Next.`, `${cancel}<button class="btn pri" data-do="fxskip" type="button">Next</button>`);
+  m.manual = true;
+  return say(m.forced ? `Your opponent's card has you do this on your side of the board. Then tap Next.` : `Do this one yourself on the board, then tap Next.`, `${cancel}<button class="btn pri" data-do="fxskip" type="button">Next</button>`);
 }
 function fxNext(){
   const m = fxCur; if (!m) return;
-  m.did = m.res == null ? null : m.res; m.res = null;
+  m.did = m.res == null ? null : m.res; m.res = null; S.mf = null;
   m.i++; m.pick = []; m.dsel = {}; m.play = null;
   if (m.i >= m.steps.length) { fxFinish(true); return; }
   fxSettle();
@@ -3482,7 +3544,7 @@ function endTurn(){
   if (S.phase !== "play") { toast("Set up your deck and Life first."); return; }
   if (!S.myTurn) { toast("It isn't your turn."); return; }
   // [End of Your Turn] abilities resolve first, then the turn ends by itself
-  if (autoFx && S.eot !== S.turn) {
+  if (fxOn() && S.eot !== S.turn) {
     S.eot = S.turn;
     const eot = [S.leader, S.stage, ...S.chars].filter(f => f && fxAb(f.card.c).some(a => a.t === "endOfTurn"));
     if (eot.length) {
@@ -3864,7 +3926,7 @@ function showMenu(title, items, x, y){
 }
 function openCardMenu(src, x, y){
   const [k, s] = src.split(":"), i = +s;
-  const M = (label, dest) => [label, () => moveCard(src, dest)];
+  const M = (label, dest) => [label, () => { if (fairMove(src, dest)) moveCard(src, dest); }];
   let items = [], title = "", info = null;
   if (k === "hand") {
     const c = S.hand[i]; if (!c) return;
@@ -3876,18 +3938,18 @@ function openCardMenu(src, x, y){
     title = lab(c); info = {c: c.c, n: c.n, r: 0, d: 0};
     const ty = (CARDDB.get(c.c) || {}).t || "";
     items = [M("Play to Character area", "chars"), M("Play as Stage", "stage"), M("Play as Event", "event"),
-      ["Play for free (an effect lets you)", () => moveCard(src, /Stage/.test(ty) ? "stage" : /Event/.test(ty) ? "event" : "chars", true)], M("Add to Life", "life"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"), M("Trash", "trash")];
+      ["Play for free (an effect lets you)", () => { if (fair(["play"])) moveCard(src, /Stage/.test(ty) ? "stage" : /Event/.test(ty) ? "event" : "chars", true); }], M("Add to Life", "life"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"), M("Trash", "trash")];
   } else if (k === "ch" || k === "st" || k === "ld") {
     const f = k === "ch" ? S.chars[i] : k === "st" ? S.stage : S.leader; if (!f) return;
     if (k === "ch" && defending() && !f.r && S.blk == null && isBlocker(f.card.c) && !fxCur) { doBlock(i); toast(`${lab(f.card)} blocks. Tap Counter cards in your hand to save it.`); return; }
     title = lab(f.card); info = {c: f.card.c, n: f.card.n, r: f.r ? 1 : 0, d: f.d || 0};
     if (k !== "st" && !f.r && S.myTurn && S.turn > 1 && S.phase === "play" && oppM) items.push(["Attack", () => { atkPick = src; markTargets(); toast("Tap the Leader or Character to attack. Tap anywhere else to cancel."); }]);
-    items.push([f.r ? "Activate (stand)" : "Rest", () => { f.r = !f.r; addLog(`${f.r ? "rested" : "activated"} ${lab(f.card)}`); commit(); }]);
+    items.push([f.r ? "Activate (stand)" : "Rest", () => { if (!fair(["rest"])) return; f.r = !f.r; addLog(`${f.r ? "rested" : "activated"} ${lab(f.card)}`); commit(); }]);
     if (k !== "st") {
-      items.push(["Give DON!! (+1)", () => { if (!S.donActive) { toast("No active DON!! in your cost area."); return; } S.donActive--; f.d++; addLog(`gave DON!! to ${lab(f.card)} (+${f.d})`); commit(); }]);
-      if (f.pm) items.push([`Clear power bonus (${f.pm > 0 ? "+" : "\u2212"}${Math.abs(f.pm)})`, () => { f.pm = 0; f.bc = 0; addLog(`cleared the power bonus on ${lab(f.card)}`); commit(); }]);
-      if (f.cm) items.push([`Clear cost bonus (${f.cm > 0 ? "+" : "\u2212"}${Math.abs(f.cm)})`, () => { f.cm = 0; addLog(`cleared the cost bonus on ${lab(f.card)}`); commit(); }]);
-      if (f.d && fxCur) items.push(["Take DON!! back (an effect says so)", () => { f.d--; S.donRested++; addLog(`took a DON!! back from ${lab(f.card)}`); commit(); }]);
+      items.push(["Give DON!! (+1)", () => { if (!S.myTurn && !fair(["don"])) return; if (!S.donActive) { toast("No active DON!! in your cost area."); return; } S.donActive--; f.d++; addLog(`gave DON!! to ${lab(f.card)} (+${f.d})`); commit(); }]);
+      if (f.pm) items.push([`Clear power bonus (${f.pm > 0 ? "+" : "\u2212"}${Math.abs(f.pm)})`, () => { if (!fair(["power"])) return; f.pm = 0; f.bc = 0; addLog(`cleared the power bonus on ${lab(f.card)}`); commit(); }]);
+      if (f.cm) items.push([`Clear cost bonus (${f.cm > 0 ? "+" : "\u2212"}${Math.abs(f.cm)})`, () => { if (!fair(["cost"])) return; f.cm = 0; addLog(`cleared the cost bonus on ${lab(f.card)}`); commit(); }]);
+      if (f.d && fxCur) items.push(["Take DON!! back (an effect says so)", () => { if (!fair(["don"])) return; f.d--; S.donRested++; addLog(`took a DON!! back from ${lab(f.card)}`); commit(); }]);
     }
     if (k !== "ld") items.push(M("Return to hand", "hand"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"), M("Trash", "trash"));
   } else if (k === "ev") {
@@ -3908,30 +3970,32 @@ function openCardMenu(src, x, y){
   if (info && lastPT !== "mouse") items.unshift(["Zoom in", () => { modal = {type: "inspect", card: info}; renderModal(); }]);
   if (items.length) showMenu(title, items, x, y);
 }
+// the ability text a look at the deck was opened for, so what's taken from it can be checked at public tables
+const fxt = () => boardTools() ? null : fairText();
 function openActMenu(a, x, y){
   if (S.phase === "none") { openSetup(); return; }
   if (a === "deck") showMenu(`Deck (${S.deck.length})`, [
-    ["Draw a card", () => draw(1)], ["Draw 2 cards", () => draw(2)], ["Draw N cards\u2026", () => askCount("draw")],
+    ["Draw a card", () => { if (fair(["draw"])) draw(1); }], ["Draw 2 cards", () => { if (fair(["draw"])) draw(2); }], ["Draw N cards\u2026", () => { if (fair(["draw"])) askCount("draw"); }],
     ["Search deck (see all cards)", () => doAction("searchdeck")],
-    ["Look at top N\u2026", () => askCount("look")],
-    ["Look at top 3", () => { modal = {type: "peek", n: 3}; renderModal(); addLog("looked at the top 3 cards of their deck"); }],
-    ["Look at top 4", () => { modal = {type: "peek", n: 4}; renderModal(); addLog("looked at the top 4 cards of their deck"); }],
-    ["Look at top 5", () => { modal = {type: "peek", n: 5}; renderModal(); addLog("looked at the top 5 cards of their deck"); }],
-    ["Trash top card", () => moveCard("dk:0", "trash")],
-    ["Add top card to Life", () => moveCard("dk:0", "life")],
-    ["Shuffle deck", shuffleDeck],
+    ["Look at top N\u2026", () => { if (fair(["look", "deck"])) askCount("look"); }],
+    ["Look at top 3", () => { if (!fair(["look", "deck"])) return; modal = {type: "peek", n: 3, fx: fxt()}; renderModal(); addLog("looked at the top 3 cards of their deck"); }],
+    ["Look at top 4", () => { if (!fair(["look", "deck"])) return; modal = {type: "peek", n: 4, fx: fxt()}; renderModal(); addLog("looked at the top 4 cards of their deck"); }],
+    ["Look at top 5", () => { if (!fair(["look", "deck"])) return; modal = {type: "peek", n: 5, fx: fxt()}; renderModal(); addLog("looked at the top 5 cards of their deck"); }],
+    ["Trash top card", () => { if (fairMove("dk:0", "trash")) moveCard("dk:0", "trash"); }],
+    ["Add top card to Life", () => { if (fairMove("dk:0", "life")) moveCard("dk:0", "life"); }],
+    ["Shuffle deck", () => { if (fair(["shuffle"])) shuffleDeck(); }],
     ["Change sleeves", () => { S.sleeve = (S.sleeve + 1) % 7; addLog("changed their card sleeves"); commit(); }]], x, y);
   else if (a === "life") showMenu(`Life (${S.life.length})`, [
     ["Take damage (top Life to hand)", () => doAction("damage")],
-    ["Take damage (trash it)", () => { if (!S.life.length) { toast("No Life left. The next hit is lethal."); return; } moveCard("lf:0", "trash"); }],
-    ["Look at top Life card", () => { if (!S.life.length) return; modal = {type: "life"}; renderModal(); }],
-    ["Add top of deck to Life", () => moveCard("dk:0", "life")],
-    ["Shuffle Life", () => { shuffle(S.life); addLog("shuffled their Life"); commit(); }]], x, y);
+    ["Take damage (trash it)", () => { if (!fair(["life", "trash"])) return; if (!S.life.length) { toast("No Life left. The next hit is lethal."); return; } moveCard("lf:0", "trash"); }],
+    ["Look at top Life card", () => { if (!fair(["life", "look"])) return; if (!S.life.length) return; modal = {type: "life"}; renderModal(); }],
+    ["Add top of deck to Life", () => { if (fairMove("dk:0", "life")) moveCard("dk:0", "life"); }],
+    ["Shuffle Life", () => { if (!fair(["life", "shuffle"])) return; shuffle(S.life); addLog("shuffled their Life"); commit(); }]], x, y);
   else if (a === "trash") { modal = {type: "trash"}; renderModal(); }
   else if (a === "dondeck") showMenu(`DON!! deck (${S.donDeck})`, [
-    ["Add 1 DON!! (active)", () => addDon(1, true)], ["Add 2 DON!! (active)", () => addDon(2, true)],
-    ["Add 1 DON!! (rested)", () => addDon(1, false)], ["Return 1 DON!! to deck", returnDon],
-    ["Activate all DON!!", () => { S.donActive += S.donRested; S.donRested = 0; commit(); }]], x, y);
+    ["Add 1 DON!! (active)", () => { if (fair(["don"])) addDon(1, true); }], ["Add 2 DON!! (active)", () => { if (fair(["don"])) addDon(2, true); }],
+    ["Add 1 DON!! (rested)", () => { if (fair(["don"])) addDon(1, false); }], ["Return 1 DON!! to deck", () => { if (fair(["don"])) returnDon(); }],
+    ["Activate all DON!!", () => { if (!fair(["don"])) return; S.donActive += S.donRested; S.donRested = 0; commit(); }]], x, y);
 }
 function inspectOpp(k){
   if (!oppM) return;
@@ -4023,6 +4087,7 @@ function moveDon(d, to){
   // attached DON!! only moves when an effect says so; rested DON!! in the cost area can't be given
   if (d.att && !fxCur) { toast("DON!! given to a card stays there until your next Refresh Phase, unless an effect moves it."); return; }
   if (!d.att && d.pool === "r" && to !== "dondeck") { toast("Rested DON!! can't be given. Only active DON!! can."); return; }
+  if ((d.att || to === "dondeck" || !S.myTurn) && !fair(["don"])) return;
   const target = donHolder(to);
   if (d.att && to === d.att) return;
   if (d.kind === "don" && to === "cost") return;
@@ -4043,6 +4108,7 @@ function moveDon(d, to){
 }
 function movePm(from, to){
   const f = donHolder(from); if (!f || !f.pm) return;
+  if (to !== from && !fair(["power"])) return;
   if (to === from) return;
   const t = to ? donHolder(to) : null, v = f.pm;
   f.pm = 0; f.bc = 0;
@@ -4332,6 +4398,7 @@ async function cmbBlock(showAll){
 }
 function moveCm(from, to){
   const f = donHolder(from); if (!f || !f.cm) return;
+  if (to !== from && !fair(["cost"])) return;
   if (to === from) return;
   const t = to ? donHolder(to) : null, v = f.cm;
   f.cm = 0;
@@ -4418,7 +4485,7 @@ document.addEventListener("pointerup", e => {
     if (d.src === "ld") return;
     const z = zoneAt(e.clientX, e.clientY);
     if (z && z.dataset.zone === "hand" && /^hand:/.test(d.src)) { reorderHand(+d.src.slice(5), e.clientX, e.clientY); return; }
-    if (z) moveCard(d.src, z.dataset.zone);
+    if (z && fairMove(d.src, z.dataset.zone)) moveCard(d.src, z.dataset.zone);
     return;
   }
   if (d.kind === "don") return;
@@ -4435,15 +4502,15 @@ document.addEventListener("dblclick", e => {
   const t = e.target;
   if (!t.closest || t.closest(".modal,.builder,#menu")) return;
   const hc = t.closest("#hand [data-src]");
-  if (hc) { closeMenu(); moveCard(hc.dataset.src, "chars"); return; }
+  if (hc) { closeMenu(); if (fairMove(hc.dataset.src, "chars")) moveCard(hc.dataset.src, "chars"); return; }
   const bc = t.closest("#me [data-src]");
   if (bc && /^(ch|st|ld):/.test(bc.dataset.src)) {
     const [k, s] = bc.dataset.src.split(":"), f = k === "ch" ? S.chars[+s] : k === "st" ? S.stage : S.leader;
-    if (f) { closeMenu(); f.r = !f.r; addLog(`${f.r ? "rested" : "activated"} ${lab(f.card)}`); commit(); }
+    if (f && fair(["rest"])) { closeMenu(); f.r = !f.r; addLog(`${f.r ? "rested" : "activated"} ${lab(f.card)}`); commit(); }
     return;
   }
   const dk = t.closest('[data-act="deck"]');
-  if (dk && S.phase === "play") { closeMenu(); draw(1); }
+  if (dk && S.phase === "play" && fair(["draw"])) { closeMenu(); draw(1); }
 });
 document.addEventListener("keydown", e => {
   // shortcuts: E ends your turn, Space resolves an attack on you, Esc cancels picking an attack target
@@ -4478,6 +4545,7 @@ document.addEventListener("click", e => {
   if (sw) { formSleeve = +sw.dataset.sl; document.querySelectorAll("[data-sl]").forEach(b => b.classList.toggle("sel", b === sw)); const sn = document.getElementById("slname"); if (sn) sn.textContent = sw.title; return; }
   const don = t.closest("[data-don]");
   if (don) {
+    if (!fair(["don"])) return;
     if (don.dataset.don === "a" && S.donActive > 0) { S.donActive--; S.donRested++; }
     else if (don.dataset.don === "r" && S.donRested > 0) { S.donRested--; S.donActive++; }
     commit(); return;
@@ -4538,8 +4606,8 @@ function doAction(a){
   if (a.startsWith("cnt:")) {
     const mode = a.slice(4), n = Math.max(1, Math.min(60, Math.floor(+($("#cnt-n") || {}).value) || 1));
     closeModal();
-    if (mode === "draw") draw(n);
-    else { if (!S.deck.length) { toast("Your deck is empty."); return; } modal = {type: "peek", n}; renderModal(); addLog(`looked at the top ${Math.min(n, S.deck.length)} cards of their deck`); }
+    if (mode === "draw") { if (fair(["draw"])) draw(n); }
+    else { if (!fair(["look", "deck"])) return; if (!S.deck.length) { toast("Your deck is empty."); return; } modal = {type: "peek", n, fx: fxt()}; renderModal(); addLog(`looked at the top ${Math.min(n, S.deck.length)} cards of their deck`); }
     return;
   }
   if (a.startsWith("ord:") && modal && modal.type === "order") {
@@ -4609,9 +4677,10 @@ function doAction(a){
     fxCur.res = tot > 0; commit(); fxNext(); return;
   }
   if (a === "fxdraw" && fxCur) { const n = fxCur.steps[fxCur.i].n; draw(n); fxCur.res = true; fxNext(); return; }
-  if (a === "fxlook" && fxCur) { const n = fxCur.steps[fxCur.i].n, sp = lookSpec(fxCur.text); fxCur.res = true; fxNext(); modal = {type: "peek", n, take: sp ? sp.n : 0, pred: sp && sp.pred, bottom: !!(sp && sp.bottom)}; renderModal(); addLog(`looked at the top ${Math.min(n, S.deck.length)} cards of their deck`); return; }
+  if (a === "fxlook" && fxCur) { const n = fxCur.steps[fxCur.i].n, sp = lookSpec(fxCur.text), fx = fxCur.text || ""; fxCur.res = true; fxNext(); modal = {type: "peek", n, take: sp ? sp.n : 0, pred: sp && sp.pred, bottom: !!(sp && sp.bottom), fx, lim: !!sp}; renderModal(); addLog(`looked at the top ${Math.min(n, S.deck.length)} cards of their deck`); return; }
   if (a.startsWith("fxdon:") && fxCur) { addDon(fxCur.steps[fxCur.i].n, a === "fxdon:a"); fxCur.res = true; fxNext(); return; }
   if (a === "sndon") { sndOn = !sndOn; try { localStorage.setItem("bounty:snd", sndOn ? "1" : "0"); } catch (e) {} if (sndOn) snd("turn"); toast(sndOn ? "Sounds on." : "Sounds off."); return; }
+  if (a === "autofx" && !boardTools()) { toast("Card effects always run in public and ranked matches."); render(); return; }
   if (a === "autofx") { autoFx = !autoFx; try { localStorage.setItem("nakama:autofx", autoFx ? "1" : "0"); } catch (e) {} toast(autoFx ? "Auto card effects on." : "Auto card effects off."); return; }
   if (a.startsWith("frch:")) { challenge(a.slice(5)); return; }
   if (a.startsWith("frwatch:")) { const o = onlineMap().get(a.slice(8)); if (o && o.w) watchTable(o.w, o.nk); else toast("That match just ended."); return; }
@@ -4733,9 +4802,9 @@ function doAction(a){
     case "cmbblock": cmbBlock(); break;
     case "refresh": refreshAll(); break;
     case "endturn": endTurn(); break;
-    case "searchdeck": if (!S.deck.length) { toast("Your deck is empty."); break; } modal = {type: "peek", n: Infinity, all: true}; renderModal(); addLog("searched their deck"); break;
-    case "heal": if (!S.deck.length) { toast("Your deck is empty."); break; } S.life.unshift(S.deck.shift()); addLog(`healed (Life ${S.life.length})`); commit(); break;
-    case "damage": if (!S.life.length) { toast("No Life left. The next hit is lethal."); break; } { const lc = S.life[0]; moveCard("lf:0", "hand"); offerTrigger(lc); } break;
+    case "searchdeck": if (!fair(["search"])) break; if (!S.deck.length) { toast("Your deck is empty."); break; } modal = {type: "peek", n: Infinity, all: true, fx: fxt()}; renderModal(); addLog("searched their deck"); break;
+    case "heal": if (!fair(["life"])) break; if (!S.deck.length) { toast("Your deck is empty."); break; } S.life.unshift(S.deck.shift()); addLog(`healed (Life ${S.life.length})`); commit(); break;
+    case "damage": if (!fair(["life", "hand"])) break; if (!S.life.length) { toast("No Life left. The next hit is lethal."); break; } { const lc = S.life[0]; moveCard("lf:0", "hand"); offerTrigger(lc); } break;
     case "coin": addLog("flipped a coin: " + (Math.random() < .5 ? "heads" : "tails")); break;
     case "prroll": practiceRoll(); break;
     case "die": {
