@@ -1848,7 +1848,7 @@ function statCheck(){
   S.statDone = true;
   const e = statLd(S.leader && S.leader.card && S.leader.card.c);
   if (won) { STATS.w++; if (e) e.w++; } else { STATS.l++; if (e) e.l++; }
-  const y = lost ? (S.lostDmg ? "dmg" : S.tmo >= TIMEOUTS_MAX ? "time" : S.rankLeft ? "left" : "cd") : (oppM && oppM.cd ? (oppM.cdw ? "dmg" : (oppM.to || 0) >= TIMEOUTS_MAX ? "time" : "cd") : "left");
+  const y = lost ? (S.lostDeck ? "deck" : S.lostDmg ? "dmg" : S.tmo >= TIMEOUTS_MAX ? "time" : S.rankLeft ? "left" : "cd") : (oppM && oppM.cd ? (oppM.cdw ? (oppM.dk === 0 ? "deck" : "dmg") : (oppM.to || 0) >= TIMEOUTS_MAX ? "time" : "cd") : "left");
   statHist({me: (S.leader && S.leader.card && S.leader.card.c) || "", op: S.statOpLd || "", on: S.statOpNick || "", fc: S.statOpFc || "", r: won ? "w" : "l", rk: S.ranked && S.rankOpp ? 1 : 0, b: S.rankD || 0, y});
   statsSave();
 }
@@ -1861,7 +1861,7 @@ function ago(t){
   const m = Math.round((Date.now() - t) / 60000);
   return m < 1 ? "just now" : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m / 60)} h ago` : m < 2880 ? "yesterday" : new Date(t).toLocaleDateString(undefined, {month: "short", day: "numeric"});
 }
-const HOW = {w: {cd: "They conceded", dmg: "Won on damage", left: "They left", time: "They ran out of time"}, l: {cd: "You conceded", dmg: "Lost on damage", left: "You left", time: "You ran out of time"}};
+const HOW = {w: {cd: "They conceded", dmg: "Won on damage", deck: "Their deck ran out", left: "They left", time: "They ran out of time"}, l: {cd: "You conceded", dmg: "Lost on damage", deck: "Your deck ran out", left: "You left", time: "You ran out of time"}};
 function histRow(e){
   const opn = e.op ? (nameOf(e.op) || e.op) : "Unknown Leader", men = e.me ? (nameOf(e.me) || e.me) : "";
   const bits = [HOW[e.r][e.y], e.rk ? `Ranked${e.b ? ` ${e.b > 0 ? "+" : "\u2212"}${berry(Math.abs(e.b))}` : ""}` : "", e.t ? ago(e.t) : ""].filter(Boolean);
@@ -2287,6 +2287,7 @@ const EMPTY = () => ({nick:"Opponent", sl:0, tn:0, ld:null, ch:[], st:null, ev:n
 function render(){
   if (botQuiet) return;
   if (WATCH) { renderWatch(); return; }
+  if (S.phase === "play" && S.chars.length > 5 && !modal) setTimeout(() => { if (S.chars.length > 5 && !modal) { modal = {type: "limit"}; renderModal(); } }, 0);
   rankCheck(); statCheck();
   { const ok = boardTools(); for (const k of ["resetboard", "refresh", "undo"]) { const b = $(`[data-do="${k}"]`); if (b) b.hidden = !ok; } }
   { const fb = $("#startfb");
@@ -2313,8 +2314,8 @@ function render(){
   else if (oppM && !oppM.ready) mid = oppM.nick + " is setting up their deck…";
   if (S.blk != null && !(oppM && oppM.ak)) { S.blk = null; publish(); }
   { const k = oppM && oppM.ak ? oppM.ak.s + ">" + oppM.ak.t : ""; if (k !== oppAtkKey) { oppAtkKey = k; if (k) { offerOppAttack(); const ak = oppM.ak; setTimeout(() => fxAttack(`#opp [data-opp="${ak.s}"]`, `#me [data-src="${ak.t}"]`), 0); } } }
-  const cdMsg = oppM && oppM.cd ? (oppM.cdw ? `${oppM.nick} took damage at 0 Life. You win!` : `${oppM.nick} conceded. You win!`) : "";
-  const res = S.conceded ? (S.lostDmg ? "You took damage at 0 Life. You lose!" : "You conceded the match.") : (oppM && oppM.cd ? esc(cdMsg) : "");
+  const cdMsg = oppM && oppM.cd ? (oppM.cdw ? (oppM.dk === 0 ? `${oppM.nick} has no cards left in their deck. You win!` : `${oppM.nick} took damage at 0 Life. You win!`) : `${oppM.nick} conceded. You win!`) : "";
+  const res = S.conceded ? (S.lostDeck ? "Your deck is empty. You lose!" : S.lostDmg ? "You took damage at 0 Life. You lose!" : "You conceded the match.") : (oppM && oppM.cd ? esc(cdMsg) : "");
   if (oppM && oppM.cd && !oppCdSeen) { oppCdSeen = true; toast(cdMsg); } else if (!(oppM && oppM.cd)) oppCdSeen = false;
   const ch = res ? `<span>\u2691 ${res}</span>` : S.phase === "none" ? "" : combatHTML(), midEl = $("#mid");
   midEl.classList.toggle("combat", !!ch);
@@ -2378,6 +2379,9 @@ function renderModal(){
     if (!cards.length) { closeModal(); return; }
     const pr = modal.pred, hint = modal.take ? `The effect lets you take up to ${modal.take}${pr ? " of the glowing cards" : ""}.${modal.bottom ? " The rest go to the bottom of your deck once you've taken them, or tap Take none." : ""}` : "Tap a card to take it. Shuffle when you're done.";
     showModal(`<h2>${modal.all ? "Search your deck (" + cards.length + ")" : "Top " + cards.length + " of your deck"}</h2><p class="hint">Only you can see these. ${hint}</p><div class="grid">${cards.map((c, i) => tile(c, `data-src="dk:${i}"`, false, 0, modal.take && pr ? (pr(c.c) ? "fxtarget" : "nomatch") : "")).join("")}</div><div class="row end">${modal.take && modal.bottom ? '<button class="btn" data-do="peekrest" type="button">Take none, rest to bottom</button>' : ""}${modal.all ? "" : '<button class="btn" data-do="peekbottom" type="button">Send all to bottom</button>'}<button class="btn" data-do="shuffle" type="button">Shuffle deck</button><button class="btn pri" data-do="closemodal" type="button">Done</button></div>`);
+  } else if (modal.type === "limit") {
+    if (S.chars.length <= 5) { closeModal(); return; }
+    showModal(`<h2>Only 5 Characters fit</h2><p class="hint">Trash 1 of your other Characters to make room for ${esc(lab(S.chars[S.chars.length - 1].card))}. It's trashed, not K.O.'d, so its [On K.O.] doesn't happen.</p><div class="grid">${S.chars.slice(0, -1).map((f, i) => `<div class="fxzc" data-do="limit:${i}">${tile(f.card, "", f.r, f.d || 0, "fxtarget")}</div>`).join("")}</div>`);
   } else if (modal.type === "fxzone") {
     const st = fxCur && fxCur.steps[fxCur.i]; if (!st || !(st.a === "trashHand" || st.a === "trashDeck")) { closeModal(); return; }
     const pr = fxZonePred(st), n = Math.abs(st.n);
@@ -2776,20 +2780,164 @@ function botStep(){
   if (S.atk) return 0;                                   // you're answering its attack
   return botMain();
 }
+// ---------- the computer's card abilities ----------
+// It uses them like a player would: pays the costs it can afford, aims removal at your biggest card it can hit and
+// boosts at its own next attacker (or the card being attacked), pays with its least useful cards, takes the best card
+// a search allows, and passes over anything the game leaves to the player.
+let botFxBusy = false;
+const botCanRun = a => !!a && !a.s && a.steps.some(s => s.a !== "other");
+const botVal = c => { const e = CARDDB.get(c) || {}; return (e.k || 0) * 2 + (e.ctr || 0) / 1000 + (e.t === "Character" ? 1 : 0); };
+const BAD_FOR_TARGET = {ko: 1, rest: 1, bounce: 1, bottom: 1, trashCh: 1, mark: 1, life: 1};
+// is doing this step to the chosen cards good for the computer?
+function botGood(st){
+  const own = fxOwn(st) || st.who === "own";
+  const harm = BAD_FOR_TARGET[st.a] || ((st.a === "pwr" || st.a === "cost") && st.n < 0);
+  return own ? !harm && !(st.a === "cost" && st.n > 0) : harm;
+}
+function botAbility(card, trigs, don){
+  const self = [S.leader, S.stage, ...S.chars].find(f => f && f.card === card);
+  const list = fxAb(card.c).filter(a => trigs.includes(a.t) && botCanRun(a) && (a.don || 0) <= (don || 0) && (a.donMinus || 0) <= fieldDon() && !optUsed(card, a)
+    && (c => !c || condCheck(c, self) !== false)(leadCond(a.text)));
+  if (!list.length) return false;
+  for (const a of list) fxEnqueue(fxJob(card, a));
+  botFxGo(); return true;
+}
+function botTrigger(card){
+  const ab = fxAb(card.c).find(x => x.t === "trigger"), i = S.hand.indexOf(card);
+  if (!botCanRun(ab) || i < 0) return;
+  if (!/play this card/i.test(ab.text)) { S.hand.splice(i, 1); S.trash.unshift(card); }
+  addLog(`activated the [Trigger] on ${lab(card)}`);
+  fxEnqueue(fxJob(card, Object.assign({}, ab, {don: 0}))); botFxGo();
+}
+function botFxGo(){
+  if (botFxBusy) return; botFxBusy = true;
+  try {
+    for (let g = 0; fxCur && g < 80; g++) {
+      const m = fxCur, i = m.i, st = m.steps[i];
+      if (!st) { fxFinish(true); continue; }
+      fxStepHTML(m);
+      if (!m.manual) botFxStep(m, st);
+      // nothing happened: a cost it can't pay ends the ability, anything else is passed over
+      if (fxCur === m && m.i === i && m.steps[i] === st) { if (st.pay) fxFinish(false); else { m.res = false; fxNext(); } }
+    }
+    while (fxCur) { fxQueue.length = 0; fxFinish(false); }
+  } finally { botFxBusy = false; }
+}
+// its own card that gets a boost: the card being attacked, or the strongest card that can still attack
+function botOwnPick(cs, st){
+  const at = x => donHolder(x.ref.replace(/^m:/, ""));
+  if (defending()) { const d = myDefender(); const x = cs.find(y => at(y) === d); return x ? [x] : []; }
+  if (st.a === "stand") return cs.filter(x => x.r).sort((a, b) => (b.p || 0) - (a.p || 0));
+  if (st.a === "kw" && st.k === "r") return cs.filter(x => { const f = at(x); return f && f.pt === S.turn && !f.r; }).sort((a, b) => (b.p || 0) - (a.p || 0));
+  return cs.filter(x => !x.r).sort((a, b) => (at(b) === S.leader) - (at(a) === S.leader) || (b.p || 0) - (a.p || 0)).concat(cs.filter(x => x.r));
+}
+function botFxStep(m, st){
+  if (st.self) { fxApply(); return; }
+  if (st.a === "choose") { const k = st.opts.findIndex(o => o.steps.length && o.steps.every(s => s.a !== "other")); doAction("fxopt:" + Math.max(0, k)); return; }
+  if (fxVerb(st, "it")) {
+    const cs = fxCands(st); if (!cs.length) return;
+    const lim = fxLim(st), good = botGood(st), own = fxOwn(st) || st.who === "own";
+    let pick = [];
+    if (st.all) pick = good || st.must || st.pay ? cs : [];
+    else if (good) pick = own ? botOwnPick(cs, st) : cs.filter(x => !x.mine).sort((a, b) => (b.k || 0) - (a.k || 0) || (b.p || 0) - (a.p || 0));
+    else if (st.pay || st.must) pick = cs.slice().sort((a, b) => (a.k || 0) - (b.k || 0) || (a.p || 0) - (b.p || 0));
+    pick = pick.slice(0, st.all ? 99 : lim);
+    if (!pick.length) return;
+    m.pick = pick.map(x => x.ref); fxApply(); return;
+  }
+  if (st.a === "returnDon") {
+    const sel = {}; let left = st.n;
+    const take = (k, have) => { const t = Math.min(left, have || 0); if (t > 0) { sel[k] = t; left -= t; } };
+    take("r", S.donRested); take("a", S.donActive); S.chars.forEach((f, i) => take("ch:" + i, f.d)); if (S.leader) take("ld", S.leader.d);
+    if (left > 0 && !st.upTo) return;
+    m.dsel = sel; doAction("fxrdok"); return;
+  }
+  if (st.a === "draw") { doAction("fxdraw"); return; }
+  if (st.a === "don") { doAction(/\brest/i.test(st.text || "") && !/\bactive\b/i.test(st.text || "") ? "fxdon:r" : "fxdon:a"); return; }
+  if (st.a === "look") { botLook(m, st); return; }
+  if (HAND_PICK[st.a]) {
+    const pr = fxHandPred(st), need = Math.min(Math.abs(st.n), S.hand.filter(c => !pr || pr(c.c)).length); if (!need) return;
+    m.pick = S.hand.map((c, i) => ({i, v: botVal(c.c), ok: !pr || pr(c.c)})).filter(x => x.ok).sort((a, b) => a.v - b.v).slice(0, need).map(x => "hand:" + x.i);
+    fxApply(); return;
+  }
+  if (st.a === "trashHand" || st.a === "trashDeck") {
+    const pr = fxZonePred(st), up = st.a === "trashHand";
+    const cand = S.trash.map((c, i) => ({i, v: botVal(c.c), ok: !pr || pr(c.c)})).filter(x => x.ok).sort((a, b) => up ? b.v - a.v : a.v - b.v).slice(0, Math.abs(st.n));
+    if (!cand.length || (st.pay && cand.length < Math.abs(st.n))) return;
+    const cs = cand.map(x => x.i).sort((x, y) => y - x).map(i => S.trash.splice(i, 1)[0]).filter(Boolean);
+    if (up) { S.hand.push(...cs); addLog(`added ${cs.map(lab).join(", ")} from the trash to hand`); }
+    else { S.deck.push(...cs); addLog(`put ${cs.length} card${cs.length === 1 ? "" : "s"} from the trash on the bottom of the deck`); }
+    m.res = true; commit(); fxNext(); return;
+  }
+  const ps = (st.a === "other" || st.a === "play") ? m.play : null;
+  if (ps) {
+    const i0 = m.i, pool = ps.from === "hand" ? S.hand : S.trash;
+    for (let n = ps.n; n > 0 && fxCur === m && m.i === i0; n--) {
+      const best = pool.map((c, i) => ({i, c})).filter(x => ps.pred(x.c.c) && (playDest(x.c.c) !== "chars" || S.chars.length < 5)).sort((a, b) => botVal(b.c.c) - botVal(a.c.c))[0];
+      if (!best) break;
+      fxPlay((ps.from === "hand" ? "hand:" : "tr:") + best.i);
+    }
+    if (fxCur === m && m.i === i0 && m.res) fxNext();
+    return;
+  }
+  if (["restDon", "standDon", "oppDon", "oppRetDon", "oppDiscard", "oppHandDeck", "lifeTrash", "lifeHand", "deckLife", "mill", "shuffle", "playSelf", "handSelf", "act", "noBlock"].includes(st.a)) fxApply();
+}
+// "Look at 5 cards from the top of your deck; reveal up to 1 X and add it to your hand. Then, place the rest at the bottom"
+function botLook(m, st){
+  const sp = lookSpec(m.text), n = Math.min(st.n || 0, S.deck.length), top = S.deck.splice(0, n), got = [];
+  let take = sp ? sp.n : 0;
+  for (const c of top.slice().sort((a, b) => botVal(b.c) - botVal(a.c))) if (take > 0 && (!sp.pred || sp.pred(c.c))) { got.push(c); top.splice(top.indexOf(c), 1); take--; }
+  S.hand.push(...got);
+  if (sp) S.deck.push(...top); else S.deck.unshift(...top);
+  addLog(`looked at the top ${n} cards of their deck${got.length ? ` and added ${got.map(lab).join(", ")} to hand` : ""}`);
+  m.res = true; commit(); fxNext();
+}
+// an [Activate: Main] or an Event's [Main] worth using now: something to do, a cost it can pay without giving up a
+// card, and a target for its first step that hits you
+function botWorth(card, a){
+  if (!botCanRun(a) || optUsed(card, a)) return false;
+  const self = [S.leader, S.stage, ...S.chars].find(f => f && f.card === card);
+  if ((a.don || 0) > ((self && self.d) || 0)) return false;
+  if ((a.donMinus || 0) && fieldDon() - a.donMinus < 4) return false;
+  const c = leadCond(a.text); if (c && condCheck(c, self) === false) return false;
+  for (const s of a.steps) {
+    if (s.self && ["trash", "ko", "bounce", "bottom"].includes(s.a)) return false;
+    if (s.self && s.a === "rest" && self && self.r) return false;
+    if (s.a === "restDon" && s.pay && S.donActive < s.n) return false;
+    if (s.a === "discard" && s.pay && S.hand.length < Math.abs(s.n) + 2) return false;
+  }
+  const hit = a.steps.find(s => !s.pay && !s.self && fxVerb(s, "it") && !fxOwn(s) && s.who !== "own");
+  if (hit) { const was = fxCur; fxCur = {card, steps: [hit], i: 0, text: a.text, pick: []}; try { if (!fxCands(hit).length) return false; } finally { fxCur = was; } }
+  return true;
+}
+// a [Counter] Event that adds power to the card being attacked
+function botCounterEvent(need){
+  return S.hand.map((c, i) => { const ab = fxAb(c.c).find(a => a.t === "counter"), hc = handCost(c), st = ab && ab.steps.find(s => s.a === "pwr" && s.n > 0 && !s.self && (fxOwn(s) || s.who === "own"));
+    return st && hc && hc.cost <= S.donActive && (CARDDB.get(c.c) || {}).t === "Event" ? {i, cost: hc.cost, n: st.n} : null; }).filter(Boolean)
+    .sort((a, b) => (b.n >= need) - (a.n >= need) || (a.n >= need ? a.cost - b.cost : b.n - a.n))[0] || null;
+}
+function botLimit(){
+  while (S.chars.length > 5) {
+    const i = S.chars.slice(0, -1).map((f, i) => ({i, k: (CARDDB.get(f.card.c) || {}).k || 0})).sort((a, b) => a.k - b.k)[0].i, f = S.chars.splice(i, 1)[0];
+    S.donRested += f.d || 0; S.trash.unshift(f.card); addLog(`trashed ${lab(f.card)} to stay at 5 Characters`);
+  }
+}
 function botAttackers(){
   if (!(S.turn > 1)) return [];
   if (PR.bt !== S.turn) { PR.bt = S.turn; PR.bskip = []; }
   return [["ld", S.leader], ...S.chars.map((f, i) => ["ch:" + i, f])]
     .filter(([r, f]) => f && !f.r && !(f.mk || []).includes("na") && !PR.bskip.includes(f) && typeof rushNow(f) === "string")
-    .map(([r, f]) => ({r, f, k: rushNow(f)}));
+    .map(([r, f]) => ({r, f, k: rushNow(f)}))
+    .sort((x, y) => (x.f === S.leader) - (y.f === S.leader) || (botPow(x.f) || 0) - (botPow(y.f) || 0));
 }
-// your Leader when the attack lands, or a rested Character it can K.O. (bigger ones first)
+// your Leader when you're down to 2 Life or less; otherwise a rested Character that matters first (keeping the board
+// under control), then your Leader. Bigger Characters first.
 function botTarget(a){
   const ap = botPow(a.f); if (ap == null) return null;
   const lp = oppM.ld ? powNum(oppM.ld) : null, hitLd = a.k === "all" && lp != null && ap >= lp, act = canHitActive(a.f);
   const kos = (oppM.ch || []).map((c, i) => ({i, p: powNum(c), k: (CARDDB.get(c.c) || {}).k || 0, r: c.r})).filter(x => (x.r || act) && x.p != null && ap >= x.p).sort((x, y) => y.k - x.k || y.p - x.p);
-  if (hitLd && (a.f === S.leader || oppM.lf <= 1)) return "ld";
-  if (kos.length && (kos[0].k >= 4 || !hitLd)) return "ch:" + kos[0].i;
+  if (hitLd && oppM.lf <= 2) return "ld";
+  if (kos.length && (kos[0].k >= 3 || !hitLd)) return "ch:" + kos[0].i;
   return hitLd ? "ld" : null;
 }
 function botGiveDon(atks){
@@ -2805,10 +2953,23 @@ function botMain(){
     const opts = S.hand.map((c, i) => ({i, hc: handCost(c), e: CARDDB.get(c.c) || {}})).filter(x => x.e.t === "Character" && x.hc && x.hc.cost <= S.donActive).sort((a, b) => b.hc.cost - a.hc.cost || (b.e.p || 0) - (a.e.p || 0));
     if (opts.length) { moveCard("hand:" + opts[0].i, "chars", false, opts[0].hc.cost); return 1000; }
   }
+  // 2. an [Activate: Main] or an Event's [Main] that has something to do, once each per turn
+  const used = PR.bact && PR.bact.t === S.turn ? PR.bact.u : (PR.bact = {t: S.turn, u: []}).u;
+  for (const f of [S.leader, S.stage, ...S.chars]) {
+    if (!f) continue;
+    const ab = fxAb(f.card.c).find(a => a.t === "activateMain" && !used.includes(f.card.c + a.text) && botWorth(f.card, a)); if (!ab) continue;
+    used.push(f.card.c + ab.text);
+    if (botAbility(f.card, ["activateMain"], f.d || 0)) return 1000;
+  }
+  for (const [i, c] of S.hand.entries()) {
+    const hc = handCost(c), ab = fxAb(c.c).find(a => a.t === "main");
+    if ((CARDDB.get(c.c) || {}).t !== "Event" || !hc || hc.cost > S.donActive || !ab || used.includes(c.c + ab.text) || !botWorth(c, ab)) continue;
+    used.push(c.c + ab.text); moveCard("hand:" + i, "event", false, hc.cost); return 1000;
+  }
   const atks = botAttackers();
-  // 2. give the DON!! left over to the cards that will attack
+  // 3. give the DON!! left over to the cards that will attack
   if (S.donActive > 0 && atks.length) { botGiveDon(atks); return 1000; }
-  // 3. attack one at a time; you answer each one
+  // 4. attack one at a time, weaker attacks first and the Leader last; you answer each one
   for (const a of atks) {
     const t = botTarget(a);
     if (!t) { PR.bskip.push(a.f); continue; }
@@ -2816,7 +2977,7 @@ function botMain(){
     if (!S.atk) PR.bskip.push(a.f);
     return 900;
   }
-  // 4. end the turn (its End of Turn abilities don't run)
+  // 5. end the turn (its End of Turn abilities don't run)
   S.eot = S.turn; endTurn(); return 0;
 }
 // the computer defends: a Blocker that survives, any Blocker at 1 Life or less, and counters when the hit matters
@@ -2837,6 +2998,11 @@ function botDefend(){
       let set = one ? [one] : null;
       if (!set) { set = []; let sum = 0; for (const x of ctrs.slice().sort((x, y) => y.v - x.v)) { if (sum >= amt) break; set.push(x); sum += x.v; } if (sum < amt) set = null; }
       const want = set && (r.onLeader ? life === 0 || life <= 2 || (set.length === 1 && S.hand.length >= 5) : cost(r.f) >= 4 && set.length === 1);
+      // worth saving, but the counter cards don't reach: a [Counter] Event that adds power first
+      if (!set && (r.onLeader ? life <= 2 : cost(r.f) >= 5)) {
+        const ev = botCounterEvent(amt - ctrs.reduce((s, x) => s + x.v, 0));
+        if (ev) { moveCard("hand:" + ev.i, "event", false, ev.cost); return botDefend(); }
+      }
       if (want) {
         const d = myDefender();
         for (const x of set.sort((x, y) => y.i - x.i)) {
@@ -3024,6 +3190,7 @@ function fxSettle(){
   }
 }
 function renderFx(){
+  if (botQuiet) return;
   const el = $("#fxpanel"); if (!el) return;
   document.querySelectorAll(".fxtarget,.fxpicked").forEach(e => { if (!e.closest("#modal")) e.classList.remove("fxtarget", "fxpicked"); });
   if (!fxCur) { el.hidden = true; el.innerHTML = ""; return; }
@@ -3051,6 +3218,7 @@ function fxFinish(done){
   const m = fxCur; if (!m) return;
   if (done) { const uf = [S.leader, S.stage, ...S.chars].find(f => f && f.card === m.card); if (uf && /once\s*per\s*turn/i.test(m.text || "")) { uf.mk = uf.mk || []; if (!uf.mk.includes("au")) uf.mk.push("au"); } addLog(`resolved ${lab(m.card)}'s ${m.tl || "On Play"}`); }
   else addLog(`cancelled ${lab(m.card)}'s ability`);
+  if (S.ev && S.ev.card === m.card && !fxQueue.some(j => j.card === m.card)) { S.trash.unshift(S.ev.card); S.ev = null; addLog(`${lab(m.card)} went to the trash`); }
   S.mf = null; fxCur = fxQueue.shift() || null; if (fxCur) fxSettle(); commit(); renderFx();
 }
 const fxOwn = st => st.who === "own" || st.a === "giveDon" || st.a === "kw";
@@ -3094,7 +3262,8 @@ function fxTap(t){
 // trigs: array of trigger keys. manual: show a message when nothing matches
 const ownCard = card => [S.leader, S.stage, S.ev, ...S.chars].some(f => f && f.card === card) || [S.hand, S.trash, S.life, S.deck].some(z => z.includes(card));
 async function runAbility(card, trigs, manual, don){
-  if (botQuiet || (PR && !ownCard(card))) return;
+  if (botQuiet) { if (PR && PR.bot && PR.cur === 1 && ownCard(card)) botAbility(card, trigs, don || 0); return; }
+  if (PR && !ownCard(card)) return;
   if ((!fxOn() && !manual) || !canRead(card.c)) { if (manual) toast("This card's text isn't available."); return; }
   try {
     if (!fxKnown(card.c)) toast(`Reading ${card.c}…`);
@@ -3154,7 +3323,8 @@ async function useAbility(card, x, y){
 }
 // a Life card that was just taken as damage: offer its [Trigger] ability
 async function offerTrigger(card, tries){
-  if (botQuiet || !fxOn() || !card || !canRead(card.c)) return;
+  if (botQuiet) { if (PR && PR.bot && PR.cur === 1 && card) botTrigger(card); return; }
+  if (!fxOn() || !card || !canRead(card.c)) return;
   try {
     if (!fxKnown(card.c)) toast("Checking " + card.c + " for a [Trigger]\u2026");
     const fx = await readEffect(card.c); $("#toast").hidden = true;
@@ -3449,6 +3619,8 @@ function advance(){
   }
   // the defender resolved my attack
   if (S.atk && S.atk.n && oppM && oppM.rs === S.atk.n) { S.atk = null; ch = true; }
+  // a player with no cards left in their deck loses the game
+  if (S.phase === "play" && S.turn && !S.deck.length && !S.conceded) { S.conceded = true; S.lostDmg = true; S.lostDeck = true; S.atk = null; S.blk = null; addLog("has no cards left in their deck and lost the game"); toast("Your deck is empty, so you lose."); ch = true; }
   const goPre = () => { S.phase = "pre"; addLog(S.first ? "will go first" : "will go second"); ch = true; };
   if (S.phase === "wait" || S.phase === "roll") {
     if (!R && status !== "connecting") { S.phase = "pre"; return true; }
@@ -3509,6 +3681,7 @@ function draw(n){
 function shuffleDeck(){ shuffle(S.deck); addLog("shuffled their deck"); commit(); }
 function startTurn(){
   S.pw = 0; S.cc = 0; S.atk = null; S.blk = null;
+  if (S.phase === "play" && S.ev) { S.trash.unshift(S.ev.card); S.ev = null; }
   // nobody starts a turn until both players have kept their hand and set Life (older copies don't send kp)
   if (S.phase === "play" && !S.turn && oppM && oppM.kp === 0) { toast(`Waiting for ${oppM.nick} to keep their hand and set Life.`); return; }
   if (S.phase !== "play") { toast(S.phase === "pre" ? "Keep your hand and set your Life first." : (S.phase === "wait" || S.phase === "roll") ? "The match hasn't started yet." : "Set up your deck first."); return; }
@@ -3562,6 +3735,7 @@ function endTurn(){
   }
   S.pw = 0; S.cc = 0; S.atk = null; S.blk = null;
   for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = 0; f.cm = 0; f.bc = 0; }
+  if (S.ev) { S.trash.unshift(S.ev.card); addLog(`${lab(S.ev.card)} went to the trash`); S.ev = null; }
   S.myTurn = false; S.et = (S.et || 0) + 1;
   addLog(`ended turn ${S.turn || 0}`);
   commit();
@@ -3879,7 +4053,7 @@ function moveCard(src, dest, free, pay){
   const c = r.card, nm = lab(c), wasPublic = k === "ch" || k === "st" || k === "ev" || k === "tr";
   let msg = "";
   if (dest === "hand") { S.hand.push(c); msg = k === "lf" ? `took damage (Life ${S.life.length})` : k === "tr" ? `added ${nm} from the trash to hand` : wasPublic ? `returned ${nm} to hand` : k === "dk" ? (modal && modal.type === "peek" ? `revealed ${nm} from a search and added it to hand` : "took a card from the deck to hand") : "moved a card to hand"; }
-  else if (dest === "chars") { S.chars.push({card: c, r: false, d: 0, pt: S.turn}); msg = `played ${nm}`; if (S.chars.length > 5) toast("That's more than 5 Characters. Trash one to stay within the limit."); }
+  else if (dest === "chars") { S.chars.push({card: c, r: false, d: 0, pt: S.turn}); msg = `played ${nm}`; if (S.chars.length > 5 && botQuiet) botLimit(); }
   else if (dest === "stage") { if (S.stage) { S.trash.unshift(S.stage.card); msg = `replaced their Stage (trashed ${lab(S.stage.card)}), then `; } S.stage = {card: c, r: false, d: 0}; msg += `played ${nm} as Stage`; }
   else if (dest === "event") { if (S.ev) { S.trash.unshift(S.ev.card); msg = `replaced their Event (trashed ${lab(S.ev.card)}), then `; } S.ev = {card: c, r: false, d: 0}; msg += `played ${nm} as Event`; }
   else if (dest === "trash") { S.trash.unshift(c); msg = k === "lf" ? `trashed ${nm} from Life` : k === "ch" ? `trashed ${nm} (KO)` : `trashed ${nm}`; }
@@ -4225,6 +4399,9 @@ function rushNow(f){
 }
 function attackWith(src, target, ok){
   const me = donHolder(src); if (!me) return;
+  if (S.phase !== "play" || !S.myTurn || !oppM) { toast("You can only attack on your own turn."); return; }
+  if (S.atk) { toast("Finish the attack that's going on first."); return; }
+  if (me.r) { toast(`${lab(me.card)} is rested, so it can't attack.`); return; }
   if (!ok && me !== S.leader && me.pt === S.turn) {
     const rk = rushNow(me);
     if (!rk) { toast(`${lab(me.card)} was played this turn and doesn't have [Rush], so it can't attack yet.`); return; }
@@ -4367,8 +4544,15 @@ function markCombat(){
     if (S.blk != null) mark(`#me [data-src="ch:${S.blk}"]`, "atk-blk");
   }
 }
+// a card on the field that gives [Blocker] ("[DON!! x1] This Character gains [Blocker]", a Leader's "gain [Blocker]")
+const grantsBlocker = () => [S.leader, S.stage, ...S.chars].some(g => g && fxAb(g.card.c).some(a => /gains? \[Blocker\]/i.test(a.text || "")));
+const knownFx = c => BFX.has(c) || EFX.has(c);
 function doBlock(i){
   const f = S.chars[i]; if (!f) return;
+  if (!oppM || !oppM.ak) return;
+  if (oppM.ak.t === "ch:" + i) { toast(`${lab(f.card)} is the one being attacked, so it can't block.`); return; }
+  if (f.r && S.blk !== i) { toast(`${lab(f.card)} is rested, so it can't block.`); return; }
+  if (!boardTools() && knownFx(f.card.c) && !isBlocker(f.card.c) && !grantsBlocker()) { toast(`${lab(f.card)} doesn't have [Blocker].`); return; }
   const ban = blockBan(f); if (ban) { toast(ban); return; }
   if (S.blk != null && S.chars[S.blk] && S.blk !== i) S.chars[S.blk].r = false;
   S.blk = i; f.r = true; addLog(`blocked with ${lab(f.card)}`); commit(); runAbility(f.card, ["onBlock"], false, f.d || 0);
@@ -4491,7 +4675,7 @@ document.addEventListener("pointerup", e => {
   if (d.kind === "don") return;
   const sx = e.clientX, sy = e.clientY, ds = d.src;
   // during the opponent's attack, tapping one of your active Characters blocks with it
-  if (!fxCur && oppM && oppM.ak && /^ch:/.test(ds)) { const i = +ds.slice(3), f = S.chars[i]; if (f && !f.r && S.blk !== i) { closeMenu(); doBlock(i); return; } }
+  if (!fxCur && oppM && oppM.ak && /^ch:/.test(ds)) { const i = +ds.slice(3), f = S.chars[i]; if (f && !f.r && S.blk !== i && (isBlocker(f.card.c) || !knownFx(f.card.c))) { closeMenu(); doBlock(i); return; } }
   clearTimeout(menuT); menuT = setTimeout(() => openCardMenu(ds, sx, sy), 230);
 });
 document.addEventListener("pointercancel", () => { drag = null; clearIns(); if (ghost) { ghost.remove(); ghost = null; } clearOver(); });
@@ -4655,6 +4839,11 @@ function doAction(a){
     if (st.a === "trashHand") { S.hand.push(...cs); if (cs.length) addLog(`added ${cs.map(lab).join(", ")} from the trash to hand`); }
     else { S.deck.push(...cs); if (cs.length) addLog(`put ${cs.length} card${cs.length === 1 ? "" : "s"} from the trash on the bottom of the deck`); }
     fxCur.res = cs.length > 0; closeModal(); commit(); fxNext(); return;
+  }
+  if (a.startsWith("limit:") && modal && modal.type === "limit") {
+    const i = +a.slice(6), f = S.chars[i]; if (!f || i >= S.chars.length - 1) return;
+    S.chars.splice(i, 1); S.donRested += f.d || 0; S.trash.unshift(f.card); addLog(`trashed ${lab(f.card)} to stay at 5 Characters`);
+    closeModal(); commit(); return;
   }
   if ((a === "fxskip" || a === "fxskip:no") && fxCur) { const st = fxCur.steps[fxCur.i]; if (st && st.pay) { fxFinish(false); return; } if (a === "fxskip:no") fxCur.res = false; fxNext(); return; }
   if (a === "fxcancel" && fxCur) { fxFinish(false); return; }
