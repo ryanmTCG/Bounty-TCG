@@ -380,6 +380,9 @@ button,input,textarea,select{font:inherit;color:inherit}
 .coach .skip{background:none;border:0;color:#8FD8EE;text-decoration:underline;cursor:pointer;font:inherit;font-size:12px;margin-right:auto;padding:0}
 .coachhl{outline:3px solid #4FC3E0;outline-offset:3px;border-radius:10px;animation:coachpulse 1.2s ease-in-out infinite}
 @keyframes coachpulse{0%,100%{outline-color:rgba(79,195,224,.95)}50%{outline-color:rgba(79,195,224,.25)}}
+.fxpanel .fxrv{display:flex;align-items:center;gap:10px;margin:6px 0}
+.fxpanel .fxrv span{font-size:12px;text-transform:uppercase;letter-spacing:.05em;opacity:.8}
+.fxpanel .fxrv .card{--cw:56px;--ch:78px;flex:0 0 auto;margin:0;font-size:9px}
 .fxpanel .fxdo{font-weight:700;font-size:14px;color:#fff}
 .fxpanel .fxcol{display:flex;flex-direction:column;gap:6px;margin:0 0 8px}
 .fxtarget{outline:3px dashed #F2B84B;outline-offset:2px;cursor:pointer;animation:fxpulse 1.2s ease-in-out infinite}
@@ -3126,7 +3129,9 @@ function botFxStep(m, st){
     if (fxCur === m && m.i === i0 && m.res) fxNext();
     return;
   }
-  if (["restDon", "standDon", "oppDon", "oppRetDon", "oppDiscard", "oppHandDeck", "lifeTrash", "lifeHand", "deckLife", "mill", "shuffle", "playSelf", "handSelf", "act", "noBlock", "noPlay", "lifeUp", "lifeDown"].includes(st.a)) fxApply();
+  if (st.a === "rvPlace") { fxApply(st.top && (!st.bot || (rvHere(m) && botVal(m.rv.c.c) >= 9)) ? "top" : ""); return; }
+  if (st.a === "playRv" && rvFits(m, st) && playDest(m.rv.c.c) === "chars" && S.chars.length >= 5) return;
+  if (["restDon", "standDon", "oppDon", "oppRetDon", "oppDiscard", "oppHandDeck", "lifeTrash", "lifeHand", "deckLife", "mill", "shuffle", "playSelf", "handSelf", "act", "noBlock", "noPlay", "lifeUp", "lifeDown", "reveal", "playRv", "addRv", "rvKw"].includes(st.a)) fxApply();
 }
 // "Look at 5 cards from the top of your deck; reveal up to 1 X and add it to your hand. Then, place the rest at the bottom"
 function botLook(m, st){
@@ -3422,7 +3427,8 @@ function normStep(t, deep){
   t = t || {};
   const st = {a: String(t.a || "other").slice(0, 16), who: t.who === "own" ? "own" : t.who === "any" ? "any" : "opp", n: Math.max(1, Math.min(60000, Math.round(Math.abs(+t.n) || 1))) * (+t.n < 0 ? -1 : 1), upTo: t.upTo !== false, cost: Number.isFinite(+t.cost) && t.cost !== null ? +t.cost : null, power: Number.isFinite(+t.power) && t.power !== null ? +t.power : null, rested: t.rested === true, ld: typeof t.ld === "boolean" ? t.ld : null, all: t.all === true, text: fxText(t.text, 300)};
   if (st.a === "kw" && !+t.n) st.n = 0;
-  for (const k of ["self", "pay", "battle", "tb", "top", "now", "up", "dn"]) if (t[k] === true) st[k] = true;
+  for (const k of ["self", "pay", "battle", "tb", "top", "bot", "lf", "now", "up", "dn"]) if (t[k] === true) st[k] = true;
+  if (typeof t.f === "string" && t.f.trim()) st.f = fxText(t.f, 160);
   if (typeof t.k === "string" && /^[a-zA-Z]{1,12}$/.test(t.k)) st.k = t.k;
   if (Number.isInteger(t.cnt) && t.cnt > 1) st.cnt = Math.min(t.cnt, 10);
   if (st.a === "choose" && !deep) st.opts = (Array.isArray(t.opts) ? t.opts : []).slice(0, 4).map(o => ({text: fxText(o && o.text, 300), steps: (Array.isArray(o && o.steps) ? o.steps : []).slice(0, 6).map(x => normStep(x, true))}));
@@ -3486,8 +3492,20 @@ function stepOk(m, st){
   const c = stepCond(st); if (!c) return true;
   if (/^you do$/i.test(c)) return m.did === false ? false : m.did ? true : null;
   if (/^you (?:do not|don't)$/i.test(c)) return m.did === false ? true : m.did ? false : null;
+  if (/^(?:that|the revealed) card\b/i.test(c)) return rvCheck(m, c);
   return condCheck(c, fxSelf(m));
 }
+// "Reveal 1 card from the top of your deck (or Life cards)": m.rv is that card. "the revealed card has a cost of 4 or
+// more", "that card's type includes "X"", "that card is a {X} type Character card with a cost of 4 or less"
+function rvCheck(m, c){
+  if (!m.rv) return false;
+  const seg = c.replace(/^(?:that|the revealed) card(?:'s)?\s*(?:is an?|has an?|is|has)?\s*/i, "").replace(/type includes "/i, 'type including "');
+  if (/chosen cost/i.test(seg)) return null;
+  const pr = cardFilter(seg); return pr ? pr(m.rv.c.c) : null;
+}
+// the revealed card is still where it was (not played, added to hand or put back yet)
+const rvHere = m => !!(m && m.rv && (m.rv.lf ? S.life[0] : S.deck[0]) === m.rv.c);
+const rvFits = (m, st) => { const pr = st.f ? cardFilter(st.f) : null; return rvHere(m) && (!pr || pr(m.rv.c.c)); };
 // steps whose condition isn't met are passed over
 function fxSettle(){
   for (let g = 0; fxCur && g < 12; g++) {
@@ -3726,7 +3744,8 @@ function fxStepHTML(m){
   const go = (label, act) => `<button class="btn pri" data-do="${act || "fxgo"}" type="button">${label}</button>`, next = cancel + go("Next", "fxskip:no");
   const c = stepCond(st), cv = c ? stepOk(m, st) : true, pl = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
   const head = `<h3>[${esc(m.tl || "On Play")}] ${esc(lab(m.card))}</h3><p class="fxtext">${esc(m.text)}</p>${m.steps.length > 1 ? `<p class="q">Step ${m.i + 1} of ${m.steps.length}${st.text ? ": " + esc(st.text) : ""}</p>` : ""}${c && cv === null ? `<p class="hint">Only if ${esc(c)}. Skip it if that isn't so.</p>` : ""}${st.pay ? `<p class="hint">This is the cost. If you don't pay it, the rest doesn't happen.</p>` : ""}`;
-  const say = (t, btns, extra) => head + `<p class="fxdo">${t}</p>${extra || ""}<div class="row">${btns}</div>`;
+  const rvShow = m.rv && st.a !== "reveal" ? `<div class="fxrv"><span>Revealed</span>${tile(m.rv.c, "", false, 0)}</div>` : "";
+  const say = (t, btns, extra) => head + `<p class="fxdo">${t}</p>${rvShow}${extra || ""}<div class="row">${btns}</div>`;
   if (st.self) {
     const f = fxSelf(m);
     if (!f) return say(`${esc(lab(m.card))} isn't on your field, so this does nothing.`, next);
@@ -3785,6 +3804,24 @@ function fxStepHTML(m){
     return say(st.a === "playSelf" ? `Play ${nm} for free${st.rested ? ", rested" : ""}.` : `Add ${nm} to your hand.`, cancel + skip + go(st.a === "playSelf" ? "Play it" : "Add to hand"));
   }
   if (st.a === "act") { const ab = fxAb(m.card.c).find(a => a.t === st.k); return ab ? say(`Use its [${esc(TRIG[st.k] || st.k)}] effect: ${esc(ab.text.replace(/^(\s*\[[^\]]+\]\s*)+/, ""))}`, cancel + skip + go("Use it")) : say("This card has no such effect.", next); }
+  if (st.a === "reveal") {
+    if (!(st.lf ? S.life : S.deck).length) return say(`You have no ${st.lf ? "Life cards" : "cards in your deck"}, so there's nothing to reveal.`, next);
+    return say(`Reveal the top card of your ${st.lf ? "Life cards" : "deck"} to both players.`, cancel + go("Reveal"));
+  }
+  if (st.a === "playRv" || st.a === "addRv") {
+    if (!rvHere(m)) return say("The revealed card isn't there anymore, so this does nothing.", next);
+    const nm = `<b>${esc(lab(m.rv.c))}</b>`;
+    if (!rvFits(m, st)) return say(`${nm} isn't ${st.f ? "a " + esc(st.f) : "a card this can use"}, so it stays where it is.`, next);
+    return say(st.a === "addRv" ? `Add ${nm} to your hand.` : `Play ${nm}${st.rested ? " rested" : ""} for free.`, cancel + skip + go(st.a === "addRv" ? "Add it" : "Play it"));
+  }
+  if (st.a === "rvPlace") {
+    if (!rvHere(m)) return say("The revealed card was used, so there's nothing to put back.", next);
+    return say(`Put <b>${esc(lab(m.rv.c))}</b> on the ${st.top && st.bot ? "top or bottom" : st.top ? "top" : "bottom"} of your deck.`, cancel + (st.top ? `<button class="btn${st.bot ? "" : " pri"}" data-do="fxgo:top" type="button">Top</button>` : "") + (st.bot ? go("Bottom") : ""));
+  }
+  if (st.a === "rvKw") {
+    if (!m.rvf || !S.chars.includes(m.rvf)) return say("No card was played, so this does nothing.", next);
+    return say(`<b>${esc(lab(m.rvf.card))}</b> gains [${KW_NAME[st.k] || st.k}] this turn.`, cancel + skip + go("Do it"));
+  }
   if (st.a === "lifeUp" || st.a === "lifeDown") {
     const up = st.a === "lifeUp", have = S.life.filter(c => !c.up === up).length, n = st.all ? have : Math.min(st.n, have);
     if (!n || (st.pay && have < st.n)) return say(up ? "You have no face-down Life cards to turn face-up." : "You have no face-up Life cards to turn face-down.", st.pay ? cancel : next);
@@ -3859,6 +3896,34 @@ function fxApply(arg){
       fxNext(); return;
     }
     case "act": { const ab = fxAb(m.card.c).find(a => a.t === st.k); if (ab) fxQueue.unshift(fxJob(m.card, Object.assign({}, ab, {don: 0}))); fxNext(); return; }
+    case "reveal": {
+      const c = (st.lf ? S.life : S.deck)[0];
+      if (!c) { m.res = false; fxNext(); return; }
+      m.rv = {c, lf: !!st.lf}; m.rvf = null;
+      addLog(`revealed ${lab(c)} from the top of their ${st.lf ? "Life cards" : "deck"}`); done(); return;
+    }
+    case "playRv": {
+      if (!rvFits(m, st)) { m.res = false; fxNext(); return; }
+      const dest = playDest(m.rv.c.c), n0 = S.chars.length;
+      if (m.rv.lf) delete m.rv.c.up;
+      moveCard((m.rv.lf ? "lf:" : "dk:") + 0, dest, true);
+      if (dest === "chars" && S.chars.length > n0) { m.rvf = S.chars[S.chars.length - 1]; if (st.rested) { m.rvf.r = true; commit(); } }
+      m.res = true; fxNext(); return;
+    }
+    case "addRv": {
+      if (!rvFits(m, st)) { m.res = false; fxNext(); return; }
+      S.hand.push((m.rv.lf ? S.life : S.deck).shift()); addLog(`added the revealed ${lab(m.rv.c)} to hand`); done(); return;
+    }
+    case "rvPlace": {
+      if (!rvHere(m) || m.rv.lf) { m.res = false; fxNext(); return; }
+      const top = arg === "top" && st.top;
+      if (!top) S.deck.push(S.deck.shift());
+      addLog(`put the revealed ${lab(m.rv.c)} on the ${top ? "top" : "bottom"} of their deck`); done(); return;
+    }
+    case "rvKw": {
+      if (!m.rvf || !S.chars.includes(m.rvf)) { m.res = false; fxNext(); return; }
+      fxGrant(m.rvf, st.k); done(); return;
+    }
     case "lifeUp": case "lifeDown": {
       const up = st.a === "lifeUp"; let k = 0;
       for (const c of S.life) if (!c.up === up && (st.all || k < st.n)) { if (up) c.up = true; else delete c.up; k++; }
@@ -4293,12 +4358,13 @@ function cardFilter(seg){
   const tests = []; let m;
   // "a card with a [Trigger]" is about the card's text, not its name
   if (/with an? \[Trigger\]/i.test(seg)) { tests.push((i, code) => fxAb(code).some(a => a.t === "trigger")); seg = seg.replace(/with an? \[Trigger\]/ig, ""); }
-  const col = seg.match(/\b(red|green|blue|purple|black|yellow)\b/i);
+  const plain = seg.replace(/\{[^}]*\}|"[^"]*"|\[[^\]]*\]/g, "");
+  const col = plain.match(/\b(red|green|blue|purple|black|yellow)\b/i);
   if (col) tests.push(i => String(i.c || "").toLowerCase().includes(col[1].toLowerCase()));
   const tys = [...seg.matchAll(/\{([^}]+)\}/g)].map(x => x[1]);
   if (tys.length) tests.push((i, code) => tys.some(t => hasType(code, t)));
   if ((m = seg.match(/type including "([^"]+)"/))) { const w = m[1]; tests.push((i, code) => typesOf(code).some(y => y.includes(w))); }
-  const cat = seg.match(/\b(Character|Event|Stage)\b/);
+  const cat = plain.match(/\b(Character|Event|Stage)\b/);
   if (cat) tests.push(i => i.t === cat[1]);
   if ((m = seg.match(/cost of (\d+) or (less|more)/))) { const n = +m[1], le = m[2] === "less"; tests.push(i => Number.isFinite(i.k) && (le ? i.k <= n : i.k >= n)); }
   else if ((m = seg.match(/cost of (\d+)\b/))) { const n = +m[1]; tests.push(i => i.k === n); }
@@ -4378,7 +4444,7 @@ function moveCard(src, dest, free, pay){
   const k = src.split(":")[0];
   if (k === "ld") return;
   if (ZONE[k] === dest) return;
-  const plays = (k === "hand" || (free && (k === "tr" || k === "lf"))) && (dest === "chars" || dest === "stage" || dest === "event");
+  const plays = (k === "hand" || (free && (k === "tr" || k === "lf" || k === "dk"))) && (dest === "chars" || dest === "stage" || dest === "event");
   if (plays && !free && k === "hand") { const why = playTiming(S.hand[+src.split(":")[1]], dest); if (why) { toast(why); return; } }
   // playing a card from hand takes as many active DON!! as it costs right now
   const hc = plays && !free && k === "hand" ? (S.hand[+src.split(":")[1]] ? handCost(S.hand[+src.split(":")[1]]) : null) : null;

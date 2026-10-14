@@ -122,6 +122,8 @@ def step(clause, pay=False):
     s = self_step(core, base)
     if s: return s
     if re.search(r"\bfor every\b", cl): return dict(base, a="other")
+    m = re.match(r"reveal (\w+) cards? from the top of your (deck|life cards)\.?$", cl)
+    if m: return dict(base, a="reveal", n=num(m.group(1)), lf=m.group(2) != "deck")
     m = re.search(r"\bdraw (\w+) cards?\b", cl)
     if m and not re.search(r"\bwhen (?:you|your opponent) draws?\b", low): return dict(base, a="draw", who="own", n=num(m.group(1)))
     m = re.search(r"\btrash (up to )?(\w+) ((?:[^.]*? )?)(?:cards?|events?|characters?|stages?) ?((?:with [^.]*?)?)from your hand\b", cl)
@@ -225,9 +227,40 @@ def step(clause, pay=False):
     return dict(base, a="other")
 
 
+def rv_step(c, pay):
+    """A clause after "Reveal 1 card from the top of your deck (or Life cards)" that does something with that card:
+    play it, add it to your hand, or put it back. None for anything else."""
+    t = c.strip().rstrip(".")
+    base = {"text": c.strip()}
+    if pay: base["pay"] = True
+    m = re.match(r"(?:if (?:that|the revealed) card[^,]*,\s*)?(?:you may )?play (?:that card|it)( rested)?$", t, re.I)
+    if m: return dict(base, a="playRv", rested=bool(m.group(1)))
+    m = re.match(r"play up to (\w+) (.+?)( rested)?$", t, re.I)
+    if m and not re.search(r"\bfrom your\b", t, re.I): return dict(base, a="playRv", f=m.group(2), rested=bool(m.group(3)))
+    m = re.match(r"add up to (\w+) (.+?) to your hand$", t, re.I)
+    if m and not re.search(r"\bfrom your\b", m.group(2), re.I): return dict(base, a="addRv", f=m.group(2))
+    m = re.match(r"place (?:the rest|the revealed card|it) at the (top or bottom|bottom|top) of your deck(?: in any order)?$", t, re.I)
+    if m: return dict(base, a="rvPlace", top="top" in m.group(1).lower(), bot="bottom" in m.group(1).lower())
+    if re.match(r"if you do, that character gains \[rush\] during this turn", t, re.I): return dict(base, a="rvKw", k="r")
+    return None
+
+
+def with_rv(cls):
+    """Steps for clauses, reading the ones after a reveal as about the revealed card first."""
+    out, rv = [], False
+    for c, pay in cls:
+        s = (rv_step(c, pay) if rv else None) or step(c, pay)
+        if s["a"] == "reveal": rv = True
+        out.append(s)
+    return out
+
+
 def clauses(body):
     """Split an ability's text into the clauses that become steps: [(text, pay)], pay marking a "You may ...:" cost."""
     out = []
+    # "Reveal 1 card ... and place it at the top or bottom of your deck", "reveal 1 card ..., play up to 1 ...": one step each
+    body = re.sub(r"(reveal \w+ cards? from the top of your deck) and place it at the ((?:top or )?bottom|top) of your deck", r"\1. Place the revealed card at the \2 of your deck", body, flags=re.I)
+    body = re.sub(r"(reveal \w+ cards? from the top of your deck), (play|add) ", lambda m: m.group(1) + ". " + m.group(2).capitalize() + " ", body, flags=re.I)
     body = re.sub(r"\brest (\w+) of your DON!! cards and this (Character|Leader|Stage)\b", r"rest \1 of your DON!! cards and rest this \2", body)
     body = re.sub(r"\brest this (Character|Leader|Stage|card) and (\w+) of your\b", r"rest this \1 and rest \2 of your", body)
     body = re.sub(r"\b(rest|Rest|K\.O\.) this (Character|Leader) and (up to \w+ of your opponent's)", lambda m: f"{m.group(1)} this {m.group(2)} and {m.group(1).lower() if m.group(1) == 'Rest' else m.group(1)} {m.group(3)}", body)
@@ -242,8 +275,11 @@ def clauses(body):
             for p in re.split(r",? and (?=(?:trash|rest|return|place|reveal|turn)\b(?! (?:it|them|that|those)\b))", m.group(1)):
                 if p.strip(): out.append((p.strip().rstrip(".") + ".", True))
             sent = m.group(2)
-        parts = re.split(r",? and (?=(?:trash|draw|rest|K\.O\.|give|add|return|set|place|play)\b(?! (?:it|them|that|those)\b))", sent)
-        out.extend((p.strip().rstrip(".") + ".", False) for p in parts if p.strip())
+        parts = [p.strip() for p in re.split(r",? and (?=(?:trash|draw|rest|K\.O\.|give|add|return|set|place|play)\b(?! (?:it|them|that|those)\b))", sent) if p.strip()]
+        # "If X, A and B": B only happens when X is so, too
+        cm = re.match(r"(?:then,\s*)?(if [^,]+,)\s", parts[0], re.I) if parts else None
+        if cm: parts = parts[:1] + [p if re.match(r"if\b", p, re.I) else cm.group(1) + " " + p for p in parts[1:]]
+        out.extend((p.rstrip(".") + ".", False) for p in parts)
     return out
 
 
@@ -252,7 +288,7 @@ def steps_of(body):
     # the opponent picking is beyond the game: do it by hand
     if re.search(r"\bchooses one:", body, re.I): return [{"a": "other", "text": body.strip()}]
     m = re.search(r"\bchoose one:\s*(?=•)", body, re.I)
-    if not m: return [step(c, pay) for c, pay in clauses(body)]
+    if not m: return with_rv(clauses(body))
     head = body[:m.start()]
     # the sentence that says "choose one" may start with a condition ("If X, choose one:")
     cut = max(head.rfind(". "), head.rfind(": "))

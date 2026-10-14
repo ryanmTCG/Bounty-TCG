@@ -20,7 +20,7 @@ const deck = ["OP01-013","OP01-016","OP01-024","OP01-014","OP01-015","OP01-017",
 
 // every kind of step in effects.json is one the game knows
 const kinds = await page.evaluate(() => {
-  const known = ["rest","stand","ko","bounce","bottom","pwr","draw","look","don","returnDon","giveDon","discard","other","play","choose","cost","mark","life","trashCh","kw","restDon","standDon","oppDon","oppRetDon","oppDiscard","oppHandDeck","lifeHand","deckLife","handLife","lifeTrash","mill","handDeck","trashDeck","trashHand","shuffle","playSelf","handSelf","act","noBlock","noPlay","lifeUp","lifeDown","trash"];
+  const known = ["rest","stand","ko","bounce","bottom","pwr","draw","look","don","returnDon","giveDon","discard","other","play","choose","cost","mark","life","trashCh","kw","restDon","standDon","oppDon","oppRetDon","oppDiscard","oppHandDeck","lifeHand","deckLife","handLife","lifeTrash","mill","handDeck","trashDeck","trashHand","shuffle","playSelf","handSelf","act","noBlock","noPlay","reveal","playRv","addRv","rvPlace","rvKw","lifeUp","lifeDown","trash"];
   const seen = new Set(); let stat = 0, dup = 0;
   const walk = sts => sts.forEach(s => { seen.add(s.a); if (s.opts) s.opts.forEach(o => walk(o.steps)); });
   for (const [code] of BFX) { const ab = fxAb(code); ab.forEach(a => { walk(a.steps); if (a.s) stat++; }); if (ab.some(a => a.t === "yourTurn" && !a.s) && ab.some(a => a.t === "onPlay" && a.text === (ab.find(b => b.t === "yourTurn") || {}).text)) dup++; }
@@ -237,6 +237,51 @@ const sh = await page.evaluate(() => {
   return {fx, bn};
 });
 check(sh.fx === 1 && sh.bn === 0, "OP02-102 can't be K.O.'d by an effect, but can still be returned to hand");
+await page.evaluate(() => { oppM = oppModel(PR.pres[1]); commit(); });
+// "Reveal 1 card from the top of your deck": play it (ST12-010), or put it on the bottom when it doesn't fit; a draw
+// that depends on it (ST22-003); playing a Life card (ST13-007); the computer doing the same (OP08-052)
+await fxClear();
+const rvc = await page.evaluate(() => { const ks = [...CARDDB.keys()].filter(k => /^OP0[1-9]-/.test(k));
+  const two = ks.find(k => { const e = CARDDB.get(k); return e.t === "Character" && e.k === 2; }), five = ks.find(k => { const e = CARDDB.get(k); return e.t === "Character" && e.k === 5; });
+  const wb = [...CARDDB.keys()].find(k => typesOf(k).some(y => y.includes("Whitebeard Pirates")) && (CARDDB.get(k) || {}).t === "Character" && (CARDDB.get(k) || {}).k <= 4);
+  const sabo = [...CARDDB.keys()].find(k => nameOf(k) === "Sabo" && (CARDDB.get(k) || {}).k === 5 && (CARDDB.get(k) || {}).t === "Character");
+  return {two, five, wb, sabo}; });
+console.log("reveal cards", JSON.stringify(rvc));
+const runRv = (code, t, top) => page.evaluate(([code, t, top]) => { S.chars = []; S.deck.unshift({c: top, n: nameOf(top), u: 88000 + S.deck.length}); commit(); fxEnqueue(fxJob({c: code, n: nameOf(code)}, fxAb(code).find(a => a.t === t))); return S.deck.length; }, [code, t, top]);
+await runRv("ST12-010", "onPlay", rvc.two);
+await drive();
+const rv1 = await page.evaluate(c => ({played: S.chars.some(f => f.card.c === c), top: S.deck[0].c, log: myLog.map(e => e[1]).slice(-4).join(" | ")}), rvc.two);
+console.log("reveal play", JSON.stringify(rv1));
+check(rv1.played && /revealed .*from the top of their deck/.test(rv1.log) && /for free/.test(rv1.log), "ST12-010 reveals the top card and plays the cost 2 Character for free");
+await fxClear();
+const n1 = await runRv("ST12-010", "onPlay", rvc.five);
+await page.evaluate(() => document.querySelector("#fxpanel .btn.pri").click());
+await page.waitForTimeout(200);
+const rv2 = await page.evaluate(() => ({txt: document.querySelector("#fxpanel").innerText, shown: !!document.querySelector("#fxpanel .fxrv .card")}));
+await drive();
+const rv2b = await page.evaluate(c => ({chars: S.chars.length, bottom: S.deck[S.deck.length - 1].c === c}), rvc.five);
+check(/isn't a Character card with a cost of 2/.test(rv2.txt) && rv2.shown && rv2b.chars === 0 && rv2b.bottom, "a revealed card that doesn't fit is shown, not played, and goes to the bottom");
+await fxClear();
+const rvh0 = await page.evaluate(() => S.hand.length);
+await runRv("ST22-003", "onPlay", rvc.five);
+await drive();
+const rvh1 = await page.evaluate(() => S.hand.length);
+await fxClear();
+await runRv("ST22-003", "onPlay", rvc.wb);
+await drive();
+const rvh2 = await page.evaluate(() => S.hand.length);
+check(rvh1 === rvh0 && rvh2 === rvh1 + 2, "ST22-003 draws 2 only when the revealed card is a Whitebeard Pirates card");
+await fxClear();
+const rv3 = await page.evaluate(sabo => { S.chars = [{card: {c: "ST13-007", n: nameOf("ST13-007")}, r: false, d: 0, pt: 0}]; S.life.unshift({c: sabo, n: nameOf(sabo), u: 88999}); S.leader.pm = 0; commit();
+  const lf = S.life.length; fxEnqueue(fxJob(S.chars[0].card, fxAb("ST13-007").find(a => a.t === "activateMain"))); return lf; }, rvc.sabo);
+for (let i = 0; i < 8 && await page.evaluate(() => !!fxCur); i++) { await page.evaluate(() => { if (fxCur.steps[fxCur.i].a === "pwr") { fxCur.pick = ["ld"]; doAction("fxapply"); return; } const b = document.querySelector("#fxpanel .btn.pri"); if (b) b.click(); }); await page.waitForTimeout(200); }
+const rv3b = await page.evaluate(sabo => ({lf: S.life.length, sabo: S.chars.some(f => f.card.c === sabo), pm: S.leader.pm}), rvc.sabo);
+console.log("life reveal", rv3, JSON.stringify(rv3b));
+check(rv3b.lf === rv3 - 1 && rv3b.sabo && rv3b.pm === 2000, "ST13-007 reveals the top Life card, plays the Sabo there, and gives the Leader +2000");
+await fxClear();
+check(await page.evaluate(() => { const k = [...CARDDB.keys()].find(k => hasType(k, "Red-Haired Pirates") && !/red/i.test((CARDDB.get(k) || {}).c || "")); return !k || cardFilter("{Red-Haired Pirates} type card")(k); }), "a type name with a color word in it isn't read as a color");
+const brv = await page.evaluate(wb => botSide(() => { S.chars = []; S.deck.unshift({c: wb, n: nameOf(wb), u: 88777}); botAbility({c: "OP08-052", n: nameOf("OP08-052")}, ["onPlay"], 0); return S.chars.map(f => f.card.c); }), rvc.wb);
+check(brv.includes(rvc.wb), "the computer reveals with OP08-052 and plays the Whitebeard Pirates Character it finds");
 await page.evaluate(() => { oppM = oppModel(PR.pres[1]); commit(); });
 await page.screenshot({ path: OUT + "/board.png" });
 check(!errs.length, "no page errors" + (errs.length ? ": " + errs.slice(0, 3).join(" / ") : ""));
