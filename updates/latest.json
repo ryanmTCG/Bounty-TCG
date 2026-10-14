@@ -1,8 +1,8 @@
 {
-  "version": "1.4.0",
+  "version": "1.5.0",
   "shell": 2,
-  "bundle": "web-1.4.0.json.gz",
-  "sha256": "057c7646b1cfd82d28f7e954114aa7635606f6d0f9719986b706906f6995cfc0",
-  "size": 826162,
-  "notes": "The tutorial's table log no longer reads \"You goes first\" when you haven't set a name. Nickname: set one name on your Profile (or from \"Playing as\" on the home page) and everyone sees it: your opponent at the table (even mid-match), the lobby, friends' lists and the Ranked leaderboard. Signed..."
+  "bundle": "web-1.5.0.json.gz",
+  "sha256": "97eaeb8d1413bf9f0fe83e9633ce5cbab796ad1e64df8b32c5c23847c287891d",
+  "size": 846169,
+  "notes": "Match replays: every match you play is recorded. Watch it back from the result screen or the new Replays page, with step, previous/next turn, speed and a timeline. Choose the computer's difficulty: Easy, Normal or Hard. Cards that turn Life cards face-up or face-down now work, and face-up Life..."
 }
