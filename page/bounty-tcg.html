@@ -890,6 +890,20 @@ select.sbtn{font-family:var(--slab)}
 .pfres{flex:0 0 46px;text-align:center;font-family:var(--slab);font-size:15px}
 .pfh.win .pfres{color:#9BE39F}
 .pfh.loss .pfres{color:#FFA9A6}
+.diffrow{align-items:center;gap:8px 12px;margin-top:10px}
+.diffrow label{margin:0}
+.diffrow select{width:auto}
+.diffrow .hint{flex:1 1 220px;margin:0}
+.pfh .rpacts{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+.rprow .pfres{font-size:13px}
+.mid.rpmid{flex-wrap:wrap;height:auto;padding:6px 10px}
+.rpbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 10px;width:100%;font-size:14px;color:#FFE9B8}
+.rpbar .btn{font-size:13px;padding:4px 10px}
+.rpbar .rpb{min-width:34px;padding:4px 8px;font-family:system-ui,sans-serif}
+.rpbtns{display:inline-flex;gap:4px}
+#rpseek{flex:1 1 160px;min-width:120px;max-width:420px;accent-color:#FFD23F}
+.rpev{font-size:13px;background:rgba(0,0,0,.3);border-radius:999px;padding:2px 10px}
+.rpev:empty{display:none}
 .pfh .pfinfo b{font-size:16px}
 .frtop{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:6px 0 4px}
 .frcode,.fradd{padding:12px 14px;border:2px solid rgba(255,240,205,.25);border-radius:14px;background:rgba(0,0,0,.22)}
@@ -1144,7 +1158,7 @@ let toastT;
 function toast(m){ if (botQuiet) return; const t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
 
 // ---------- state ----------
-const blank = () => ({nick:"",deck:[],hand:[],life:[],chars:[],stage:null,ev:null,atk:null,blk:null,roll:0,fc:null,conceded:false,lostDmg:false,mq:[],mqn:0,ack:0,leader:null,donDeck:10,donActive:0,donRested:0,trash:[],phase:"none",turn:0,first:false,mull:false,lifeN:5,sleeve:0,pw:0,cc:0});
+const blank = () => ({nick:"",deck:[],hand:[],life:[],chars:[],stage:null,ev:null,atk:null,blk:null,roll:0,fc:null,conceded:false,lostDmg:false,mq:[],mqn:0,ack:0,leader:null,donDeck:10,donActive:0,donRested:0,trash:[],phase:"none",turn:0,first:false,mull:false,lifeN:5,sleeve:0,pw:0,cc:0,rid:Math.random().toString(36).slice(2, 12)});
 let S = blank();
 let LOG = [], seen = new Set(), myLog = [], logSeq = 0;
 let R = null, roomCode = "", status = "offline";
@@ -1242,7 +1256,8 @@ async function connect(code){
 }
 async function leaveRoom(){
   if (rejoining) return;
-  if (WATCH) { WATCH = null; document.body.classList.remove("watching"); }
+  if (REC) rpSave(REC);
+  if (WATCH) { rpStop(); RPV = null; WATCH = null; document.body.classList.remove("watching", "replaying"); $("#mid").classList.remove("rpmid"); }
   rankForfeit(); matchForget();
   if (R) { try { await R.leave(); } catch (e) {} }
   R = null; oppPeer = null; oppM = null; PR = null; TUT = null; myQc = null; qcSeen = null;
@@ -1263,6 +1278,7 @@ function onPeers(change){
   mergeLogs(change.peers);
   if (applyMarkReqs()) publish();
   if (advance()) publish();
+  recTick();
   render();
 }
 // ---------- ranked turn timer: 3 minutes a turn, 45 seconds to answer an attack ----------
@@ -1453,6 +1469,8 @@ function doPublish(){
   const p = S.phase === "none" ? {p:0, nick:S.nick} : pubFull();
   if (p.tr && JSON.stringify(p).length > 3400) p.tr = p.tr.map(t => [t[0]]);
   R.presence(p).catch(() => {});
+  if (!PR) recMine = p;
+  recTick();
 }
 let undoStack = [], lastSnap = null, oppCdSeen = false;
 function snapNow(){ try { return JSON.stringify(S); } catch (e) { return null; } }
@@ -1938,20 +1956,231 @@ async function stopWatch(){
   R = null; status = "offline"; openHome();
 }
 function renderWatch(){
-  const a = WATCH.a, b = WATCH.b;
+  const a = WATCH.a, b = WATCH.b, rp = !!WATCH.replay;
   $("#opp").innerHTML = side(b || EMPTY(), false);
-  $("#oppHand").innerHTML = oppHandPanel(b || EMPTY());
-  $("#me").innerHTML = a ? side(a, true) : `<div class="wait">Waiting for the players…</div>`;
-  $("#hand").innerHTML = `<span class="empty">${a ? `${esc(a.nick)} has ${a.h || 0} cards in hand` : ""}</span>`;
+  $("#oppHand").innerHTML = rp && b && b.hd ? rpHand(b) : oppHandPanel(b || EMPTY());
+  $("#me").innerHTML = a ? side(a, true) : `<div class="wait">${rp ? "" : "Waiting for the players…"}</div>`;
+  $("#hand").innerHTML = rp && a && a.hd && a.hd.length ? a.hd.map(c => tile({c}, "", false, 0)).join("") : `<span class="empty">${a ? `${esc(a.nick)} has ${a.h || 0} cards in hand` : ""}</span>`;
+  if (rp) { fitHand(); $("#handn").textContent = a && a.hd ? `(${a.hd.length})` : ""; }
   $("#banner").innerHTML = "";
   const atk = a && a.ak ? [a, b, a.ak] : b && b.ak ? [b, a, b.ak] : null;
   const at = x => x === "ld" ? atk[0].ld : atk[0].ch[+x.slice(3)], tg = x => x === "ld" ? (atk[1] || {}).ld : ((atk[1] || {}).ch || [])[+x.slice(3)];
   const res = a && a.cd ? `${a.nick} lost. ${b ? b.nick : "Their opponent"} wins!` : b && b.cd ? `${b.nick} lost. ${a ? a.nick : "Their opponent"} wins!` : "";
-  const mid = $("#mid"); mid.classList.toggle("combat", !!(atk && !res));
+  const mid = $("#mid");
+  if (rp) {
+    rpBar();
+    const ev = $("#rpev"); if (ev) ev.textContent = res ? "\u2691 " + res : atk ? `\u2694 ${atk[0].nick}'s ${at(atk[2].s) ? lab(at(atk[2].s)) : "card"} attacks ${tg(atk[2].t) ? lab(tg(atk[2].t)) : "a target"}` : "";
+    const v = RPV, lg = v ? v.log.slice(0, v.L[v.i]).slice(-60).reverse() : [];
+    $("#log").innerHTML = lg.length ? lg.map(e => `<p class="${e.mine ? "mine" : "theirs"}"><b>${esc(e.who)}</b> ${esc(e.m)}</p>`).join("") : '<p class="tips">Nothing yet.</p>';
+    return;
+  }
+  mid.classList.toggle("combat", !!(atk && !res));
   mid.innerHTML = `<span>\u{1F441} Watching ${esc(a ? a.nick : "")}${b ? " vs " + esc(b.nick) : ""}</span>${res ? `<span>⚑ ${esc(res)}</span>` : atk ? `<span>⚔ ${esc(atk[0].nick)}'s <b>${esc(at(atk[2].s) ? lab(at(atk[2].s)) : "card")}</b> attacks <b>${esc(tg(atk[2].t) ? lab(tg(atk[2].t)) : "a target")}</b></span>` : ""}<button class="btn" data-do="stopwatch" type="button">Stop watching</button>`;
   const lg = [];
   for (const [m, mine] of [[a, true], [b, false]]) if (m && Array.isArray(m.lg)) for (const e of m.lg) if (Array.isArray(e) && pubLog(e[1])) lg.push({who: m.nick, mine, m: String(e[1])});
   $("#log").innerHTML = lg.length ? lg.slice(-30).reverse().map(e => `<p class="${e.mine ? "mine" : "theirs"}"><b>${esc(e.who)}</b> ${esc(e.m)}</p>`).join("") : '<p class="tips">Nothing yet.</p>';
+}
+// ---------- match replays ----------
+// Every change to either player's public board (what the other player sees) is a frame, with your own hand on your
+// side, and both hands against the computer and at a table where you play both sides. Only what changed is kept.
+// The last RP_MAX matches stay on this computer, packed with gzip, finished or not.
+const RP_KEY = "bounty:replays", RP_MAX = 10, RP_FRAMES = 4000, RP_SPEEDS = [1, 2, 4], RP_ID = /^[a-z0-9-]{4,40}$/;
+const RP_KEEP = new Set(["p", "nick", "sl", "tn", "pw", "cc", "ld", "ch", "st", "ev", "ak", "bk", "rl", "cd", "lf", "dd", "da", "dr", "dk", "h", "tr", "lg", "lu", "mf", "ox", "hd"]);
+let REC = null, recMine = null, RPV = null, rpQ = Promise.resolve();
+function recSide(p, s){
+  if (!p || typeof p !== "object" || p.p !== 1) return null;
+  const o = {};
+  for (const k of Object.keys(p)) if (RP_KEEP.has(k) && k !== "hd") o[k] = p[k];
+  if (s && Array.isArray(s.hand)) o.hd = s.hand.map(c => c.c);
+  return JSON.stringify(o).length < 12000 ? o : null;
+}
+// the table being recorded: Player 1's side at practice tables, yours online
+const recS0 = () => PR ? (PR.cur === 0 ? S : PR.sides[0] && PR.sides[0].S) : S;
+function recTick(){
+  if (WATCH || TUT || botQuiet) return;
+  const s0 = recS0();
+  if (!s0 || !s0.rid || (s0.phase !== "pre" && s0.phase !== "play")) return;
+  const sOf = i => PR.cur === i ? S : PR.sides[i] && PR.sides[i].S;
+  const a = recSide(PR ? PR.pres[0] : recMine, PR ? sOf(0) : S), b = recSide(PR ? PR.pres[1] : oppPeer && oppPeer.presence, PR ? sOf(1) : null);
+  if (!a) return;
+  if (!REC || REC.k !== s0.rid) {
+    if (REC) rpSave(REC);
+    const id = String(s0.rid).replace(/[^a-z0-9]/g, "").slice(0, 20) || "m";
+    REC = {k: s0.rid, id: rpList().some(e => e.id === id) ? id + "-" + Date.now().toString(36) : id, t0: Date.now(), last: Date.now(), fr: [], pa: {}, pb: {}, b: PR ? (PR.bot ? 1 : 2) : 0};
+  }
+  if (REC.fr.length >= RP_FRAMES) return;
+  const da = rpDiff(REC.pa, a), db = b ? rpDiff(REC.pb, b) : null;
+  if (!da && !db) return;
+  const now = Date.now();
+  REC.fr.push([REC.fr.length ? now - REC.last : 0, da || 0, db || 0]); REC.last = now; REC.dirty = true;
+  if (!REC.end && (a.cd || (b && b.cd))) { REC.end = a.cd ? "l" : "w"; rpSave(REC); }
+}
+// only the parts of a board that changed since the last frame; null for a part that went away
+function rpDiff(prev, cur){
+  let d = null;
+  for (const k of Object.keys(cur)) { const j = JSON.stringify(cur[k]); if (j !== undefined && prev[k] !== j) { (d || (d = {}))[k] = JSON.parse(j); prev[k] = j; } }
+  for (const k of Object.keys(prev)) if (cur[k] === undefined) { (d || (d = {}))[k] = null; delete prev[k]; }
+  return d;
+}
+function rpApply(p, d){
+  if (!d || typeof d !== "object") return p;
+  const o = Object.assign({}, p);
+  for (const k of Object.keys(d)) if (RP_KEEP.has(k)) { if (d[k] === null) delete o[k]; else o[k] = d[k]; }
+  return o;
+}
+function rpList(){
+  try { const v = JSON.parse(localStorage.getItem(RP_KEY) || "[]"); return Array.isArray(v) ? v.filter(e => e && typeof e === "object" && RP_ID.test(e.id) && typeof e.z === "string") : []; }
+  catch (e) { return []; }
+}
+// newest first; when the browser's storage is full, the oldest replays go
+function rpStore(list){
+  list = list.slice(0, RP_MAX);
+  try { if (!list.length) { localStorage.setItem(RP_KEY, "[]"); return true; } } catch (e) { return false; }
+  for (; list.length; list.pop()) { try { localStorage.setItem(RP_KEY, JSON.stringify(list)); return true; } catch (e) {} }
+  return false;
+}
+const rpVal = (p, k) => { try { return p[k] ? JSON.parse(p[k]) : null; } catch (e) { return null; } };
+function rpMeta(rec){
+  const la = rpVal(rec.pa, "ld"), lb = rpVal(rec.pb, "ld");
+  return {id: rec.id, t: rec.t0, me: clean(rpVal(rec.pa, "nick"), 20) || "Player", on: clean(rpVal(rec.pb, "nick"), 20) || "Opponent", ld: clean(la && la.c, 16), op: clean(lb && lb.c, 16),
+    r: rec.end || "", n: rec.fr.length, d: Math.max(0, rec.last - rec.t0), tn: num(rpVal(rec.pa, "tn"), 999) + num(rpVal(rec.pb, "tn"), 999), b: rec.b};
+}
+async function rpPack(s){
+  try {
+    const u = new Uint8Array(await new Response(new Blob([s]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer());
+    let bin = ""; for (let i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+    return "z" + btoa(bin);
+  } catch (e) { return "j" + s; }
+}
+async function rpUnpack(z){
+  if (z[0] !== "z") return z.slice(1);
+  const u = Uint8Array.from(atob(z.slice(1)), ch => ch.charCodeAt(0));
+  return await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
+}
+// saves run one after another so an older copy never lands after a newer one; sync (closing the app) skips packing
+function rpSave(rec, sync){
+  if (!rec || rec.fr.length < 6) return rpQ;
+  if (sync) { if (rec.dirty) { rec.dirty = false; const e = rpMeta(rec); e.z = "j" + JSON.stringify(rec.fr); rpStore([e, ...rpList().filter(x => x.id !== e.id)]); } return rpQ; }
+  return rpQ = rpQ.then(async () => {
+    if (!rec.dirty) return;
+    rec.dirty = false;
+    const e = rpMeta(rec); e.z = await rpPack(JSON.stringify(rec.fr));
+    rpStore([e, ...rpList().filter(x => x.id !== e.id)]);
+  }).catch(() => {});
+}
+window.addEventListener("pagehide", () => { if (REC) rpSave(REC, true); });
+const liveMatch = () => !!(R && !PR && S.phase === "play" && !S.conceded && !(oppM && oppM.cd));
+async function rpOpen(id, from){
+  if (from === "list" && liveMatch()) { toast("Finish or leave your match first, then watch a replay."); return; }
+  if (WATCH && !WATCH.replay) { await leaveRoom(); status = "offline"; }
+  let fr = null, e = null;
+  if (REC && REC.id === id) { fr = REC.fr.slice(); e = rpMeta(REC); }
+  else { e = rpList().find(x => x.id === id); if (e) try { fr = JSON.parse(await rpUnpack(e.z)); } catch (er) { fr = null; } }
+  if (!e || !Array.isArray(fr) || !fr.length) { toast("Couldn't open that replay."); return; }
+  // each frame's two boards, and the match log as it grew
+  const A = [], B = [], T = [], L = [], log = [], seen = [new Set(), new Set()];
+  let a = {}, b = {}, t = 0;
+  for (const f of fr.slice(0, RP_FRAMES)) {
+    if (!Array.isArray(f)) continue;
+    t += Math.max(0, Math.min(600000, +f[0] || 0));
+    a = rpApply(a, f[1]); b = rpApply(b, f[2]);
+    [[a, 0], [b, 1]].forEach(([x, k]) => { for (const l of Array.isArray(x.lg) ? x.lg.slice(-10) : []) {
+      if (!Array.isArray(l) || !pubLog(l[1])) continue;
+      const key = l[0] + "|" + l[1]; if (seen[k].has(key)) continue; seen[k].add(key);
+      log.push({who: clean(x.nick, 20) || (k ? "Opponent" : "Player"), mine: !k, m: String(l[1]).slice(0, 300)});
+    } });
+    A.push(a); B.push(b); T.push(t); L.push(log.length);
+  }
+  if (!A.length) { toast("Couldn't open that replay."); return; }
+  closeModal(); closeMenu(); hidePreview(); if (builderOpen) closeBuilder();
+  if (RPV) rpStop();
+  RPV = {e, A, B, T, L, log, i: 0, sp: 1, on: false, tm: null, from};
+  WATCH = {replay: true, a: null, b: null};
+  document.body.classList.add("watching", "replaying");
+  $("#mid").classList.remove("combat");
+  rpShow(0); rpPlay(true);
+}
+const rpTurn = i => num((RPV.A[i] || {}).tn, 999) + num((RPV.B[i] || {}).tn, 999);
+function rpShow(i){
+  const v = RPV; if (!v) return;
+  v.i = Math.max(0, Math.min(v.A.length - 1, Math.floor(+i) || 0));
+  const mm = p => { if (!p || p.p !== 1) return null; const m = oppModel(p); m.hd = Array.isArray(p.hd) ? p.hd.slice(0, 80).map(c => clean(c, 16)).filter(Boolean) : null; return m; };
+  WATCH.a = mm(v.A[v.i]); WATCH.b = mm(v.B[v.i]);
+  render();
+}
+function rpStop(){ if (RPV) { clearTimeout(RPV.tm); RPV.tm = null; RPV.on = false; } }
+function rpPlay(on){
+  const v = RPV; if (!v) return;
+  clearTimeout(v.tm); v.tm = null; v.on = !!on;
+  if (v.on && v.i >= v.A.length - 1) rpShow(0);          // play again from the start once it reached the end
+  const next = () => {
+    if (RPV !== v || !v.on) return;
+    if (v.i >= v.A.length - 1) { v.on = false; rpBar(); return; }
+    const dt = Math.max(250, Math.min(1500, v.T[v.i + 1] - v.T[v.i])) / v.sp;
+    v.tm = setTimeout(() => { if (RPV !== v || !v.on) return; rpShow(v.i + 1); next(); }, dt);
+  };
+  next(); rpBar();
+}
+function rpSeek(i){ rpStop(); rpShow(i); }
+// the first frame of the next turn, or of this turn (the one before when already there)
+function rpTurnJump(dir){
+  const v = RPV; if (!v) return;
+  let i = v.i; const cur = rpTurn(i);
+  if (dir > 0) { while (i < v.A.length - 1 && rpTurn(i) <= cur) i++; }
+  else {
+    while (i > 0 && rpTurn(i - 1) === cur) i--;
+    if (i === v.i && i > 0) { i--; const p = rpTurn(i); while (i > 0 && rpTurn(i - 1) === p) i--; }
+  }
+  rpSeek(i);
+}
+function rpExit(){
+  const v = RPV; rpStop(); RPV = null; WATCH = null;
+  document.body.classList.remove("watching", "replaying"); $("#mid").classList.remove("rpmid");
+  render(); renderLog();
+  if (v && v.from === "list") openReplays();
+  else if (S.phase === "none" && !R) openHome();
+  if (PR && PR.bot) botSoon();
+}
+function rpBar(){
+  const v = RPV, el = $("#mid"); if (!v || !el) return;
+  if (!$("#rpbar")) {
+    el.classList.add("rpmid");
+    el.innerHTML = `<div class="rpbar" id="rpbar"><span class="rpinfo" id="rpinfo"></span><span class="rpbtns">`
+      + [["start", "⏮", "Back to the start"], ["prevturn", "⏪", "Previous turn"], ["back", "◀", "Back one step (Left arrow)"], ["play", "", "Play or pause (Space)"], ["fwd", "▶", "Forward one step (Right arrow)"], ["nextturn", "⏩", "Next turn"], ["speed", "", "Playback speed"]]
+        .map(([k, t, h]) => `<button class="btn rpb${k === "play" ? " pri" : ""}" data-do="rp:${k}" id="rp-${k}" type="button" title="${h}" aria-label="${h}">${t}</button>`).join("")
+      + `</span><input type="range" id="rpseek" min="0" step="1" value="0" aria-label="Replay position"><span class="rpev" id="rpev"></span><button class="btn" data-do="rp:exit" type="button">Exit replay</button></div>`;
+    const sk = $("#rpseek"); sk.addEventListener("input", () => rpSeek(+sk.value));
+  }
+  const sk = $("#rpseek"); sk.max = String(v.A.length - 1); if (document.activeElement !== sk) sk.value = String(v.i);
+  $("#rp-play").textContent = v.on ? "⏸" : "▶︎"; $("#rp-play").setAttribute("aria-label", v.on ? "Pause" : "Play");
+  $("#rp-speed").textContent = v.sp + "×";
+  const a = WATCH && WATCH.a, b = WATCH && WATCH.b, tn = rpTurn(v.i);
+  $("#rpinfo").textContent = `Replay: ${a ? a.nick : v.e.me} vs ${b ? b.nick : v.e.on}${tn ? ` · Turn ${tn}` : ""} · ${v.i + 1}/${v.A.length}`;
+}
+// the computer's hand (or Player 2's) face up in a replay
+function rpHand(m){
+  const h = m.hd.length, step = h > 1 ? Math.min(34, Math.floor(260 / (h - 1))) : 0;
+  const hc = m.hd.map((c, i) => tile({c}, "", false, 0, "ohcard").replace('style="', `style="left:${i * step}px;`)).join("");
+  return `<h2><span class="ohname">${esc(m.nick + "'s")}</span> hand <span class="chip">${h}</span></h2><div class="ohcards" style="width:calc(var(--ohw) + ${Math.max(0, h - 1) * step}px)">${hc || '<span class="lbl">No cards</span>'}</div>`;
+}
+const rpDur = ms => { const m = Math.round(ms / 60000); return m < 1 ? "under a minute" : m + " min"; };
+function openReplays(){
+  modal = {type: "replays"};
+  const list = rpList(), CODE = /^[A-Z0-9]{1,8}-\d{2,4}$/;
+  const row = e => {
+    const op = CODE.test(e.op) ? e.op : "", ld = CODE.test(e.ld) ? e.ld : "", me = clean(e.me, 20) || "Player", on = clean(e.on, 20) || "Opponent";
+    const both = e.b === 2, cls = both || !e.r ? "" : e.r === "w" ? "win" : "loss";
+    const lab = !e.r ? "Unfinished" : both ? "Finished" : e.r === "w" ? "Win" : "Loss";
+    const bits = [both && e.r ? `${e.r === "w" ? me : on} won` : "", e.b === 1 ? "Practice" : both ? "Both sides" : "Online", e.tn ? `${e.tn} turns` : "", e.d ? rpDur(e.d) : "", e.t ? ago(e.t) : ""].filter(Boolean).join(" · ");
+    const lds = [ld ? `${nameOf(ld) || ld}` : "", op ? `${nameOf(op) || op}` : ""].filter(Boolean).join(" vs ");
+    return `<div class="pfh rprow ${cls}"><span class="pfres">${lab}</span>${op ? tile({c: op, n: nameOf(op)}, "", false, 0) : `<div class="card pfnone"></div>`}<div class="pfinfo"><b>${esc(me)} vs ${esc(on)}</b><small>${esc(lds)}</small><span class="pfline">${esc(bits)}</span></div><div class="rpacts"><button class="btn pri" data-do="rpopen:${e.id}" type="button">Watch</button><button class="btn" data-do="rpdel:${e.id}" type="button" aria-label="Delete this replay">Delete</button></div></div>`;
+  };
+  showModal(`<h2>Replays</h2>
+    <p class="hint">Your last ${RP_MAX} matches, online and practice, finished or not. Play them back move by move, with your hand (and the computer's) face up. They're kept on this computer only.</p>
+    ${list.length ? `<div class="pfhist">${list.map(row).join("")}</div>` : `<div class="lbempty"><b>No replays yet</b>Play a match and it shows up here.</div>`}
+    <div class="row end"><button class="btn" data-do="home" type="button">Back</button></div>`);
+  const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
+  $("#modal").classList.add("homebg", "lobpage");
 }
 function myStatus(){ return !R || PR ? (S.phase === "none" ? "home" : "solo") : oppM ? "match" : "table"; }
 const isFriend = c => STATS.fr.some(f => f.c === c);
@@ -2321,7 +2550,7 @@ function render(){
   const cdMsg = oppM && oppM.cd ? (oppM.cdw ? (oppM.dk === 0 ? `${oppM.nick} has no cards left in their deck. You win!` : `${oppM.nick} took damage at 0 Life. You win!`) : `${oppM.nick} conceded. You win!`) : "";
   const res = S.conceded ? (S.lostDeck ? "Your deck is empty. You lose!" : S.lostDmg ? "You took damage at 0 Life. You lose!" : "You conceded the match.") : (oppM && oppM.cd ? esc(cdMsg) : "");
   if (oppM && oppM.cd && !oppCdSeen) { oppCdSeen = true; toast(cdMsg); } else if (!(oppM && oppM.cd)) oppCdSeen = false;
-  const ch = res ? `<span>\u2691 ${res}</span>` : S.phase === "none" ? "" : combatHTML(), midEl = $("#mid");
+  const ch = res ? `<span>\u2691 ${res}</span>${REC && REC.k === (recS0() || {}).rid && REC.fr.length >= 6 ? '<button class="btn" data-do="rpwatch" type="button">Watch replay</button>' : ""}` : S.phase === "none" ? "" : combatHTML(), midEl = $("#mid");
   midEl.classList.toggle("combat", !!ch);
   if (ch) midEl.innerHTML = ch; else midEl.textContent = mid;
   markCombat(); updTimers(); fxWatch(); markTargets(); markPlayable(); markOppNew(); quickResolve(); renderCoach();
@@ -2347,7 +2576,7 @@ window.addEventListener("resize", fitHand);
 function renderStatus(){
   const el = $("#status");
   if (PR) {
-    el.innerHTML = PR.bot ? `<span class="dot on"></span><span>Practice against the computer</span>` : `<span class="dot on"></span><span>Practice: playing as <b>${esc(S.nick)}</b></span>`;
+    el.innerHTML = PR.bot ? `<span class="dot on"></span><span>Practice against the computer${TUT ? "" : ` (${DIFFS[botLv()]})`}</span>` : `<span class="dot on"></span><span>Practice: playing as <b>${esc(S.nick)}</b></span>`;
   } else if (status === "online") {
     el.innerHTML = `<span class="dot on"></span><span>Room</span><button class="chip link" data-do="copyroom" type="button" title="Copy room code">${esc(roomCode)}</button>`;
   } else if (status === "connecting" || status === "reconnecting") {
@@ -2457,6 +2686,7 @@ function openHome(page){
       ${tutSeen() || STATS.g ? "" : '<button class="btn" data-do="tutorial" type="button">New here? Learn to play</button>'}
       <button class="btn" data-do="homebuilder" type="button">Deck editor</button>
       <button class="btn" data-do="homeprofile" type="button">Profile</button>
+      <button class="btn" data-do="homereplays" type="button">Replays</button>
       <button class="btn" data-do="homesign" type="button">${acctBtn()}</button>
       ${back}`;
   showModal(`<div>
@@ -2515,6 +2745,7 @@ function openSetup(opts){
       <textarea id="f-deck2" spellcheck="false" placeholder="Other decklist"></textarea>
     </details>
     <p class="hint">One card per line, with the card number and a count. A name is optional and only for your own reference. Tiles show the card number, since card art isn't loaded.</p>
+    ${(d0 => `<div class="row diffrow"${opts.bot ? "" : " hidden"}><label for="f-diff">Computer difficulty</label><select id="f-diff">${DIFFS.map((n, i) => `<option value="${i}"${i === d0 ? " selected" : ""}>${n}</option>`).join("")}</select><span class="hint" id="f-diffh">${DIFF_HINT[d0]}</span></div>`)(+v.diff === 0 || +v.diff === 2 ? +v.diff : 1)}
     <div class="row end">
       <button class="btn" data-do="sample" type="button">Load sample deck</button>
       ${S.phase !== "none" ? '<button class="btn" data-do="closemodal" type="button">Cancel</button>' : `<button class="btn" data-do="${jl || opts.pub ? "homelobby" : opts.friends ? "homefriends" : "homeplay"}" type="button">Back</button>`}
@@ -2543,7 +2774,8 @@ function readForm(){
     room: normRoom($("#f-room").value) || randRoom(),
     pub: !!($("#f-pub") && $("#f-pub").checked),
     lname: clean(($("#f-lname") || {}).value, 40),
-    fmt: LB_FMT[($("#f-fmt") || {}).value] ? $("#f-fmt").value : (loadSaved().fmt || "std")
+    fmt: LB_FMT[($("#f-fmt") || {}).value] ? $("#f-fmt").value : (loadSaved().fmt || "std"),
+    diff: (d => d === 0 || d === 2 ? d : 1)($("#f-diff") ? +$("#f-diff").value : +loadSaved().diff)
   }, readDeckFields());
 }
 async function startGame(join){
@@ -2573,7 +2805,7 @@ async function startGame(join){
 let lastCfg = null;
 function newGame(c, join){
   rankForfeit(); matchForget(); rankDeferredApply();
-  lastCfg = c;
+  lastCfg = c; recMine = null;
   const cards = []; let u = 1;
   for (const e of parseLines(c.deck)) for (let k = 0; k < e.count; k++) cards.push({u: u++, c: e.code, n: e.name});
   shuffle(cards);
@@ -2656,7 +2888,7 @@ async function startPractice(bot, cfg){
   if (!cfg) save(c);
   TUT = null;
   await leaveRoom();
-  R = null; PR = {cur: 1, sides: [null, null], pres: [null, null], busy: false, bot: bot ? 1 : 0};
+  R = null; PR = {cur: 1, sides: [null, null], pres: [null, null], busy: false, bot: bot ? 1 : 0, diff: c.diff === 0 || c.diff === 2 ? c.diff : 1};
   newGame(Object.assign({}, c, {nick: bot ? "Computer" : "Player 2", first: false, deck: d2 || c.deck, leader: l2 || c.leader}), false);
   PR.pres[1] = JSON.parse(JSON.stringify(pubFull())); practiceStash();
   newGame(Object.assign({}, c, {nick: bot ? c.nick || "Player" : "Player 1", first: true}), false);
@@ -2664,7 +2896,7 @@ async function startPractice(bot, cfg){
   R = practiceR(); roomCode = "practice"; status = "online";
   oppM = oppModel(PR.pres[1]);
   closeModal(); renderStatus(); renderLog(); render();
-  toast(bot ? "Practice against the computer. Roll to see who goes first." : "Practice table ready. Roll to see who goes first.");
+  toast(bot ? `Practice against the computer (${DIFFS[botLv()]}). Roll to see who goes first.` : "Practice table ready. Roll to see who goes first.");
 }
 // ---------- tutorial: a guided first game against the computer ----------
 // The Zoro starter list with Blockers in it, a fixed opening hand, and you going first. A panel over the card
@@ -2725,6 +2957,14 @@ function tutSkip(){ TUT = null; tutMark(); render(); toast("Tutorial closed. The
 // It plays its side between your actions: keeps a playable hand, plays the biggest Characters it can pay for,
 // gives its DON!! to the cards that attack, attacks your Leader or a rested Character it can K.O., and defends
 // with Blockers and counter cards. Its own card abilities don't run.
+// how well the computer plays. Easy: one Character a turn, no abilities to activate, DON!! all on its Leader, straight
+// at your Leader, and it only defends when a hit would lose. Normal: the strategy guides. Hard: Normal, and it defends
+// sooner, raises each attacker past your Leader's power so one small counter can't stop it, and goes after Blockers.
+const DIFFS = ["Easy", "Normal", "Hard"];
+const DIFF_HINT = ["Plays one Character a turn, doesn't use its abilities on its turn, and only defends when a hit would lose.",
+  "Plays like the strategy guides: blocks, counters, uses its card abilities and goes for the win when it can.",
+  "Defends sooner, spreads DON!! so each attack needs more counters, and takes out your Blockers first."];
+const botLv = () => PR && (PR.diff === 0 || PR.diff === 2) ? PR.diff : 1;
 let botT = null;
 function botSoon(ms){ if (!PR || !PR.bot || botT) return; botT = setTimeout(botTick, ms == null ? 700 : ms); }
 // run fn as the computer, then show what it did from your side
@@ -2742,6 +2982,7 @@ function botSide(fn){
     practiceStash(); practiceLoad(0);
     oppM = oppModel(PR.pres[1]);
   }
+  recTick();
   const ch = applyMarkReqs();
   if (PR.botEnd) { PR.botEnd = 0; startTurn(); }
   else if (ch || advance()) commit();
@@ -2769,7 +3010,7 @@ function botStep(){
     if (!PR.order) return 0;
     // mulligan once a hand with fewer than two cheap Characters
     const cheap = S.hand.filter(c => { const e = CARDDB.get(c.c) || {}; return e.t === "Character" && e.k >= 1 && e.k <= 4; }).length;
-    if (!S.mull && cheap < 2) { mulligan(); return 700; }
+    if (!S.mull && cheap < 2 && botLv()) { mulligan(); return 700; }
     keepHand();
     // you kept first: whoever goes first starts now
     if (oppM.kp === 1 && !S.first) PR.botEnd = 1;
@@ -2954,7 +3195,8 @@ function botAttackers(){
 function botTarget(a, lethal){
   const ap = botPow(a.f); if (ap == null) return null;
   const lp = oppM.ld ? powNum(oppM.ld) : null, hitLd = a.k === "all" && lp != null && ap >= lp, act = canHitActive(a.f);
-  const kos = (oppM.ch || []).map((c, i) => ({i, p: powNum(c), k: (CARDDB.get(c.c) || {}).k || 0, r: c.r})).filter(x => (x.r || act) && x.p != null && ap >= x.p).sort((x, y) => y.k - x.k || y.p - x.p);
+  const lv = botLv(), kos = (oppM.ch || []).map((c, i) => ({i, p: powNum(c), k: ((CARDDB.get(c.c) || {}).k || 0) + (lv > 1 && isBlocker(c.c) ? 3 : 0), r: c.r})).filter(x => (x.r || act) && x.p != null && ap >= x.p).sort((x, y) => y.k - x.k || y.p - x.p);
+  if (!lv) return hitLd ? "ld" : kos.length ? "ch:" + kos[0].i : null;
   if (hitLd && (lethal || oppM.lf <= 2)) return "ld";
   if (kos.length && (kos[0].k >= 3 || !hitLd)) return "ch:" + kos[0].i;
   return hitLd ? "ld" : null;
@@ -2962,16 +3204,23 @@ function botTarget(a, lethal){
 function botGiveDon(atks, max){
   let left = max == null ? S.donActive : max;
   const lp = oppM.ld ? powNum(oppM.ld) || 5000 : 5000, give = (a, n) => { for (let j = 0; j < n && S.donActive > 0 && left > 0; j++, left--) moveDon({pool: "a"}, a.r); };
+  if (!botLv()) { give(atks.find(a => a.f === S.leader) || atks[0], left); return; }
   // first enough to reach your Leader's power, cheapest first, then the rest on the Leader
   const need = atks.filter(a => a.k === "all").map(a => ({a, n: Math.max(0, Math.ceil((lp - (botPow(a.f) || 0)) / 1000))})).sort((x, y) => x.n - y.n);
   for (const x of need) if (x.n > 0 && x.n <= Math.min(left, S.donActive)) give(x.a, x.n);
+  // Hard: then +1000 at a time to the weakest attacker that reaches your Leader, up to 1000 over, so a single
+  // 1000 counter doesn't stop it
+  if (botLv() > 1) for (let g = 0; g < 20 && left > 0 && S.donActive > 0; g++) {
+    const x = atks.filter(a => a.k === "all" && a.f !== S.leader && (botPow(a.f) || 0) >= lp && (botPow(a.f) || 0) < lp + 1000).sort((p, q) => (botPow(p.f) || 0) - (botPow(q.f) || 0))[0];
+    if (!x) break; give(x, 1);
+  }
   if (left > 0 && S.donActive > 0) give(atks.find(a => a.f === S.leader) || atks[0], left);
 }
 function botMain(){
   // 1. play the most expensive Character the active DON!! pay for
-  if (S.chars.length < 5) {
+  if (S.chars.length < 5 && !(botLv() === 0 && PR.bpl === S.turn)) {
     const opts = S.hand.map((c, i) => ({i, hc: handCost(c), e: CARDDB.get(c.c) || {}})).filter(x => x.e.t === "Character" && x.hc && x.hc.cost <= S.donActive && !playTiming(S.hand[x.i], "chars")).sort((a, b) => b.hc.cost - a.hc.cost || (b.e.p || 0) - (a.e.p || 0));
-    if (opts.length) { moveCard("hand:" + opts[0].i, "chars", false, opts[0].hc.cost); return 1000; }
+    if (opts.length) { PR.bpl = S.turn; moveCard("hand:" + opts[0].i, "chars", false, opts[0].hc.cost); return 1000; }
   }
   if (!S.stage) {
     const st = S.hand.map((c, i) => ({i, hc: handCost(c), e: CARDDB.get(c.c) || {}})).filter(x => x.e.t === "Stage" && x.hc && x.hc.cost <= S.donActive && !playTiming(S.hand[x.i], "stage")).sort((a, b) => b.hc.cost - a.hc.cost)[0];
@@ -2979,20 +3228,20 @@ function botMain(){
   }
   // 2. an [Activate: Main] or an Event's [Main] that has something to do, once each per turn
   const used = PR.bact && PR.bact.t === S.turn ? PR.bact.u : (PR.bact = {t: S.turn, u: []}).u;
-  for (const f of [S.leader, S.stage, ...S.chars]) {
+  for (const f of botLv() ? [S.leader, S.stage, ...S.chars] : []) {
     if (!f) continue;
     const ab = fxAb(f.card.c).find(a => a.t === "activateMain" && !used.includes(f.card.c + a.text) && botWorth(f.card, a)); if (!ab) continue;
     used.push(f.card.c + ab.text);
     if (botAbility(f.card, ["activateMain"], f.d || 0)) return 1000;
   }
-  for (const [i, c] of S.hand.entries()) {
+  for (const [i, c] of botLv() ? S.hand.entries() : []) {
     const hc = handCost(c), ab = fxAb(c.c).find(a => a.t === "main");
     if ((CARDDB.get(c.c) || {}).t !== "Event" || !hc || hc.cost > S.donActive || !ab || used.includes(c.c + ab.text) || playTiming(c, "event") || !botWorth(c, ab)) continue;
     used.push(c.c + ab.text); moveCard("hand:" + i, "event", false, hc.cost); return 1000;
   }
-  const atks = botAttackers(), lethal = botLethal(atks);
+  const atks = botAttackers(), lethal = botLv() > 0 && botLethal(atks);
   // 3. give the DON!! left over to the cards that will attack, less what a [Counter] Event in hand needs on your turn
-  const keep = lethal ? 0 : botCtrKeep();
+  const keep = lethal || !botLv() ? 0 : botCtrKeep();
   if (S.donActive > keep && atks.length) { botGiveDon(atks, S.donActive - keep); return 1000; }
   // 4. attack one at a time, weaker attacks first and the Leader last; you answer each one. All at your Leader when
   // that wins the game
@@ -3015,7 +3264,8 @@ function botMain(){
 function botDefend(){
   const n = oppM.ak.n, w = botHold("def" + n, 1500); if (w) return w;
   const r0 = defResult();
-  if (r0 && r0.hits && PR.boa !== n) {
+  const lv = botLv();
+  if (r0 && r0.hits && PR.boa !== n && lv) {
     PR.boa = n; let any = false;
     for (const f of [S.leader, ...S.chars, S.stage].filter(Boolean)) { const ab = fxAb(f.card.c).find(a => a.t === "onOppAttack"); if (ab && botWorth(f.card, ab) && botAbility(f.card, ["onOppAttack"], f.d || 0)) any = true; }
     if (any) return 800;
@@ -3024,7 +3274,7 @@ function botDefend(){
     const life = S.life.length, cost = f => (CARDDB.get(f.card.c) || {}).k || 0;
     if (r0.onLeader && S.blk == null) {
       const bl = S.chars.map((f, i) => ({f, i, p: powNum({c: f.card.c, pm: pmOf(f)})})).filter(x => !x.f.r && blockerNow(x.f) && !blockBan(x.f));
-      const b = bl.filter(x => x.p != null && x.p > r0.ap).sort((x, y) => cost(x.f) - cost(y.f))[0] || (life <= 1 ? bl.sort((x, y) => cost(x.f) - cost(y.f))[0] : null);
+      const b = (lv ? bl.filter(x => x.p != null && x.p > r0.ap).sort((x, y) => cost(x.f) - cost(y.f))[0] : null) || (life <= (lv > 1 ? 2 : 1) ? bl.sort((x, y) => cost(x.f) - cost(y.f))[0] : null);
       if (b) doBlock(b.i);
     }
     const r = defResult();
@@ -3033,9 +3283,11 @@ function botDefend(){
       const one = ctrs.filter(x => x.v >= amt).sort((x, y) => x.v - y.v)[0];
       let set = one ? [one] : null;
       if (!set) { set = []; let sum = 0; for (const x of ctrs.slice().sort((x, y) => y.v - x.v)) { if (sum >= amt) break; set.push(x); sum += x.v; } if (sum < amt) set = null; }
-      const want = set && (r.onLeader ? life === 0 || life <= 2 || (set.length === 1 && S.hand.length >= 5) : cost(r.f) >= 4 && set.length === 1);
+      const want = set && (!lv ? r.onLeader && life === 0
+        : lv > 1 ? (r.onLeader ? life <= 3 || (set.length === 1 && S.hand.length >= 4) : (cost(r.f) >= 3 && set.length === 1) || (cost(r.f) >= 5 && set.length <= 2))
+        : (r.onLeader ? life === 0 || life <= 2 || (set.length === 1 && S.hand.length >= 5) : cost(r.f) >= 4 && set.length === 1));
       // worth saving, but the counter cards don't reach: a [Counter] Event that adds power first
-      if (!set && (r.onLeader ? life <= 2 : cost(r.f) >= 5)) {
+      if (!set && lv && (r.onLeader ? life <= lv + 1 : cost(r.f) >= 6 - lv)) {
         const ev = botCounterEvent(amt - ctrs.reduce((s, x) => s + x.v, 0));
         if (ev) { moveCard("hand:" + ev.i, "event", false, ev.cost); return botDefend(); }
       }
@@ -4819,6 +5071,15 @@ document.addEventListener("dblclick", e => {
   if (dk && S.phase === "play" && fair(["draw"])) { closeMenu(); draw(1); }
 });
 document.addEventListener("keydown", e => {
+  if (RPV) {
+    const tag = (e.target || {}).tagName || "";
+    if (!modal && !e.ctrlKey && !e.metaKey && !e.altKey && !/^(INPUT|TEXTAREA|SELECT)$/.test(tag)) {
+      if (e.key === " ") { if (tag !== "BUTTON") { e.preventDefault(); rpPlay(!RPV.on); } }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); rpSeek(RPV.i - 1); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); rpSeek(RPV.i + 1); }
+    }
+    return;
+  }
   // shortcuts: E ends your turn, Space resolves an attack on you, Esc cancels picking an attack target
   if (!e.ctrlKey && !e.metaKey && !e.altKey && !/^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test((e.target || {}).tagName || "") && !modal) {
     const k = e.key.toLowerCase();
@@ -4871,6 +5132,7 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("change", e => {
   const t = e.target;
+  if (t && t.id === "f-diff") { const h = $("#f-diffh"); if (h) h.textContent = DIFF_HINT[+t.value] || ""; return; }
   if (t && (t.id === "bd-set" || t.id === "bd-sortset")) {
     bdSetVal = t.value;
     ["bd-set", "bd-sortset"].forEach(id => { const s = document.getElementById(id); if (s) s.value = bdSetVal; });
@@ -4904,6 +5166,7 @@ document.addEventListener("keydown", e => {
 });
 $("#modal").addEventListener("click", e => { if (e.target.id === "modal" && modal && modal.type !== "setup" && modal.type !== "lobbies" && modal.type !== "home" && !artBusy && !rdBusy) closeModal(); });
 function doAction(a){
+  if (RPV && /^(resetboard|refresh|undo|endturn|concede|keep|mull|draw|dfresolve)/.test(a)) { toast("Exit the replay first."); return; }
   if (a === "bddeckwide") {
     const m = $("#bdmain"), on = m.classList.toggle("deckwide"), t = $("#bd-tab");
     if (t) { t.textContent = on ? "Back to cards \u25B6" : "\u25C0 Expand deck"; t.setAttribute("aria-expanded", on ? "true" : "false"); t.setAttribute("aria-label", on ? "Shrink deck view" : "Expand deck view"); }
@@ -4996,6 +5259,16 @@ function doAction(a){
   if (a.startsWith("frch:")) { challenge(a.slice(5)); return; }
   if (a.startsWith("frwatch:")) { const o = onlineMap().get(a.slice(8)); if (o && o.w) watchTable(o.w, o.nk); else toast("That match just ended."); return; }
   if (a === "stopwatch") { stopWatch(); return; }
+  if (a.startsWith("rpopen:")) { rpOpen(a.slice(7), "list"); return; }
+  if (a.startsWith("rpdel:")) { const id = a.slice(6); rpStore(rpList().filter(e => e.id !== id)); if (REC && REC.id === id) REC.dirty = false; openReplays(); toast("Replay deleted."); return; }
+  if (a.startsWith("rp:")) {
+    const v = RPV, k = a.slice(3); if (!v) return;
+    if (k === "exit") rpExit(); else if (k === "play") rpPlay(!v.on); else if (k === "start") rpSeek(0);
+    else if (k === "back") rpSeek(v.i - 1); else if (k === "fwd") rpSeek(v.i + 1);
+    else if (k === "prevturn") rpTurnJump(-1); else if (k === "nextturn") rpTurnJump(1);
+    else if (k === "speed") { v.sp = RP_SPEEDS[(RP_SPEEDS.indexOf(v.sp) + 1) % RP_SPEEDS.length]; if (v.on) rpPlay(true); else rpBar(); }
+    return;
+  }
   if (a.startsWith("frrm:")) { const c = a.slice(5), f = STATS.fr.find(x => x.c === c); STATS.fr = STATS.fr.filter(x => x.c !== c); statsSave(); renderFriends(); if (f) toast(`Removed ${f.n || f.c} from your friends.`); return; }
   if (a.startsWith("fradd:")) { const c = a.slice(6), e = (STATS.h || []).find(x => x.fc === c); if (addFriend(c, e && e.on)) renderFriends(); return; }
   if (a === "fradd") { const i = $("#fr-code"); if (i && addFriend(i.value)) { i.value = ""; renderFriends(); } return; }
@@ -5028,6 +5301,8 @@ function doAction(a){
     case "lbmake": openSetup({pub: true}); break;
     case "homebuilder": closeModal(); openBuilder(); break;
     case "homeprofile": closeModal(); openProfile(); break;
+    case "homereplays": closeModal(); openReplays(); break;
+    case "rpwatch": if (REC) rpOpen(REC.id, "match"); break;
     case "homenick": closeModal(); openProfile(true); break;
     case "pfnick": if (setNick(($("#pf-nick") || {}).value)) openProfile(); break;
     case "rejoin": rejoinMatch(); break;

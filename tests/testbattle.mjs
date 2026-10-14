@@ -296,7 +296,7 @@ check(await A.page.evaluate(() => [...document.querySelectorAll("#menu button")]
 await A.page.keyboard.press("Escape");
 // smoother play: playable cards light up, tap to attack, the opponent's new card lights up, an attack you can't answer
 // resolves by itself, effect wording picks the right cards, and E ends the turn
-const glowN = await def.page.evaluate(async () => { S.donActive = 5; commit(); await new Promise(r => setTimeout(r, 300)); return {can: document.querySelectorAll("#hand .card.canplay").length, want: S.hand.filter(c => (handCost(c) || {cost: 99}).cost <= 5).length}; });
+const glowN = await def.page.evaluate(async () => { S.donActive = 5; commit(); await new Promise(r => setTimeout(r, 300)); return {can: document.querySelectorAll("#hand .card.canplay").length, want: S.hand.filter(c => (handCost(c) || {cost: 99}).cost <= 5 && !((CARDDB.get(c.c) || {}).t === "Event" && playTiming(c, "event"))).length}; });
 console.log("playable", JSON.stringify(glowN));
 check(glowN.can > 0 && glowN.can === glowN.want, "hand cards your DON!! can pay for light up");
 await def.page.evaluate(() => { S.leader.r = false; S.turn = Math.max(S.turn, 2); commit(); openCardMenu("ld", 300, 300); [...document.querySelectorAll("#menu button")].find(b => b.textContent === "Attack").click(); });
@@ -323,6 +323,10 @@ check(spec.n === 1 && spec.bottom && spec.zoro && !spec.nami && !spec.navy, "Nam
 await def.page.evaluate(() => document.dispatchEvent(new KeyboardEvent("keydown", {key: "e", bubbles: true})));
 await def.page.waitForTimeout(1500);
 check(await def.page.evaluate(() => !S.myTurn), "E ends the turn");
+// the match was recorded for a replay: both boards and your own hand, never the opponent's hand
+const orp = await A.page.evaluate(() => REC ? {n: REC.fr.length, b: REC.b, me: rpMeta(REC).me, on: rpMeta(REC).on, myHd: REC.fr.some(f => f[1] && f[1].hd), oppHd: REC.fr.some(f => f[2] && f[2].hd), opp: REC.fr.some(f => f[2])} : null);
+console.log("online replay", JSON.stringify(orp));
+check(orp && orp.n > 10 && orp.b === 0 && orp.opp && orp.on !== "Opponent" && orp.on !== orp.me && orp.myHd && !orp.oppHd, "an online match is recorded for a replay, with your hand but never your opponent's");
 console.log("errorsA", A.errs.slice(0, 5)); console.log("errorsB", B.errs.slice(0, 5));
 await A.app.close(); await B.app.close(); peer.kill();
 console.log(fail ? `${fail} FAILED` : "all passed");
