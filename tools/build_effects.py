@@ -142,6 +142,13 @@ def step(clause, pay=False):
     if m: return dict(base, a="restDon", n=num(m.group(1)))
     m = re.match(r"set up to (\w+) of your don!! cards? as active(?:\.|$)", cl)
     if m: return dict(base, a="standDon", n=num(m.group(1)))
+    # resting your own cards as a cost: "You may rest 1 of your cards" (a DON!! card counts), "You may rest your 1 Leader",
+    # "rest 1 of your {Dressrosa} type Leader or Stage cards", "rest 1 of your [Uta] cards", "rest 1 of your Characters"
+    if re.match(r"(?:you may )?rest your (?:\w+ )?leader(?:\.|$)", cl): return dict(base, a="rest", who="own", n=1, upTo=False, ld=True)
+    m = re.match(r"(?:you may )?rest (\w+) of your (?!opponent's|don!!)(.*?)(cards?|characters?)(?:\.|$)", cl)
+    if m:
+        what = m.group(2) + m.group(3)
+        return dict(base, a="rest", who="own", n=num(m.group(1)), upTo=False, ld=not re.fullmatch(r"characters?", what), dn=True if what == "cards" else None)
     m = re.match(r"rest up to (\w+) of your opponent's don!! cards?(?:\.|$)", cl)
     if m: return dict(base, a="oppDon", n=num(m.group(1)))
     m = re.search(r"your opponent returns (\w+) don!! cards? from their field to their don!! deck", cl)
@@ -156,8 +163,11 @@ def step(clause, pay=False):
     if m: return dict(base, a="lifeHand", n=num(m.group(2)), tb=bool(m.group(3)))
     m = re.search(r"\badd (up to )?(\w+) cards? from the top of your deck to the top of your life cards", cl)
     if m: return dict(base, a="deckLife", n=num(m.group(2)))
-    m = re.search(r"\badd (up to )?(\w+) cards? from your hand to the top of your life cards", cl)
-    if m: return dict(base, a="handLife", n=num(m.group(2)))
+    m = re.search(r"\badd (up to )?(\w+) (?:[^.]*? )?(?:cards?|characters?)(?: with [^.]*?)? from your hand to the top of your life cards( face-up)?", cl)
+    if m: return dict(base, a="handLife", n=num(m.group(2)), up=True if m.group(3) else None)
+    # face-up Life: "You may turn 1 card from the top of your Life cards face-up", "turn all of your Life cards face-down"
+    m = re.match(r"(?:you may )?turn (all|\w+) (?:of your (?:face-up )?life cards|cards? from the top(?: or bottom)? of your life cards) face-(up|down)(?:\.|$)", cl)
+    if m: return dict(base, a="lifeUp" if m.group(2) == "up" else "lifeDown", who="own", n=99 if m.group(1) == "all" else num(m.group(1)), all=m.group(1) == "all")
     m = re.search(r"\btrash (up to )?(\w+) cards? from the top( or bottom)? of your life cards", cl)
     if m: return dict(base, a="lifeTrash", who="own", n=num(m.group(2)))
     m = re.search(r"\btrash up to (\w+) cards? from the top of your opponent's life cards", cl)
@@ -204,14 +214,14 @@ def step(clause, pay=False):
     who = r"(?:up to \w+ |all |\w+ )?of your (?:opponent's )?%s(?:leader or character cards?|characters?|leader)|your (?:opponent's )?leader|(?:up to \w+ |all )%scharacters?" % (QUAL.lower(), QUAL.lower())
     verbs = [("ko", r"\bk\.o\. (?:%s)" % who), ("rest", r"\brest (?:%s)" % who), ("stand", r"\bset (?:%s)[^.]* as active" % who),
              ("bounce", r"\breturn (?:%s)[^.]* to (?:the|its|their) owner'?s?'? hand" % who), ("bottom", r"\bplace (?:%s)[^.]* at the bottom of (?:the|its|their) owner'?s?'? deck" % who),
-             ("life", r"\badd (?:%s)[^.]* to the top or bottom of (?:the|its|their) owner'?s?'? life cards" % who), ("trashCh", r"\btrash (?:%s)" % who)]
+             ("life", r"\b(?:add|place) (?:%s)[^.]* (?:to|at) the top(?: or bottom)? of (?:(?:the|its|their) owner'?s?'?|your opponent's|their) life cards" % who), ("trashCh", r"\btrash (?:%s)" % who)]
     for a, rx in verbs:
         m = re.search(rx, low)
         if not m: continue
         t = target(c[m.start():])
         if not t: continue
         if t[0] == "any" and a not in ("ko", "bounce", "bottom", "life", "rest"): continue
-        return dict(base, a=a, who=t[0], n=t[1], upTo=t[2], all=t[3], ld=t[4] if a in ("rest", "stand") else False, cost=cost, power=power)
+        return dict(base, a=a, who=t[0], n=t[1], upTo=t[2], all=t[3], ld=t[4] if a in ("rest", "stand") else False, cost=cost, power=power, up=True if a == "life" and "face-up" in low else None)
     return dict(base, a="other")
 
 
@@ -219,6 +229,7 @@ def clauses(body):
     """Split an ability's text into the clauses that become steps: [(text, pay)], pay marking a "You may ...:" cost."""
     out = []
     body = re.sub(r"\brest (\w+) of your DON!! cards and this (Character|Leader|Stage)\b", r"rest \1 of your DON!! cards and rest this \2", body)
+    body = re.sub(r"\brest this (Character|Leader|Stage|card) and (\w+) of your\b", r"rest this \1 and rest \2 of your", body)
     body = re.sub(r"\b(rest|Rest|K\.O\.) this (Character|Leader) and (up to \w+ of your opponent's)", lambda m: f"{m.group(1)} this {m.group(2)} and {m.group(1).lower() if m.group(1) == 'Rest' else m.group(1)} {m.group(3)}", body)
     for sent in re.split(r"(?<=\.)\s+(?=[A-Z])", body.strip()):
         sent = re.sub(r"^Then,\s*", "", sent)

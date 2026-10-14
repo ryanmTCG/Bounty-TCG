@@ -944,6 +944,7 @@ select.sbtn{font-family:var(--slab)}
 .lifez .card.lifecard{position:absolute;left:50%;top:calc(6px + var(--i)*var(--lstep));margin:calc(var(--cw)*-.2) 0 0 calc(var(--cw) / -2);transform:rotate(90deg) scale(.94);z-index:calc(20 - var(--i))}
 .side.opp .lifez .card.lifecard{top:auto;bottom:calc(6px + var(--i)*var(--lstep));margin:0 0 calc(var(--cw)*-.2) calc(var(--cw) / -2)}
 .lifez .cnt{z-index:25}
+.lifez .card.lifecard.lifeup{box-shadow:0 0 0 2px #FFD23F,0 2px 6px rgba(0,0,0,.5)}
 .side.opp .lifez .cnt{bottom:auto;top:3px}
 .ohandp{margin:10px 10px 0;padding:6px 12px 10px;border-width:4px;order:0}
 .ohandp h2{display:flex;gap:8px;align-items:center;margin:0 0 6px;font-family:var(--slab);font-weight:400;font-size:15px;color:#F2B84B;text-shadow:0 2px 0 rgba(0,0,0,.55)}
@@ -1134,7 +1135,7 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp
 const clean = (s, n = 24) => String(s == null ? "" : s).replace(/[^\p{L}\p{N} .,'!&:+\-]/gu, "").trim().slice(0, n);
 const num = (x, max = 99) => { x = Math.floor(+x); return x >= 0 && x <= max ? x : 0; };
 const hue = code => { let h = 0; for (const ch of String(code).split("-")[0]) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; };
-const ACTK = {rest:1, stand:1, ko:1, bounce:1, bottom:1, pwr:1, dmg:1, pwb:1, cst:1, life:1, trc:1, ltr:1, rdn:1, odn:1, odis:1, ohd:1};
+const ACTK = {rest:1, stand:1, ko:1, bounce:1, bottom:1, pwr:1, dmg:1, pwb:1, cst:1, life:1, lfu:1, trc:1, ltr:1, rdn:1, odn:1, odis:1, ohd:1};
 const MK = {fz:{l:"Freeze", s:"FREEZE"}, nb:{l:"No Block", s:"NO BLOCK"}, au:{l:"Ability used", s:"USED"}, nk:{l:"No K.O.", s:"NO K.O."}, na:{l:"No Attack", s:"NO ATTACK"}};
 for (const k in MK) ACTK["x" + k] = 1;
 const lab = c => c.n ? c.c + " " + c.n : c.c;
@@ -1426,6 +1427,7 @@ function oppModel(x){
     mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0))), u: q.u ? 1 : 0})), ma: num(x.ma, 1000000),
     ox: Array.isArray(x.ox) ? [Math.max(-20000, Math.min(20000, Math.round(+x.ox[0] || 0))), Math.max(-10, Math.min(10, Math.round(+x.ox[1] || 0)))] : null,
     mf: x.mf && typeof x.mf === "object" && /^[A-Z0-9]{1,8}-\d{2,4}$/.test(x.mf.c) ? {c: x.mf.c, a: num(x.mf.a, 30), s: num(x.mf.s, 30), n: num(x.mf.n, 1e6)} : null,
+    lu: (Array.isArray(x.lu) ? x.lu : []).slice(0, 12).filter(t => Array.isArray(t) && Number.isInteger(t[0]) && t[0] >= 0 && t[0] < 60).map(t => [t[0], clean(t[1], 16)]),
     lf: num(x.lf, 60), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
   };
@@ -1440,6 +1442,7 @@ function pubFull(){
     tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), uid:S.ranked ? acctUid() : "", mk:S.ranked ? (S.mk || (S.mk = Math.random().toString(36).slice(2, 12))) : "", lg:myLog.filter(e => pubLog(e[1])).slice(-8)};
   const ox = statOpp(); if (ox[0] || ox[1]) o.ox = ox;
   if (S.mf) o.mf = S.mf;
+  const lu = S.life.map((c, i) => c.up ? [i, c.c] : null).filter(Boolean); if (lu.length) o.lu = lu;
   return o;
 }
 let pubT = null;
@@ -2257,7 +2260,8 @@ function side(m, mine){
   const top = m.tr[0] ? {c: m.tr[0][0], n: m.tr[0][1]} : null;
   const lf = m.lf || 0;
   let lc = "";
-  for (let i = 0; i < lf; i++) lc += `<div class="card back sl${m.sl} lifecard" style="--i:${i}"></div>`;
+  const lu = new Map((m.lu || []).map(t => [t[0], t[1]]));
+  for (let i = 0; i < lf; i++) lc += lu.has(i) ? tile({c: lu.get(i)}, `title="Face-up Life card"`, false, 0, "lifecard lifeup").replace('style="', `style="--i:${i};`) : `<div class="card back sl${m.sl} lifecard" style="--i:${i}"></div>`;
   const life = `<div class="lifez${lf ? "" : " empty"}" ${mine ? 'data-act="life" data-zone="life" title="Tap for Life actions, or drop a card here"' : ""} style="--d:${Math.max(lf - 1, 1)}">${lc}${lf ? `<em class="cnt">Life ${lf}</em>` : lbl("Life")}</div>`;
   const ev = `<div class="slot z-ev evslot" ${Z("event")}>${m.ev ? tile(m.ev, A("ev"), false, 0) : lbl("Event")}</div>`;
   const ld = `<div class="slot z-ld" ${mine && m.ld ? 'data-dzone="ld"' : ""} ${!mine && m.ld ? 'data-atk="ld"' : ""}>${m.ld ? tile(m.ld, A("ld"), m.ld.r, m.ld.d, "leader", m.ld.pm, m.ld.cm, m.ld.mk, true) : lbl("Leader")}</div>`;
@@ -2834,6 +2838,7 @@ function botOwnPick(cs, st){
 function botFxStep(m, st){
   if (st.self) { fxApply(); return; }
   if (st.a === "choose") { const k = st.opts.findIndex(o => o.steps.length && o.steps.every(s => s.a !== "other")); doAction("fxopt:" + Math.max(0, k)); return; }
+  if (st.a === "rest" && st.dn && st.pay && S.donActive > 0) { doAction("fxrestdon"); return; }
   if (fxVerb(st, "it")) {
     const cs = fxCands(st); if (!cs.length) return;
     const lim = fxLim(st), good = botGood(st), own = fxOwn(st) || st.who === "own";
@@ -2880,7 +2885,7 @@ function botFxStep(m, st){
     if (fxCur === m && m.i === i0 && m.res) fxNext();
     return;
   }
-  if (["restDon", "standDon", "oppDon", "oppRetDon", "oppDiscard", "oppHandDeck", "lifeTrash", "lifeHand", "deckLife", "mill", "shuffle", "playSelf", "handSelf", "act", "noBlock", "noPlay"].includes(st.a)) fxApply();
+  if (["restDon", "standDon", "oppDon", "oppRetDon", "oppDiscard", "oppHandDeck", "lifeTrash", "lifeHand", "deckLife", "mill", "shuffle", "playSelf", "handSelf", "act", "noBlock", "noPlay", "lifeUp", "lifeDown"].includes(st.a)) fxApply();
 }
 // "Look at 5 cards from the top of your deck; reveal up to 1 X and add it to your hand. Then, place the rest at the bottom"
 function botLook(m, st){
@@ -3047,6 +3052,27 @@ function botDefend(){
   }
   defResolve(true); return 0;
 }
+// "This Character cannot be K.O.'d by effects.", "If ..., this Character cannot be removed from the field by your
+// opponent's effects." and "all of your {X} type Characters cannot be ..." while what they ask for holds. A battle K.O.
+// (v -1) isn't an effect.
+const REMOVE_K = {ko: 1, bounce: 1, bottom: 1, life: 1, lfu: 1, trc: 1};
+function shielded(f, k){
+  if (!f || f === S.leader) return false;
+  for (const h of [S.leader, S.stage, ...S.chars]) if (h) for (const a of fxAb(h.card.c)) {
+    if (a.t !== "other" && a.t !== "yourTurn") continue;
+    const t = (a.text || "").replace(/\s*\([^)]*\)/g, "");
+    const m = /^(?:\[[^\]]+\]\s*)*(?:If ([^,]+), )?(this Character|all of your (?:(red|green|blue|purple|black|yellow) )?(?:\{([^}]+)\} type )?Characters)(?: gains? [^.]*? and)? cannot be (K\.O\.'d|removed from the field) by (?:your opponent's )?effects/i.exec(t);
+    if (!m) continue;
+    if (/^this/i.test(m[2]) ? h !== f : ((m[3] && !String((CARDDB.get(f.card.c) || {}).c || "").toLowerCase().includes(m[3].toLowerCase())) || (m[4] && !hasType(f.card.c, m[4])))) continue;
+    if (/K\.O\./.test(m[5]) && k !== "ko") continue;
+    if ((h.d || 0) < (a.don || 0)) continue;
+    if (/\[Your Turn\]/i.test(t) && !S.myTurn) continue;
+    if (/\[Opponent's Turn\]/i.test(t) && S.myTurn) continue;
+    if (m[1] && condCheck(m[1], h) !== true) continue;
+    return true;
+  }
+  return false;
+}
 function applyMarkReqs(){
   let ch = false;
   const akn = oppM && oppM.ak ? oppM.ak.n || -1 : 0;
@@ -3076,6 +3102,7 @@ function applyMarkReqs(){
         else if (q.k === "rest") { f.r = true; addLog(q.u ? `${by} undid standing ${nm}` : `${nm} was rested by ${by}`); }
         else if (q.k === "stand") { f.r = false; addLog(q.u ? `${by} undid resting ${nm}` : `${nm} was stood by ${by}`); }
         else if (q.k === "pwr") { f.pm = Math.max(-60000, Math.min(60000, (f.pm || 0) + q.v)); addLog(q.u ? `${by} undid ${q.v > 0 ? "-" : "+"}${Math.abs(q.v)} power on ${nm}` : `${nm} got ${q.v > 0 ? "+" : "-"}${Math.abs(q.v)} power from ${by}`); }
+        else if (REMOVE_K[q.k] && q.v !== -1 && shielded(f, q.k)) addLog(`${nm} can't be ${q.k === "ko" ? "K.O.'d" : "removed from the field"} by ${by}'s effect`);
         else if (q.k[0] === "x") { const mk = q.k.slice(1); if (f.mk && f.mk.includes(mk)) { f.mk = f.mk.filter(x => x !== mk); addLog(`${by} took ${MK[mk].l} back off ${nm}`); } }
         else if (f !== S.leader) {
           const i = S.chars.indexOf(f); if (i < 0) continue;
@@ -3083,7 +3110,7 @@ function applyMarkReqs(){
           if (q.k === "ko") { S.trash.unshift(f.card); addLog(`${nm} was K.O.'d by ${by}`); const kc = f.card, kd = f.d || 0; setTimeout(() => runAbility(kc, ["onKO"], false, kd), 0); }
           else if (q.k === "bounce") { S.hand.push(f.card); addLog(`${nm} was returned to hand by ${by}`); }
           else if (q.k === "bottom") { S.deck.push(f.card); addLog(`${nm} was put on the bottom of the deck by ${by}`); }
-          else if (q.k === "life") { S.life.unshift(f.card); addLog(`${nm} was added to the top of their Life by ${by} (Life ${S.life.length})`); }
+          else if (q.k === "life" || q.k === "lfu") { if (q.k === "lfu") f.card.up = true; else delete f.card.up; S.life.unshift(f.card); addLog(`${nm} was added to the top of their Life${q.k === "lfu" ? " face-up" : ""} by ${by} (Life ${S.life.length})`); }
           else if (q.k === "trc") { S.trash.unshift(f.card); addLog(`${nm} was trashed by ${by}`); }
         }
         continue;
@@ -3143,7 +3170,7 @@ function normStep(t, deep){
   t = t || {};
   const st = {a: String(t.a || "other").slice(0, 16), who: t.who === "own" ? "own" : t.who === "any" ? "any" : "opp", n: Math.max(1, Math.min(60000, Math.round(Math.abs(+t.n) || 1))) * (+t.n < 0 ? -1 : 1), upTo: t.upTo !== false, cost: Number.isFinite(+t.cost) && t.cost !== null ? +t.cost : null, power: Number.isFinite(+t.power) && t.power !== null ? +t.power : null, rested: t.rested === true, ld: typeof t.ld === "boolean" ? t.ld : null, all: t.all === true, text: fxText(t.text, 300)};
   if (st.a === "kw" && !+t.n) st.n = 0;
-  for (const k of ["self", "pay", "battle", "tb", "top", "now"]) if (t[k] === true) st[k] = true;
+  for (const k of ["self", "pay", "battle", "tb", "top", "now", "up", "dn"]) if (t[k] === true) st[k] = true;
   if (typeof t.k === "string" && /^[a-zA-Z]{1,12}$/.test(t.k)) st.k = t.k;
   if (Number.isInteger(t.cnt) && t.cnt > 1) st.cnt = Math.min(t.cnt, 10);
   if (st.a === "choose" && !deep) st.opts = (Array.isArray(t.opts) ? t.opts : []).slice(0, 4).map(o => ({text: fxText(o && o.text, 300), steps: (Array.isArray(o && o.steps) ? o.steps : []).slice(0, 6).map(x => normStep(x, true))}));
@@ -3427,6 +3454,7 @@ function fxCands(st){
     if (lim.notSelf && own && x.card === self) return false;
     if (lim.rested && !x.r) return false;
     if (lim.active && x.r) return false;
+    if (st.a === "rest" && x.r) return false;
     return true;
   };
   const src = !lim.chars ? [] : own
@@ -3458,13 +3486,13 @@ function fxStepHTML(m){
   }
   if (st.a === "choose") return say("Choose one:", cancel, `<div class="fxcol">${st.opts.map((o, i) => `<button class="btn" data-do="fxopt:${i}" type="button">${esc(o.text)}</button>`).join("")}</div>`);
   if (fxVerb(st, "it")) {
-    const cs = fxCands(st), own = fxOwn(st);
-    if (!cs.length) return say(`No ${st.who === "any" ? "Characters" : own ? "cards of yours" : "opposing cards"} can be chosen for this.`, st.pay ? cancel : `${cancel}<button class="btn pri" data-do="fxskip:no" type="button">Next</button>`);
+    const cs = fxCands(st), own = fxOwn(st), dnBtn = st.a === "rest" && st.dn && S.donActive > 0 ? `<button class="btn" data-do="fxrestdon" type="button">Rest a DON!!</button>` : "";
+    if (!cs.length) return dnBtn ? say("Rest one of your active DON!! cards to pay this.", cancel + dnBtn) : say(`No ${st.who === "any" ? "Characters" : own ? "cards of yours" : "opposing cards"} can be chosen for this.`, st.pay ? cancel : `${cancel}<button class="btn pri" data-do="fxskip:no" type="button">Next</button>`);
     if (st.all && m.allFor !== m.i) { m.allFor = m.i; m.pick = cs.map(x => x.ref); }
     const what = cs.some(x => x.ref === "ld") ? "card" : "Character", lim = fxLim(st);
     if (st.all) return say(`Every green ${own || st.who === "any" ? "" : "opposing "}${what} is chosen: ${esc(fxVerb(st, "them"))}. Tap one on the board to leave it out.`, `${cancel}${skip}<button class="btn pri" data-do="fxapply" type="button">Apply (${m.pick.length})</button>`);
     const which = st.who === "any" ? `${lim} Character${lim === 1 ? "" : "s"} (yours or your opponent's)` : lim === 1 && !st.upTo ? (own ? `one of your ${what}s` : `an opposing ${what}`) : `${lim} ${own ? "of your" : "opposing"} ${what}${lim === 1 && !own ? "" : "s"}`;
-    return say(`Tap ${st.upTo ? "up to " : ""}${which} on the board to ${esc(fxVerb(st, lim === 1 ? "it" : "them"))}.`, lim === 1 ? cancel + skip : `${cancel}${skip}<button class="btn pri" data-do="fxapply" type="button">Apply (${m.pick.length})</button>`);
+    return say(`Tap ${st.upTo ? "up to " : ""}${which} on the board to ${esc(fxVerb(st, lim === 1 ? "it" : "them"))}${dnBtn ? ", or rest a DON!!" : ""}.`, lim === 1 ? cancel + skip + dnBtn : `${cancel}${skip}<button class="btn pri" data-do="fxapply" type="button">Apply (${m.pick.length})</button>`);
   }
   if (st.a === "returnDon") {
     const sel = m.dsel = m.dsel || {}, tot = Object.values(sel).reduce((a, b) => a + b, 0), opts = [["a", "Active DON!! (cost area)", S.donActive], ["r", "Rested DON!! (cost area)", S.donRested]];
@@ -3505,6 +3533,11 @@ function fxStepHTML(m){
     return say(st.a === "playSelf" ? `Play ${nm} for free${st.rested ? ", rested" : ""}.` : `Add ${nm} to your hand.`, cancel + skip + go(st.a === "playSelf" ? "Play it" : "Add to hand"));
   }
   if (st.a === "act") { const ab = fxAb(m.card.c).find(a => a.t === st.k); return ab ? say(`Use its [${esc(TRIG[st.k] || st.k)}] effect: ${esc(ab.text.replace(/^(\s*\[[^\]]+\]\s*)+/, ""))}`, cancel + skip + go("Use it")) : say("This card has no such effect.", next); }
+  if (st.a === "lifeUp" || st.a === "lifeDown") {
+    const up = st.a === "lifeUp", have = S.life.filter(c => !c.up === up).length, n = st.all ? have : Math.min(st.n, have);
+    if (!n || (st.pay && have < st.n)) return say(up ? "You have no face-down Life cards to turn face-up." : "You have no face-up Life cards to turn face-down.", st.pay ? cancel : next);
+    return say(`Turn ${st.all ? "all of your face-up Life cards" : pl(n, (up ? "face-down" : "face-up") + " Life card") + " from the top"} face-${up ? "up" : "down"}.`, cancel + skip + go(st.pay ? "Pay" : up ? "Turn face-up" : "Turn face-down"));
+  }
   if (st.a === "noPlay") return say(`You can't play ${st.cost != null ? `Characters with a base cost of ${st.cost} or more` : "Character cards"} for the rest of this turn.`, go("OK"));
   if (st.a === "noBlock") return say(`Your opponent can't use [Blocker]${st.power != null ? ` Characters with ${st.power} power or less` : ""} ${S.atk ? "in this battle" : "this turn"}.`, cancel + go("OK"));
   if (st.a === "kw") { m.manual = true; return say(`Give a card [${esc(KW_NAME[st.k] || st.k)}].`, cancel + go("Next", "fxskip")); }
@@ -3546,7 +3579,7 @@ function fxApply(arg){
     const cs = []; m.pick.map(r => +r.slice(5)).sort((a, b) => b - a).forEach(i => { const c = S.hand.splice(i, 1)[0]; if (c) cs.unshift(c); });
     m.res = cs.length > 0;
     if (st.a === "discard") { cs.forEach(c => S.trash.unshift(c)); if (cs.length && S.myTurn) S.htr = S.turn; if (cs.length) addLog(`trashed ${pl(cs.length, "card")} from hand`); }
-    else if (st.a === "handLife") { cs.forEach(c => S.life.unshift(c)); if (cs.length) addLog(`added ${pl(cs.length, "card")} from hand to the top of their Life (Life ${S.life.length})`); }
+    else if (st.a === "handLife") { cs.forEach(c => { if (st.up) c.up = true; else delete c.up; S.life.unshift(c); }); if (cs.length) addLog(`added ${cs.length === 1 && st.up ? lab(cs[0]) : pl(cs.length, "card")} from hand to the top of their Life${st.up ? " face-up" : ""} (Life ${S.life.length})`); }
     else if (cs.length) { if (arg === "top") S.deck.unshift(...cs); else S.deck.push(...cs); addLog(`put ${pl(cs.length, "card")} from hand on the ${arg === "top" ? "top" : "bottom"} of the deck`); }
     done(); return;
   }
@@ -3563,7 +3596,7 @@ function fxApply(arg){
       const n = Math.min(st.n, S.life.length); for (let i = 0; i < n; i++) S.trash.unshift(S.life.shift()); if (n) addLog(`trashed ${pl(n, "card")} from the top of their Life (Life ${S.life.length})`); done(); return;
     }
     case "lifeHand": { const n = Math.min(st.n, S.life.length); for (let i = 0; i < n; i++) S.hand.push(arg === "bot" ? S.life.pop() : S.life.shift()); if (n) addLog(`added ${pl(n, "card")} from the ${arg === "bot" ? "bottom" : "top"} of their Life to hand (Life ${S.life.length})`); done(); return; }
-    case "deckLife": { const n = Math.min(st.n, S.deck.length); for (let i = 0; i < n; i++) S.life.unshift(S.deck.shift()); if (n) addLog(`added ${pl(n, "card")} from the top of their deck to Life (Life ${S.life.length})`); done(); return; }
+    case "deckLife": { const n = Math.min(st.n, S.deck.length); for (let i = 0; i < n; i++) { const c = S.deck.shift(); delete c.up; S.life.unshift(c); } if (n) addLog(`added ${pl(n, "card")} from the top of their deck to Life (Life ${S.life.length})`); done(); return; }
     case "mill": { const n = Math.min(st.n, S.deck.length); for (let i = 0; i < n; i++) S.trash.unshift(S.deck.shift()); if (n) addLog(`trashed ${pl(n, "card")} from the top of their deck`); done(); return; }
     case "shuffle": shuffle(S.deck); addLog("shuffled their deck"); done(); return;
     case "playSelf": case "handSelf": {
@@ -3574,6 +3607,11 @@ function fxApply(arg){
       fxNext(); return;
     }
     case "act": { const ab = fxAb(m.card.c).find(a => a.t === st.k); if (ab) fxQueue.unshift(fxJob(m.card, Object.assign({}, ab, {don: 0}))); fxNext(); return; }
+    case "lifeUp": case "lifeDown": {
+      const up = st.a === "lifeUp"; let k = 0;
+      for (const c of S.life) if (!c.up === up && (st.all || k < st.n)) { if (up) c.up = true; else delete c.up; k++; }
+      m.res = k > 0; if (k) addLog(`turned ${pl(k, "Life card")} face-${up ? "up" : "down"}`); done(); return;
+    }
     case "noPlay": { S.npc = {t: S.turn, k: st.cost}; addLog(`can't play ${st.cost != null ? `Characters with a base cost of ${st.cost} or more` : "Characters"} for the rest of the turn`); done(); return; }
     case "noBlock": {
       if (S.atk) { if (st.power != null) S.atk.ub = st.power; else S.atk.u = 1; }
@@ -3602,7 +3640,7 @@ function fxApply(arg){
   for (const ref of theirs) {
     const t = oppCardAt(ref); if (!t) continue;
     if (ref === "ld" && !["rest", "stand", "pwr", "cost", "mark"].includes(kind)) continue;
-    const k = kind === "cost" ? "cst" : kind === "trashCh" ? "trc" : kind === "mark" ? st.k : kind === "pwr" && st.battle ? "pwb" : kind;
+    const k = kind === "cost" ? "cst" : kind === "trashCh" ? "trc" : kind === "life" && st.up ? "lfu" : kind === "mark" ? st.k : kind === "pwr" && st.battle ? "pwb" : kind;
     if (!ACTK[k] && !MK[k]) continue;
     sendOpp({r: ref, c: t.c, k, v: kind === "pwr" || kind === "cost" ? st.n : kind === "mark" && st.now ? 1 : 0});
     const sg = `${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)}`;
@@ -3886,6 +3924,8 @@ function costCond(t){
   let m;
   if ((m = t.match(/^(you|your opponent) ha(?:ve|s) (\d+) or (less|more) Life cards?$/))) return atLeast(m[1] === "you" ? S.life.length : (oppM ? oppM.lf : 0), +m[2], m[3]);
   if ((m = t.match(/^you have (\d+) or (less|more) DON!! cards? on your field$/))) return atLeast(myDonField(), +m[1], m[2]);
+  if ((m = t.match(/^you have (?:a|(\d+) or more) face-up Life cards?$/))) return S.life.filter(c => c.up).length >= +(m[1] || 1);
+  if (/^you have no face-up Life cards$/.test(t)) return !S.life.some(c => c.up);
   if ((m = t.match(/^the number of DON!! cards on your field is at least (\d+) less than the number on your opponent's field$/))) return !!oppM && oppDonField() - myDonField() >= +m[1];
   if ((m = t.match(/^your Leader has the \{([^}]+)\} type$/))) return !!S.leader && hasType(S.leader.card.c, m[1]);
   if ((m = t.match(/^your Leader's card name includes "([^"]+)"$/))) return !!S.leader && nameOf(S.leader.card.c).includes(m[1]);
@@ -4109,7 +4149,7 @@ function moveCard(src, dest, free, pay){
   else if (dest === "trash") { S.trash.unshift(c); msg = k === "lf" ? `trashed ${nm} from Life` : k === "ch" ? `trashed ${nm} (KO)` : `trashed ${nm}`; }
   else if (dest === "deck") { S.deck.unshift(c); msg = wasPublic ? `put ${nm} on top of the deck` : "put a card on top of the deck"; }
   else if (dest === "deckbot") { S.deck.push(c); msg = wasPublic ? `put ${nm} on the bottom of the deck` : "put a card on the bottom of the deck"; }
-  else if (dest === "life") { S.life.unshift(c); msg = `added a card to Life (${S.life.length})`; }
+  else if (dest === "life") { delete c.up; S.life.unshift(c); msg = `added a card to Life (${S.life.length})`; }
   if (k === "dk" && modal && modal.type === "peek") {
     modal.n = Math.max(0, modal.n - 1);
     // a search that says "add up to N ... then place the rest at the bottom" finishes by itself once N are taken
@@ -5031,6 +5071,11 @@ function doAction(a){
     case "startturn": startTurn(); break;
     case "undo": undo(); break;
     case "quickchat": qcMenu(); break;
+    case "fxrestdon": {
+      const m = fxCur, st = m && m.steps[m.i];
+      if (!st || st.a !== "rest" || !st.dn || S.donActive < 1) break;
+      S.donActive--; S.donRested++; addLog("rested 1 DON!! to pay for " + lab(m.card)); m.res = true; m.pick = []; commit(); fxNext(); break;
+    }
     case "prfirst:0": case "prfirst:1": practiceFirst(+a.slice(8)); break;
     case "resetboard": if (!boardTools()) { toast(NO_TOOLS); break; } if (S.phase === "none" || !lastCfg) { toast("Set up your deck first."); break; } modal = {type: "reset"}; renderModal(); break;
     case "resetyes": { closeModal(); if (!boardTools()) break; const first = S.first, wasRoom = S.phase !== "wait" && S.phase !== "roll"; newGame(lastCfg, false); S.first = first; addLog("reset their board"); commit(); } break;
@@ -5046,7 +5091,7 @@ function doAction(a){
     case "cmbapply": {
       const r = combatResult(); if (!S.atk || !r) break;
       if (r.hits) {
-        sendOpp({r: r.ref, c: r.code, k: r.onLeader ? "dmg" : "ko", v: 0});
+        sendOpp({r: r.ref, c: r.code, k: r.onLeader ? "dmg" : "ko", v: r.onLeader ? 0 : -1});
         addLog(r.onLeader ? `hit the Leader for 1 damage (${r.ap} vs ${r.tp})` : `K.O.'d the defending Character (${r.ap} vs ${r.tp})`);
       } else addLog(`attack failed (${r.ap} vs ${r.tp})`);
       S.atk = null; commit(); break;
@@ -5074,7 +5119,7 @@ function doAction(a){
     case "refresh": refreshAll(); break;
     case "endturn": endTurn(); break;
     case "searchdeck": if (!fair(["search"])) break; if (!S.deck.length) { toast("Your deck is empty."); break; } modal = {type: "peek", n: Infinity, all: true, fx: fxt()}; renderModal(); addLog("searched their deck"); break;
-    case "heal": if (!fair(["life"])) break; if (!S.deck.length) { toast("Your deck is empty."); break; } S.life.unshift(S.deck.shift()); addLog(`healed (Life ${S.life.length})`); commit(); break;
+    case "heal": if (!fair(["life"])) break; if (!S.deck.length) { toast("Your deck is empty."); break; } { const c = S.deck.shift(); delete c.up; S.life.unshift(c); } addLog(`healed (Life ${S.life.length})`); commit(); break;
     case "damage": if (!fair(["life", "hand"])) break; if (!S.life.length) { toast("No Life left. The next hit is lethal."); break; } { const lc = S.life[0]; moveCard("lf:0", "hand"); offerTrigger(lc); } break;
     case "coin": addLog("flipped a coin: " + (Math.random() < .5 ? "heads" : "tails")); break;
     case "prroll": practiceRoll(); break;

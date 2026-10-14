@@ -20,7 +20,7 @@ const deck = ["OP01-013","OP01-016","OP01-024","OP01-014","OP01-015","OP01-017",
 
 // every kind of step in effects.json is one the game knows
 const kinds = await page.evaluate(() => {
-  const known = ["rest","stand","ko","bounce","bottom","pwr","draw","look","don","returnDon","giveDon","discard","other","play","choose","cost","mark","life","trashCh","kw","restDon","standDon","oppDon","oppRetDon","oppDiscard","oppHandDeck","lifeHand","deckLife","handLife","lifeTrash","mill","handDeck","trashDeck","trashHand","shuffle","playSelf","handSelf","act","noBlock","noPlay","trash"];
+  const known = ["rest","stand","ko","bounce","bottom","pwr","draw","look","don","returnDon","giveDon","discard","other","play","choose","cost","mark","life","trashCh","kw","restDon","standDon","oppDon","oppRetDon","oppDiscard","oppHandDeck","lifeHand","deckLife","handLife","lifeTrash","mill","handDeck","trashDeck","trashHand","shuffle","playSelf","handSelf","act","noBlock","noPlay","lifeUp","lifeDown","trash"];
   const seen = new Set(); let stat = 0, dup = 0;
   const walk = sts => sts.forEach(s => { seen.add(s.a); if (s.opts) s.opts.forEach(o => walk(o.steps)); });
   for (const [code] of BFX) { const ab = fxAb(code); ab.forEach(a => { walk(a.steps); if (a.s) stat++; }); if (ab.some(a => a.t === "yourTurn" && !a.s) && ab.some(a => a.t === "onPlay" && a.text === (ab.find(b => b.t === "yourTurn") || {}).text)) dup++; }
@@ -195,6 +195,49 @@ const ub = await page.evaluate(() => {
 console.log("unblockable", JSON.stringify(ub));
 check(/Unblockable/.test(ub.ban) && ub.blocked == null, "an Unblockable attacker can't be blocked");
 check(/stops \[Blocker\]/.test(ub.nb) && ub.ok === "", "\"your opponent cannot activate [Blocker]\" stops blocking for that battle only");
+// face-up Life: EB01-040 turns the top Life card face-up to pay, EB03-051 turns them all back face-down
+await page.evaluate(() => { while (fxCur) { fxQueue.length = 0; fxFinish(false); } S.chars = []; S.rs = 0; oppM = oppModel(PR.pres[1]); while (S.life.length < 4) S.life.push(S.deck.shift()); S.life.forEach(c => delete c.up); commit(); });
+const drive = async () => { for (let i = 0; i < 8 && await page.evaluate(() => !!fxCur); i++) { await page.evaluate(() => { const b = document.querySelector("#fxpanel .btn.pri") || document.querySelector('#fxpanel [data-do^="fxskip"]'); if (b) b.click(); }); await page.waitForTimeout(200); } };
+const fxClear = () => page.evaluate(() => { while (fxCur) { fxQueue.length = 0; fxFinish(false); } });
+await page.evaluate(() => fxEnqueue(fxJob({c: "EB01-040", n: nameOf("EB01-040")}, fxAb("EB01-040").find(a => a.t === "activateMain"))));
+await drive();
+const fu = await page.evaluate(() => ({top: !!S.life[0].up, rest: S.life.slice(1).some(c => c.up), lu: pubFull().lu, seen: oppModel(pubFull()).lu, shown: document.querySelectorAll("#me .lifez .lifeup").length, cond: condCheck("you have a face-up Life card", S.leader)}));
+console.log("face-up", JSON.stringify(fu));
+check(fu.top && !fu.rest && fu.lu && fu.lu[0][0] === 0 && fu.seen.length === 1 && fu.shown === 1 && fu.cond === true, "turning the top Life card face-up shows it on the board and to the opponent");
+await fxClear();
+await page.evaluate(() => fxEnqueue(fxJob({c: "EB03-051", n: nameOf("EB03-051")}, fxAb("EB03-051").find(a => a.t === "onPlay"))));
+await drive();
+check(await page.evaluate(() => !S.life.some(c => c.up) && !pubFull().lu), "\"turn all of your Life cards face-down\" turns them back");
+await fxClear();
+const hl = await page.evaluate(() => {
+  const ab = normFx({abilities: [{t: "main", text: "[Main] Add up to 1 card from your hand to the top of your Life cards face-up.", steps: [{a: "handLife", up: true, n: 1, text: "Add up to 1 card from your hand to the top of your Life cards face-up."}]}]}).ab[0];
+  fxEnqueue(fxJob({c: "OP01-016", n: ""}, ab)); const c = S.hand[0]; fxCur.pick = ["hand:0"]; doAction("fxapply"); return {same: S.life[0] === c, up: !!S.life[0].up};
+});
+check(hl.same && hl.up, "a card added from hand to Life face-up is face-up");
+const lfu = await page.evaluate(() => {
+  const base = JSON.parse(JSON.stringify(PR.pres[1])); S.chars = [{card: {c: "OP01-016", n: ""}, r: false, d: 0, pt: 0}]; S.life.forEach(c => delete c.up);
+  base.mq = [{id: S.ack + 1, r: "ch:0", c: "OP01-016", k: "lfu", v: 0}]; oppM = oppModel(base); applyMarkReqs(); commit();
+  return {gone: !S.chars.length, top: S.life[0].c, up: !!S.life[0].up};
+});
+check(lfu.gone && lfu.top === "OP01-016" && lfu.up, "the opponent's effect adds your Character to the top of your Life face-up");
+// "You may rest 1 of your cards": a DON!! will do (EB04-015), and resting your Leader (OP04-088)
+await fxClear();
+await page.evaluate(() => { S.life.forEach(c => delete c.up); S.donActive = 3; S.leader.r = false; commit(); fxEnqueue(fxJob({c: "EB04-015", n: nameOf("EB04-015")}, fxAb("EB04-015").find(a => a.t === "onKO"))); });
+await page.waitForTimeout(300);
+const rd = await page.evaluate(() => { const b = document.querySelector('#fxpanel [data-do="fxrestdon"]'); const da = S.donActive; if (b) b.click(); return {btn: !!b, paid: S.donActive === da - 1, moved: !fxCur || fxCur.i === 1}; });
+await page.evaluate(() => { while (fxCur) { fxQueue.length = 0; fxFinish(false); } });
+check(rd.btn && rd.paid && rd.moved, "\"rest 1 of your cards\" can be paid by resting a DON!!");
+const rl = await page.evaluate(() => { fxEnqueue(fxJob({c: "OP04-088", n: nameOf("OP04-088")}, fxAb("OP04-088").find(a => a.t === "activateMain"))); const cands = fxCands(fxCur.steps[0]).map(x => x.ref); fxCur.pick = ["ld"]; doAction("fxapply"); const r = {cands, rested: !!S.leader.r, next: fxCur && fxCur.i === 1}; while (fxCur) { fxQueue.length = 0; fxFinish(false); } S.leader.r = false; commit(); return r; });
+check(rl.cands.join() === "ld" && rl.rested && rl.next, "\"rest your 1 Leader\" rests the Leader to pay");
+// "This Character cannot be K.O.'d by effects" (OP02-102): an effect can't, a battle can
+const sh = await page.evaluate(() => {
+  const base = JSON.parse(JSON.stringify(PR.pres[1])); S.chars = [{card: {c: "OP02-102", n: ""}, r: false, d: 0, pt: 0}];
+  base.mq = [{id: S.ack + 1, r: "ch:0", c: "OP02-102", k: "ko", v: 0}]; oppM = oppModel(base); applyMarkReqs(); const fx = S.chars.length;
+  base.mq = [{id: S.ack + 1, r: "ch:0", c: "OP02-102", k: "bounce", v: 0}]; oppM = oppModel(base); applyMarkReqs(); const bn = S.chars.length;
+  return {fx, bn};
+});
+check(sh.fx === 1 && sh.bn === 0, "OP02-102 can't be K.O.'d by an effect, but can still be returned to hand");
+await page.evaluate(() => { oppM = oppModel(PR.pres[1]); commit(); });
 await page.screenshot({ path: OUT + "/board.png" });
 check(!errs.length, "no page errors" + (errs.length ? ": " + errs.slice(0, 3).join(" / ") : ""));
 await app.close();
