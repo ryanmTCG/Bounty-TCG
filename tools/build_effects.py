@@ -175,6 +175,8 @@ def step(clause, pay=False):
     if re.search(r"\bplay up to (\d+) (.+?) from your (hand|trash)", cl): return dict(base, a="play")
     m = re.match(r"your opponent cannot activate (?:a |up to \w+ )?\[blocker\](?: character that has (\d+) power or less)? during this (?:battle|turn)", cl)
     if m: return dict(base, a="noBlock", power=int(m.group(1)) if m.group(1) else None)
+    m = re.match(r"you cannot play character cards(?: with a base cost of (\d+) or more)? during this turn", cl)
+    if m: return dict(base, a="noPlay", cost=int(m.group(1)) if m.group(1) else None)
     m = re.match(r"up to (\w+) of your (?:%s)(leader or character cards?|characters?|leader) gains? \[(rush|double attack|banish|unblockable)\] during this turn" % QUAL.lower(), cl)
     if m: return dict(base, a="kw", who="own", n=num(m.group(1)), k=KW_LETTER[m.group(3)], ld="leader" in m.group(2))
     # cost changes: "Give up to 1 of your opponent's Characters −2 cost during this turn"

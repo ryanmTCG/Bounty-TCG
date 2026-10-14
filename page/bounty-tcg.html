@@ -2839,7 +2839,7 @@ function botFxStep(m, st){
     const lim = fxLim(st), good = botGood(st), own = fxOwn(st) || st.who === "own";
     let pick = [];
     if (st.all) pick = good || st.must || st.pay ? cs : [];
-    else if (good) pick = own ? botOwnPick(cs, st) : cs.filter(x => !x.mine).sort((a, b) => (b.k || 0) - (a.k || 0) || (b.p || 0) - (a.p || 0));
+    else if (good) { const ak = defending() ? oppM.ak.s : null; pick = own ? botOwnPick(cs, st) : cs.filter(x => !x.mine).sort((a, b) => (b.ref === ak) - (a.ref === ak) || (b.k || 0) - (a.k || 0) || (b.p || 0) - (a.p || 0)); }
     else if (st.pay || st.must) pick = cs.slice().sort((a, b) => (a.k || 0) - (b.k || 0) || (a.p || 0) - (b.p || 0));
     pick = pick.slice(0, st.all ? 99 : lim);
     if (!pick.length) return;
@@ -2880,7 +2880,7 @@ function botFxStep(m, st){
     if (fxCur === m && m.i === i0 && m.res) fxNext();
     return;
   }
-  if (["restDon", "standDon", "oppDon", "oppRetDon", "oppDiscard", "oppHandDeck", "lifeTrash", "lifeHand", "deckLife", "mill", "shuffle", "playSelf", "handSelf", "act", "noBlock"].includes(st.a)) fxApply();
+  if (["restDon", "standDon", "oppDon", "oppRetDon", "oppDiscard", "oppHandDeck", "lifeTrash", "lifeHand", "deckLife", "mill", "shuffle", "playSelf", "handSelf", "act", "noBlock", "noPlay"].includes(st.a)) fxApply();
 }
 // "Look at 5 cards from the top of your deck; reveal up to 1 X and add it to your hand. Then, place the rest at the bottom"
 function botLook(m, st){
@@ -2916,6 +2916,20 @@ function botCounterEvent(need){
     return st && hc && hc.cost <= S.donActive && (CARDDB.get(c.c) || {}).t === "Event" ? {i, cost: hc.cost, n: st.n} : null; }).filter(Boolean)
     .sort((a, b) => (b.n >= need) - (a.n >= need) || (a.n >= need ? a.cost - b.cost : b.n - a.n))[0] || null;
 }
+// the active DON!! to keep for your turn: enough for its cheapest [Counter] Event that adds power, if that's 3 or less
+function botCtrKeep(){
+  const k = Math.min(99, ...S.hand.map(c => { const ab = fxAb(c.c).find(a => a.t === "counter"), hc = handCost(c);
+    return ab && hc && (CARDDB.get(c.c) || {}).t === "Event" && ab.steps.some(s => s.a === "pwr" && s.n > 0) ? hc.cost : 99; }));
+  return k <= 3 ? k : 0;
+}
+// it can win this turn: enough attacks that reach your Leader's power (with the DON!! it has left to give) for every
+// Life card, the last hit, and one for each of your active Blockers
+function botLethal(atks){
+  if (!oppM || !oppM.ld) return false;
+  const lp = powNum(oppM.ld) || 5000; let don = S.donActive, hits = 0;
+  for (const n of atks.filter(a => a.k === "all").map(a => Math.max(0, Math.ceil((lp - (botPow(a.f) || 0)) / 1000))).sort((a, b) => a - b)) if (n <= don) { don -= n; hits++; }
+  return hits >= (oppM.lf || 0) + 1 + (oppM.ch || []).filter(c => !c.r && isBlocker(c.c)).length;
+}
 function botLimit(){
   while (S.chars.length > 5) {
     const i = S.chars.slice(0, -1).map((f, i) => ({i, k: (CARDDB.get(f.card.c) || {}).k || 0})).sort((a, b) => a.k - b.k)[0].i, f = S.chars.splice(i, 1)[0];
@@ -2926,32 +2940,37 @@ function botAttackers(){
   if (!(S.turn > 1)) return [];
   if (PR.bt !== S.turn) { PR.bt = S.turn; PR.bskip = []; }
   return [["ld", S.leader], ...S.chars.map((f, i) => ["ch:" + i, f])]
-    .filter(([r, f]) => f && !f.r && !(f.mk || []).includes("na") && !PR.bskip.includes(f) && typeof rushNow(f) === "string")
+    .filter(([r, f]) => f && !f.r && !(f.mk || []).includes("na") && !PR.bskip.includes(f) && typeof rushNow(f) === "string" && !cantAttack(f))
     .map(([r, f]) => ({r, f, k: rushNow(f)}))
     .sort((x, y) => (x.f === S.leader) - (y.f === S.leader) || (botPow(x.f) || 0) - (botPow(y.f) || 0));
 }
 // your Leader when you're down to 2 Life or less; otherwise a rested Character that matters first (keeping the board
 // under control), then your Leader. Bigger Characters first.
-function botTarget(a){
+function botTarget(a, lethal){
   const ap = botPow(a.f); if (ap == null) return null;
   const lp = oppM.ld ? powNum(oppM.ld) : null, hitLd = a.k === "all" && lp != null && ap >= lp, act = canHitActive(a.f);
   const kos = (oppM.ch || []).map((c, i) => ({i, p: powNum(c), k: (CARDDB.get(c.c) || {}).k || 0, r: c.r})).filter(x => (x.r || act) && x.p != null && ap >= x.p).sort((x, y) => y.k - x.k || y.p - x.p);
-  if (hitLd && oppM.lf <= 2) return "ld";
+  if (hitLd && (lethal || oppM.lf <= 2)) return "ld";
   if (kos.length && (kos[0].k >= 3 || !hitLd)) return "ch:" + kos[0].i;
   return hitLd ? "ld" : null;
 }
-function botGiveDon(atks){
-  const lp = oppM.ld ? powNum(oppM.ld) || 5000 : 5000, give = (a, n) => { for (let j = 0; j < n && S.donActive > 0; j++) moveDon({pool: "a"}, a.r); };
+function botGiveDon(atks, max){
+  let left = max == null ? S.donActive : max;
+  const lp = oppM.ld ? powNum(oppM.ld) || 5000 : 5000, give = (a, n) => { for (let j = 0; j < n && S.donActive > 0 && left > 0; j++, left--) moveDon({pool: "a"}, a.r); };
   // first enough to reach your Leader's power, cheapest first, then the rest on the Leader
   const need = atks.filter(a => a.k === "all").map(a => ({a, n: Math.max(0, Math.ceil((lp - (botPow(a.f) || 0)) / 1000))})).sort((x, y) => x.n - y.n);
-  for (const x of need) if (x.n > 0 && x.n <= S.donActive) give(x.a, x.n);
-  if (S.donActive > 0) give(atks.find(a => a.f === S.leader) || atks[0], S.donActive);
+  for (const x of need) if (x.n > 0 && x.n <= Math.min(left, S.donActive)) give(x.a, x.n);
+  if (left > 0 && S.donActive > 0) give(atks.find(a => a.f === S.leader) || atks[0], left);
 }
 function botMain(){
   // 1. play the most expensive Character the active DON!! pay for
   if (S.chars.length < 5) {
-    const opts = S.hand.map((c, i) => ({i, hc: handCost(c), e: CARDDB.get(c.c) || {}})).filter(x => x.e.t === "Character" && x.hc && x.hc.cost <= S.donActive).sort((a, b) => b.hc.cost - a.hc.cost || (b.e.p || 0) - (a.e.p || 0));
+    const opts = S.hand.map((c, i) => ({i, hc: handCost(c), e: CARDDB.get(c.c) || {}})).filter(x => x.e.t === "Character" && x.hc && x.hc.cost <= S.donActive && !playTiming(S.hand[x.i], "chars")).sort((a, b) => b.hc.cost - a.hc.cost || (b.e.p || 0) - (a.e.p || 0));
     if (opts.length) { moveCard("hand:" + opts[0].i, "chars", false, opts[0].hc.cost); return 1000; }
+  }
+  if (!S.stage) {
+    const st = S.hand.map((c, i) => ({i, hc: handCost(c), e: CARDDB.get(c.c) || {}})).filter(x => x.e.t === "Stage" && x.hc && x.hc.cost <= S.donActive && !playTiming(S.hand[x.i], "stage")).sort((a, b) => b.hc.cost - a.hc.cost)[0];
+    if (st) { moveCard("hand:" + st.i, "stage", false, st.hc.cost); return 1000; }
   }
   // 2. an [Activate: Main] or an Event's [Main] that has something to do, once each per turn
   const used = PR.bact && PR.bact.t === S.turn ? PR.bact.u : (PR.bact = {t: S.turn, u: []}).u;
@@ -2963,31 +2982,43 @@ function botMain(){
   }
   for (const [i, c] of S.hand.entries()) {
     const hc = handCost(c), ab = fxAb(c.c).find(a => a.t === "main");
-    if ((CARDDB.get(c.c) || {}).t !== "Event" || !hc || hc.cost > S.donActive || !ab || used.includes(c.c + ab.text) || !botWorth(c, ab)) continue;
+    if ((CARDDB.get(c.c) || {}).t !== "Event" || !hc || hc.cost > S.donActive || !ab || used.includes(c.c + ab.text) || playTiming(c, "event") || !botWorth(c, ab)) continue;
     used.push(c.c + ab.text); moveCard("hand:" + i, "event", false, hc.cost); return 1000;
   }
-  const atks = botAttackers();
-  // 3. give the DON!! left over to the cards that will attack
-  if (S.donActive > 0 && atks.length) { botGiveDon(atks); return 1000; }
-  // 4. attack one at a time, weaker attacks first and the Leader last; you answer each one
+  const atks = botAttackers(), lethal = botLethal(atks);
+  // 3. give the DON!! left over to the cards that will attack, less what a [Counter] Event in hand needs on your turn
+  const keep = lethal ? 0 : botCtrKeep();
+  if (S.donActive > keep && atks.length) { botGiveDon(atks, S.donActive - keep); return 1000; }
+  // 4. attack one at a time, weaker attacks first and the Leader last; you answer each one. All at your Leader when
+  // that wins the game
   for (const a of atks) {
-    const t = botTarget(a);
+    const t = botTarget(a, lethal);
     if (!t) { PR.bskip.push(a.f); continue; }
     attackWith(a.r, t);
     if (!S.atk) PR.bskip.push(a.f);
     return 900;
   }
-  // 5. end the turn (its End of Turn abilities don't run)
-  S.eot = S.turn; endTurn(); return 0;
+  // 5. its [End of Your Turn] abilities, then end the turn
+  if (S.eot !== S.turn) {
+    S.eot = S.turn; let any = false;
+    for (const f of [S.leader, S.stage, ...S.chars].filter(Boolean)) { const ab = fxAb(f.card.c).find(a => a.t === "endOfTurn"); if (ab && botWorth(f.card, ab) && botAbility(f.card, ["endOfTurn"], f.d || 0)) any = true; }
+    if (any) return 900;
+  }
+  endTurn(); return 0;
 }
 // the computer defends: a Blocker that survives, any Blocker at 1 Life or less, and counters when the hit matters
 function botDefend(){
   const n = oppM.ak.n, w = botHold("def" + n, 1500); if (w) return w;
   const r0 = defResult();
+  if (r0 && r0.hits && PR.boa !== n) {
+    PR.boa = n; let any = false;
+    for (const f of [S.leader, ...S.chars, S.stage].filter(Boolean)) { const ab = fxAb(f.card.c).find(a => a.t === "onOppAttack"); if (ab && botWorth(f.card, ab) && botAbility(f.card, ["onOppAttack"], f.d || 0)) any = true; }
+    if (any) return 800;
+  }
   if (r0 && r0.hits) {
     const life = S.life.length, cost = f => (CARDDB.get(f.card.c) || {}).k || 0;
     if (r0.onLeader && S.blk == null) {
-      const bl = S.chars.map((f, i) => ({f, i, p: powNum({c: f.card.c, pm: pmOf(f)})})).filter(x => !x.f.r && isBlocker(x.f.card.c) && !blockBan(x.f));
+      const bl = S.chars.map((f, i) => ({f, i, p: powNum({c: f.card.c, pm: pmOf(f)})})).filter(x => !x.f.r && blockerNow(x.f) && !blockBan(x.f));
       const b = bl.filter(x => x.p != null && x.p > r0.ap).sort((x, y) => cost(x.f) - cost(y.f))[0] || (life <= 1 ? bl.sort((x, y) => cost(x.f) - cost(y.f))[0] : null);
       if (b) doBlock(b.i);
     }
@@ -3474,6 +3505,7 @@ function fxStepHTML(m){
     return say(st.a === "playSelf" ? `Play ${nm} for free${st.rested ? ", rested" : ""}.` : `Add ${nm} to your hand.`, cancel + skip + go(st.a === "playSelf" ? "Play it" : "Add to hand"));
   }
   if (st.a === "act") { const ab = fxAb(m.card.c).find(a => a.t === st.k); return ab ? say(`Use its [${esc(TRIG[st.k] || st.k)}] effect: ${esc(ab.text.replace(/^(\s*\[[^\]]+\]\s*)+/, ""))}`, cancel + skip + go("Use it")) : say("This card has no such effect.", next); }
+  if (st.a === "noPlay") return say(`You can't play ${st.cost != null ? `Characters with a base cost of ${st.cost} or more` : "Character cards"} for the rest of this turn.`, go("OK"));
   if (st.a === "noBlock") return say(`Your opponent can't use [Blocker]${st.power != null ? ` Characters with ${st.power} power or less` : ""} ${S.atk ? "in this battle" : "this turn"}.`, cancel + go("OK"));
   if (st.a === "kw") { m.manual = true; return say(`Give a card [${esc(KW_NAME[st.k] || st.k)}].`, cancel + go("Next", "fxskip")); }
   const ps = st.a === "other" || st.a === "play" ? (m.play || (m.play = playSpec(st.text || m.text))) : null;
@@ -3542,6 +3574,7 @@ function fxApply(arg){
       fxNext(); return;
     }
     case "act": { const ab = fxAb(m.card.c).find(a => a.t === st.k); if (ab) fxQueue.unshift(fxJob(m.card, Object.assign({}, ab, {don: 0}))); fxNext(); return; }
+    case "noPlay": { S.npc = {t: S.turn, k: st.cost}; addLog(`can't play ${st.cost != null ? `Characters with a base cost of ${st.cost} or more` : "Characters"} for the rest of the turn`); done(); return; }
     case "noBlock": {
       if (S.atk) { if (st.power != null) S.atk.ub = st.power; else S.atk.u = 1; }
       if (!S.atk || /during this turn/i.test(st.text)) { S.nbT = S.turn; S.nbP = st.power; }
@@ -4032,12 +4065,29 @@ function handCost(c){
   }
   return {base, cut, unsure, cost: Math.max(0, base - cut)};
 }
+// When a card from hand may be played (Comprehensive Rules 6-5-3 and 7-1-3): Characters, Stages and [Main] Events in
+// your own Main Phase with no battle going on, [Counter] Events while you're being attacked. An Event the game has no
+// abilities for can go either way. Returns why not, or null. A card ability left to the player that plays cards opens it.
+function playTiming(c, dest){
+  if (!c || S.phase !== "play") return null;
+  if (fxCur && fxCur.manual && FAIR.play.test(fairText())) return null;
+  const def = defending(), T = new Set(fxAb(c.c).map(a => a.t)), known = knownFx(c.c);
+  if (dest === "event" && known && (T.has("main") || T.has("counter"))) {
+    if (def) return T.has("counter") ? null : `${lab(c)} has no [Counter], so it can only be played on your own turn.`;
+    if (!T.has("main")) return `${lab(c)} is a [Counter] Event: play it while you're being attacked.`;
+  } else if (dest === "event" && def) return null;
+  if (!S.myTurn) return dest === "event" ? "You can play Events on your own turn, and [Counter] Events while you're attacked." : "You can only play cards on your own turn.";
+  if (S.atk) return "Finish the attack that's going on first.";
+  if (dest === "chars" && S.npc && S.npc.t === S.turn && (S.npc.k == null || ((CARDDB.get(c.c) || {}).k || 0) >= S.npc.k)) return `An ability you used this turn stops you playing ${S.npc.k != null ? `Characters with a base cost of ${S.npc.k} or more` : "Characters"} until the turn ends.`;
+  return null;
+}
 // free = an effect plays the card, so no DON!! are paid; pay = the price the player picked when handCost was unsure
 function moveCard(src, dest, free, pay){
   const k = src.split(":")[0];
   if (k === "ld") return;
   if (ZONE[k] === dest) return;
   const plays = (k === "hand" || (free && (k === "tr" || k === "lf"))) && (dest === "chars" || dest === "stage" || dest === "event");
+  if (plays && !free && k === "hand") { const why = playTiming(S.hand[+src.split(":")[1]], dest); if (why) { toast(why); return; } }
   // playing a card from hand takes as many active DON!! as it costs right now
   const hc = plays && !free && k === "hand" ? (S.hand[+src.split(":")[1]] ? handCost(S.hand[+src.split(":")[1]]) : null) : null;
   if (hc && pay == null && hc.unsure) {
@@ -4115,7 +4165,7 @@ function openCardMenu(src, x, y){
       ["Play for free (an effect lets you)", () => { if (fair(["play"])) moveCard(src, /Stage/.test(ty) ? "stage" : /Event/.test(ty) ? "event" : "chars", true); }], M("Add to Life", "life"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"), M("Trash", "trash")];
   } else if (k === "ch" || k === "st" || k === "ld") {
     const f = k === "ch" ? S.chars[i] : k === "st" ? S.stage : S.leader; if (!f) return;
-    if (k === "ch" && defending() && !f.r && S.blk == null && isBlocker(f.card.c) && !fxCur) { doBlock(i); toast(`${lab(f.card)} blocks. Tap Counter cards in your hand to save it.`); return; }
+    if (k === "ch" && defending() && !f.r && S.blk == null && blockerNow(f) && !fxCur) { doBlock(i); toast(`${lab(f.card)} blocks. Tap Counter cards in your hand to save it.`); return; }
     title = lab(f.card); info = {c: f.card.c, n: f.card.n, r: f.r ? 1 : 0, d: f.d || 0};
     if (k !== "st" && !f.r && S.myTurn && S.turn > 1 && S.phase === "play" && oppM) items.push(["Attack", () => { atkPick = src; markTargets(); toast("Tap the Leader or Character to attack. Tap anywhere else to cancel."); }]);
     items.push([f.r ? "Activate (stand)" : "Rest", () => { if (!fair(["rest"])) return; f.r = !f.r; addLog(`${f.r ? "rested" : "activated"} ${lab(f.card)}`); commit(); }]);
@@ -4294,14 +4344,30 @@ const atkAt = (x, y) => { const el = document.elementFromPoint(x, y); return el 
 // on your turn, light up the hand cards your active DON!! can pay for and the cards that can still attack
 // (nobody attacks on their first turn, and a Character played this turn needs [Rush])
 const isBlocker = c => { const fx = BFX.get(c) || EFX.get(c); return !!(fx && fx.blocker); };
+// one of my Characters has [Blocker] right now: printed, or "this Character gains [Blocker]" while what it asks for
+// holds ([DON!! xN], whose turn, "If you have 2 or less Life cards, ..."). A condition the game can't check counts as met.
+const SELF_BLK = /\bthis Character gains? \[Blocker\]/i;
+function blockerNow(f){
+  if (!f || !isBlocker(f.card.c)) return false;
+  const own = fxAb(f.card.c).filter(a => (a.t === "other" || a.t === "yourTurn") && SELF_BLK.test(a.text || ""));
+  if (!own.length) return true;
+  return own.some(a => {
+    const t = a.text || "", m = /DON!! x(\d+)/.exec(t);
+    if ((f.d || 0) < Math.max(a.don || 0, m ? +m[1] : 0)) return false;
+    if (/\[Your Turn\]/i.test(t) && !S.myTurn) return false;
+    if (/\[Opponent's Turn\]/i.test(t) && S.myTurn) return false;
+    const c = (/\bIf ([^,]+),/i.exec(t) || [])[1];
+    return !c || condCheck(c, f) !== false;
+  });
+}
 const defending = () => !!(oppM && oppM.ak && S.rs !== oppM.ak.n);
 function markPlayable(){
   // Blocker tags on both boards, and the blockers that can answer this attack
-  document.querySelectorAll('#me [data-src^="ch:"], #opp [data-atk^="ch:"]').forEach(el => { const mine = !!el.dataset.src, i = +(mine ? el.dataset.src : el.dataset.atk).slice(3), f = mine ? S.chars[i] : oppM && oppM.ch[i], c = f && (mine ? f.card.c : f.c); const card = el.classList.contains("card") ? el : el.querySelector(".card"); if (!card) return; card.classList.toggle("isblk", !!(c && isBlocker(c))); card.classList.toggle("canblk", !!(mine && f && !f.r && S.blk == null && defending() && isBlocker(c) && !blockBan(f))); });
+  document.querySelectorAll('#me [data-src^="ch:"], #opp [data-atk^="ch:"]').forEach(el => { const mine = !!el.dataset.src, i = +(mine ? el.dataset.src : el.dataset.atk).slice(3), f = mine ? S.chars[i] : oppM && oppM.ch[i], c = f && (mine ? f.card.c : f.c); const card = el.classList.contains("card") ? el : el.querySelector(".card"); if (!card) return; card.classList.toggle("isblk", !!(c && (mine ? blockerNow(f) : isBlocker(c)))); card.classList.toggle("canblk", !!(mine && f && !f.r && S.blk == null && defending() && blockerNow(f) && !blockBan(f))); });
   const eb = document.querySelector('.turnbar [data-do="endturn"]');
   const on = S.phase === "play" && S.myTurn && !S.atk && !(oppM && oppM.ak);
-  S.hand.forEach((c, i) => { const el = document.querySelector(`#hand [data-src="hand:${i}"]`); if (!el) return; const hc = on ? handCost(c) : null; el.classList.toggle("canplay", !!(hc && hc.cost <= S.donActive)); });
-  const can = f => on && S.turn > 1 && f && !f.r && !(f.mk || []).includes("na") && !!rushNow(f);
+  S.hand.forEach((c, i) => { const el = document.querySelector(`#hand [data-src="hand:${i}"]`); if (!el) return; const hc = on ? handCost(c) : null, ty = (CARDDB.get(c.c) || {}).t; el.classList.toggle("canplay", !!(hc && hc.cost <= S.donActive && !playTiming(c, ty === "Event" ? "event" : ty === "Stage" ? "stage" : "chars"))); });
+  const can = f => on && S.turn > 1 && f && !f.r && !(f.mk || []).includes("na") && !!rushNow(f) && !cantAttack(f);
   [["ld", S.leader], ...S.chars.map((f, i) => ["ch:" + i, f])].forEach(([r, f]) => { const el = document.querySelector(`#me [data-src="${r}"]`); if (el) el.classList.toggle("canatk", !!can(f)); });
   // nothing left to play or attack with: point at End turn
   if (eb) eb.classList.toggle("endglow", !!(on && !fxCur && !modal && !document.querySelector("#hand .canplay, #me .canatk")));
@@ -4324,7 +4390,7 @@ function quickResolve(){
   const n = oppM.ak.n;
   if (handCounters().length) return;
   if (counterEvents().length) return;
-  if (S.chars.some(f => !f.r && !blockBan(f) && (!(BFX.get(f.card.c) || EFX.get(f.card.c)) || (BFX.get(f.card.c) || EFX.get(f.card.c)).blocker))) return;
+  if (S.chars.some(f => !f.r && !blockBan(f) && (!knownFx(f.card.c) || blockerNow(f)))) return;
   if ([S.leader, S.stage, ...S.chars].some(f => f && fxAb(f.card.c).some(a => a.t === "onOppAttack"))) return;
   qrKey = n;
   setTimeout(() => {
@@ -4397,11 +4463,27 @@ function rushNow(f){
   }
   return maybe ? {ask: maybe, by} : false;
 }
+// why f can't attack because of its own text ("This Leader cannot attack.", "If you have 5 or more cards in your hand,
+// this Character cannot attack.", "... cannot attack unless ..."), or "". A condition the game can't check doesn't stop it.
+function cantAttack(f){
+  for (const a of f ? fxAb(f.card.c) : []) {
+    if (a.t !== "other" && a.t !== "yourTurn") continue;
+    const t = (a.text || "").replace(/\s*\([^)]*\)/g, ""), m = /^(?:\[[^\]]+\]\s*)*(?:If ([^,]+), )?This (?:Leader|Character) cannot attack(?: unless ([^.]+))?\./i.exec(t);
+    if (!m) continue;
+    if ((f.d || 0) < (a.don || 0)) continue;
+    if (/effect is negated during this turn/i.test(t) && S.htr === S.turn) continue;
+    if (m[1] && condCheck(m[1], f) !== true) continue;
+    if (m[2] && condCheck(m[2], f) !== false) continue;
+    return `${lab(f.card)} can't attack${m[1] || m[2] ? " right now" : ""} (its own effect).`;
+  }
+  return "";
+}
 function attackWith(src, target, ok){
   const me = donHolder(src); if (!me) return;
   if (S.phase !== "play" || !S.myTurn || !oppM) { toast("You can only attack on your own turn."); return; }
   if (S.atk) { toast("Finish the attack that's going on first."); return; }
   if (me.r) { toast(`${lab(me.card)} is rested, so it can't attack.`); return; }
+  { const no = cantAttack(me); if (no) { toast(no); return; } }
   if (!ok && me !== S.leader && me.pt === S.turn) {
     const rk = rushNow(me);
     if (!rk) { toast(`${lab(me.card)} was played this turn and doesn't have [Rush], so it can't attack yet.`); return; }
@@ -4528,7 +4610,7 @@ function combatHTML(){
       const ctrs = hc.map(e => { const nm = nameOf(e.c.c) || e.c.c; return `<button class="btn cmbctr" data-do="cmbhc:${e.i}" type="button" title="Trash ${esc(lab(e.c))} from your hand for +${e.v} power">+${e.v} ${esc(nm.length > 16 ? nm.slice(0, 15) + "\u2026" : nm)}${e.n > 1 ? ` <i>\u00D7${e.n}</i>` : ""}</button>`; }).join("");
       const evs = counterEvents().map(e => `<button class="btn cmbctr" data-do="cmbev:${e.i}" type="button" title="Play this Counter Event for ${e.cost} DON!!">${esc(lab(e.c))} <i>(${e.cost} DON!!)</i></button>`).join("");
       const res = !r ? "Resolve attack" : r.hits ? (r.onLeader ? "Take 1 damage" : "Resolve: K.O.") : "Resolve: attack fails";
-      return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span>${cmbPow(r, true)}${d && d.bc ? `<span>Counters <i>+${d.bc}</i></span>` : ""}<span class="tmr" id="tmr-cmb" hidden></span><span class="cmbbr"></span>${ctrs || evs ? `<span class="hint">${b ? `Tap Counter cards in your hand to save ${esc(lab(b.card))}.` : "Tap a Counter card in your hand to use it."}</span><span class="cmbbr"></span>` : ""}${!b && S.chars.some(f => !f.r && isBlocker(f.card.c) && !blockBan(f)) ? `<span class="hint">Tap a glowing Blocker to block.</span>` : !b && blockBan(null) ? `<span class="hint">${esc(blockBan(null))}</span>` : ""}<button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn pri" data-do="${r ? "dfresolve" : "dfdone"}" type="button">${res}</button>`;
+      return `<span>\u2694 ${esc(oppM.nick)}'s <b>${esc(lab(a))}</b> attacks your <b>${esc(lab(t.card))}</b>${b ? ` (blocking: <b>${esc(lab(b.card))}</b>)` : ""}</span>${cmbPow(r, true)}${d && d.bc ? `<span>Counters <i>+${d.bc}</i></span>` : ""}<span class="tmr" id="tmr-cmb" hidden></span><span class="cmbbr"></span>${ctrs || evs ? `<span class="hint">${b ? `Tap Counter cards in your hand to save ${esc(lab(b.card))}.` : "Tap a Counter card in your hand to use it."}</span><span class="cmbbr"></span>` : ""}${!b && S.chars.some(f => !f.r && blockerNow(f) && !blockBan(f)) ? `<span class="hint">Tap a glowing Blocker to block.</span>` : !b && blockBan(null) ? `<span class="hint">${esc(blockBan(null))}</span>` : ""}<button class="btn" data-do="cmbabil" type="button">Abilities</button><button class="btn pri" data-do="${r ? "dfresolve" : "dfdone"}" type="button">${res}</button>`;
     }
   }
   return "";
@@ -4545,14 +4627,14 @@ function markCombat(){
   }
 }
 // a card on the field that gives [Blocker] ("[DON!! x1] This Character gains [Blocker]", a Leader's "gain [Blocker]")
-const grantsBlocker = () => [S.leader, S.stage, ...S.chars].some(g => g && fxAb(g.card.c).some(a => /gains? \[Blocker\]/i.test(a.text || "")));
+const grantsBlocker = () => [S.leader, S.stage, ...S.chars].some(g => g && fxAb(g.card.c).some(a => /gains? \[Blocker\]/i.test(a.text || "") && !SELF_BLK.test(a.text || "")));
 const knownFx = c => BFX.has(c) || EFX.has(c);
 function doBlock(i){
   const f = S.chars[i]; if (!f) return;
   if (!oppM || !oppM.ak) return;
   if (oppM.ak.t === "ch:" + i) { toast(`${lab(f.card)} is the one being attacked, so it can't block.`); return; }
   if (f.r && S.blk !== i) { toast(`${lab(f.card)} is rested, so it can't block.`); return; }
-  if (!boardTools() && knownFx(f.card.c) && !isBlocker(f.card.c) && !grantsBlocker()) { toast(`${lab(f.card)} doesn't have [Blocker].`); return; }
+  if (!boardTools() && knownFx(f.card.c) && !blockerNow(f) && !grantsBlocker()) { toast(isBlocker(f.card.c) ? `${lab(f.card)} doesn't have [Blocker] right now.` : `${lab(f.card)} doesn't have [Blocker].`); return; }
   const ban = blockBan(f); if (ban) { toast(ban); return; }
   if (S.blk != null && S.chars[S.blk] && S.blk !== i) S.chars[S.blk].r = false;
   S.blk = i; f.r = true; addLog(`blocked with ${lab(f.card)}`); commit(); runAbility(f.card, ["onBlock"], false, f.d || 0);
@@ -4675,7 +4757,7 @@ document.addEventListener("pointerup", e => {
   if (d.kind === "don") return;
   const sx = e.clientX, sy = e.clientY, ds = d.src;
   // during the opponent's attack, tapping one of your active Characters blocks with it
-  if (!fxCur && oppM && oppM.ak && /^ch:/.test(ds)) { const i = +ds.slice(3), f = S.chars[i]; if (f && !f.r && S.blk !== i && (isBlocker(f.card.c) || !knownFx(f.card.c))) { closeMenu(); doBlock(i); return; } }
+  if (!fxCur && oppM && oppM.ak && /^ch:/.test(ds)) { const i = +ds.slice(3), f = S.chars[i]; if (f && !f.r && S.blk !== i && (blockerNow(f) || !knownFx(f.card.c))) { closeMenu(); doBlock(i); return; } }
   clearTimeout(menuT); menuT = setTimeout(() => openCardMenu(ds, sx, sy), 230);
 });
 document.addEventListener("pointercancel", () => { drag = null; clearIns(); if (ghost) { ghost.remove(); ghost = null; } clearOver(); });
