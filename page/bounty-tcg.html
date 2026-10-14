@@ -3105,7 +3105,7 @@ function botFxStep(m, st){
   if (st.a === "don") { doAction(/\brest/i.test(st.text || "") && !/\bactive\b/i.test(st.text || "") ? "fxdon:r" : "fxdon:a"); return; }
   if (st.a === "look") { botLook(m, st); return; }
   if (HAND_PICK[st.a]) {
-    const pr = fxHandPred(st), need = Math.min(Math.abs(st.n), S.hand.filter(c => !pr || pr(c.c)).length); if (!need) return;
+    const pr = fxHandPred(st), need = Math.min(Math.abs(st.n), S.hand.filter(c => !pr || pr(c.c)).length); if (!need || (st.a === "revealHand" && st.pay && need < Math.abs(st.n))) return;
     m.pick = S.hand.map((c, i) => ({i, v: botVal(c.c), ok: !pr || pr(c.c)})).filter(x => x.ok).sort((a, b) => a.v - b.v).slice(0, need).map(x => "hand:" + x.i);
     fxApply(); return;
   }
@@ -3556,8 +3556,10 @@ const fxVerb = (st, it) => ({rest: `rest ${it}`, stand: `set ${it} active`, ko: 
   cost: `give ${it} ${st.n > 0 ? "+" : "−"}${Math.abs(st.n)} cost`, life: `add ${it} to the top of its owner's Life`, trashCh: `trash ${it}`, kw: `give ${it} [${KW_NAME[st.k] || st.k}] this turn`,
   mark: st.k === "fz" ? `keep ${it} rested through your opponent's next Refresh Phase` : st.k === "na" ? `stop ${it} from attacking` : null})[st.a] || null;
 // steps where the player picks cards in their hand, and which cards the wording allows
-const HAND_PICK = {discard: 1, handLife: 1, handDeck: 1};
+const HAND_PICK = {discard: 1, handLife: 1, handDeck: 1, revealHand: 1};
 function fxHandPred(st){
+  // "reveal a total of 3 Event or {Punk Hazard} type cards": either kind will do
+  if (st.a === "revealHand") { const ps = String(st.f || "").split(/\s+or\s+(?![^{]*\})/).map(cardFilter); return ps.every(Boolean) ? (code => ps.some(p => p(code))) : cardFilter(st.f); }
   if (st.a !== "discard") return null;
   const m = /\btrash (?:up to )?\w+ (.*?)from your hand/i.exec(st.text || ""); if (!m) return null;
   return /^cards? ?$/i.test(m[1].trim()) ? null : cardFilter(m[1]);
@@ -3779,8 +3781,9 @@ function fxStepHTML(m){
   if (HAND_PICK[st.a]) {
     const pr = fxHandPred(st), have = S.hand.filter(c => !pr || pr(c.c)).length, need = Math.min(Math.abs(st.n), have);
     if (!need) return say("No card in your hand fits this.", st.pay ? cancel : next);
-    const verb = {discard: "trash", handLife: "add to the top of your Life", handDeck: st.top ? "put on the top or bottom of your deck" : "put on the bottom of your deck"}[st.a];
-    const btn = st.a === "handDeck" && st.top ? `<button class="btn" data-do="fxapply:top" type="button">Top (${m.pick.length})</button>${go(`Bottom (${m.pick.length})`, "fxapply")}` : need === 1 && st.a === "discard" && !st.must ? "" : go(`${st.a === "discard" ? "Trash" : "Done"} (${m.pick.length})`, "fxapply");
+    if (st.a === "revealHand" && st.pay && have < Math.abs(st.n)) return say(`This needs ${pl(Math.abs(st.n), "card")} like that in your hand, and you have ${have}.`, cancel);
+    const verb = {discard: "trash", handLife: "add to the top of your Life", handDeck: st.top ? "put on the top or bottom of your deck" : "put on the bottom of your deck", revealHand: "reveal to your opponent"}[st.a];
+    const btn = st.a === "revealHand" ? go(`Reveal (${m.pick.length})`, "fxapply") : st.a === "handDeck" && st.top ? `<button class="btn" data-do="fxapply:top" type="button">Top (${m.pick.length})</button>${go(`Bottom (${m.pick.length})`, "fxapply")}` : need === 1 && st.a === "discard" && !st.must ? "" : go(`${st.a === "discard" ? "Trash" : "Done"} (${m.pick.length})`, "fxapply");
     return say(`Tap ${st.upTo && !st.pay && !st.must ? "up to " : ""}${need === 1 ? "a card" : need + " cards"} in your hand to ${verb}.`, cancel + skip + btn);
   }
   if (st.a === "restDon") { const ok = S.donActive >= st.n; return say(ok ? `Rest ${pl(st.n, "active DON!!").replace(/DON!!s$/, "DON!!")}.` : `This needs ${st.n} active DON!!, and you have ${S.donActive}.`, ok ? cancel + skip + go(st.pay ? "Pay" : "Rest them") : st.pay ? cancel : next); }
@@ -3865,6 +3868,13 @@ function fxApply(arg){
   if (HAND_PICK[st.a]) {
     const pr = fxHandPred(st), need = Math.min(Math.abs(st.n), S.hand.filter(c => !pr || pr(c.c)).length);
     if ((st.pay || st.must) && m.pick.length < need) { toast(`Tap ${need === 1 ? "a card" : need + " cards"} in your hand first.`); return; }
+    if (st.a === "revealHand") {
+      const cs = m.pick.map(r => S.hand[+r.slice(5)]).filter(Boolean);
+      if (st.pay && cs.length < Math.abs(st.n)) { toast(`Tap ${pl(Math.abs(st.n), "card")} in your hand first.`); return; }
+      m.res = cs.length > 0; m.rvh = cs;
+      if (cs.length) addLog(`revealed ${cs.map(lab).join(", ")} from hand`);
+      done(); return;
+    }
     const cs = []; m.pick.map(r => +r.slice(5)).sort((a, b) => b - a).forEach(i => { const c = S.hand.splice(i, 1)[0]; if (c) cs.unshift(c); });
     m.res = cs.length > 0;
     if (st.a === "discard") { cs.forEach(c => S.trash.unshift(c)); if (cs.length && S.myTurn) S.htr = S.turn; if (cs.length) addLog(`trashed ${pl(cs.length, "card")} from hand`); }
@@ -4364,11 +4374,12 @@ function cardFilter(seg){
   const tys = [...seg.matchAll(/\{([^}]+)\}/g)].map(x => x[1]);
   if (tys.length) tests.push((i, code) => tys.some(t => hasType(code, t)));
   if ((m = seg.match(/type including "([^"]+)"/))) { const w = m[1]; tests.push((i, code) => typesOf(code).some(y => y.includes(w))); }
-  const cat = plain.match(/\b(Character|Event|Stage)\b/);
+  const cat = plain.match(/\b(Character|Event|Stage)s?\b/);
   if (cat) tests.push(i => i.t === cat[1]);
   if ((m = seg.match(/cost of (\d+) or (less|more)/))) { const n = +m[1], le = m[2] === "less"; tests.push(i => Number.isFinite(i.k) && (le ? i.k <= n : i.k >= n)); }
   else if ((m = seg.match(/cost of (\d+)\b/))) { const n = +m[1]; tests.push(i => i.k === n); }
   if ((m = seg.match(/(\d+) power or (less|more)/))) { const n = +m[1], le = m[2] === "less"; tests.push(i => Number.isFinite(i.p) && (le ? i.p <= n : i.p >= n)); }
+  else if ((m = seg.match(/with (\d+) power\b/))) { const n = +m[1]; tests.push(i => i.p === n); }
   const not = [...seg.matchAll(/other than \[([^\]]+)\]/g)].map(x => x[1]);
   if (not.length) tests.push((i, code) => !not.includes(nameOf(code)));
   const names = [...seg.replace(/other than \[[^\]]+\]/g, "").matchAll(/\[([^\]]+)\]/g)].map(x => x[1]);

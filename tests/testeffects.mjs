@@ -20,7 +20,7 @@ const deck = ["OP01-013","OP01-016","OP01-024","OP01-014","OP01-015","OP01-017",
 
 // every kind of step in effects.json is one the game knows
 const kinds = await page.evaluate(() => {
-  const known = ["rest","stand","ko","bounce","bottom","pwr","draw","look","don","returnDon","giveDon","discard","other","play","choose","cost","mark","life","trashCh","kw","restDon","standDon","oppDon","oppRetDon","oppDiscard","oppHandDeck","lifeHand","deckLife","handLife","lifeTrash","mill","handDeck","trashDeck","trashHand","shuffle","playSelf","handSelf","act","noBlock","noPlay","reveal","playRv","addRv","rvPlace","rvKw","lifeUp","lifeDown","trash"];
+  const known = ["rest","stand","ko","bounce","bottom","pwr","draw","look","don","returnDon","giveDon","discard","other","play","choose","cost","mark","life","trashCh","kw","restDon","standDon","oppDon","oppRetDon","oppDiscard","oppHandDeck","lifeHand","deckLife","handLife","lifeTrash","mill","handDeck","trashDeck","trashHand","shuffle","playSelf","handSelf","act","noBlock","noPlay","revealHand","reveal","playRv","addRv","rvPlace","rvKw","lifeUp","lifeDown","trash"];
   const seen = new Set(); let stat = 0, dup = 0;
   const walk = sts => sts.forEach(s => { seen.add(s.a); if (s.opts) s.opts.forEach(o => walk(o.steps)); });
   for (const [code] of BFX) { const ab = fxAb(code); ab.forEach(a => { walk(a.steps); if (a.s) stat++; }); if (ab.some(a => a.t === "yourTurn" && !a.s) && ab.some(a => a.t === "onPlay" && a.text === (ab.find(b => b.t === "yourTurn") || {}).text)) dup++; }
@@ -282,6 +282,31 @@ await fxClear();
 check(await page.evaluate(() => { const k = [...CARDDB.keys()].find(k => hasType(k, "Red-Haired Pirates") && !/red/i.test((CARDDB.get(k) || {}).c || "")); return !k || cardFilter("{Red-Haired Pirates} type card")(k); }), "a type name with a color word in it isn't read as a color");
 const brv = await page.evaluate(wb => botSide(() => { S.chars = []; S.deck.unshift({c: wb, n: nameOf(wb), u: 88777}); botAbility({c: "OP08-052", n: nameOf("OP08-052")}, ["onPlay"], 0); return S.chars.map(f => f.card.c); }), rvc.wb);
 check(brv.includes(rvc.wb), "the computer reveals with OP08-052 and plays the Whitebeard Pirates Character it finds");
+// "You may reveal 2 Events from your hand:" (OP12-004): the cards stay in hand, and without 2 Events it can't be paid
+await page.evaluate(() => { oppM = oppModel(PR.pres[1]); commit(); });
+const evs = await page.evaluate(() => [...CARDDB.keys()].filter(k => /^OP0[1-9]-/.test(k) && (CARDDB.get(k) || {}).t === "Event").slice(0, 2));
+const rh = await page.evaluate(evs => { while (fxCur) { fxQueue.length = 0; fxFinish(false); }
+  S.chars = [{card: {c: "OP12-004", n: nameOf("OP12-004")}, r: false, d: 0, pt: 0}]; S.hand = [{c: "OP01-016", n: "", u: 91001}, ...evs.map((c, i) => ({c, n: nameOf(c), u: 91002 + i}))]; commit();
+  fxEnqueue(fxJob(S.chars[0].card, fxAb("OP12-004").find(a => a.t === "activateMain")));
+  const st = fxCur.steps[0], glow = document.querySelectorAll("#hand .fxglow, #hand [data-fx]").length; fxCur.pick = ["hand:0"]; doAction("fxapply"); const early = fxCur && fxCur.i === 0;
+  fxCur.pick = ["hand:1", "hand:2"]; doAction("fxapply"); const pay = {a: st.a, early, h: S.hand.length, next: fxCur && fxCur.steps[fxCur.i].a, log: myLog.slice(-1)[0][1]};
+  doAction("fxgo"); pay.pm = S.chars[0].pm || 0; while (fxCur) { fxQueue.length = 0; fxFinish(false); }
+  S.hand = S.hand.slice(0, 2); commit(); fxEnqueue(fxJob(S.chars[0].card, fxAb("OP12-004").find(a => a.t === "activateMain"))); pay.short = document.querySelector("#fxpanel").innerText; pay.btns = [...document.querySelectorAll("#fxpanel button")].map(b => b.textContent);
+  while (fxCur) { fxQueue.length = 0; fxFinish(false); }
+  pay.events = cardFilter("Events")(evs[0]) && !cardFilter("Events")("OP01-016");
+  return pay; }, evs);
+console.log("reveal hand", JSON.stringify(rh));
+check(rh.a === "revealHand" && rh.early && rh.h === 3 && /revealed .* from hand/.test(rh.log) && rh.pm === 2000, "OP12-004 reveals 2 Events from hand (they stay there) and gets +2000");
+check(/needs 2 cards/.test(rh.short) && rh.btns.join() === "Don't use it" && rh.events, "with only 1 Event in hand the cost can't be paid");
+// "You may place 2 cards with a type including "CP" from your trash at the bottom of your deck:" (OP03-080), by the computer
+const cp = await page.evaluate(() => [...CARDDB.keys()].filter(k => typesOf(k).some(y => y.includes("CP"))).slice(0, 2));
+const small = await page.evaluate(() => { const k = [...CARDDB.keys()].find(k => /^OP01-/.test(k) && (CARDDB.get(k) || {}).t === "Character" && (CARDDB.get(k) || {}).k <= 3); S.chars = [{card: {c: k, n: nameOf(k)}, r: false, d: 0, pt: 0}]; commit(); PR.pres[0] = JSON.parse(JSON.stringify(pubFull())); return k; });
+// (the made-up requests above moved your side's count of the computer's requests past its own)
+const bcp = await page.evaluate(cp => botSide(() => { S.mqn = Math.max(S.mqn || 0, (PR.sides[0].S.ack || 0) + 5); S.trash = cp.map((c, i) => ({c, n: nameOf(c), u: 92000 + i})); const d = S.deck.length; botAbility({c: "OP03-080", n: nameOf("OP03-080")}, ["onPlay"], 0); return {tr: S.trash.length, dk: S.deck.length - d}; }), cp);
+await page.waitForTimeout(300);
+const gone = await page.evaluate(() => !S.chars.length);
+console.log("cp", JSON.stringify(cp), JSON.stringify(bcp), gone, small);
+check(bcp.tr === 0 && bcp.dk === 2 && gone, "the computer pays OP03-080 with 2 CP cards from its trash and K.O.s your cost 3 or less Character");
 await page.evaluate(() => { oppM = oppModel(PR.pres[1]); commit(); });
 await page.screenshot({ path: OUT + "/board.png" });
 check(!errs.length, "no page errors" + (errs.length ? ": " + errs.slice(0, 3).join(" / ") : ""));

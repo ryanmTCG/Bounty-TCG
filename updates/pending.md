@@ -9,3 +9,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - Abilities that make you rest your own cards or a DON!! to pay their cost now work.
 - "Cannot be K.O.'d by effects" and "cannot be removed from the field" now protect the card.
 - Cards that reveal the top card of your deck or Life now work: the card is shown to both players, then played, added to your hand or put back as the card says.
+- Costs that make you reveal cards from your hand, or put cards like "CP" from your trash on the bottom of your deck, now work.

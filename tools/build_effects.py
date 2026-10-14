@@ -124,6 +124,9 @@ def step(clause, pay=False):
     if re.search(r"\bfor every\b", cl): return dict(base, a="other")
     m = re.match(r"reveal (\w+) cards? from the top of your (deck|life cards)\.?$", cl)
     if m: return dict(base, a="reveal", n=num(m.group(1)), lf=m.group(2) != "deck")
+    # "You may reveal 2 Events from your hand": shown to the opponent, they stay in your hand
+    m = re.match(r"(?:you may )?reveal (up to )?(?:a total of )?(\w+) (.+?) from your hand\.?$", core.strip(), re.I)
+    if m: return dict(base, a="revealHand", n=num(m.group(2)), f=m.group(3), upTo=bool(m.group(1)))
     m = re.search(r"\bdraw (\w+) cards?\b", cl)
     if m and not re.search(r"\bwhen (?:you|your opponent) draws?\b", low): return dict(base, a="draw", who="own", n=num(m.group(1)))
     m = re.search(r"\btrash (up to )?(\w+) ((?:[^.]*? )?)(?:cards?|events?|characters?|stages?) ?((?:with [^.]*?)?)from your hand\b", cl)
@@ -179,7 +182,7 @@ def step(clause, pay=False):
     if m: return dict(base, a="mill", n=num(m.group(2)))
     m = re.search(r"\bplace (\w+) cards? from your hand at the (top or bottom|bottom|top) of your deck", cl)
     if m: return dict(base, a="handDeck", n=num(m.group(1)), top=m.group(2) != "bottom")
-    m = re.search(r"\b(?:place|return) (up to )?(\w+) (.*?)cards? from your trash (?:at|to) the bottom of your deck", cl)
+    m = re.search(r"\b(?:place|return) (up to )?(\w+) (.*?)cards?(?: with [^.]*?)? from your trash (?:at|to) the bottom of your deck", cl)
     if m: return dict(base, a="trashDeck", n=num(m.group(2)), upTo=bool(m.group(1)))
     m = re.search(r"\badd (up to )?(\w+) (.+?) from your trash to your hand", cl)
     if m: return dict(base, a="trashHand", n=num(m.group(2)))
