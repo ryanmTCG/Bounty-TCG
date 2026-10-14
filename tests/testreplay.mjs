@@ -1,8 +1,11 @@
 import { _electron as electron } from "playwright-core";
 import fs from "fs";
+import path from "path";
+import zlib from "zlib";
 // Match replays and the computer's difficulty. A match against the computer is recorded as it goes; "Watch replay"
 // plays it back (both hands face up, step, jump a turn, speed, seek, keys), it's kept packed on this computer and
-// listed on the Replays page. Easy, Normal and Hard change how the computer plays. Runs offline.
+// listed on the Replays page, and saved as a file to share and opened again (checked, since it's someone else's
+// file). Easy, Normal and Hard change how the computer plays. Runs offline.
 const OUT = process.argv[2] || "shots-replay";
 fs.mkdirSync(OUT, { recursive: true });
 const prof = "/tmp/bounty-prof-replay"; fs.rmSync(prof, { recursive: true, force: true });
@@ -116,10 +119,48 @@ check(fromList.ok && fromList.from === "list" && fromList.n === fromList.want, "
 await page.click('[data-do="rp:exit"]');
 await page.waitForTimeout(200);
 check(await page.evaluate(() => modal && modal.type === "replays"), "exiting returns to the Replays page");
+// ---- replay files ----
+const dlPath = path.resolve(`${OUT}/replay-file.json`); fs.rmSync(dlPath, { force: true });
+await app.evaluate(({ session }, p) => { session.defaultSession.once("will-download", (e, item) => { item.setSavePath(p); globalThis.__dlName = item.getFilename(); }); }, dlPath);
+await page.click('.rprow [data-do^="rpfile:"]');
+for (let i = 0; i < 25 && !fs.existsSync(dlPath); i++) await page.waitForTimeout(200);
+await page.waitForTimeout(400);
+const file = fs.existsSync(dlPath) ? JSON.parse(fs.readFileSync(dlPath, "utf8")) : null, dlName = await app.evaluate(() => globalThis.__dlName);
+console.log("file", dlName, file && JSON.stringify(Object.assign({}, file.e, { z: file.e.z.length })));
+check(file && file.bounty === "replay" && file.e.z[0] === "z" && file.e.me === "Ryan" && file.e.on === "Computer", "Save file writes the replay to a file");
+check(/^bounty-replay-ryan-vs-computer-\d{4}-\d{2}-\d{2}\.json$/.test(dlName || ""), "the file is named after the players and the date");
 await page.click('.rprow [data-do^="rpdel:"]');
 await page.waitForTimeout(200);
 check(await page.evaluate(() => !document.querySelector(".rprow") && JSON.parse(localStorage.getItem("bounty:replays")).length === 0), "Delete removes it");
-await page.evaluate(() => closeModal());
+await page.setInputFiles("#rp-file", dlPath);
+await page.waitForTimeout(800);
+const im = await page.evaluate(() => ({rows: document.querySelectorAll(".rprow").length, txt: (document.querySelector(".rprow") || {}).innerText || "", toast: document.querySelector("#toast").textContent}));
+console.log("opened", JSON.stringify(im));
+check(im.rows === 1 && /From a file/.test(im.txt) && /Computer won/.test(im.txt) && /Replay added/.test(im.toast), "Open a replay file adds it to the list");
+await page.click('.rprow [data-do^="rpopen:"]');
+await page.waitForTimeout(500);
+const fw = await page.evaluate(() => ({n: RPV && RPV.A.length, want: REC.fr.length, info: document.querySelector("#rpinfo").textContent}));
+check(fw.n === fw.want && /Ryan vs Computer/.test(fw.info), "a replay from a file plays back in full");
+await page.click('[data-do="rp:exit"]');
+await page.waitForTimeout(200);
+await page.setInputFiles("#rp-file", dlPath);
+await page.waitForTimeout(600);
+check(await page.evaluate(() => document.querySelectorAll(".rprow").length === 1 && /already have/.test(document.querySelector("#toast").textContent)), "opening the same file again doesn't add it twice");
+// someone else's file: only what a recording keeps, names cleaned, and nothing too big to unpack
+const ev = JSON.parse(JSON.stringify(file));
+ev.e.id = "other1"; ev.e.me = '<img src=x onerror="window.__x=1">Zoro'; ev.e.tn = "lots";
+const bomb = { bounty: "replay", v: 1, e: { id: "bomb1", me: "B", z: "z" + zlib.gzipSync(Buffer.alloc(40 * 1048576, 32)).toString("base64") } };
+const bad = await page.evaluate(async ([ev, bomb]) => {
+  const fr = JSON.parse(await rpUnpack(ev.e.z)); fr[1][1] = Object.assign({}, fr[1][1] || {}, {evil: "x", __proto__x: 1}); ev.e.z = "j" + JSON.stringify(fr);
+  const r = await rpImport(JSON.stringify(ev)), e = rpList().find(x => x.id === r.id), back = e && JSON.parse(await rpUnpack(e.z));
+  return {ok: !!e, me: e && e.me, tn: e && e.tn, evil: back && Object.keys(back[1][1] || {}).some(k => k === "evil" || k === "__proto__x"),
+    bomb: (await rpImport(JSON.stringify(bomb))).err || "", junk: (await rpImport("hello")).err || "", wrong: (await rpImport(JSON.stringify({bounty: "replay", e: {z: "j[1,2]"}}))).err || ""};
+}, [ev, bomb]);
+console.log("checked", JSON.stringify(bad));
+check(bad.ok && bad.me === "img srcx onerrorwind" && bad.tn === 0 && !bad.evil, "a file's names are cleaned and board parts a recording doesn't keep are dropped");
+check(/too large/.test(bad.bomb) && /isn't a Bounty TCG replay/.test(bad.junk) && /damaged/.test(bad.wrong), "a file that unpacks too big, isn't a replay, or is damaged is refused");
+check(await page.evaluate(() => !window.__x), "nothing in a replay file runs");
+await page.evaluate(() => { rpStore([]); closeModal(); });
 
 // ---- how each level plays ----
 const sync = () => page.evaluate(() => { PR.pres[0] = JSON.parse(JSON.stringify(pubFull())); });

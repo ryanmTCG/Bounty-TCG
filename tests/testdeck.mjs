@@ -52,6 +52,41 @@ const st = await page.evaluate(() => {
 console.log("stats", JSON.stringify(st));
 check(st.nums.some(t => t === `${st.blk} / ${st.trg} Blockers / Triggers`), "the stats count Blockers and Triggers");
 
+// opening hand odds: the chance of each kind of card in the first 5, and with one mulligan
+const blk4 = await page.evaluate(() => { const c = [...CARDDB.keys()].find(k => /^OP01-/.test(k) && isBlocker(k) && (CARDDB.get(k) || {}).c === "Red"); bdAdd(c, 4); return c; });
+const od = await page.evaluate(() => {
+  const n = bdTotal(), C = (a, b) => { let r = 1; for (let i = 0; i < b; i++) r = r * (a - i) / (i + 1); return r; };
+  let k = 0; for (const [c, v] of BD.cards) if (isBlocker(c)) k += v.count;
+  const p = 1 - C(n - k, 5) / C(n, 5);
+  const row = [...document.querySelectorAll("#bd-anal .bd-odds tbody tr")].map(r => [...r.cells].map(c => c.textContent));
+  return {rows: row, want: [Math.round(p * 100) + "%", Math.round((1 - (1 - p) ** 2) * 100) + "%"], k, n};
+});
+console.log("odds", JSON.stringify(od));
+check(od.rows.length === 4 && /Character costing 2 or less/.test(od.rows[0][0]), "the deck stats show opening hand odds");
+const blkRow = od.rows.find(r => /Blocker/.test(r[0])) || [];
+check(od.k === 4 && blkRow[1] === od.want[0] && blkRow[2] === od.want[1] && blkRow[0].includes(`(${od.k})`), "the Blocker odds match the deck's count, with and without a mulligan");
+await page.evaluate(c => bdAdd(c, -4), blk4);
+// a test hand: 5 cards from this deck, one mulligan, then draw ahead
+const handOf = () => page.evaluate(() => ({cards: [...document.querySelectorAll("#bdh-cards .card")].map(c => c.querySelector("b").textContent), newer: document.querySelectorAll("#bdh-cards .card[data-new]").length,
+  note: (document.querySelector("#bdh-note") || {}).textContent || "", mull: !!(document.querySelector('[data-bd="H:mull"]') || {}).disabled, draw: !!(document.querySelector('[data-bd="H:draw"]') || {}).disabled,
+  fits: (() => { if (!BDH) return false; const all = BDH.hand.concat(BDH.deck), m = new Map(); for (const c of all) m.set(c, (m.get(c) || 0) + 1); return all.length === bdTotal() && [...BD.cards].every(([k, v]) => m.get(k) === v.count); })()}));
+await page.click('[data-bd="H:new"]');
+const h1 = await handOf();
+check(h1.cards.length === 5 && h1.fits && !h1.mull && /opening hand/.test(h1.note), "Draw a test hand deals 5 cards from the deck");
+await page.click('[data-bd="H:mull"]');
+const h2 = await handOf();
+check(h2.cards.length === 5 && h2.fits && h2.mull && /after the mulligan/.test(h2.note), "Mulligan deals a new 5, once");
+await page.click('[data-bd="H:draw"]');
+const h3 = await handOf();
+check(h3.cards.length === 6 && h3.newer === 1 && h3.fits && /plus 1 draw\. 6 left/.test(h3.note), "Draw next adds the next card, marked");
+for (let i = 0; i < 8; i++) { const b = await page.$('[data-bd="H:draw"]:not([disabled])'); if (b) await b.click(); }
+const h4 = await handOf();
+check(h4.cards.length === 12 && h4.draw && h4.fits, "it draws until the deck runs out");
+await page.screenshot({ path: OUT + "/testhand.png" });
+await page.evaluate(() => bdAdd("OP01-016", -1));
+check(await page.evaluate(() => !document.querySelector("#bdh-cards") && !!document.querySelector('[data-bd="H:new"]')), "changing the deck puts the test hand away");
+await page.evaluate(() => bdAdd("OP01-016", 1));
+
 // off-color cards
 const blue = await page.evaluate(() => [...CARDDB.keys()].find(k => /^OP01-/.test(k) && (CARDDB.get(k) || {}).c === "Blue" && (CARDDB.get(k) || {}).t === "Character"));
 await page.evaluate(code => bdAdd(code, 2), blue);

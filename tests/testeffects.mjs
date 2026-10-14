@@ -2,7 +2,8 @@ import { _electron as electron } from "playwright-core";
 import fs from "fs";
 // Card abilities the game carries out: costs paid from the card itself, Choose one, a step's own condition, Triggers that
 // play the card or use its [Main], effects on the opponent's side (cost, Freeze, their hand and Life), Life and deck
-// steps, cards from the trash, always-on power and cost, and Double Attack, Banish and Unblockable in battle.
+// steps, cards from the trash, always-on power and cost, Double Attack, Banish and Unblockable in battle, revealed
+// cards, and power that lasts through the opponent's next turn.
 // Runs against the computer, offline.
 const OUT = process.argv[2] || "shots-effects";
 fs.mkdirSync(OUT, { recursive: true });
@@ -308,6 +309,29 @@ const gone = await page.evaluate(() => !S.chars.length);
 console.log("cp", JSON.stringify(cp), JSON.stringify(bcp), gone, small);
 check(bcp.tr === 0 && bcp.dk === 2 && gone, "the computer pays OP03-080 with 2 CP cards from its trash and K.O.s your cost 3 or less Character");
 await page.evaluate(() => { oppM = oppModel(PR.pres[1]); commit(); });
+// power "until the end of your opponent's next turn": your Leader keeps +1000 through the computer's turn (OP09-013),
+// and the computer's Character keeps your −2000 through its own turn (OP11-009); both end when your next turn starts
+const nx = await page.evaluate(() => {
+  while (fxCur) { fxQueue.length = 0; fxFinish(false); }
+  botSide(() => { S.chars = [{card: {c: "OP01-013", n: nameOf("OP01-013")}, r: false, d: 0, pt: 0}]; return 0; });
+  S.myTurn = true; S.atk = null; S.chars = []; S.leader.pm = 0; S.leader.nx = 0; S.mqn = Math.max(S.mqn || 0, (PR.sides[1].S.ack || 0) + 5); commit();
+  fxEnqueue(fxJob({c: "OP09-013", n: nameOf("OP09-013")}, fxAb("OP09-013").find(a => a.t === "onPlay")));
+  const s1 = fxCur.steps[fxCur.i]; fxCur.pick = ["ld"]; doAction("fxapply");
+  const ld = {pm: S.leader.pm, nx: S.leader.nx, flag: !!s1.nx};
+  fxEnqueue(fxJob({c: "OP11-009", n: nameOf("OP11-009")}, fxAb("OP11-009").find(a => a.t === "whenAttacking")));
+  fxCur.pick = fxCands(fxCur.steps[fxCur.i]).map(x => x.ref).slice(0, 1); doAction("fxapply");
+  const req = Object.assign({}, S.mq[S.mq.length - 1]);
+  while (fxCur) { fxQueue.length = 0; fxFinish(false); }
+  endTurn(); clearTimeout(botT); botT = null;
+  const end = S.leader.pm;
+  PR.pres[0] = JSON.parse(JSON.stringify(pubFull()));
+  const opp = botSide(() => { const f = S.chars[0]; startTurn(); const a = f.pm; endTurn(); return {a, b: f.pm, nt: f.nt || 0}; });
+  return {ld, req, end, opp, start: {pm: S.leader.pm, nx: S.leader.nx || 0, my: S.myTurn}};
+});
+console.log("next turn", JSON.stringify(nx));
+check(nx.ld.flag && nx.ld.pm === 1000 && nx.ld.nx === 1000 && nx.end === 1000, "your Leader keeps +1000 from OP09-013 after your turn ends");
+check(nx.req.k === "pwr" && nx.req.v === -2000 && nx.req.nx === 1 && nx.opp.a === -2000 && nx.opp.b === 0 && nx.opp.nt === 0, "the computer's Character keeps −2000 from OP11-009 through its turn, then loses it");
+check(nx.start.my && nx.start.pm === 0 && nx.start.nx === 0, "the +1000 ends when your next turn starts");
 await page.screenshot({ path: OUT + "/board.png" });
 check(!errs.length, "no page errors" + (errs.length ? ": " + errs.slice(0, 3).join(" / ") : ""));
 await app.close();

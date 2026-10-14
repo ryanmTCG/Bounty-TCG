@@ -84,6 +84,11 @@ def split_cond(c):
     return m.group(2) if m else re.sub(r"^then,\s*", "", c, flags=re.I)
 
 
+# power that lasts through the opponent's next turn, not just this one
+NEXT_TURN = r"until the (?:start of your next turn|end of your opponent's next turn)"
+def next_turn(low): return {"nx": True} if re.search(NEXT_TURN, low) else {}
+
+
 def self_step(core, base):
     """Steps that act on the card itself: "You may rest this Character", "Play this card", "This Leader gains +2000 power"."""
     low = core.lower()
@@ -101,8 +106,8 @@ def self_step(core, base):
     if m: return dict(base, a="act", k={"main": "main", "on play": "onPlay", "counter": "counter"}[m.group(1)])
     m = re.match(r"%s gains \[(rush|double attack|banish|unblockable)\](?: and ([+\-−])(\d+) power)? during this turn" % SELF, low)
     if m: return dict(base, a="kw", self=True, k=KW_LETTER[m.group(1)], n=int(m.group(3) or 0) * (-1 if m.group(2) in ("-", "−") else 1))
-    m = re.match(r"%s gains ([+\-−])(\d+) power(?: during this (?:turn|battle))?(?:\.|$)" % SELF, low)
-    if m: return dict(base, a="pwr", self=True, n=int(m.group(2)) * (1 if m.group(1) == "+" else -1), battle=battle)
+    m = re.match(r"%s gains ([+\-−])(\d+) power(?: during this (?:turn|battle)| %s)?(?:\.|$)" % (SELF, NEXT_TURN), low)
+    if m: return dict(base, a="pwr", self=True, n=int(m.group(2)) * (1 if m.group(1) == "+" else -1), battle=battle, **next_turn(low))
     m = re.match(r"give %s ([+\-−])(\d+) power(?: during this (?:turn|battle))?(?:\.|$)" % SELF, low)
     if m: return dict(base, a="pwr", self=True, n=int(m.group(2)) * (1 if m.group(1) == "+" else -1), battle=battle)
     m = re.match(r"give %s (?:up to )?(\w+) (rested )?don!! cards?" % SELF, low)
@@ -207,7 +212,7 @@ def step(clause, pay=False):
         t = target(c)
         if t and t[0] != "any":
             v = int(m.group(2)) * (-1 if m.group(1) != "+" else 1)
-            return dict(base, a="pwr", who=t[0], n=v, upTo=t[2], all=t[3], ld=t[4], cost=cost, power=power, battle="during this battle" in cl, cnt=t[1] if t[1] > 1 else None)
+            return dict(base, a="pwr", who=t[0], n=v, upTo=t[2], all=t[3], ld=t[4], cost=cost, power=power, battle="during this battle" in cl, cnt=t[1] if t[1] > 1 else None, **next_turn(cl))
     # "Up to 1 of your opponent's rested Characters ... will not become active in your opponent's next Refresh Phase",
     # "... cannot attack until the end of your opponent's next turn": a mark on the card
     for k, rx in (("fz", r"will not become active"), ("na", r"cannot attack(?! (?:a |your opponent's )?(?:leader|characters?|active))")):

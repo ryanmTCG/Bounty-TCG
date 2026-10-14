@@ -168,6 +168,18 @@ button,input,textarea,select{font:inherit;color:inherit}
 .bdn b{display:block;font-family:var(--slab,inherit);font-weight:400;font-size:17px;color:#FFE9B8}
 .bdn small{display:block;font-size:11px;color:var(--muted)}
 .bd-anal .hint{margin:6px 0 0;font-size:12px}
+.bd-odds{width:100%;max-width:520px;border-collapse:collapse;font-size:12.5px;margin-top:10px}
+.bd-odds caption{text-align:left;font-family:var(--slab,inherit);color:#FFE9B8;font-size:13px;padding-bottom:3px}
+.bd-odds th,.bd-odds td{padding:3px 8px;text-align:right;border-top:1px solid rgba(255,240,205,.1)}
+.bd-odds th:first-child,.bd-odds td:first-child{text-align:left;padding-left:0}
+.bd-odds thead th{color:var(--muted);font-weight:400;font-size:11px;border-top:0}
+.bd-odds td small{color:var(--muted)}
+.bd-sh{margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,240,205,.15)}
+.bd-sh .row{align-items:center;gap:8px;flex-wrap:wrap}
+.bd-sh .row .hint{margin:0}
+.bdh-cards{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.bdh-cards .card{--cw:68px;--ch:95px;flex:0 0 auto;margin:0;font-size:9.5px}
+.bdh-cards .card[data-new]{outline:2px solid rgba(255,210,122,.7);outline-offset:1px}
 .banner .mhint{display:block;font-size:13px;opacity:.85;margin-top:2px}
 #fxl{position:fixed;inset:0;pointer-events:none;z-index:95}
 .fxsvg{position:fixed;left:0;top:0;overflow:visible}
@@ -1443,7 +1455,7 @@ function oppModel(x){
     uid: typeof x.uid === "string" && /^[A-Za-z0-9_-]{4,64}$/.test(x.uid) ? x.uid : "", mk: typeof x.mk === "string" && /^[a-z0-9]{4,16}$/.test(x.mk) ? x.mk : "",
     ld: f(x.ld), ch: (Array.isArray(x.ch) ? x.ch : []).slice(0, 12).map(f).filter(Boolean), st: f(x.st), ev: f(x.ev),
     ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0, u: x.ak.u ? 1 : 0, ub: Number.isFinite(+x.ak.ub) && x.ak.ub !== null ? Math.max(0, Math.min(60000, Math.round(+x.ak.ub))) : null} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2, rk: x.rk ? 1 : 0, fc: FC_RE.test(x.fc) ? x.fc : "", tl: Number.isInteger(x.tl) && x.tl >= 0 && x.tl <= 3600 ? x.tl : null, tp: x.tp ? 1 : 0, to: num(x.to, 9), qc: Array.isArray(x.qc) && Number.isInteger(x.qc[0]) && Number.isInteger(x.qc[1]) && QC[x.qc[1]] ? {id: x.qc[0], k: x.qc[1]} : null,
-    mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0))), u: q.u ? 1 : 0})), ma: num(x.ma, 1000000),
+    mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0))), u: q.u ? 1 : 0, nx: q.nx ? 1 : 0})), ma: num(x.ma, 1000000),
     ox: Array.isArray(x.ox) ? [Math.max(-20000, Math.min(20000, Math.round(+x.ox[0] || 0))), Math.max(-10, Math.min(10, Math.round(+x.ox[1] || 0)))] : null,
     mf: x.mf && typeof x.mf === "object" && /^[A-Z0-9]{1,8}-\d{2,4}$/.test(x.mf.c) ? {c: x.mf.c, a: num(x.mf.a, 30), s: num(x.mf.s, 30), n: num(x.mf.n, 1e6)} : null,
     lu: (Array.isArray(x.lu) ? x.lu : []).slice(0, 12).filter(t => Array.isArray(t) && Number.isInteger(t[0]) && t[0] >= 0 && t[0] < 60).map(t => [t[0], clean(t[1], 16)]),
@@ -1485,7 +1497,7 @@ function commit(){
   render(); publish();
 }
 function sendOpp(q){ q.id = ++S.mqn; S.mq.push(q); S.mqh = (S.mqh || []).concat(Object.assign({}, q)).slice(-30); }
-const OPP_BACK = {pwr: q => ({k: "pwr", v: -q.v}), pwb: q => ({k: "pwb", v: -q.v}), cst: q => ({k: "cst", v: -q.v}), rest: () => ({k: "stand"}), stand: () => ({k: "rest"})};
+const OPP_BACK = {pwr: q => q.nx ? {k: "pwr", v: -q.v, nx: 1} : {k: "pwr", v: -q.v}, pwb: q => ({k: "pwb", v: -q.v}), cst: q => ({k: "cst", v: -q.v}), rest: () => ({k: "stand"}), stand: () => ({k: "rest"})};
 // Reset board, Refresh and Undo would let someone take back moves against a stranger, so public lobby tables
 // (S.pubt) and ranked matches don't have them. Friends only tables and practice do.
 const boardTools = () => !S.ranked && !S.pubt;
@@ -2072,6 +2084,63 @@ function rpSave(rec, sync){
   }).catch(() => {});
 }
 window.addEventListener("pagehide", () => { if (REC) rpSave(REC, true); });
+// ---------- replay files ----------
+// A replay saved as a file to send to someone. Opening one checks everything in it, since it's someone else's file:
+// its size, packed and unpacked, the shape of every frame, and only the board parts a recording keeps.
+const RP_FILE_MAX = 6 * 1048576, RP_TEXT_MAX = 24 * 1048576;
+async function rpFileText(id){
+  const e = REC && REC.id === id ? Object.assign(rpMeta(REC), {z: await rpPack(JSON.stringify(REC.fr))}) : rpList().find(x => x.id === id);
+  return e ? JSON.stringify({bounty: "replay", v: 1, e}) : null;
+}
+async function rpDownload(id){
+  const txt = await rpFileText(id); if (!txt) { toast("Couldn't save that replay."); return; }
+  const e = JSON.parse(txt).e, sl = x => (clean(x, 20) || "player").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "player";
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([txt], {type: "application/json"}));
+  a.download = `bounty-replay-${sl(e.me)}-vs-${sl(e.on)}-${new Date(+e.t || Date.now()).toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+}
+// unpacks gzip, stopping as soon as it grows past max
+async function rpInflate(b64, max){
+  const u = Uint8Array.from(atob(b64), ch => ch.charCodeAt(0));
+  const rd = new Blob([u]).stream().pipeThrough(new DecompressionStream("gzip")).getReader(), parts = [];
+  for (let n = 0;;) {
+    const {done, value} = await rd.read(); if (done) break;
+    n += value.length; if (n > max) { rd.cancel().catch(() => {}); throw new Error("too large"); }
+    parts.push(value);
+  }
+  return await new Blob(parts).text();
+}
+// adds a replay file to the list; returns its id, or what's wrong with it
+async function rpImport(txt){
+  let o = null; try { o = typeof txt === "string" && txt.length <= RP_FILE_MAX ? JSON.parse(txt) : null; } catch (er) {}
+  const e = o && o.bounty === "replay" && o.e && typeof o.e === "object" ? o.e : null;
+  if (!e || typeof e.z !== "string" || !/^[zj]/.test(e.z)) return {err: "That isn't a Bounty TCG replay file."};
+  let fr = null;
+  try { const raw = e.z[0] === "z" ? await rpInflate(e.z.slice(1), RP_TEXT_MAX) : e.z.slice(1); fr = JSON.parse(raw); } catch (er) { fr = null; }
+  const side = d => d === 0 || d === null || (d && typeof d === "object" && !Array.isArray(d));
+  if (!Array.isArray(fr) || fr.length < 2 || fr.length > RP_FRAMES || !fr.every(f => Array.isArray(f) && f.length === 3 && side(f[1]) && side(f[2])))
+    return {err: "That replay file is damaged, or too large to open."};
+  const keep = d => { if (!d) return 0; const x = {}; for (const k of Object.keys(d)) if (RP_KEEP.has(k)) x[k] = d[k]; return x; };
+  const frs = fr.map(f => [Math.max(0, Math.min(600000, Math.floor(+f[0]) || 0)), keep(f[1]), keep(f[2])]);
+  const z = await rpPack(JSON.stringify(frs)), list = rpList();
+  const base = typeof e.id === "string" && RP_ID.test(e.id) ? e.id.slice(0, 26) : "file";
+  const same = list.find(x => x.id === base);
+  if (same && same.z === z) return {id: base, had: true};
+  const id = same ? base + "-" + Date.now().toString(36) : base, t = +e.t;
+  const ent = {id, t: t > 0 && t < Date.now() + 864e5 ? t : Date.now(), me: clean(e.me, 20) || "Player", on: clean(e.on, 20) || "Opponent", ld: clean(e.ld, 16), op: clean(e.op, 16),
+    r: e.r === "w" || e.r === "l" ? e.r : "", n: frs.length, d: Math.max(0, Math.min(864e5, Math.floor(+e.d) || 0)), tn: num(e.tn, 999), b: e.b === 1 || e.b === 2 ? e.b : 0, sh: 1, z};
+  rpStore([ent, ...list.filter(x => x.id !== id)]);
+  return rpList().some(x => x.id === id) ? {id} : {err: "There isn't room on this computer to keep that replay."};
+}
+async function rpOpenFile(f){
+  if (f.size > RP_FILE_MAX) { toast("That file is too large to be a replay."); return; }
+  const r = await rpImport(await f.text()).catch(() => ({err: "Couldn't open that file."}));
+  if (r.err) { toast(r.err); return; }
+  if (modal && modal.type === "replays") openReplays();
+  toast(r.had ? "You already have that replay. It's in your list." : "Replay added. Press Watch to play it.");
+}
 const liveMatch = () => !!(R && !PR && S.phase === "play" && !S.conceded && !(oppM && oppM.cd));
 async function rpOpen(id, from){
   if (from === "list" && liveMatch()) { toast("Finish or leave your match first, then watch a replay."); return; }
@@ -2172,16 +2241,16 @@ function openReplays(){
   const list = rpList(), CODE = /^[A-Z0-9]{1,8}-\d{2,4}$/;
   const row = e => {
     const op = CODE.test(e.op) ? e.op : "", ld = CODE.test(e.ld) ? e.ld : "", me = clean(e.me, 20) || "Player", on = clean(e.on, 20) || "Opponent";
-    const both = e.b === 2, cls = both || !e.r ? "" : e.r === "w" ? "win" : "loss";
+    const both = e.b === 2 || e.sh, cls = both || !e.r ? "" : e.r === "w" ? "win" : "loss";
     const lab = !e.r ? "Unfinished" : both ? "Finished" : e.r === "w" ? "Win" : "Loss";
-    const bits = [both && e.r ? `${e.r === "w" ? me : on} won` : "", e.b === 1 ? "Practice" : both ? "Both sides" : "Online", e.tn ? `${e.tn} turns` : "", e.d ? rpDur(e.d) : "", e.t ? ago(e.t) : ""].filter(Boolean).join(" · ");
+    const bits = [both && e.r ? `${e.r === "w" ? me : on} won` : "", e.sh ? "From a file" : "", e.b === 1 ? "Practice" : e.b === 2 ? "Both sides" : "Online", e.tn ? `${num(e.tn, 999)} turns` : "", e.d ? rpDur(+e.d || 0) : "", e.t ? ago(+e.t || 0) : ""].filter(Boolean).join(" · ");
     const lds = [ld ? `${nameOf(ld) || ld}` : "", op ? `${nameOf(op) || op}` : ""].filter(Boolean).join(" vs ");
-    return `<div class="pfh rprow ${cls}"><span class="pfres">${lab}</span>${op ? tile({c: op, n: nameOf(op)}, "", false, 0) : `<div class="card pfnone"></div>`}<div class="pfinfo"><b>${esc(me)} vs ${esc(on)}</b><small>${esc(lds)}</small><span class="pfline">${esc(bits)}</span></div><div class="rpacts"><button class="btn pri" data-do="rpopen:${e.id}" type="button">Watch</button><button class="btn" data-do="rpdel:${e.id}" type="button" aria-label="Delete this replay">Delete</button></div></div>`;
+    return `<div class="pfh rprow ${cls}"><span class="pfres">${lab}</span>${op ? tile({c: op, n: nameOf(op)}, "", false, 0) : `<div class="card pfnone"></div>`}<div class="pfinfo"><b>${esc(me)} vs ${esc(on)}</b><small>${esc(lds)}</small><span class="pfline">${esc(bits)}</span></div><div class="rpacts"><button class="btn pri" data-do="rpopen:${e.id}" type="button">Watch</button><button class="btn" data-do="rpfile:${e.id}" type="button" title="Save it as a file to send to someone">Save file</button><button class="btn" data-do="rpdel:${e.id}" type="button" aria-label="Delete this replay">Delete</button></div></div>`;
   };
   showModal(`<h2>Replays</h2>
-    <p class="hint">Your last ${RP_MAX} matches, online and practice, finished or not. Play them back move by move, with your hand (and the computer's) face up. They're kept on this computer only.</p>
+    <p class="hint">Your last ${RP_MAX} matches, online and practice, finished or not. Play them back move by move, with your hand (and the computer's) face up. They're kept on this computer. Save one as a file to send it to a friend, and open a file someone sent you to watch theirs.</p>
     ${list.length ? `<div class="pfhist">${list.map(row).join("")}</div>` : `<div class="lbempty"><b>No replays yet</b>Play a match and it shows up here.</div>`}
-    <div class="row end"><button class="btn" data-do="home" type="button">Back</button></div>`);
+    <div class="row end"><button class="btn" data-do="rpimport" type="button">Open a replay file</button><input type="file" id="rp-file" accept=".json,application/json" hidden><button class="btn" data-do="home" type="button">Back</button></div>`);
   const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
   $("#modal").classList.add("homebg", "lobpage");
 }
@@ -3358,7 +3427,7 @@ function applyMarkReqs(){
         }
         else if (q.k === "rest") { f.r = true; addLog(q.u ? `${by} undid standing ${nm}` : `${nm} was rested by ${by}`); }
         else if (q.k === "stand") { f.r = false; addLog(q.u ? `${by} undid resting ${nm}` : `${nm} was stood by ${by}`); }
-        else if (q.k === "pwr") { f.pm = Math.max(-60000, Math.min(60000, (f.pm || 0) + q.v)); addLog(q.u ? `${by} undid ${q.v > 0 ? "-" : "+"}${Math.abs(q.v)} power on ${nm}` : `${nm} got ${q.v > 0 ? "+" : "-"}${Math.abs(q.v)} power from ${by}`); }
+        else if (q.k === "pwr") { f.pm = Math.max(-60000, Math.min(60000, (f.pm || 0) + q.v)); if (q.nx) f.nt = Math.max(-60000, Math.min(60000, (f.nt || 0) + q.v)); addLog(q.u ? `${by} undid ${q.v > 0 ? "-" : "+"}${Math.abs(q.v)} power on ${nm}` : `${nm} got ${q.v > 0 ? "+" : "-"}${Math.abs(q.v)} power from ${by}`); }
         else if (REMOVE_K[q.k] && q.v !== -1 && shielded(f, q.k)) addLog(`${nm} can't be ${q.k === "ko" ? "K.O.'d" : "removed from the field"} by ${by}'s effect`);
         else if (q.k[0] === "x") { const mk = q.k.slice(1); if (f.mk && f.mk.includes(mk)) { f.mk = f.mk.filter(x => x !== mk); addLog(`${by} took ${MK[mk].l} back off ${nm}`); } }
         else if (f !== S.leader) {
@@ -3427,7 +3496,7 @@ function normStep(t, deep){
   t = t || {};
   const st = {a: String(t.a || "other").slice(0, 16), who: t.who === "own" ? "own" : t.who === "any" ? "any" : "opp", n: Math.max(1, Math.min(60000, Math.round(Math.abs(+t.n) || 1))) * (+t.n < 0 ? -1 : 1), upTo: t.upTo !== false, cost: Number.isFinite(+t.cost) && t.cost !== null ? +t.cost : null, power: Number.isFinite(+t.power) && t.power !== null ? +t.power : null, rested: t.rested === true, ld: typeof t.ld === "boolean" ? t.ld : null, all: t.all === true, text: fxText(t.text, 300)};
   if (st.a === "kw" && !+t.n) st.n = 0;
-  for (const k of ["self", "pay", "battle", "tb", "top", "bot", "lf", "now", "up", "dn"]) if (t[k] === true) st[k] = true;
+  for (const k of ["self", "pay", "battle", "tb", "top", "bot", "lf", "now", "up", "dn", "nx"]) if (t[k] === true) st[k] = true;
   if (typeof t.f === "string" && t.f.trim()) st.f = fxText(t.f, 160);
   if (typeof t.k === "string" && /^[a-zA-Z]{1,12}$/.test(t.k)) st.k = t.k;
   if (Number.isInteger(t.cnt) && t.cnt > 1) st.cnt = Math.min(t.cnt, 10);
@@ -3859,7 +3928,7 @@ function fxApply(arg){
     const nm = lab(f.card), ref = fxRef(f);
     if (st.a === "rest") { f.r = true; addLog(`rested ${nm}`); }
     else if (st.a === "stand") { f.r = false; addLog(`set ${nm} as active`); }
-    else if (st.a === "pwr") { f.pm = clampP((f.pm || 0) + st.n); if (st.battle) f.bc = (f.bc || 0) + st.n; addLog(`gave ${nm} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} power`); }
+    else if (st.a === "pwr") { f.pm = clampP((f.pm || 0) + st.n); if (st.battle) f.bc = (f.bc || 0) + st.n; if (st.nx) f.nx = clampP((f.nx || 0) + st.n); addLog(`gave ${nm} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} power${st.nx ? " until their next turn" : ""}`); }
     else if (st.a === "kw") { fxGrant(f, st.k); if (st.n) f.pm = clampP((f.pm || 0) + st.n); }
     else if (st.a === "giveDon") fxGiveDon(f, st);
     else if (ref !== "ld") { fxRemoveOwn(ref, st.a); fxNext(); return; }
@@ -3959,7 +4028,7 @@ function fxApply(arg){
     const f = ref === "ld" ? S.leader : S.chars[+ref.slice(3)]; if (!f) continue;
     if (kind === "rest") { f.r = true; addLog(`rested ${lab(f.card)}`); }
     else if (kind === "stand") { f.r = false; addLog(`stood ${lab(f.card)}`); }
-    else if (kind === "pwr") { f.pm = clampP((f.pm || 0) + st.n); if (st.battle) f.bc = (f.bc || 0) + st.n; addLog(`gave ${lab(f.card)} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} power`); }
+    else if (kind === "pwr") { f.pm = clampP((f.pm || 0) + st.n); if (st.battle) f.bc = (f.bc || 0) + st.n; if (st.nx) f.nx = clampP((f.nx || 0) + st.n); addLog(`gave ${lab(f.card)} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} power${st.nx ? " until their next turn" : ""}`); }
     else if (kind === "cost") { f.cm = Math.max(-20, Math.min(20, (f.cm || 0) + st.n)); addLog(`gave ${lab(f.card)} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} cost`); }
     else if (kind === "kw") fxGrant(f, st.k);
     else if (ref !== "ld") fxRemoveOwn(ref, kind);
@@ -3969,7 +4038,7 @@ function fxApply(arg){
     if (ref === "ld" && !["rest", "stand", "pwr", "cost", "mark"].includes(kind)) continue;
     const k = kind === "cost" ? "cst" : kind === "trashCh" ? "trc" : kind === "life" && st.up ? "lfu" : kind === "mark" ? st.k : kind === "pwr" && st.battle ? "pwb" : kind;
     if (!ACTK[k] && !MK[k]) continue;
-    sendOpp({r: ref, c: t.c, k, v: kind === "pwr" || kind === "cost" ? st.n : kind === "mark" && st.now ? 1 : 0});
+    sendOpp(Object.assign({r: ref, c: t.c, k, v: kind === "pwr" || kind === "cost" ? st.n : kind === "mark" && st.now ? 1 : 0}, kind === "pwr" && st.nx ? {nx: 1} : {}));
     const sg = `${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)}`;
     addLog(`${{ko: "K.O.'d", rest: "rested", stand: "stood", bounce: "returned to hand", bottom: "put on the bottom of the deck", life: "added to its owner's Life", trashCh: "trashed", pwr: sg + " power on", cost: sg + " cost on", mark: st.k === "fz" ? "froze" : "stopped from attacking"}[kind] || kind} ${lab(t)}`);
   }
@@ -4085,9 +4154,10 @@ function startTurn(){
   if (S.phase !== "play") { toast(S.phase === "pre" ? "Keep your hand and set your Life first." : (S.phase === "wait" || S.phase === "roll") ? "The match hasn't started yet." : "Set up your deck first."); return; }
   S.turn++;
   const stand = f => { if (f.mk && f.mk.includes("na") && S.turn >= (f.nat || 0)) { f.mk = f.mk.filter(k => k !== "na"); addLog(`${lab(f.card)} can attack again`); } if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; f.mk = (f.mk || []).filter(k => k !== "au"); };
-  for (const f of S.chars) { stand(f); S.donRested += f.d; f.d = 0; f.pm = 0; f.cm = 0; f.bc = 0; }
+  // power "until the start of your next turn" ends now (nx); an opponent's "until the end of your next turn" stays (nt)
+  for (const f of S.chars) { stand(f); S.donRested += f.d; f.d = 0; f.pm = f.nt || 0; f.nx = 0; f.cm = 0; f.bc = 0; }
   if (S.stage) S.stage.r = false;
-  stand(S.leader); S.donRested += S.leader.d; S.leader.d = 0; S.leader.pm = 0; S.leader.cm = 0; S.leader.bc = 0;
+  stand(S.leader); S.donRested += S.leader.d; S.leader.d = 0; S.leader.pm = S.leader.nt || 0; S.leader.nx = 0; S.leader.cm = 0; S.leader.bc = 0;
   S.donActive += S.donRested; S.donRested = 0;
   S.myTurn = true; S.tleft = TURN_MS; S.tw = false; if (R && !PR) snd("turn");
   addLog(`started turn ${S.turn}`);
@@ -4132,7 +4202,7 @@ function endTurn(){
     }
   }
   S.pw = 0; S.cc = 0; S.atk = null; S.blk = null;
-  for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = 0; f.cm = 0; f.bc = 0; }
+  for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = f.nx || 0; f.nt = 0; f.cm = 0; f.bc = 0; }
   if (S.ev) { S.trash.unshift(S.ev.card); addLog(`${lab(S.ev.card)} went to the trash`); S.ev = null; }
   S.myTurn = false; S.et = (S.et || 0) + 1;
   addLog(`ended turn ${S.turn || 0}`);
@@ -4540,7 +4610,7 @@ function openCardMenu(src, x, y){
     items.push([f.r ? "Activate (stand)" : "Rest", () => { if (!fair(["rest"])) return; f.r = !f.r; addLog(`${f.r ? "rested" : "activated"} ${lab(f.card)}`); commit(); }]);
     if (k !== "st") {
       items.push(["Give DON!! (+1)", () => { if (!S.myTurn && !fair(["don"])) return; if (!S.donActive) { toast("No active DON!! in your cost area."); return; } S.donActive--; f.d++; addLog(`gave DON!! to ${lab(f.card)} (+${f.d})`); commit(); }]);
-      if (f.pm) items.push([`Clear power bonus (${f.pm > 0 ? "+" : "\u2212"}${Math.abs(f.pm)})`, () => { if (!fair(["power"])) return; f.pm = 0; f.bc = 0; addLog(`cleared the power bonus on ${lab(f.card)}`); commit(); }]);
+      if (f.pm) items.push([`Clear power bonus (${f.pm > 0 ? "+" : "\u2212"}${Math.abs(f.pm)})`, () => { if (!fair(["power"])) return; f.pm = 0; f.bc = 0; f.nx = 0; f.nt = 0; addLog(`cleared the power bonus on ${lab(f.card)}`); commit(); }]);
       if (f.cm) items.push([`Clear cost bonus (${f.cm > 0 ? "+" : "\u2212"}${Math.abs(f.cm)})`, () => { if (!fair(["cost"])) return; f.cm = 0; addLog(`cleared the cost bonus on ${lab(f.card)}`); commit(); }]);
       if (f.d && fxCur) items.push(["Take DON!! back (an effect says so)", () => { if (!fair(["don"])) return; f.d--; S.donRested++; addLog(`took a DON!! back from ${lab(f.card)}`); commit(); }]);
     }
@@ -4704,7 +4774,7 @@ function movePm(from, to){
   if (to !== from && !fair(["power"])) return;
   if (to === from) return;
   const t = to ? donHolder(to) : null, v = f.pm;
-  f.pm = 0; f.bc = 0;
+  f.pm = 0; f.bc = 0; f.nx = 0; f.nt = 0;
   if (t) { t.pm = Math.max(-60000, Math.min(60000, (t.pm || 0) + v)); addLog(`moved ${v > 0 ? "+" : "\u2212"}${Math.abs(v)} power from ${lab(f.card)} to ${lab(t.card)}`); }
   else addLog(`removed the power bonus from ${lab(f.card)}`);
   commit();
@@ -5180,7 +5250,7 @@ document.addEventListener("click", e => {
   const sbn = t.closest("[data-sort]");
   if (sbn) { setSort(sbn.dataset.sort); return; }
   const bdb = t.closest("[data-bd]");
-  if (bdb) { const i = bdb.dataset.bd.indexOf(":"), a = bdb.dataset.bd.slice(0, i), c = bdb.dataset.bd.slice(i + 1); if (a === "+") bdAdd(c, 1); else if (a === "-") bdAdd(c, -1); else if (a === "L") bdLeader(c); else if (a === "LX") { BD.leader = null; renderBdDeck(); } return; }
+  if (bdb) { const i = bdb.dataset.bd.indexOf(":"), a = bdb.dataset.bd.slice(0, i), c = bdb.dataset.bd.slice(i + 1); if (a === "+") bdAdd(c, 1); else if (a === "-") bdAdd(c, -1); else if (a === "L") bdLeader(c); else if (a === "LX") { BD.leader = null; renderBdDeck(); } else if (a === "H") bdHand(c); return; }
   const lib = t.closest("[data-lib]");
   if (lib) { bdAdd(lib.dataset.lib, 1); return; }
   const ld = t.closest("[data-ld]"); if (ld) { loadDeck(ld.dataset.ld); return; }
@@ -5217,6 +5287,7 @@ document.addEventListener("change", e => {
     bdShow = 60; renderLib(); return;
   }
   if (t && (t.id === "bd-color" || t.id === "bd-type" || t.id === "bd-kw" || t.id === "bd-attr" || t.id === "bd-artonly" || t.id === "bd-group" || t.id === "bd-showban" || t.id === "bd-showrot")) { bdShow = 60; renderLib(); return; }
+  if (t && t.id === "rp-file") { const f = t.files && t.files[0]; t.value = ""; if (f) rpOpenFile(f); return; }
   if (t && t.id === "cd-file") { const f = t.files && t.files[0]; t.value = ""; if (f) { if (f.size > 12 * 1048576) toast("That file is too large (12 MB max)."); else f.text().then(importCardData); } return; }
   if (t && t.id === "f-pub") { const o = $("#f-pubopts"), b = $("#f-joinbtn"); if (o) o.hidden = !t.checked; if (b) b.textContent = t.checked ? "Open lobby" : "Join room"; return; }
   if (t && t.id === "cal-card") { calLoad(t.value); return; }
@@ -5337,6 +5408,8 @@ function doAction(a){
   if (a.startsWith("frwatch:")) { const o = onlineMap().get(a.slice(8)); if (o && o.w) watchTable(o.w, o.nk); else toast("That match just ended."); return; }
   if (a === "stopwatch") { stopWatch(); return; }
   if (a.startsWith("rpopen:")) { rpOpen(a.slice(7), "list"); return; }
+  if (a.startsWith("rpfile:")) { rpDownload(a.slice(7)); return; }
+  if (a === "rpimport") { const f = $("#rp-file"); if (f) f.click(); return; }
   if (a.startsWith("rpdel:")) { const id = a.slice(6); rpStore(rpList().filter(e => e.id !== id)); if (REC && REC.id === id) REC.dirty = false; openReplays(); toast("Replay deleted."); return; }
   if (a.startsWith("rp:")) {
     const v = RPV, k = a.slice(3); if (!v) return;
@@ -6390,7 +6463,42 @@ function bdStatsHTML(rows){
     [`${ty.Character} / ${ty.Event}${ty.Stage ? " / " + ty.Stage : ""}`, ty.Stage ? "Characters / Events / Stages" : "Characters / Events"],
     [`${blk} / ${trg}`, "Blockers / Triggers"]
   ].map(([v, l]) => `<div><b>${esc(String(v))}</b><small>${esc(l)}</small></div>`).join("");
-  return `<details class="bd-anal" id="bd-anal"${bdStatsOpen ? " open" : ""}><summary>Deck stats</summary><div class="bd-anal-in"><div class="bdc" role="img" aria-label="Cost curve: ${curve.map((n, i) => `${n} at cost ${i === 7 ? "7 or more" : i}`).join(", ")}">${bars}</div><div class="bdn">${nums}</div></div>${unknown ? `<p class="hint">${unknown} card${unknown === 1 ? "" : "s"} without card data ${unknown === 1 ? "isn't" : "aren't"} counted.</p>` : ""}</details>`;
+  return `<details class="bd-anal" id="bd-anal"${bdStatsOpen ? " open" : ""}><summary>Deck stats</summary><div class="bd-anal-in"><div class="bdc" role="img" aria-label="Cost curve: ${curve.map((n, i) => `${n} at cost ${i === 7 ? "7 or more" : i}`).join(", ")}">${bars}</div><div class="bdn">${nums}</div></div>${unknown ? `<p class="hint">${unknown} card${unknown === 1 ? "" : "s"} without card data ${unknown === 1 ? "isn't" : "aren't"} counted.</p>` : ""}${bdOddsHTML(rows, total)}<div class="bd-sh" id="bd-sh">${bdHandHTML()}</div></details>`;
+}
+// the chance of at least one of k cards in the first h of an n-card deck, and of finding one if you mulligan a hand
+// without it (the mulligan shuffles the 5 back and draws 5 new ones)
+const hyp1 = (n, k, h) => { if (k <= 0 || n <= 0) return 0; let miss = 1; for (let i = 0; i < h; i++) miss *= Math.max(0, n - k - i) / (n - i); return 1 - miss; };
+function bdOddsHTML(rows, n){
+  if (n < 5) return "";
+  const cnt = f => rows.reduce((a, k) => a + (f(k, CARDDB.get(k) || {}) ? BD.cards.get(k).count : 0), 0);
+  const pct = x => Math.round(x * 100) + "%";
+  const lines = [
+    ["A Character costing 2 or less", cnt((k, e) => /Character/.test(e.t || "") && Number.isFinite(e.k) && e.k <= 2)],
+    ["A Blocker", cnt(k => isBlocker(k))],
+    ["A +2000 counter", cnt((k, e) => e.ctr >= 2000)],
+    ["An Event", cnt((k, e) => /Event/.test(e.t || ""))]
+  ].map(([l, k]) => { const p = hyp1(n, k, 5); return `<tr><td>${esc(l)} <small>(${k})</small></td><td>${pct(p)}</td><td>${pct(1 - (1 - p) * (1 - p))}</td></tr>`; }).join("");
+  return `<table class="bd-odds"><caption>Opening hand odds</caption><thead><tr><th scope="col">Chance of drawing</th><th scope="col">First 5</th><th scope="col">With a mulligan</th></tr></thead><tbody>${lines}</tbody></table>`;
+}
+// a practice opening hand from the deck being built: mulligan once, then draw the next cards to see your first turns
+let BDH = null;
+const bdSig = () => Array.from(BD.cards.entries()).sort((a, b) => natural(a[0], b[0])).map(([k, v]) => k + "x" + v.count).join(",");
+function bdHandHTML(){
+  if (BDH && BDH.sig !== bdSig()) BDH = null;
+  if (!BDH) return `<div class="row"><button class="btn" type="button" data-bd="H:new">Draw a test hand</button><span class="hint">Deal 5 cards from this deck, try a mulligan, then draw ahead.</span></div>`;
+  const cards = BDH.hand.map((c, i) => tile({c, n: nameOf(c) || ""}, i >= 5 ? 'data-new="1"' : "", false, 0)).join("");
+  const note = BDH.drew ? `Opening hand plus ${BDH.drew} draw${BDH.drew === 1 ? "" : "s"}. ${BDH.deck.length} left in the deck.` : BDH.mull ? "Your hand after the mulligan." : "Your opening hand. You can mulligan it once.";
+  return `<div class="row"><button class="btn" type="button" data-bd="H:new">New hand</button><button class="btn" type="button" data-bd="H:mull"${BDH.mull || BDH.drew ? " disabled" : ""}>Mulligan</button><button class="btn pri" type="button" data-bd="H:draw"${BDH.deck.length ? "" : " disabled"}>Draw next</button><button class="btn" type="button" data-bd="H:x">Close</button></div><p class="hint" id="bdh-note">${esc(note)}</p><div class="bdh-cards" id="bdh-cards">${cards}</div>`;
+}
+function bdHand(a){
+  if (a === "x") BDH = null;
+  else if (a === "new") {
+    const deck = []; BD.cards.forEach((v, k) => { for (let i = 0; i < v.count; i++) deck.push(k); });
+    shuffle(deck); BDH = {sig: bdSig(), deck, hand: deck.splice(0, 5), mull: false, drew: 0};
+  } else if (!BDH) return;
+  else if (a === "mull" && !BDH.mull && !BDH.drew) { BDH.deck = shuffle(BDH.deck.concat(BDH.hand)); BDH.hand = BDH.deck.splice(0, 5); BDH.mull = true; }
+  else if (a === "draw" && BDH.deck.length) { BDH.hand.push(BDH.deck.shift()); BDH.drew++; }
+  const el = $("#bd-sh"); if (el) el.innerHTML = bdHandHTML();
 }
 document.addEventListener("toggle", e => { if (e.target && e.target.id === "bd-anal") { bdStatsOpen = e.target.open; try { localStorage.setItem("bounty:bdstats", bdStatsOpen ? "1" : "0"); } catch (x) {} } }, true);
 function refreshBdLoad(){
