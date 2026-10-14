@@ -1,8 +1,8 @@
 {
-  "version": "1.3.9",
+  "version": "1.4.0",
   "shell": 2,
-  "bundle": "web-1.3.9.json.gz",
-  "sha256": "910c06873ae6e904de343ab00bdd12f453b98c9d6e2054c11646309f659c606e",
-  "size": 759797,
-  "notes": "Only active DON!! can be dragged, and DON!! given to a card stays until the Refresh Phase or a K.O., unless an effect moves it. Blocking is done by tapping a glowing Blocker (no Block button), and the Blocker tag is orange. Characters can't attack the turn they're played unless they have [Rush]..."
+  "bundle": "web-1.4.0.json.gz",
+  "sha256": "057c7646b1cfd82d28f7e954114aa7635606f6d0f9719986b706906f6995cfc0",
+  "size": 826162,
+  "notes": "The tutorial's table log no longer reads \"You goes first\" when you haven't set a name. Nickname: set one name on your Profile (or from \"Playing as\" on the home page) and everyone sees it: your opponent at the table (even mid-match), the lobby, friends' lists and the Ranked leaderboard. Signed..."
 }
