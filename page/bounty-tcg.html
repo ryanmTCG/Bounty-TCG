@@ -529,6 +529,13 @@ select.sbtn{height:26px;min-width:88px}
 .lbbar .sp{flex:1}
 .lbcount{display:flex;gap:6px;align-items:center;font-weight:700;color:#F1DDB0}
 .lblist{display:flex;flex-direction:column;gap:10px}
+.rkseason{display:flex;flex-direction:column;gap:2px;margin:4px 0 10px;padding:8px 12px;border:2px solid rgba(242,184,75,.5);border-radius:14px;background:rgba(242,184,75,.08)}
+.rkseason b{font-family:var(--slab);font-weight:400;font-size:17px;color:#F2B84B}
+.rkseason span{font-size:13px;color:var(--muted)}
+.pfseasons{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.pfseasons div{display:flex;flex-direction:column;padding:8px 12px;border:2px solid rgba(255,240,205,.25);border-radius:14px;background:rgba(0,0,0,.22)}
+.pfseasons b{font-family:var(--slab);font-weight:400;color:#FFE9B8;font-size:16px}
+.pfseasons small{color:var(--muted);font-size:12px}
 .mtfil{gap:12px;align-items:flex-end;margin:4px 0 12px}
 .mtfil>div{min-width:150px}
 .mtrk{display:flex;gap:6px;align-items:center;font-size:14px;padding-bottom:8px}
@@ -1515,7 +1522,7 @@ function oppModel(x){
     ox: Array.isArray(x.ox) ? [Math.max(-20000, Math.min(20000, Math.round(+x.ox[0] || 0))), Math.max(-10, Math.min(10, Math.round(+x.ox[1] || 0)))] : null,
     mf: x.mf && typeof x.mf === "object" && /^[A-Z0-9]{1,8}-\d{2,4}$/.test(x.mf.c) ? {c: x.mf.c, a: num(x.mf.a, 30), s: num(x.mf.s, 30), n: num(x.mf.n, 1e6)} : null,
     lu: (Array.isArray(x.lu) ? x.lu : []).slice(0, 12).filter(t => Array.isArray(t) && Number.isInteger(t[0]) && t[0] >= 0 && t[0] < 60).map(t => [t[0], clean(t[1], 16)]),
-    lf: num(x.lf, 60), kc: num(x.kc, 999), ns: x.ns ? 1 : 0, dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
+    lf: num(x.lf, 60), kc: num(x.kc, 999), ns: x.ns ? 1 : 0, rb: x.rb == null ? null : num(x.rb, 1e8), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
   };
 }
@@ -1530,6 +1537,7 @@ function pubFull(){
   const ox = statOpp(); if (ox[0] || ox[1]) o.ox = ox;
   if (S.mf) o.mf = S.mf;
   if (!shareOn()) o.ns = 1;
+  if (S.ranked) o.rb = RANK.b;
   const lu = S.life.map((c, i) => c.up ? [i, c.c] : null).filter(Boolean); if (lu.length) o.lu = lu;
   return o;
 }
@@ -1657,18 +1665,56 @@ function illegalNote(bad, fmt){
 // ---------- ranked ----------
 // Honor system: games are peer to peer, so each player keeps their own bounty. A result counts only when the
 // loser's own game says so (they conceded or took damage at 0 Life), so a winner can't claim a win by themselves.
-// Each ranked game moves the bounty by a random ฿25,000 to ฿30,000; every ฿300,000 is a new rank.
+// Each ranked game moves the bounty by how surprising the result was (Elo on the bounty scale, rankStep); every
+// ฿300,000 is a new rank. Seasons are calendar quarters: a new one halves every bounty and starts the record again.
 const RANKS = [[900000, "Yonko"], [600000, "Warlord"], [300000, "Supernova"], [0, "Rookie"]];
 // losses hurt less at low ranks: a quarter of the usual amount for a Rookie, rising to the full amount at Yonko
 const LOSS = {Rookie: .25, Supernova: .5, Warlord: .75, Yonko: 1};
 function rankName(b){ return RANKS.find(x => b >= x[0])[1]; }
 function berry(n){ return "฿" + Math.max(0, Math.round(+n || 0)).toLocaleString("en-US"); }
-function rankFrom(x, nick){ return {b: Number.isFinite(+x.b) ? Math.max(0, Math.round(+x.b)) : 0, w: x.w | 0, l: x.l | 0, nick: String(x.nick || nick || "")}; }
+// ฿400,000 between two bounties makes the higher one a 10-to-1 favourite. A win against an equal bounty is worth
+// ฿27,500; beating a much higher one up to ฿50,000 and a much lower one at least ฿5,000. A loss costs what the winner
+// would have gained the other way round (less at the low ranks, through LOSS).
+const RK_K = 55000;
+function rankStep(me, opp, won){
+  const e = 1 / (1 + Math.pow(10, ((+opp || 0) - (+me || 0)) / 400000)), raw = RK_K * (won ? 1 - e : e);
+  return Math.round(Math.max(won ? 5000 : 0, Math.min(50000, raw)) / 100) * 100;
+}
+const rankLossStep = (me, opp) => Math.round(rankStep(me, opp, false) * LOSS[rankName(me)] / 100) * 100;
+// Season 1 is October to December 2026 (UTC); bounties from before seasons carry into it unchanged.
+const SEASON_1 = [2026, 4], SEASON_RE = /^\d{4}q[1-4]$/;
+function seasonKey(t){ const d = new Date(t == null ? Date.now() : t); return d.getUTCFullYear() + "q" + (Math.floor(d.getUTCMonth() / 3) + 1); }
+function seasonNo(k){ const m = /^(\d{4})q([1-4])$/.exec(k || ""); return m ? (+m[1] - SEASON_1[0]) * 4 + (+m[2] - SEASON_1[1]) + 1 : 0; }
+function seasonEnd(k){ const m = /^(\d{4})q([1-4])$/.exec(k || ""); return m ? Date.UTC(+m[1], +m[2] * 3, 1) : 0; }
+const seasonReset = b => Math.min(300000, Math.floor(Math.max(0, b) / 2 / 100) * 100);
+function seasonName(k){
+  const m = /^(\d{4})q([1-4])$/.exec(k || ""); if (!m) return "";
+  const mon = ["January", "April", "July", "October"][+m[2] - 1], end = ["March", "June", "September", "December"][+m[2] - 1];
+  return `Season ${seasonNo(k)} (${mon} to ${end} ${m[1]})`;
+}
+// bring a bounty record into this season: true when it changed
+function rankSeason(x){
+  const cur = seasonKey();
+  if (x.s === cur || (x.s && x.s > cur)) return false;
+  if (!x.s) { x.s = cur; return true; }
+  x.ps = Object.assign({}, x.ps || {}, {[x.s]: x.b});
+  const ks = Object.keys(x.ps).sort().slice(-12); x.ps = Object.fromEntries(ks.map(k => [k, x.ps[k]]));
+  x.b = seasonReset(x.b); x.w = 0; x.l = 0; x.s = cur;
+  return true;
+}
+function rankFrom(x, nick){
+  const ps = {};
+  if (x.ps && typeof x.ps === "object") for (const k of Object.keys(x.ps).filter(k => SEASON_RE.test(k)).sort().slice(-12)) if (Number.isFinite(+x.ps[k])) ps[k] = Math.max(0, Math.round(+x.ps[k]));
+  return {b: Number.isFinite(+x.b) ? Math.max(0, Math.round(+x.b)) : 0, w: x.w | 0, l: x.l | 0, nick: String(x.nick || nick || ""), s: SEASON_RE.test(x.s || "") ? x.s : "", ps};
+}
+// what goes in ranks/<uid>
+const rankOut = (x, more) => Object.assign({b: x.b, w: x.w, l: x.l, nick: clean(RANK.nick, 20) || "Player", t: Date.now(), s: x.s || seasonKey(), ps: x.ps || {}}, more || {});
 function rankLoadLocal(){
   try { const x = JSON.parse(localStorage.getItem("bounty:rank") || "null"); if (x && typeof x === "object") return rankFrom(x); } catch (e) {}
   return {b: 0, w: 0, l: 0, nick: ""};
 }
 let RANK = rankLoadLocal(), rankRef;
+if (rankSeason(RANK)) { try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {} }
 async function rankDoc(){
   if (rankRef !== undefined) return rankRef;
   rankRef = null;
@@ -1680,7 +1726,7 @@ async function rankDoc(){
 }
 async function rankLoad(){
   const ref = await rankDoc();
-  if (ref) { try { const sn = await ref.get(); if (sn.exists) RANK = rankFrom(sn.data() || {}, RANK.nick); else if (RANK.w + RANK.l) rankSave(); } catch (e) {} }
+  if (ref) { try { const sn = await ref.get(); if (sn.exists) { RANK = rankFrom(sn.data() || {}, RANK.nick); if (rankSeason(RANK)) rankSave(); } else if (RANK.w + RANK.l) rankSave(); } catch (e) {} }
   rankPendingCheck(); rankClaimRetry();
 }
 // Ranked results are cross-checked: the loser's own game writes results/<match> naming the winner, and a win only
@@ -1689,7 +1735,7 @@ const acctUid = () => { try { const u = window.bountyAccount && window.bountyAcc
 const matchId = () => S.mk && oppM && oppM.mk ? [S.mk, oppM.mk].sort().join("-") : "";
 async function rankLossRecord(mid, winner){
   const me = acctUid(); if (!mid || !winner || !me || winner === me) return;
-  try { const db = await getDb(); const ref = db.doc("results/" + mid); const sn = await ref.get(); if (!sn.exists) await ref.set({w: winner, l: me, c: 0, t: Date.now()}); } catch (e) {}
+  try { const db = await getDb(); const ref = db.doc("results/" + mid); const sn = await ref.get(); if (!sn.exists) await ref.set({w: winner, l: me, c: 0, t: Date.now(), s: seasonKey()}); } catch (e) {}
 }
 function rankClaims(){ try { const x = JSON.parse(localStorage.getItem("bounty:claims") || "[]"); return Array.isArray(x) ? x.filter(c => c && c.mid && Date.now() - c.t < 7 * 864e5) : []; } catch (e) { return []; } }
 function rankClaimsSave(x){ try { localStorage.setItem("bounty:claims", JSON.stringify(x.slice(-20))); } catch (e) {} }
@@ -1700,19 +1746,24 @@ async function rankClaim(mid, step){
     const db = await getDb(), rr = db.doc("results/" + mid), rs = await rr.get(), r = rs.exists ? rs.data() : null;
     if (!r || r.w !== me) return false;
     if (r.c) return true;
-    const cur = await ref.get(), x = cur.exists ? rankFrom(cur.data() || {}) : {b: 0, w: 0, l: 0};
-    if (!cur.exists) await ref.set({b: 0, w: 0, l: 0, nick: clean(RANK.nick, 20) || "Player", t: Date.now()});
+    const cur = await ref.get(), x = cur.exists ? rankFrom(cur.data() || {}) : rankFrom({b: 0, w: 0, l: 0, s: seasonKey()});
+    if (!cur.exists) await ref.set(rankOut(x));
+    else if (rankSeason(x)) await ref.set(rankOut(x));
+    if (r.s && r.s !== x.s) return false;   // a win from another season doesn't count in this one
     await rr.set(Object.assign({}, r, {c: x.w + 1}));
-    await ref.set({b: x.b + step, w: x.w + 1, l: x.l, lw: mid, nick: clean(RANK.nick, 20) || "Player", t: Date.now()});
-    RANK = rankFrom({b: x.b + step, w: x.w + 1, l: x.l, nick: RANK.nick}); try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {}
+    const nx = Object.assign({}, x, {b: x.b + step, w: x.w + 1});
+    await ref.set(rankOut(nx, {lw: mid}));
+    RANK = rankFrom(Object.assign({}, nx, {nick: RANK.nick})); try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {}
     return true;
   } catch (e) { return false; }
 }
 async function rankLossCloud(amount){
   const ref = await rankDoc(); if (!ref) return;
   try {
-    const cur = await ref.get(), x = cur.exists ? rankFrom(cur.data() || {}) : {b: 0, w: 0, l: 0};
-    await ref.set({b: Math.max(0, x.b - Math.min(30000, Math.max(0, amount))), w: x.w, l: x.l + 1, nick: clean(RANK.nick, 20) || "Player", t: Date.now()});
+    const cur = await ref.get(), x = cur.exists ? rankFrom(cur.data() || {}) : rankFrom({b: 0, w: 0, l: 0, s: seasonKey()});
+    if (!cur.exists) await ref.set(rankOut(x));
+    else if (rankSeason(x)) await ref.set(rankOut(x));
+    await ref.set(rankOut(Object.assign({}, x, {b: Math.max(0, x.b - Math.min(50000, Math.max(0, amount))), l: x.l + 1})));
   } catch (e) {}
 }
 async function rankClaimRetry(){
@@ -1724,7 +1775,7 @@ setInterval(() => { if (rankClaims().length) rankClaimRetry(); }, 60000);
 async function rankSave(){
   try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {}
   const ref = await rankDoc();
-  if (ref) { try { await ref.set({b: RANK.b, w: RANK.w, l: RANK.l, nick: clean(RANK.nick, 20) || "Player", t: Date.now()}); } catch (e) {} }
+  if (ref) { try { await ref.set(rankOut(RANK)); } catch (e) {} }
 }
 // Leaving counts as a loss. While a ranked match is on, a marker sits in this browser; it's cleared when the match
 // ends normally, so closing the window mid-match costs the bounty on the next visit. The player who stays wins once
@@ -1733,8 +1784,9 @@ let RANK_GRACE = 120000;   // long enough to reopen the game and press Rejoin
 function rankPend(on){ try { if (on) localStorage.setItem("bounty:rankpend", typeof on === "string" ? on : "1"); else localStorage.removeItem("bounty:rankpend"); } catch (e) {} }
 function rankResult(won, why){
   S.rankDone = true; S.rankWon = won; rankPend(false);
-  const before = RANK.b, step = 25000 + Math.round(Math.random() * 50) * 100;   // ฿25,000 to ฿30,000 in ฿100 steps
-  RANK.b = Math.max(0, before + (won ? step : -Math.round(step * LOSS[rankName(before)] / 100) * 100));
+  rankSeason(RANK);
+  const before = RANK.b, opp = S.oppB != null ? S.oppB : before;
+  RANK.b = Math.max(0, before + (won ? rankStep(before, opp, true) : -rankLossStep(before, opp)));
   if (won) RANK.w++; else RANK.l++;
   RANK.nick = S.nick || RANK.nick;
   const mid = S.mid || matchId(), ou = S.oppUid || (oppM && oppM.uid) || "";
@@ -1749,13 +1801,14 @@ function rankResult(won, why){
 function rankCheck(){
   if (!S.ranked || S.rankDone) return;
   if (oppM && oppM.rk) S.rankOpp = true;   // a ranked opponent sat down, so this match counts
+  if (oppM && oppM.rk && S.oppB == null) S.oppB = oppM.rb != null ? oppM.rb : RANK.b;   // their bounty when the match began sets what it's worth
   if (oppM && oppM.uid) S.oppUid = oppM.uid;
   if (matchId()) S.mid = matchId();
   if (!S.rankOpp) return;
   // a loss counts the moment you lose, even if your opponent has already left; a win comes from the opponent's loss
   const lost = S.conceded, won = !lost && !!(oppM && oppM.cd);
   if (won || lost) { rankResult(won); return; }
-  if (oppM) { S.rankGone = 0; if (!S.rankPend) { S.rankPend = true; rankPend(JSON.stringify({ld: (S.leader && S.leader.card && S.leader.card.c) || "", op: (oppM.ld && oppM.ld.c) || "", on: oppM.nick, mid: matchId(), ou: oppM.uid || ""})); } return; }
+  if (oppM) { S.rankGone = 0; if (!S.rankPend) { S.rankPend = true; rankPend(JSON.stringify({ld: (S.leader && S.leader.card && S.leader.card.c) || "", op: (oppM.ld && oppM.ld.c) || "", on: oppM.nick, mid: matchId(), ou: oppM.uid || "", ob: S.oppB || 0})); } return; }
   // the opponent is gone: if they stay gone (and we're still connected), they've left and we win
   if (status !== "online" || !R) { S.rankGone = 0; return; }
   if (!S.rankGone) {
@@ -1784,8 +1837,9 @@ function rankPendingCheck(){
   }
   rankPend(false);
   let info = {}; try { if (p[0] === "{") info = JSON.parse(p) || {}; else info = {ld: p}; } catch (e) {}
-  const before = RANK.b, step = 25000 + Math.round(Math.random() * 50) * 100;
-  RANK.b = Math.max(0, before - Math.round(step * LOSS[rankName(before)] / 100) * 100); RANK.l++;
+  rankSeason(RANK);
+  const before = RANK.b;
+  RANK.b = Math.max(0, before - rankLossStep(before, Number.isFinite(+info.ob) ? +info.ob : before)); RANK.l++;
   if (acctUid()) { try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {} rankLossCloud(before - RANK.b); } else rankSave();
   rankLossRecord(String(info.mid || ""), String(info.ou || ""));
   statLoss(String(info.ld || ""), {op: String(info.op || ""), on: clean(info.on, 20), b: RANK.b - before});
@@ -1795,19 +1849,20 @@ function rankPendingCheck(){
 async function rankBoard(){
   const db = await getDb(); if (!db) return null;
   try {
-    const sn = await db.collection("ranks").get();
-    return sn.docs.map(d => rankFrom(d.data() || {})).filter(x => x.w + x.l > 0).sort((a, b) => b.b - a.b).slice(0, 25);
+    const sn = await db.collection("ranks").get(), cur = seasonKey();
+    return sn.docs.map(d => rankFrom(d.data() || {})).filter(x => x.w + x.l > 0 && (x.s === cur || (!x.s && seasonNo(cur) === 1))).sort((a, b) => b.b - a.b).slice(0, 25);
   } catch (e) { return null; }
 }
 function openRanked(){
   modal = {type: "ranked"};
   const v = loadSaved(), ld = parseLines(v.leader || "")[0], n = deckCount(v.deck || ""), bad = illegalNote(deckIllegal(v, "std"), "std");
   showModal(`<h2>Ranked</h2>
-    <p class="hint">Play a Standard match against someone else who's looking. Win and your bounty goes up by ฿25,000 to ฿30,000. Every ฿300,000 earns a new rank: Rookie, Supernova, Warlord, then Yonko. Losing costs a Rookie a quarter of that, a Supernova half, a Warlord three quarters and a Yonko the full amount. A result counts when the losing player concedes or takes damage at 0 Life. Leaving a ranked match early counts as a loss, and your opponent gets the win. Each turn has a 3-minute clock (paused while your opponent answers an attack, and they get 45 seconds to do it). Running out of time ends your turn, and the third time loses the match.</p>
+    <p class="hint">Play a Standard match against someone else who's looking. Beating a player with the same bounty as yours raises it by ฿27,500. Beating a higher bounty is worth more (up to ฿50,000) and a lower one less (at least ฿5,000), so your bounty follows how well you play, not how much. Every ฿300,000 earns a new rank: Rookie, Supernova, Warlord, then Yonko. A loss costs what the winner would have gained the other way round, but a Rookie only loses a quarter of that, a Supernova half and a Warlord three quarters. A result counts when the losing player concedes or takes damage at 0 Life. Leaving a ranked match early counts as a loss, and your opponent gets the win. Each turn has a 3-minute clock (paused while your opponent answers an attack, and they get 45 seconds to do it). Running out of time ends your turn, and the third time loses the match.</p>
+    <div class="rkseason"><b>${esc(seasonName(seasonKey()))}</b><span>Ends in ${Math.max(1, Math.ceil((seasonEnd(seasonKey()) - Date.now()) / 864e5))} day${Math.ceil((seasonEnd(seasonKey()) - Date.now()) / 864e5) === 1 ? "" : "s"}. When the next season starts, every bounty is halved (to ฿300,000 at most) and the win–loss record starts again. Your final bounty each season is kept in your Profile.</span></div>
     <div class="rkme"><span class="rkbadge">${esc(rankName(RANK.b))}</span><div><b>${berry(RANK.b)}</b> bounty<small>${RANK.w} win${RANK.w === 1 ? "" : "s"} · ${RANK.l} loss${RANK.l === 1 ? "" : "es"}</small></div></div>
     <div class="rkdeck">Your deck: ${ld ? `<b>${esc(ld.code)} ${esc(ld.name || nameOf(ld.code) || "")}</b>, ${n} cards` : "<b>none picked yet</b>"} <button class="linkbtn" data-do="homebuilder" type="button">Change it in the Deck editor</button>${bad ? `<div class="rkbad">${esc(bad)}</div>` : ""}</div>
     <div class="lbbar"><button class="btn pri" data-do="rkfind" type="button">Find a match</button><span class="sp"></span><span class="lbcount" id="lb-count"></span></div>
-    <h3 class="rkh">Leaderboard</h3>
+    <h3 class="rkh">Leaderboard, ${esc(seasonName(seasonKey()).replace(/ \(.*\)$/, ""))}</h3>
     <div class="rkboard" id="rk-board"><div class="lbempty"><b>Loading…</b></div></div>
     <div class="row end">${S.phase === "none" ? '<button class="btn" data-do="homeplay" type="button">Back</button>' : '<button class="btn" data-do="closemodal" type="button">Back to table</button>'}</div>`);
   const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
@@ -1924,7 +1979,7 @@ async function rankNick(n){
   try {
     const sn = await ref.get(); if (!sn.exists) return;
     const x = sn.data() || {}; if (x.nick === n) return;
-    await ref.set({b: Math.round(+x.b || 0), w: x.w | 0, l: x.l | 0, nick: n, t: Date.now()});
+    await ref.set(Object.assign(rankOut(rankFrom(x)), {nick: n}));
   } catch (e) {}
 }
 function statHist(e){ STATS.h = [Object.assign({t: Date.now()}, e), ...(STATS.h || [])].slice(0, HIST_MAX); }
@@ -1979,8 +2034,9 @@ function openProfile(focusNick){
       <div><b>${STATS.w}</b><small>Wins</small></div>
       <div><b>${STATS.l}</b><small>Losses</small></div>
       <div><b>${pct(STATS.w, STATS.l)}</b><small>Win rate</small></div>
-      <div><b>${RANK.w}–${RANK.l}</b><small>Ranked record</small></div>
+      <div><b>${RANK.w}–${RANK.l}</b><small>Ranked record this season</small></div>
     </div>
+    ${Object.keys(RANK.ps || {}).length ? `<h3 class="rkh">Past ranked seasons</h3><div class="pfseasons">${Object.keys(RANK.ps).sort().reverse().map(k => `<div><b>${esc(rankName(RANK.ps[k]))}</b><small>${esc(seasonName(k))}</small><span>${berry(RANK.ps[k])}</span></div>`).join("")}</div>` : ""}
     <h3 class="rkh">Match history</h3>
     ${(STATS.h || []).length ? `<div class="pfhist">${STATS.h.map(histRow).join("")}</div>`
       : `<div class="lbempty"><b>No matches yet</b>Your last ${HIST_MAX} online matches show up here, with who you played and how it went.</div>`}

@@ -1,9 +1,11 @@
 rules_version = '2';
 // Rules for the desktop app's accounts (Firebase project set up by Ryan). Paste into Firestore > Rules.
 // Each player's decks and profile (data/users/<uid>/...) are theirs alone. The ranked leaderboard (ranks/<uid>) is
-// readable by everyone; its owner can only change it one game at a time: a loss lowers the bounty by at most 30,000,
-// and a win raises it by 25,000 to 30,000 only with a match record (results/<match>) that the loser's own game wrote
-// naming this player as the winner, which the winner marks as used so it counts once.
+// readable by everyone; its owner can only change it one game at a time: a loss lowers the bounty by at most 50,000,
+// and a win raises it by 5,000 to 50,000 only with a match record (results/<match>) from the same season that the
+// loser's own game wrote naming this player as the winner, which the winner marks as used so it counts once.
+// Seasons are calendar quarters (s, like "2026q4"): moving to a new one at least halves the bounty (to 300,000 at
+// most) and starts the record again; the first season keeps the bounty from before seasons.
 service cloud.firestore {
   match /databases/{database}/documents {
     match /data/users/{uid}/{doc} {
@@ -32,16 +34,23 @@ service cloud.firestore {
       allow read: if true;
       allow create: if request.auth != null && request.auth.uid == uid
         && request.resource.data.b is int && request.resource.data.b >= 0 && request.resource.data.b <= 300000;
-      allow update: if request.auth != null && request.auth.uid == uid && (isLoss() || isWin() || nameOnly());
+      allow update: if request.auth != null && request.auth.uid == uid && (isLoss() || isWin() || nameOnly() || newSeason());
     }
     function d() { return request.resource.data; }
     function o() { return resource.data; }
-    function nameOnly() { return d().b == o().b && d().w == o().w && d().l == o().l; }
-    function isLoss() { return d().w == o().w && d().l == o().l + 1 && d().b <= o().b && d().b >= o().b - 30000 && d().b >= 0; }
+    function sameSeason() { return d().get('s', '') == o().get('s', '') && d().get('ps', {}) == o().get('ps', {}); }
+    function nameOnly() { return sameSeason() && d().b == o().b && d().w == o().w && d().l == o().l; }
+    function isLoss() { return sameSeason() && d().w == o().w && d().l == o().l + 1 && d().b <= o().b && d().b >= o().b - 50000 && d().b >= 0; }
     function isWin() {
-      return d().l == o().l && d().w == o().w + 1 && d().b >= o().b + 25000 && d().b <= o().b + 30000
+      return sameSeason() && d().l == o().l && d().w == o().w + 1 && d().b >= o().b + 5000 && d().b <= o().b + 50000
         && get(/databases/$(database)/documents/results/$(d().lw)).data.w == request.auth.uid
-        && get(/databases/$(database)/documents/results/$(d().lw)).data.c == d().w;
+        && get(/databases/$(database)/documents/results/$(d().lw)).data.c == d().w
+        && get(/databases/$(database)/documents/results/$(d().lw)).data.s == d().s;
+    }
+    function newSeason() {
+      return d().s is string && d().s.matches('^[0-9]{4}q[1-4]$') && d().get('ps', {}).size() <= 12 && (
+        (!('s' in o()) && d().b == o().b && d().w == o().w && d().l == o().l)
+        || ('s' in o() && d().s > o().s && d().w == 0 && d().l == 0 && d().b >= 0 && d().b <= o().b / 2 && d().b <= 300000));
     }
   }
 }
