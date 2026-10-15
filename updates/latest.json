@@ -1,8 +1,8 @@
 {
-  "version": "1.5.1",
+  "version": "1.6.0",
   "shell": 2,
-  "bundle": "web-1.5.1.json.gz",
-  "sha256": "b7ad2ef336438b684e0ae4e8c2801b955ebc08ddd6b613a59c62abc12afae8a0",
-  "size": 851062,
-  "notes": "OP17-063 Kaido's ability now negates the Character before K.O.ing it, so \"cannot be K.O.'d by effects\" and On K.O. don't stop it, and other \"negate the effect\" cards work too. Cards like OP17-063 and EB01-001 that give Characters in your hand without a Counter a +1000 Counter now do so while..."
+  "bundle": "web-1.6.0.json.gz",
+  "sha256": "816d4f87ee232e81bd5d06c4d82d26bbf0270051adbd112df560195129f675c1",
+  "size": 899734,
+  "notes": "The 73 cards that keep a Character on the field \"instead\" (like EB04-030, OP13-047 and OP11-101) now stop the K.O. or removal and ask whether you want to pay for it. The computer uses its own. About 55 \"When ...\" abilities are now offered when that happens instead of being left for you to..."
 }

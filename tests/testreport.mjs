@@ -14,6 +14,7 @@ page.on("pageerror", e => { if (!/test boom/.test(String(e))) errs.push(String(e
 page.on("console", m => { if (m.type() === "error" && !/peerjs\.com|ERR_CONNECTION|40[034]|test boom/.test(m.text())) errs.push(m.text()); });
 await page.setViewportSize({ width: 1280, height: 900 }).catch(() => {});
 await page.waitForLoadState("load"); await page.waitForTimeout(1500);
+const VER = JSON.parse(fs.readFileSync("version.json", "utf8")).version;
 let fail = 0;
 const check = (ok, msg) => { console.log(ok ? "ok  " : "FAIL", msg); if (!ok) fail++; };
 const wait = ms => page.waitForTimeout(ms);
@@ -42,7 +43,7 @@ check(await until(() => [...fire.docs.keys()].some(k => k.startsWith("reports/")
 const rk = [...fire.docs.keys()].find(k => k.startsWith("reports/")), rd = fire.plain(fire.docs.get(rk));
 const inner = await page.evaluate(async z => { const o = JSON.parse(z[0] === "z" ? await rpInflate(z.slice(1), 1e8) : z.slice(1)); return {sides: o.st.sides.length, mode: o.st.mode, errs: o.st.errs.map(e => e[1]).join("|"), log: o.st.log.length, frames: !!(o.e && o.e.z), hd: o.e ? /"hd"/.test(await rpUnpack(o.e.z)) : false}; }, rd.z);
 console.log("report", JSON.stringify({id: rk, by: rd.by, ver: rd.ver, msg: rd.msg, where: rd.where, len: rd.z.length}), JSON.stringify(inner));
-check(rd.by === "uid1" && rd.ver === "1.5.1" && rd.where === "computer" && /skipped its attack/.test(rd.msg), "the report names the player, version and kind of game");
+check(rd.by === "uid1" && rd.ver === VER && rd.where === "computer" && /skipped its attack/.test(rd.msg), "the report names the player, version and kind of game");
 check(inner.sides === 2 && /test boom/.test(inner.errs) && inner.log > 3 && inner.frames && inner.hd, "it carries both sides, the log, the error and the replay");
 check(/sent with this game/.test(await page.textContent("#toast")) && await page.evaluate(() => !modal || modal.type !== "report"), "the player is thanked and back at the table");
 // saved as a file instead: the file opens like a replay
@@ -58,7 +59,7 @@ await page.click('[data-do="reports"]');
 await page.waitForSelector(".repr", { timeout: 8000 }).catch(() => {});
 const rl = await page.evaluate(() => [...document.querySelectorAll(".repr")].map(r => r.innerText.replace(/\s+/g, " ")));
 console.log("reports", JSON.stringify(rl));
-check(rl.length === 1 && /skipped its attack/.test(rl[0]) && /computer · version 1\.5\.1/.test(rl[0]), "an admin sees the report under Profile > Bug reports");
+check(rl.length === 1 && /skipped its attack/.test(rl[0]) && rl[0].includes("computer · version " + VER), "an admin sees the report under Profile > Bug reports");
 check(await page.evaluate(() => !window.__x && !document.querySelector(".repr img")), "a report's text can't run anything");
 await page.click('[data-do="repdet:0"]'); await wait(800);
 const det = await page.evaluate(() => $("#rep-det-0").textContent);
