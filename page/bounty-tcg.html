@@ -3114,9 +3114,19 @@ function botGood(st){
   const harm = BAD_FOR_TARGET[st.a] || ((st.a === "pwr" || st.a === "cost") && st.n < 0);
   return own ? !harm && !(st.a === "cost" && st.n > 0) : harm;
 }
-function botAbility(card, trigs, don){
+// whether an ability that fires by itself applies now: its [Your Turn] / [Opponent's Turn], and for "When this Character
+// is K.O.'d by your opponent's effect" (koBy), how it was K.O.'d (cause: "opp" their effect, "own" yours, "battle"; null
+// when it's not known, as when the player moves the card by hand)
+function abFits(a, cause){
+  const t = a.text || "";
+  if (/\[Opponent's Turn\]/i.test(t) && S.myTurn) return false;
+  if (/\[Your Turn\]/i.test(t) && !S.myTurn) return false;
+  if (a.koBy && cause) return a.koBy === "opp" ? cause === "opp" : cause !== "battle";
+  return true;
+}
+function botAbility(card, trigs, don, cause){
   const self = [S.leader, S.stage, ...S.chars].find(f => f && f.card === card);
-  const list = fxAb(card.c).filter(a => trigs.includes(a.t) && botCanRun(a) && (a.don || 0) <= (don || 0) && (a.donMinus || 0) <= fieldDon() && !optUsed(card, a)
+  const list = fxAb(card.c).filter(a => trigs.includes(a.t) && abFits(a, cause) && botCanRun(a) && (a.don || 0) <= (don || 0) && (a.donMinus || 0) <= fieldDon() && !optUsed(card, a)
     && (c => !c || condCheck(c, self) !== false)(leadCond(a.text)));
   if (!list.length) return false;
   for (const a of list) fxEnqueue(fxJob(card, a));
@@ -3437,7 +3447,7 @@ function applyMarkReqs(){
         else if (f !== S.leader) {
           const i = S.chars.indexOf(f); if (i < 0) continue;
           S.chars.splice(i, 1); S.donRested += f.d || 0;
-          if (q.k === "ko") { S.trash.unshift(f.card); addLog(`${nm} was K.O.'d by ${by}`); const kc = f.card, kd = f.d || 0; if (!negated(f)) setTimeout(() => runAbility(kc, ["onKO"], false, kd), 0); }
+          if (q.k === "ko") { S.trash.unshift(f.card); addLog(`${nm} was K.O.'d by ${by}`); const kc = f.card, kd = f.d || 0; if (!negated(f)) setTimeout(() => runAbility(kc, ["onKO"], false, kd, "opp"), 0); }
           else if (q.k === "bounce") { S.hand.push(f.card); addLog(`${nm} was returned to hand by ${by}`); }
           else if (q.k === "bottom") { S.deck.push(f.card); addLog(`${nm} was put on the bottom of the deck by ${by}`); }
           else if (q.k === "life" || q.k === "lfu") { if (q.k === "lfu") f.card.up = true; else delete f.card.up; S.life.unshift(f.card); addLog(`${nm} was added to the top of their Life${q.k === "lfu" ? " face-up" : ""} by ${by} (Life ${S.life.length})`); }
@@ -3527,6 +3537,7 @@ function normFx(r){
     const steps = (Array.isArray(x && x.steps) ? x.steps : []).slice(0, 6).map(t => normStep(t));
     const o = {t: TRIG[x && x.t] ? x.t : "other", don: Math.max(0, Math.min(10, Math.round(+(x && x.don) || 0))), donMinus: Math.max(0, Math.min(10, Math.round(+(x && x.donMinus) || 0))), text: fxText(x && x.text, 600), steps};
     const st = normStat(x && x.s); if (st) o.s = st;
+    if (x && (x.koBy === "opp" || x.koBy === "fx")) o.koBy = x.koBy;
     if (x && x.hc && Number.isFinite(+x.hc.n) && +x.hc.n > 0) o.hc = Object.assign({n: Math.min(5000, Math.round(+x.hc.n))}, typeof x.hc.ty === "string" ? {ty: fxText(x.hc.ty, 40)} : {});
     return o;
   }).filter(x => x.text);
@@ -3667,8 +3678,8 @@ function fxTap(t){
 }
 // trigs: array of trigger keys. manual: show a message when nothing matches
 const ownCard = card => [S.leader, S.stage, S.ev, ...S.chars].some(f => f && f.card === card) || [S.hand, S.trash, S.life, S.deck].some(z => z.includes(card));
-async function runAbility(card, trigs, manual, don){
-  if (botQuiet) { if (PR && PR.bot && PR.cur === 1 && ownCard(card)) botAbility(card, trigs, don || 0); return; }
+async function runAbility(card, trigs, manual, don, cause){
+  if (botQuiet) { if (PR && PR.bot && PR.cur === 1 && ownCard(card)) botAbility(card, trigs, don || 0, cause); return; }
   if (PR && !ownCard(card)) return;
   if ((!fxOn() && !manual) || !canRead(card.c)) { if (manual) toast("This card's text isn't available."); return; }
   try {
@@ -3676,7 +3687,7 @@ async function runAbility(card, trigs, manual, don){
     const fx = await readEffect(card.c);
     $("#toast").hidden = true;
     if (!fx) { if (manual) toast("Couldn't read the card text here."); return; }
-    const all = fx.ab.filter(x => trigs.includes(x.t)), list = all.filter(x => (x.don || 0) <= (don || 0) && (x.donMinus || 0) <= fieldDon());
+    const all = fx.ab.filter(x => trigs.includes(x.t) && (manual || abFits(x, cause))), list = all.filter(x => (x.don || 0) <= (don || 0) && (x.donMinus || 0) <= fieldDon());
     if (!list.length && all.length) { if (manual) toast(`${lab(card)} doesn't meet the DON!! requirement for that.`); return; }
     if (list.every(x => optUsed(card, x))) { toast(`${lab(card)} already used its Once Per Turn ability this turn.`); return; }
     list.splice(0, list.length, ...list.filter(x => !optUsed(card, x)));
@@ -3984,7 +3995,7 @@ function fxApply(arg){
     if (st.a === "rest") { f.r = true; addLog(`rested ${nm}`); }
     else if (st.a === "stand") { f.r = false; addLog(`set ${nm} as active`); }
     else if (st.a === "pwr") { f.pm = clampP((f.pm || 0) + st.n); if (st.battle) f.bc = (f.bc || 0) + st.n; fxLast(f, st); addLog(`gave ${nm} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} power${st.nx ? " until their next turn" : ""}`); }
-    else if (st.a === "kw") { fxGrant(f, st.k); if (st.n) f.pm = clampP((f.pm || 0) + st.n); }
+    else if (st.a === "kw") { fxGrant(f, st.k); if (st.n) { f.pm = clampP((f.pm || 0) + st.n); if (st.battle) f.bc = (f.bc || 0) + st.n; } }
     else if (st.a === "giveDon") fxGiveDon(f, st);
     else if (ref !== "ld") { fxRemoveOwn(ref, st.a); fxNext(); return; }
     done(); return;
@@ -4115,8 +4126,10 @@ function fxGrant(f, k){
   addLog(`${lab(f.card)} gains [${KW_NAME[k] || k}] this turn`);
 }
 // my own Character leaving the field by an effect; a K.O. runs its [On K.O.], trashing it doesn't
+// how the Character moveCard() is trashing was K.O.'d, when an effect of yours did it (see abFits)
+let koCause = null;
 function fxRemoveOwn(ref, how){
-  if (how === "ko") { moveCard(ref, "trash"); return; }
+  if (how === "ko") { koCause = "own"; try { moveCard(ref, "trash"); } finally { koCause = null; } return; }
   if (how === "bounce") { moveCard(ref, "hand"); return; }
   if (how === "bottom") { moveCard(ref, "deckbot"); return; }
   if (how === "life") { moveCard(ref, "life"); return; }
@@ -4653,7 +4666,7 @@ function moveCard(src, dest, free, pay){
   addLog(msg);
   commit();
   if (plays) runOnPlay(c, dest === "event");
-  else if (k === "ch" && dest === "trash") runAbility(c, ["onKO"], false, r.d || 0);
+  else if (k === "ch" && dest === "trash") runAbility(c, ["onKO"], false, r.d || 0, koCause);
 }
 
 // ---------- menus ----------
@@ -5076,7 +5089,7 @@ function defResolve(apply){
     }
   } else if (r && r.hits) {
     const i = S.chars.indexOf(r.f);
-    if (i >= 0) { S.chars.splice(i, 1); S.donRested += r.f.d || 0; S.trash.unshift(r.f.card); addLog(`${lab(r.f.card)} was K.O.'d by ${by} (${r.ap} vs ${r.tp})`); const kc = r.f.card, kd = r.f.d || 0; setTimeout(() => runAbility(kc, ["onKO"], false, kd), 0); }
+    if (i >= 0) { S.chars.splice(i, 1); S.donRested += r.f.d || 0; S.trash.unshift(r.f.card); addLog(`${lab(r.f.card)} was K.O.'d by ${by} (${r.ap} vs ${r.tp})`); const kc = r.f.card, kd = r.f.d || 0; setTimeout(() => runAbility(kc, ["onKO"], false, kd, "battle"), 0); }
   } else if (r) addLog(`stopped ${by}'s attack (${r.ap} vs ${r.tp})`);
   else addLog("finished the opponent's attack");
   endBattle(); S.rs = oppM.ak.n || 0; S.blk = null; commit();

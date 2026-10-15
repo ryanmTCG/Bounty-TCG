@@ -399,7 +399,9 @@ const cx = await page.evaluate(() => {
   return {sanji: f("OP01-013"), ev: f("OP01-026"), nami: f("OP01-016"), from: ps.from, luffy: ps.pred("OP01-024"), usopp: ps.pred("OP01-004"),
     attr: at.attr, types: ty.types, don: dn.don, blk: bk.blk, stage: fl.stage, eqP: z.eqP, bp: z.bp, my, now,
     st: fxAb("ST14-001").map(a => a.s && (a.s.k || a.s.p)), buchi: condCheck("you don't have [Buchi]", S.leader), orTrig: L("OP05-002", "pwr").orTrig,
-    all: fxAb("OP12-018").flatMap(a => a.steps || []).some(s => s.n === -1000 && s.all && s.ld), peq: statFits({to: "chars", peq: 6000}, S.leader, {card: {c: "ST01-012"}}) && !statFits({to: "chars", peq: 6000}, S.leader, {card: {c: "OP01-013"}})};
+    all: fxAb("OP12-018").flatMap(a => a.steps || []).some(s => s.n === -1000 && s.all && s.ld),
+    fits: [abFits({text: "[Opponent's Turn] [On K.O.] Draw 1 card."}, null) === !my, abFits({koBy: "opp", text: ""}, "opp"), !abFits({koBy: "opp", text: ""}, "battle"), abFits({koBy: "fx", text: ""}, "own"), !abFits({koBy: "fx", text: ""}, "battle"), abFits({koBy: "opp", text: ""}, null)],
+    ko: fxAb("OP11-035").find(a => a.koBy === "opp" && a.t === "onKO") && fxAb("OP16-102").some(a => a.t === "trigger" && a.steps[0].a === "act" && a.steps[0].k === "onKO"), peq: statFits({to: "chars", peq: 6000}, S.leader, {card: {c: "ST01-012"}}) && !statFits({to: "chars", peq: 6000}, S.leader, {card: {c: "OP01-013"}})};
 });
 console.log("card wording", JSON.stringify(cx));
 check(cx.sanji && cx.ev && !cx.nami, "\"[Sanji] or Event card\" takes either one");
@@ -407,6 +409,7 @@ check(cx.from === "both" && cx.luffy && !cx.usopp, "\"from your hand or trash\" 
 check(cx.attr.join() === "Special,Wisdom" && cx.types.join() === "Fish-Man,Merfolk" && cx.don === 1 && cx.blk && cx.stage && cx.eqP === 0 && cx.bp, "attributes, types, DON!! given, [Blocker], a named Stage and base power 0 limit targets");
 check(cx.now[0] === !cx.my && cx.now[2] === cx.my && cx.now[1] && cx.now[3], "[Opponent's Turn] abilities are used on the opponent's turn, and \"would be K.O.'d ... instead\" on either");
 check(cx.buchi === true && cx.orTrig && cx.all, "\"you don't have [X]\", \"{X} type Characters or Characters with a [Trigger]\" and \"your opponent's Leader and all of their Characters\" read right");
+check(cx.fits.every(Boolean) && cx.ko, "\"When this Character is K.O.'d by your opponent's effect\" fires only for that, [Opponent's Turn] abilities only then, and \"Activate this card's [On K.O.] effect\" Triggers work");
 check(cx.st.join() === "1,1000" && cx.peq, "ST14-001's two always-on effects both count, and \"with 6000 base power\" means exactly that");
 await page.screenshot({ path: OUT + "/board.png" });
 check(!errs.length, "no page errors" + (errs.length ? ": " + errs.slice(0, 3).join(" / ") : ""));

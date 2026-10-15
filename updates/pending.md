@@ -13,3 +13,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - "Play ... from your hand or trash" offers both, searches like "[Sanji] or Event card" take either one, and "Your Leader and all of your Characters" includes the Leader.
 - [Opponent's Turn] abilities are used on the opponent's turn and "would be K.O.'d ... instead" ones on either, while choices, replacements and "at the end of this turn" effects are left to the player instead of being carried out wrong.
 - Leaders and Characters with two always-on effects (like ST14-001 and OP17-119) now get both.
+- "When this Character is K.O.'d" abilities now fire like [On K.O.] (only for the kind of K.O. they name), [Opponent's Turn] and [Your Turn] abilities only fire on that turn, "Activate this card's [On K.O.] effect" Triggers work, and "gains [Banish] during this battle" is carried out.

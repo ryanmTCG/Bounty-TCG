@@ -105,9 +105,9 @@ def self_step(core, base):
     m = re.match(r"(?:you may )?play this (?:character |stage )?card(?: from your trash)?( rested)?(?:\.|$)", low)
     if m: return dict(base, a="playSelf", rested=bool(m.group(1)))
     if re.match(r"(?:you may )?add this card to your hand", low): return dict(base, a="handSelf")
-    m = re.match(r"activate this card's \[(main|on play|counter)\] effect", low)
-    if m: return dict(base, a="act", k={"main": "main", "on play": "onPlay", "counter": "counter"}[m.group(1)])
-    m = re.match(r"%s gains \[(rush|double attack|banish|unblockable)\](?: and ([+\-−])(\d+) power)?(?: during this turn)?(?:\.|$| \()" % SELF, low)
+    m = re.match(r"activate this card's \[(main|on play|counter|on k\.o\.|when attacking)\] effect", low)
+    if m: return dict(base, a="act", k={"main": "main", "on play": "onPlay", "counter": "counter", "on k.o.": "onKO", "when attacking": "whenAttacking"}[m.group(1)])
+    m = re.match(r"%s gains \[(rush|double attack|banish|unblockable)\](?: and ([+\-−])(\d+) power)?(?: during this (?:turn|battle))?(?:\.|$| \()" % SELF, low)
     if m: return dict(base, a="kw", self=True, k=KW_LETTER[m.group(1)], n=int(m.group(3) or 0) * (-1 if m.group(2) in ("-", "−") else 1))
     m = re.match(r"%s gains ([+\-−])(\d+) power(?: during this (?:turn|battle)| %s| until the end of your next turn)?(?:\.|$)" % (SELF, NEXT_TURN), low)
     if m: return dict(base, a="pwr", self=True, n=int(m.group(2)) * (1 if m.group(1) == "+" else -1), battle=battle, **next_turn(low))
@@ -470,6 +470,13 @@ def abilities(text, is_trigger=False):
         # [Your Turn] in front of another timing ("[Your Turn] [On Play]") only says when it can happen
         if len(timings) > 1 and "yourTurn" in timings: timings.remove("yourTurn")
         don = next((int(t[7:]) for t in tags if t.startswith("DON!! x")), 0)
+        # "[Opponent's Turn] When this Character is K.O.'d, ...": an [On K.O.]; "by your opponent's effect" / "by an effect"
+        # is koBy, which the game checks against how the card was K.O.'d
+        koBy = None
+        km = re.match(r"When this Character is K\.O\.'d(?: by (your opponent's effect|an effect))?, (.+)$", body, re.S) if set(timings) <= {"yourTurn"} else None
+        if km:
+            timings, koBy = ["onKO"], {"your opponent's effect": "opp", "an effect": "fx"}.get(km.group(1))
+            body = km.group(2)[0].upper() + km.group(2)[1:]
         # a keyword tag followed only by its reminder text has nothing to carry out; Double Attack, Banish and
         # Unblockable are kept as always-on grants (they can need DON!!: "[DON!! x1] [Banish]")
         if kws and not timings and (not body or re.fullmatch(r"\([^()]*\)\.?", body)):
@@ -518,6 +525,7 @@ def abilities(text, is_trigger=False):
             if hc: ab["hc"] = dict({"n": int(hc.group(2))}, **({"ty": hc.group(1)} if hc.group(1) else {}))
             if don: ab["don"] = don
             if donMinus: ab["donMinus"] = donMinus
+            if koBy: ab["koBy"] = koBy
             if steps: ab["steps"] = steps
             if st: ab["s"] = st
             out.append(ab)
