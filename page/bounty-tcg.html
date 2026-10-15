@@ -208,6 +208,7 @@ button,input,textarea,select{font:inherit;color:inherit}
 @keyframes fxflash{0%{opacity:1}100%{opacity:0}}
 .chip.good{background:#2FA66A;color:#fff}
 .chip.bad{background:var(--coral);color:#fff}
+.chip.pre{background:#2C86B0;color:#fff}
 .bdrow .thumb{display:block}
 .bdrow .thumb .card{--cw:30px;--ch:42px;font-size:0}
 .bdrow button{border:0;border-radius:6px;min-width:28px;height:28px;background:var(--btn2);cursor:pointer;font-weight:700}
@@ -516,10 +517,12 @@ select.sbtn{height:26px;min-width:88px}
 .legal.ban{background:#B8342A}
 .legal.rot{background:#4F6166}
 .legal.soon{background:#E8A72C;color:#2A1D00}
+.legal.pre{background:#2C86B0}
 .lwrap.isban .card,.lwrap.isrot .card{filter:saturate(.4) brightness(.78)}
 .bdctl span.lg-ban{color:#FFA091;text-decoration:line-through}
 .bdctl span.lg-rot{color:#9FB3B8;font-style:italic}
 .bdctl span.lg-soon{color:#F2B84B}
+.lg-pre{color:#8FD3F2}
 /* lobbies: open tables anyone can join */
 .sheet.lobsheet{width:min(760px,100%)}
 .lbbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 12px}
@@ -534,7 +537,7 @@ select.sbtn{height:26px;min-width:88px}
 .lbinfo b{font-family:var(--slab);font-weight:400;font-size:18px;letter-spacing:.02em;color:#FFE9B8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lbinfo small{color:var(--muted);font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lbchips{display:flex;flex-wrap:wrap;gap:6px}
-.chip.fstd{background:#2B6E8C}.chip.fext{background:#7A4E9C}
+.chip.fstd{background:#2B6E8C}.chip.fext{background:#7A4E9C}.chip.fpre{background:#2C86B0}
 .chip.open{background:#2FA66A;border-color:#12262D;color:#fff}
 .lbrow .lbstate{flex:0 0 auto}
 .lbempty{text-align:center;padding:26px 14px;border:3px dashed rgba(242,184,75,.45);border-radius:18px;color:#F1DDB0}
@@ -1129,7 +1132,7 @@ body.watching .turnbar,body.watching .tbopts{opacity:.4}
         <div class="bd-checks">
           <label class="bdart"><input type="checkbox" id="bd-artonly"> Only cards with art</label>
           <label class="bdart"><input type="checkbox" id="bd-group" checked> Group by color</label>
-          <span class="bdart bdshow" title="Banned: on the official ban list, so not allowed in any format. Rotated: Block 1 cards, out of Standard since April 1, 2026 but still allowed in Extra. List checked October 2026.">Show <label><input type="checkbox" id="bd-showban"> Banned</label><label><input type="checkbox" id="bd-showrot"> Rotated</label></span>
+          <span class="bdart bdshow" title="Banned: on the official ban list, so not allowed in any format. Rotated: Block 1 cards, out of Standard since April 1, 2026 but still allowed in Extra. Previews: cards from a set that isn't out in English yet (EB05 on Oct 30, OP18 on Nov 20, 2026). List checked October 2026.">Show <label><input type="checkbox" id="bd-showban"> Banned</label><label><input type="checkbox" id="bd-showrot"> Rotated</label><label><input type="checkbox" id="bd-showpre" checked> Previews</label></span>
         </div>
       </div>
       <div class="bd-lib" id="bd-lib"></div>
@@ -1564,7 +1567,7 @@ function undo(){
 // ---------- lobbies: open tables anyone can join ----------
 // Every open copy of the game shares one lobby (the page-wide room). A host puts their open table in their
 // lobby presence; the Lobbies page lists everyone's. Presence clears by itself when the host leaves.
-const LB_FMT = {std: "Standard", ext: "Extra", any: "Casual"};
+const LB_FMT = {std: "Standard", pre: "Standard + previews", ext: "Extra", any: "Casual"};
 let myLobby = null, lbSent = "";
 const LBV = {unsub: null, unconn: null, peers: [], conn: null, err: "", since: 0, tick: null, tok: 0};
 async function lobbyRoom(){ try { return window.claude && window.claude.use ? await window.claude.use("room") : null; } catch (e) { return null; } }
@@ -1587,9 +1590,9 @@ function lobbyList(){
 }
 function lbAge(t){ const m = Math.floor((Date.now() - t) / 60000); return !t || m < 0 || m > 720 ? "" : m < 1 ? "Just opened" : m < 60 ? `Open ${m} min` : `Open ${Math.floor(m / 60)} h`; }
 function deckIllegal(c, fmt){
-  if (fmt !== "std" && fmt !== "ext") return [];
+  if (fmt !== "std" && fmt !== "ext" && fmt !== "pre") return [];
   const codes = new Set(parseLines(c.leader).concat(parseLines(c.deck)).map(e => e.code)), bad = [];
-  codes.forEach(x => { const lg = legalOf(x); if (lg === "ban" || (fmt === "std" && lg === "rot")) bad.push(x); });
+  codes.forEach(x => { const lg = legalOf(x); if (lg === "ban" || (fmt !== "ext" && lg === "rot") || (fmt !== "pre" && lg === "pre")) bad.push(x); });
   BAN_PAIRS.forEach(([a, b]) => { if (codes.has(a) && codes.has(b)) bad.push(a + " with " + b); });
   const L = parseLines(c.leader)[0];
   if (L) offColor([...codes], L.code).forEach(x => bad.push(x + " (not the Leader's color)"));
@@ -1597,7 +1600,8 @@ function deckIllegal(c, fmt){
 }
 function illegalNote(bad, fmt){
   if (!bad.length) return "";
-  return `${bad.length} card${bad.length === 1 ? " isn't" : "s aren't"} legal in ${LB_FMT[fmt]}: ${bad.slice(0, 4).join(", ")}${bad.length > 4 ? " and more" : ""}.`;
+  const pre = fmt !== "pre" && bad.some(x => legalOf(x) === "pre");
+  return `${bad.length} card${bad.length === 1 ? " isn't" : "s aren't"} legal in ${LB_FMT[fmt]}: ${bad.slice(0, 4).join(", ")}${bad.length > 4 ? " and more" : ""}.${pre ? " Preview cards are only allowed at Standard + previews tables until their set comes out." : ""}`;
 }
 // ---------- ranked ----------
 // Honor system: games are peer to peer, so each player keeps their own bounty. A result counts only when the
@@ -2797,7 +2801,7 @@ function openSetup(opts){
     ${opts.friends ? "" : `<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="f-pub" ${opts.pub ? "checked" : ""}> List this table in Lobbies so anyone can join. Reset board, Refresh and Undo are off at listed tables.</label>`}
     <div class="row lbopts" id="f-pubopts" ${opts.pub ? "" : "hidden"}>
       <div style="flex:2;min-width:180px"><label for="f-lname">Lobby name</label><input type="text" id="f-lname" maxlength="40" value="${esc(v.lname || "")}" placeholder="Your name's table"></div>
-      <div style="flex:1;min-width:140px"><label for="f-fmt">Format</label><select id="f-fmt">${Object.keys(LB_FMT).map(k => `<option value="${k}"${k === fmt0 ? " selected" : ""}>${LB_FMT[k]}${k === "any" ? " (any cards)" : ""}</option>`).join("")}</select></div>
+      <div style="flex:1;min-width:140px"><label for="f-fmt">Format</label><select id="f-fmt">${Object.keys(LB_FMT).filter(k => k !== "pre" || preSets().length || k === fmt0).map(k => `<option value="${k}"${k === fmt0 ? " selected" : ""}>${LB_FMT[k]}${k === "any" ? " (any cards)" : k === "pre" && preSets().length ? " (" + preSets().join(", ") + " early)" : ""}</option>`).join("")}</select></div>
     </div>`}
     <label for="f-leader">Leader</label>
     <input type="text" id="f-leader" value="${esc(v.leader || "")}" placeholder="OP01-001 Roronoa Zoro">
@@ -5550,7 +5554,7 @@ document.addEventListener("change", e => {
     if (t.id === "bd-sortset") { bdSort = {key: "set", dir: 1}; updateSortUI(); }
     bdShow = 60; renderLib(); return;
   }
-  if (t && (t.id === "bd-color" || t.id === "bd-type" || t.id === "bd-kw" || t.id === "bd-attr" || t.id === "bd-artonly" || t.id === "bd-group" || t.id === "bd-showban" || t.id === "bd-showrot")) { bdShow = 60; renderLib(); return; }
+  if (t && (t.id === "bd-color" || t.id === "bd-type" || t.id === "bd-kw" || t.id === "bd-attr" || t.id === "bd-artonly" || t.id === "bd-group" || t.id === "bd-showban" || t.id === "bd-showrot" || t.id === "bd-showpre")) { bdShow = 60; renderLib(); return; }
   if (t && t.id === "rp-file") { const f = t.files && t.files[0]; t.value = ""; if (f) rpOpenFile(f); return; }
   if (t && t.id === "cd-file") { const f = t.files && t.files[0]; t.value = ""; if (f) { if (f.size > 12 * 1048576) toast("That file is too large (12 MB max)."); else f.text().then(importCardData); } return; }
   if (t && t.id === "f-pub") { const o = $("#f-pubopts"), b = $("#f-joinbtn"); if (o) o.hidden = !t.checked; if (b) b.textContent = t.checked ? "Open lobby" : "Join room"; return; }
@@ -6435,10 +6439,18 @@ const BAN_PAIRS = [["OP11-040", "OP11-067"], ["OP11-040", "OP08-069"], ["OP07-11
 const BLOCK1 = /^(?:(?:OP0[1-4]|ST0[1-9])-\d+|P-0[0-3]\d)$/;
 // Block 1 card numbers Bandai moved to a newer block (Block 4 list, Super Parallel list, reprints), so they stay in Standard.
 const BLOCK1_KEPT = new Set("OP01-016 OP01-039 OP01-055 OP01-120 OP02-005 OP02-013 OP02-068 OP03-008 OP03-044 OP03-048 OP03-072 OP03-097 OP03-122 OP04-016 OP04-077 OP04-083 OP04-096 ST01-011 ST02-007 ST06-008".split(" "));
+// Sets in the game before their English release (previews), with that release date. Until then their cards are only legal at
+// "Standard + previews" tables, Casual tables and in practice. Japan now gets each set a day after English, so there's no
+// separate Japanese card pool to offer. Add the next set here when its preview cards go in data/names.
+const RELEASES = {EB05: "2026-10-30", OP18: "2026-11-20"};
 const shortDate = d => new Date(d + "T12:00:00").toLocaleDateString("en-US", {month: "short", day: "numeric"});
+const todayISO = () => new Date().toLocaleDateString("en-CA");
+const preDate = code => { const d = RELEASES[String(code || "").toUpperCase().split("-")[0]]; return d && todayISO() < d ? d : ""; };
+const preSets = () => Object.keys(RELEASES).filter(s => todayISO() < RELEASES[s]).sort((a, b) => RELEASES[a] < RELEASES[b] ? -1 : 1);
 function legalOf(code){
   code = String(code || "").toUpperCase();
-  if (BANNED.has(code)) { const from = BANNED.get(code); return !from || new Date().toLocaleDateString("en-CA") >= from ? "ban" : "soon"; }
+  if (BANNED.has(code)) { const from = BANNED.get(code); return !from || todayISO() >= from ? "ban" : "soon"; }
+  if (preDate(code)) return "pre";
   return BLOCK1.test(code) && !BLOCK1_KEPT.has(code) ? "rot" : "";
 }
 // a list pasted from a deck site or simulator usually starts with its Leader ("1xOP01-001", or a "Leader: OP01-001" line):
@@ -6462,11 +6474,12 @@ function offColor(codes, leader){
 function legalTag(code){
   const lg = legalOf(code);
   if (!lg) return "";
-  return `<em class="legal ${lg}">${lg === "ban" ? "BANNED" : lg === "rot" ? "ROTATED" : "BANNED " + shortDate(BANNED.get(code)).toUpperCase()}</em>`;
+  return `<em class="legal ${lg}">${lg === "ban" ? "BANNED" : lg === "rot" ? "ROTATED" : lg === "pre" ? "PREVIEW" : "BANNED " + shortDate(BANNED.get(code)).toUpperCase()}</em>`;
 }
 function legalNote(code){
   const lg = legalOf(code);
-  return lg === "ban" ? "Banned in every format" : lg === "rot" ? "Block 1: not allowed in Standard, still allowed in Extra" : lg === "soon" ? "Banned from " + shortDate(BANNED.get(code)) : "";
+  return lg === "ban" ? "Banned in every format" : lg === "rot" ? "Block 1: not allowed in Standard, still allowed in Extra" : lg === "soon" ? "Banned from " + shortDate(BANNED.get(code))
+    : lg === "pre" ? `Preview: legal in Standard and Extra from ${shortDate(preDate(code))}. Until then, play it at Standard + previews tables, Casual tables or in practice.` : "";
 }
 
 // ---------- deck builder ----------
@@ -6622,10 +6635,10 @@ function renderLib(){
   fillSel($("#bd-attr"), "All attributes", Array.from(ats).sort());
   const toks = normq($("#bd-q").value).split(" ").filter(Boolean);
   const set = bdSetVal, ty = $("#bd-type").value, kwSel = ($("#bd-kw") || {}).value || "", atSel = ($("#bd-attr") || {}).value || "", artOnly = $("#bd-artonly").checked;
-  const showBan = !$("#bd-showban") || $("#bd-showban").checked, showRot = !$("#bd-showrot") || $("#bd-showrot").checked;
+  const showBan = !$("#bd-showban") || $("#bd-showban").checked, showRot = !$("#bd-showrot") || $("#bd-showrot").checked, showPre = !$("#bd-showpre") || $("#bd-showpre").checked;
   const codes = all.filter(c => {
     if (set && c.split("-")[0] !== set) return false;
-    if (!showBan || !showRot) { const lg = legalOf(c); if ((lg === "ban" && !showBan) || (lg === "rot" && !showRot)) return false; }
+    if (!showBan || !showRot || !showPre) { const lg = legalOf(c); if ((lg === "ban" && !showBan) || (lg === "rot" && !showRot) || (lg === "pre" && !showPre)) return false; }
     if (artOnly && !ART.has(c)) return false;
     const m = CARDDB.get(c);
     if (bdColors.size && !(m && m.c && m.c.toLowerCase().split(/[\/,\s]+/).some(x => bdColors.has(x)))) return false;
@@ -6688,11 +6701,12 @@ function renderBdDeck(){
   const el = $("#bd-deck"); if (!el) return;
   const t = bdTotal(), rows = Array.from(BD.cards.keys()).sort(natural), L = BD.leader;
   const lead = `<div class="bd-leader"><div class="bd-lthumb">${L ? tile({c: L.c, n: L.n}, "", false, 0, "leader") : "?"}</div><div class="bd-ltext"><div class="bd-ltitle">Leader</div>${L ? `<div><b>${esc(L.c)}</b> ${esc(L.n)}</div><button class="btn" type="button" data-bd="LX:x">Remove</button>` : `<div class="hint">None yet. Press Leader under a card.</div>`}</div></div>`;
-  const used = L ? rows.concat(L.c) : rows, banned = used.filter(k => legalOf(k) === "ban"), rotated = used.filter(k => legalOf(k) === "rot");
+  const used = L ? rows.concat(L.c) : rows, banned = used.filter(k => legalOf(k) === "ban"), rotated = used.filter(k => legalOf(k) === "rot"), pre = used.filter(k => legalOf(k) === "pre");
   const pairs = BAN_PAIRS.filter(p => used.includes(p[0]) && used.includes(p[1])), off = L ? offColor(rows, L.c) : [];
   const stats = `<div class="bd-stats"><span class="chip ${t === 50 ? "good" : t > 50 ? "bad" : ""}">${t} of 50 cards</span>${L ? "" : '<span class="chip bad">Needs a Leader</span>'}`
     + (banned.length ? `<span class="chip bad" title="${esc(banned.join(", "))}">${banned.length} banned</span>` : "")
     + (rotated.length ? `<span class="chip" title="${esc(rotated.join(", "))}">${rotated.length} not in Standard</span>` : "")
+    + (pre.length ? `<span class="chip pre" title="${esc(pre.map(k => k + " from " + shortDate(preDate(k))).join(", "))}. Until then, only at Standard + previews tables, Casual tables and in practice.">${pre.length} preview${pre.length === 1 ? "" : "s"}</span>` : "")
     + pairs.map(p => `<span class="chip bad" title="These two can't be in the same deck">Banned pair: ${esc(p[0])} + ${esc(p[1])}</span>`).join("")
     + (off.length ? `<span class="chip bad" title="${esc(off.join(", "))}">${off.length} not in the Leader's color${colorsOf(L.c).length > 1 ? "s" : ""}</span>` : "") + `</div>`;
   const list = rows.length

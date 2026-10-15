@@ -49,6 +49,33 @@ await page.uncheck("#bd-showban"); await page.uncheck("#bd-showrot");
 await page.waitForTimeout(400);
 console.log("all sets, both hidden", JSON.stringify(await count()));
 await page.check("#bd-showban"); await page.check("#bd-showrot");
+// preview sets: legal only at Standard + previews tables (and Casual) until their English release
+const fails = [];
+const check = (name, ok) => { console.log((ok ? "ok   " : "FAIL ") + name); if (!ok) fails.push(name); };
+const pv = await page.evaluate(() => {
+  RELEASES.OP18 = "2099-01-01"; RELEASES.EB05 = "2000-01-01";
+  const deck = {leader: "OP18-001", deck: "4xOP18-003\n4xOP01-013"};
+  return {op18: legalOf("OP18-003"), eb05: legalOf("EB05-001"), sets: preSets(), tag: legalTag("OP18-003"), note: legalNote("OP18-003"),
+    std: deckIllegal(deck, "std"), pre: deckIllegal(deck, "pre"), ext: deckIllegal(deck, "ext"), any: deckIllegal(deck, "any"),
+    stdNote: illegalNote(deckIllegal(deck, "std"), "std"), lb: cleanLobby({c: "lobby-abc", n: "x", h: "y", f: "pre"}).f};
+});
+console.log("previews", JSON.stringify(pv));
+check("an OP18 card is a preview before its date", pv.op18 === "pre" && /PREVIEW/.test(pv.tag) && /from Jan 1/.test(pv.note));
+check("a released set isn't a preview", pv.eb05 === "" && pv.sets.join() === "OP18");
+check("previews aren't legal in Standard or Extra", pv.std.includes("OP18-003") && pv.std.includes("OP18-001") && pv.ext.includes("OP18-003") && /Standard \+ previews tables/.test(pv.stdNote));
+check("previews are legal at Standard + previews tables", !pv.pre.includes("OP18-003") && !pv.pre.includes("OP18-001") && pv.pre.includes("OP01-013") && !pv.any.length);
+check("a lobby listing keeps the previews format", pv.lb === "pre");
+await page.evaluate(() => { bdLeader("OP18-001"); bdAdd("OP18-003", 2); });
+await page.waitForTimeout(300);
+const pchip = await page.evaluate(() => [...document.querySelectorAll("#bd-deck .bd-stats .chip.pre")].map(e => e.textContent).join());
+check("the deck editor counts previews", pchip === "2 previews");
+await page.selectOption("#bd-set", "OP18"); await page.waitForTimeout(400);
+const shownPre = await page.evaluate(() => document.querySelectorAll("#bd-lib .legal.pre").length);
+await page.uncheck("#bd-showpre"); await page.waitForTimeout(400);
+const hiddenPre = await page.evaluate(() => document.querySelectorAll("#bd-lib [data-lib]").length);
+check("the Previews filter hides preview cards", shownPre > 0 && hiddenPre === 0);
+await page.check("#bd-showpre"); await page.selectOption("#bd-set", "");
+await page.evaluate(() => { BD.cards.clear(); BD.leader = null; RELEASES.OP18 = "2026-11-20"; RELEASES.EB05 = "2026-10-30"; renderBdDeck(); });
 // deck panel warnings
 await page.evaluate(() => {
   bdLeader("OP11-040");
@@ -67,4 +94,5 @@ await page.setViewportSize({ width: 420, height: 860 }).catch(() => {});
 await page.waitForTimeout(500);
 await page.screenshot({ path: OUT + "/narrow.png" });
 console.log("errors", JSON.stringify(errs));
+if (fails.length || errs.length) process.exitCode = 1;
 await app.close();
