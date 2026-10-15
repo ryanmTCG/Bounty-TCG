@@ -28,6 +28,15 @@ service cloud.firestore {
       allow create: if request.auth != null && d().by == request.auth.uid
         && d().keys().hasOnly(['v', 't', 'm', 'k', 'f', 'l', 'o', 'r', 'y', 'tn', 'd', 'n', 'on', 'by', 'rp'])
         && d().r in ['w', 'l'] && d().l is string && d().l.size() <= 12 && d().d is string && d().d.size() <= 1300
+        && d().t is int && d().t > request.time.toMillis() - 600000 && d().t < request.time.toMillis() + 600000
+        && (!('rp' in d()) || exists(/databases/$(database)/documents/replays/$(id)));
+    }
+    // Shared replays: a replay code (or a finished match's replay for the Recent games feed, under its games id) holds the
+    // same text as a replay file. Anyone can open one; only a signed-in player adds one, once, and nobody changes it.
+    match /replays/{id} {
+      allow read: if true;
+      allow create: if request.auth != null && d().by == request.auth.uid && d().keys().hasOnly(['v', 't', 'by', 'e'])
+        && d().e is string && d().e.size() <= 900000 && id.matches('^[a-z0-9-]{4,80}$')
         && d().t is int && d().t > request.time.toMillis() - 600000 && d().t < request.time.toMillis() + 600000;
     }
     match /ranks/{uid} {

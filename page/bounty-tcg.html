@@ -538,6 +538,9 @@ select.sbtn{height:26px;min-width:88px}
 .pfseasons small{color:var(--muted);font-size:12px}
 .mtfil{gap:12px;align-items:flex-end;margin:4px 0 12px}
 .mtfil>div{min-width:150px}
+.mttabs{gap:8px;margin:0 0 6px}
+.rpcode{gap:8px;margin:0 0 12px;align-items:center}
+.rpcode input{flex:1 1 220px;max-width:340px;text-transform:uppercase}
 .mtrk{display:flex;gap:6px;align-items:center;font-size:14px;padding-bottom:8px}
 .mtgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
 .mtrow{display:flex;gap:10px;align-items:center;padding:8px 10px;border:2px solid rgba(255,240,205,.25);border-radius:14px;background:rgba(0,0,0,.22);color:inherit;font:inherit;text-align:left}
@@ -971,6 +974,10 @@ select.sbtn{font-family:var(--slab)}
 .diffrow .hint{flex:1 1 220px;margin:0}
 .pfh .rpacts{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
 .rprow .pfres{font-size:13px}
+.rprow{flex-wrap:wrap}
+.rprow .pfinfo{flex:1 1 150px;min-width:0}
+.rprow .rpacts{flex:1 1 100%;margin-left:0}
+.rprow .rpacts .btn{font-size:13px;padding:5px 10px}
 .mid.rpmid{flex-wrap:wrap;height:auto;padding:6px 10px}
 .rpbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 10px;width:100%;font-size:14px;color:#FFE9B8}
 .rpbar .btn{font-size:13px;padding:4px 10px}
@@ -2231,8 +2238,8 @@ async function rpInflate(b64, max){
   }
   return await new Blob(parts).text();
 }
-// adds a replay file to the list; returns its id, or what's wrong with it
-async function rpImport(txt){
+// checks a replay file: its entry and frames, or what's wrong with it
+async function rpCheck(txt){
   let o = null; try { o = typeof txt === "string" && txt.length <= RP_FILE_MAX ? JSON.parse(txt) : null; } catch (er) {}
   const e = o && o.bounty === "replay" && o.e && typeof o.e === "object" ? o.e : null;
   if (!e || typeof e.z !== "string" || !/^[zj]/.test(e.z)) return {err: "That isn't a Bounty TCG replay file."};
@@ -2242,16 +2249,85 @@ async function rpImport(txt){
   if (!Array.isArray(fr) || fr.length < 2 || fr.length > RP_FRAMES || !fr.every(f => Array.isArray(f) && f.length === 3 && side(f[1]) && side(f[2])))
     return {err: "That replay file is damaged, or too large to open."};
   const keep = d => { if (!d) return 0; const x = {}; for (const k of Object.keys(d)) if (RP_KEEP.has(k)) x[k] = d[k]; return x; };
-  const frs = fr.map(f => [Math.max(0, Math.min(600000, Math.floor(+f[0]) || 0)), keep(f[1]), keep(f[2])]);
-  const z = await rpPack(JSON.stringify(frs)), list = rpList();
-  const base = typeof e.id === "string" && RP_ID.test(e.id) ? e.id.slice(0, 26) : "file";
+  const frs = fr.map(f => [Math.max(0, Math.min(600000, Math.floor(+f[0]) || 0)), keep(f[1]), keep(f[2])]), t = +e.t;
+  const ent = {id: typeof e.id === "string" && RP_ID.test(e.id) ? e.id.slice(0, 26) : "file", t: t > 0 && t < Date.now() + 864e5 ? t : Date.now(), me: clean(e.me, 20) || "Player", on: clean(e.on, 20) || "Opponent", ld: clean(e.ld, 16), op: clean(e.op, 16),
+    r: e.r === "w" || e.r === "l" ? e.r : "", n: frs.length, d: Math.max(0, Math.min(864e5, Math.floor(+e.d) || 0)), tn: num(e.tn, 999), b: e.b === 1 || e.b === 2 ? e.b : 0, sh: 1};
+  return {ent, frs};
+}
+// adds a replay file to the list; returns its id, or what's wrong with it
+async function rpImport(txt, code){
+  const c = await rpCheck(txt); if (c.err) return c;
+  const z = await rpPack(JSON.stringify(c.frs)), list = rpList();
+  const base = c.ent.id;
   const same = list.find(x => x.id === base);
   if (same && same.z === z) return {id: base, had: true};
-  const id = same ? base + "-" + Date.now().toString(36) : base, t = +e.t;
-  const ent = {id, t: t > 0 && t < Date.now() + 864e5 ? t : Date.now(), me: clean(e.me, 20) || "Player", on: clean(e.on, 20) || "Opponent", ld: clean(e.ld, 16), op: clean(e.op, 16),
-    r: e.r === "w" || e.r === "l" ? e.r : "", n: frs.length, d: Math.max(0, Math.min(864e5, Math.floor(+e.d) || 0)), tn: num(e.tn, 999), b: e.b === 1 || e.b === 2 ? e.b : 0, sh: 1, z};
+  const id = same ? base + "-" + Date.now().toString(36) : base;
+  const ent = Object.assign(c.ent, {id, z}, code ? {code} : {});
   rpStore([ent, ...list.filter(x => x.id !== id)]);
   return rpList().some(x => x.id === id) ? {id} : {err: "There isn't room on this computer to keep that replay."};
+}
+// ---------- replay codes ----------
+// A signed-in player can share a replay as a code (replays/<code> in the shared database, the same text as a replay file),
+// and anyone can open a code. What comes back is someone else's file, so it goes through rpImport's checks.
+const RP_SHARE_MAX = 900000, RP_CODE_A = "abcdefghjkmnpqrstuvwxyz23456789";
+const rpCodeShow = c => /^[a-z0-9]{8}$/.test(c) ? (c.slice(0, 4) + "-" + c.slice(4)).toUpperCase() : c;
+async function rpShare(id){
+  const uid = acctUid();
+  if (!uid) { toast("Sign in to an account in Profile to share replays by code. You can still send one with Save file."); return; }
+  const had = rpList().find(x => x.id === id);
+  if (had && had.code) { rpCopyCode(had.code); return; }
+  const txt = await rpFileText(id); if (!txt) { toast("Couldn't share that replay."); return; }
+  if (txt.length > RP_SHARE_MAX) { toast("That replay is too long to share by code. Send it with Save file instead."); return; }
+  const db = await getDb(); if (!db) { toast("Couldn't reach the shared replays. Check your internet connection."); return; }
+  for (let i = 0; i < 2; i++) {
+    const c = Array.from(crypto.getRandomValues(new Uint8Array(8)), b => RP_CODE_A[b % RP_CODE_A.length]).join("");
+    try {
+      await db.doc("replays/" + c).set({v: 1, t: Date.now(), by: uid, e: txt});
+      const list = rpList(), x = list.find(x => x.id === id); if (x) { x.code = c; rpStore(list); }
+      if (modal && modal.type === "replays") openReplays();
+      rpCopyCode(c); return;
+    } catch (er) {}
+  }
+  toast("Couldn't share that replay right now. Try again in a moment.");
+}
+function rpCopyCode(c){
+  const t = rpCodeShow(c), msg = `Replay code ${t}. Anyone with Bounty TCG can watch it from Replays > Open a code.`;
+  try { navigator.clipboard.writeText(t).then(() => toast(msg + " It's copied."), () => toast(msg)); } catch (e) { toast(msg); }
+}
+const rpCodeNorm = v => { v = String(v || "").trim().toLowerCase().replace(/\s+/g, ""); return /^[a-z0-9]{4}-[a-z0-9]{4}$/.test(v) ? v.replace("-", "") : v; };
+async function rpFetch(c){
+  if (!/^[a-z0-9-]{4,80}$/.test(c)) return {err: "That isn't a replay code."};
+  const db = await getDb(); if (!db) return {err: "Couldn't reach the shared replays. Check your internet connection."};
+  try {
+    const sn = await db.doc("replays/" + c).get(), d = sn.exists ? sn.data() : null;
+    return d && typeof d.e === "string" && d.e.length <= RP_FILE_MAX ? {txt: d.e} : {err: "There's no replay with that code."};
+  } catch (e) { return {err: "Couldn't reach the shared replays. Check your internet connection."}; }
+}
+// a code typed on the Replays page: added to your list and played
+async function rpCode(){
+  const el = $("#rp-code"), c = rpCodeNorm(el && el.value); if (!c) { toast("Type a replay code first."); return; }
+  if (liveMatch()) { toast("Finish or leave your match first, then watch a replay."); return; }
+  const had = rpList().find(x => x.code === c); if (had) { rpOpen(had.id, "list"); return; }
+  const f = await rpFetch(c); if (f.err) { toast(f.err); return; }
+  const r = await rpImport(f.txt, c).catch(() => ({err: "Couldn't open that replay."}));
+  if (r.err) { toast(r.err); return; }
+  rpOpen(r.id, "list");
+}
+// a replay from the Recent games feed: played without keeping it
+async function rpFeed(id){
+  if (liveMatch()) { toast("Finish or leave your match first, then watch a replay."); return; }
+  const f = await rpFetch(id); if (f.err) { toast(f.err); return; }
+  const c = await rpCheck(f.txt).catch(() => ({err: "Couldn't open that replay."}));
+  if (c.err) { toast(c.err); return; }
+  if (WATCH && !WATCH.replay) { await leaveRoom(); status = "offline"; }
+  rpOpenFrames(c.ent, c.frs, "feed");
+}
+// the replay of the match that just ended, without either hand, for the Recent games feed
+async function rpFeedText(){
+  if (!REC || REC.k !== S.rid || REC.fr.length < 6) return null;
+  const noHd = d => { if (!d) return d; const o = Object.assign({}, d); delete o.hd; return o; };
+  const e = rpMeta(REC); e.z = await rpPack(JSON.stringify(REC.fr.map(f => [f[0], noHd(f[1]), noHd(f[2])])));
+  return JSON.stringify({bounty: "replay", v: 1, e});
 }
 async function rpOpenFile(f){
   if (f.size > RP_FILE_MAX) { toast("That file is too large to be a replay."); return; }
@@ -2267,6 +2343,9 @@ async function rpOpen(id, from){
   let fr = null, e = null;
   if (REC && REC.id === id) { fr = REC.fr.slice(); e = rpMeta(REC); }
   else { e = rpList().find(x => x.id === id); if (e) try { fr = JSON.parse(await rpUnpack(e.z)); } catch (er) { fr = null; } }
+  rpOpenFrames(e, fr, from);
+}
+function rpOpenFrames(e, fr, from){
   if (!e || !Array.isArray(fr) || !fr.length) { toast("Couldn't open that replay."); return; }
   // each frame's two boards, and the match log as it grew
   const A = [], B = [], T = [], L = [], log = [], seen = [new Set(), new Set()];
@@ -2329,6 +2408,7 @@ function rpExit(){
   document.body.classList.remove("watching", "replaying"); $("#mid").classList.remove("rpmid");
   render(); renderLog();
   if (v && v.from === "list") openReplays();
+  else if (v && v.from === "feed") { openMeta(); modal.view = "recent"; renderMeta(); }
   else if (S.phase === "none" && !R) openHome();
   if (PR && PR.bot) botSoon();
 }
@@ -2362,12 +2442,13 @@ function openReplays(){
     const op = CODE.test(e.op) ? e.op : "", ld = CODE.test(e.ld) ? e.ld : "", me = clean(e.me, 20) || "Player", on = clean(e.on, 20) || "Opponent";
     const both = e.b === 2 || e.sh, cls = both || !e.r ? "" : e.r === "w" ? "win" : "loss";
     const lab = !e.r ? "Unfinished" : both ? "Finished" : e.r === "w" ? "Win" : "Loss";
-    const bits = [both && e.r ? `${e.r === "w" ? me : on} won` : "", e.sh ? "From a file" : "", e.b === 1 ? "Practice" : e.b === 2 ? "Both sides" : "Online", e.tn ? `${num(e.tn, 999)} turns` : "", e.d ? rpDur(+e.d || 0) : "", e.t ? ago(+e.t || 0) : ""].filter(Boolean).join(" · ");
+    const bits = [both && e.r ? `${e.r === "w" ? me : on} won` : "", e.sh ? (e.code ? "Shared with you" : "From a file") : e.code ? `Code ${rpCodeShow(e.code)}` : "", e.b === 1 ? "Practice" : e.b === 2 ? "Both sides" : "Online", e.tn ? `${num(e.tn, 999)} turns` : "", e.d ? rpDur(+e.d || 0) : "", e.t ? ago(+e.t || 0) : ""].filter(Boolean).join(" · ");
     const lds = [ld ? `${nameOf(ld) || ld}` : "", op ? `${nameOf(op) || op}` : ""].filter(Boolean).join(" vs ");
-    return `<div class="pfh rprow ${cls}"><span class="pfres">${lab}</span>${op ? tile({c: op, n: nameOf(op)}, "", false, 0) : `<div class="card pfnone"></div>`}<div class="pfinfo"><b>${esc(me)} vs ${esc(on)}</b><small>${esc(lds)}</small><span class="pfline">${esc(bits)}</span></div><div class="rpacts"><button class="btn pri" data-do="rpopen:${e.id}" type="button">Watch</button><button class="btn" data-do="rpfile:${e.id}" type="button" title="Save it as a file to send to someone">Save file</button><button class="btn" data-do="rpdel:${e.id}" type="button" aria-label="Delete this replay">Delete</button></div></div>`;
+    return `<div class="pfh rprow ${cls}"><span class="pfres">${lab}</span>${op ? tile({c: op, n: nameOf(op)}, "", false, 0) : `<div class="card pfnone"></div>`}<div class="pfinfo"><b>${esc(me)} vs ${esc(on)}</b><small>${esc(lds)}</small><span class="pfline">${esc(bits)}</span></div><div class="rpacts"><button class="btn pri" data-do="rpopen:${e.id}" type="button">Watch</button>${e.sh ? "" : `<button class="btn" data-do="rpshare:${e.id}" type="button" title="Share it as a code anyone can open">${e.code ? "Copy code" : "Share code"}</button>`}<button class="btn" data-do="rpfile:${e.id}" type="button" title="Save it as a file to send to someone">Save file</button><button class="btn" data-do="rpdel:${e.id}" type="button" aria-label="Delete this replay">Delete</button></div></div>`;
   };
   showModal(`<h2>Replays</h2>
-    <p class="hint">Your last ${RP_MAX} matches, online and practice, finished or not. Play them back move by move, with your hand (and the computer's) face up. They're kept on this computer. Save one as a file to send it to a friend, and open a file someone sent you to watch theirs.</p>
+    <p class="hint">Your last ${RP_MAX} matches, online and practice, finished or not. Play them back move by move, with your hand (and the computer's) face up. They're kept on this computer. Share one as a code (signed in to an account) or save it as a file to send to a friend, and open a code or file someone sent you to watch theirs.</p>
+    <div class="row rpcode"><input type="text" id="rp-code" maxlength="80" placeholder="Replay code, like ABCD-EFGH" autocomplete="off" autocapitalize="characters"><button class="btn" data-do="rpcode" type="button">Open a code</button></div>
     ${list.length ? `<div class="pfhist">${list.map(row).join("")}</div>` : `<div class="lbempty"><b>No replays yet</b>Play a match and it shows up here.</div>`}
     <div class="row end"><button class="btn" data-do="rpimport" type="button">Open a replay file</button><input type="file" id="rp-file" accept=".json,application/json" hidden><button class="btn" data-do="home" type="button">Back</button></div>`);
   const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
@@ -2772,7 +2853,14 @@ function gameCheck(){
     r: S.statWon ? "w" : "l", y: S.statY || "", tn: Math.min(999, S.turn | 0), d: deckPack(lastCfg || {}), n: clean(S.nick, 20), on: S.statOpNs ? "" : clean(S.statOpNick, 20), by: uid};
   const id = (rec.m || "x" + Date.now().toString(36)) + "-" + (S.mk || Math.random().toString(36).slice(2, 10));
   S.gameId = id;
-  getDb().then(db => db && db.doc("games/" + id).set(rec)).then(() => { if (COMM.recs) COMM.recs.unshift(cleanGame(rec, id)); }, () => {});
+  getDb().then(async db => {
+    if (!db) return;
+    // its replay (both public boards, no hands) for the Recent games feed, under the same id
+    const txt = await rpSave(REC).then(rpFeedText).catch(() => null);
+    if (txt && txt.length <= RP_SHARE_MAX) { try { await db.doc("replays/" + id).set({v: 1, t: Date.now(), by: uid, e: txt}); rec.rp = 1; } catch (e) {} }
+    await db.doc("games/" + id).set(rec);
+    if (COMM.recs) COMM.recs.unshift(cleanGame(rec, id));
+  }).catch(() => {});
 }
 function cleanGame(x, id){
   if (!x || typeof x !== "object" || !CARD_RE.test(x.l || "") || (x.r !== "w" && x.r !== "l")) return null;
@@ -2821,9 +2909,10 @@ function metaLeader(recs, ld){
 }
 const wr = (w, g) => g ? Math.round(100 * w / g) + "%" : "–";
 function openMeta(){
-  modal = {type: "meta", f: "std", days: 30, rk: false, ld: null};
+  modal = {type: "meta", f: "std", days: 30, rk: false, ld: null, view: "ld"};
   showModal(`<h2>Meta</h2>
-    <p class="hint">How each Leader is doing in real online matches, from players who share theirs. Every finished match is shared by each player who's signed in to an account, with their own Leader, the result and their own decklist. You can turn this off in Profile.</p>
+    <p class="hint">How each Leader is doing in real online matches, from players who share theirs. Every finished match is shared by each player who's signed in to an account, with their own Leader, the result, their own decklist and a replay of the boards (no hands). You can turn this off in Profile.</p>
+    <div class="row mttabs" role="tablist"><button class="btn pri" data-do="mt:view:ld" id="mt-tab-ld" type="button" role="tab" aria-selected="true">Leaders</button><button class="btn" data-do="mt:view:recent" id="mt-tab-recent" type="button" role="tab" aria-selected="false">Recent games</button></div>
     <div class="row mtfil">
       <div><label for="mt-f">Format</label><select id="mt-f">${Object.keys(META_F).map(k => `<option value="${k}">${META_F[k]}</option>`).join("")}</select></div>
       <div><label for="mt-d">Played in</label><select id="mt-d"><option value="7">The last 7 days</option><option value="30" selected>The last 30 days</option><option value="0">Any time</option></select></div>
@@ -2836,6 +2925,11 @@ function openMeta(){
   for (const id of ["mt-f", "mt-d", "mt-rk"]) $("#" + id).addEventListener("change", () => { if (!modal || modal.type !== "meta") return; modal.f = $("#mt-f").value; modal.days = +$("#mt-d").value; modal.rk = $("#mt-rk").checked; renderMeta(); });
   gamesLoad().then(renderMeta);
 }
+// how a shared match ended, told from outside it
+function feedHow(g){
+  const lo = g.r === "w" ? g.on || "the other player" : g.n || "the player";
+  return {cd: `${lo} conceded`, dmg: "won on damage", deck: `${lo}'s deck ran out`, left: `${lo} left`, time: `${lo} ran out of time`}[g.y] || "";
+}
 function renderMeta(){
   const el = $("#mt-body"); if (!el || !modal || modal.type !== "meta") return;
   if (!COMM.recs) {
@@ -2843,7 +2937,20 @@ function renderMeta(){
     return;
   }
   const recs = metaPick(COMM.recs, modal), tot = recs.length, foot = `<p class="hint">From ${tot} shared result${tot === 1 ? "" : "s"} (each player's side of a match counts once)${acctUid() ? (shareOn() ? ". Yours are shared." : ". Yours aren't shared: turn it on in Profile.") : ". Sign in to share yours."}</p>`;
+  for (const k of ["ld", "recent"]) { const b = $("#mt-tab-" + k); if (b) { b.classList.toggle("pri", modal.view === k); b.setAttribute("aria-selected", String(modal.view === k)); } }
   if (!tot) { el.innerHTML = `<div class="lbempty"><b>No shared matches yet</b>Finished online matches from players signed in to an account show up here.</div>` + foot; return; }
+  if (modal.view === "recent") {
+    // one row per match: both players' records share its id, and the one with a replay wins
+    const seen = new Map();
+    for (const g of recs) { const k = g.m || g.id, x = seen.get(k); if (!x || (!x.rp && g.rp)) seen.set(k, g); }
+    const lds = metaAgg(recs).map(x => x.l), fl = lds.includes(modal.fl) ? modal.fl : "";
+    const list = Array.from(seen.values()).filter(g => !fl || g.l === fl || g.o === fl).sort((a, b) => b.t - a.t).slice(0, 50);
+    modal.recent = list.map(g => g.id);
+    el.innerHTML = `<div class="row mtfil"><div><label for="mt-fl">Leader</label><select id="mt-fl"><option value="">Any Leader</option>${lds.map(l => `<option value="${esc(l)}"${l === fl ? " selected" : ""}>${esc(nameOf(l) || l)} (${esc(l)})</option>`).join("")}</select></div></div>
+      ${list.length ? `<div class="pfhist">${list.map((g, i) => `<div class="pfh rprow ${g.r === "w" ? "win" : "loss"}">${tile({c: g.l, n: nameOf(g.l)}, "", false, 0)}<div class="pfinfo"><b>${esc(g.n || "A player")} ${g.r === "w" ? "beat" : "lost to"} ${esc(g.on || "a player")}</b><small>${esc(nameOf(g.l) || g.l)} vs ${esc(g.o ? nameOf(g.o) || g.o : "an unnamed Leader")}</small><span class="pfline">${esc([GAME_K[g.k], LB_FMT[g.f] || "", g.tn ? g.tn + " turns" : "", feedHow(g), ago(g.t)].filter(Boolean).join(" · "))}</span></div><div class="rpacts">${g.rp ? `<button class="btn pri" data-do="mt:rp:${i}" type="button">Watch</button>` : ""}</div></div>`).join("")}</div>` : `<p class="hint">No games with that Leader yet.</p>`}` + foot;
+    const sel = $("#mt-fl"); if (sel) sel.addEventListener("change", () => { modal.fl = sel.value; renderMeta(); });
+    return;
+  }
   if (modal.ld) {
     const m = metaLeader(recs, modal.ld), ld = modal.ld;
     el.innerHTML = `<div class="lbbar"><button class="linkbtn" data-do="mt:all" type="button">◀ All Leaders</button></div>
@@ -2851,7 +2958,7 @@ function renderMeta(){
       <h3 class="rkh">Matchups</h3>
       ${m.mu.length ? `<div class="mtgrid">${m.mu.map(x => `<div class="mtrow">${tile({c: x.o, n: nameOf(x.o)}, "", false, 0)}<div class="mtinfo"><b>vs ${esc(nameOf(x.o) || x.o)}</b><small>${esc(x.o)} · ${x.g} game${x.g === 1 ? "" : "s"}</small></div><span class="mtwr${x.g >= 3 ? (x.w * 2 > x.g ? " up" : x.w * 2 < x.g ? " dn" : "") : ""}">${wr(x.w, x.g)}</span></div>`).join("")}</div>` : `<p class="hint">No matchups yet.</p>`}
       <h3 class="rkh">Most played lists</h3>
-      ${m.lists.length ? m.lists.map((x, i) => `<details class="mtlist"${i ? "" : " open"}><summary><b>List ${i + 1}</b> · played ${x.g} time${x.g === 1 ? "" : "s"} · ${wr(x.w, x.g)} wins</summary>${tourDeckHTML(x.d)}<div class="row"><button class="btn pri" data-do="mt:open:${i}" type="button">Open in the Deck editor</button><button class="btn" data-do="mt:copy:${i}" type="button">Copy list</button></div></details>`).join("") : `<p class="hint">No decklists shared yet.</p>`}
+      ${m.lists.length ? m.lists.map((x, i) => `<details class="mtlist"${i ? "" : " open"}><summary><b>List ${i + 1}</b> · played ${x.g} time${x.g === 1 ? "" : "s"} · ${wr(x.w, x.g)} wins</summary>${tourDeckHTML(x.d)}<div class="row"><button class="btn pri" data-do="mt:open:${i}" type="button">Open in the Deck editor</button><button class="btn" data-do="mt:copy:${i}" type="button">Copy list</button><button class="btn" data-do="mt:bot:${i}" type="button">Play the computer with it</button></div></details>`).join("") : `<p class="hint">No decklists shared yet.</p>`}
       ${m.core.length ? `<h3 class="rkh">Cards in most lists</h3><div class="mtcore">${m.core.map(y => `<span title="In ${y.in} of ${m.nd} lists, ${(y.n / y.in).toFixed(1)} copies on average">${(y.n / y.in).toFixed(1)}× ${esc(y.c)} ${esc(nameOf(y.c) || "")} <i>${Math.round(100 * y.in / m.nd)}%</i></span>`).join("")}</div>` : ""}` + foot;
     modal.lists = m.lists.map(x => x.d);
     return;
@@ -3318,13 +3425,14 @@ function openSetup(opts){
       <input type="text" id="sd-name" maxlength="40" placeholder="Deck name" style="flex:1;min-width:140px">
       <button class="btn" data-do="savedeck" type="button">Save deck</button>
     </div>
-    <details style="margin-top:8px"><summary>Test against a different deck (optional)</summary>
-      <p class="hint">For "Play both sides" and "Play the computer", the other player uses this deck and Leader. Leave them empty to play your deck against itself.</p>
+    <details style="margin-top:8px" id="f-other"${opts.bot ? " open" : ""}><summary>${opts.bot ? "The computer's deck" : "Test against a different deck (optional)"}</summary>
+      <p class="hint">For "Play both sides" and "Play the computer", the other player uses this deck and Leader. Pick a deck that did well at a recent tournament, or a popular list from the Meta page, or type one in. Leave it on "Same as yours" to play your deck against itself.</p>
+      <label for="f-odeck">Deck</label><select id="f-odeck">${odeckOpts(opts.odeck ? "own" : v.odeck)}</select><p class="hint" id="f-odeckh"></p>
       <input type="text" id="f-leader2" placeholder="Other Leader, e.g. OP01-001 Roronoa Zoro">
       <textarea id="f-deck2" spellcheck="false" placeholder="Other decklist"></textarea>
     </details>
     <p class="hint">One card per line, with the card number and a count. A name is optional and only for your own reference. Tiles show the card number, since card art isn't loaded.</p>
-    ${(d0 => `<div class="row diffrow"${opts.bot ? "" : " hidden"}><label for="f-diff">Computer difficulty</label><select id="f-diff">${DIFFS.map((n, i) => `<option value="${i}"${i === d0 ? " selected" : ""}>${n}</option>`).join("")}</select><span class="hint" id="f-diffh">${DIFF_HINT[d0]}</span></div>`)(+v.diff === 0 || +v.diff === 2 ? +v.diff : 1)}
+    ${(d0 => `<div class="row diffrow"${opts.bot ? "" : " hidden"}><label for="f-diff">Computer difficulty</label><select id="f-diff">${DIFFS.map((n, i) => `<option value="${i}"${i === d0 ? " selected" : ""}>${n}</option>`).join("")}</select><span class="hint" id="f-diffh">${DIFF_HINT[d0]}</span></div>`)(diffOf(+v.diff))}
     <div class="row end">
       <button class="btn" data-do="sample" type="button">Load sample deck</button>
       ${S.phase !== "none" ? '<button class="btn" data-do="closemodal" type="button">Cancel</button>' : `<button class="btn" data-do="${jl || opts.pub ? "homelobby" : opts.friends ? "homefriends" : "homeplay"}" type="button">Back</button>`}
@@ -3335,6 +3443,9 @@ function openSetup(opts){
     </div>
     ${S.phase !== "none" ? '<p class="hint">Starting again resets your side of the table.</p>' : ""}`);
   renderSaved();
+  if (opts.odeck) { $("#f-leader2").value = opts.odeck.l; $("#f-deck2").value = opts.odeck.deck; odeckNote(); }
+  else odeckFill();
+  odeckMeta();
 }
 function readDeckFields(){
   const sp = splitLeader($("#f-deck").value), ld = $("#f-leader").value.trim();
@@ -3354,7 +3465,8 @@ function readForm(){
     pub: !!($("#f-pub") && $("#f-pub").checked),
     lname: clean(($("#f-lname") || {}).value, 40),
     fmt: LB_FMT[($("#f-fmt") || {}).value] ? $("#f-fmt").value : (loadSaved().fmt || "std"),
-    diff: (d => d === 0 || d === 2 ? d : 1)($("#f-diff") ? +$("#f-diff").value : +loadSaved().diff)
+    diff: diffOf($("#f-diff") ? +$("#f-diff").value : +loadSaved().diff),
+    odeck: $("#f-odeck") ? $("#f-odeck").value.slice(0, 20) : loadSaved().odeck || ""
   }, readDeckFields());
 }
 async function startGame(join){
@@ -3468,7 +3580,7 @@ async function startPractice(bot, cfg){
   if (!cfg) save(c);
   TUT = null;
   await leaveRoom();
-  R = null; PR = {cur: 1, sides: [null, null], pres: [null, null], busy: false, bot: bot ? 1 : 0, diff: c.diff === 0 || c.diff === 2 ? c.diff : 1};
+  R = null; PR = {cur: 1, sides: [null, null], pres: [null, null], busy: false, bot: bot ? 1 : 0, diff: diffOf(c.diff)};
   newGame(Object.assign({}, c, {nick: bot ? "Computer" : "Player 2", first: false, deck: d2 || c.deck, leader: l2 || c.leader}), false);
   PR.pres[1] = JSON.parse(JSON.stringify(pubFull())); practiceStash();
   newGame(Object.assign({}, c, {nick: bot ? c.nick || "Player" : "Player 1", first: true}), false);
@@ -3477,6 +3589,60 @@ async function startPractice(bot, cfg){
   oppM = oppModel(PR.pres[1]);
   closeModal(); renderStatus(); renderLog(); render();
   toast(bot ? `Practice against the computer (${DIFFS[botLv()]}). Roll to see who goes first.` : "Practice table ready. Roll to see who goes first.");
+}
+// ---------- the other deck for practice: tournament decks and the Meta page's popular lists ----------
+// Lists that won or placed at Japanese events in October 2026 (onepiecetopdecks.com), packed by deckPack().
+// Japan gets sets a day after English, so they're Standard here too. Swap in new ones as the meta moves.
+const BOT_DECKS = [
+  {n: "Black Luffy", e: "1st (5-0), Japanese store event, Oct 12 2026", d: "OP17-079|OP17-084*1 OP17-086*2 OP17-094*4 OP17-080*4 OP17-081*4 OP17-082*3 OP17-087*3 OP17-090*2 OP17-091*3 OP17-095*4 OP17-089*2 OP15-088*4 OP17-119*4 OP17-093*4 ST14-017*2 OP14-096*2 OP17-098*2"},
+  {n: "Blue Xebec", e: "1st, Japanese store event (BINKS Cup), Oct 9 2026", d: "OP17-039|OP08-051*4 OP17-045*4 OP17-052*4 OP17-054*4 OP17-044*4 OP17-046*4 OP17-049*4 OP17-040*4 OP17-048*4 OP17-118*4 OP17-055*4 OP17-056*4 EB02-030*2"},
+  {n: "Purple Kaido", e: "1st (16-1), Japanese Flame Flame Fruit Coliseum, Oct 4 2026", d: "OP17-058|EB04-032*4 OP17-075*4 OP17-073*4 OP17-074*4 EB04-031*4 OP17-060*1 OP17-061*4 OP17-065*2 ST34-004*4 OP17-062*3 OP17-063*3 OP15-078*4 OP17-076*1 OP07-077*4 EB04-040*2 OP09-077*2"},
+  {n: "Red Whitebeard", e: "1st, Japanese store event, Oct 10 2026", d: "OP17-001|ST30-004*4 OP17-004*3 OP17-002*4 OP12-002*4 ST30-005*2 OP16-118*4 OP17-015*3 ST23-001*1 OP17-008*4 OP09-118*2 OP17-005*4 OP04-016*3 OP16-021*4 OP17-017*4 OP17-019*4"},
+  {n: "Green Shanks", e: "1st, Japanese store event, Oct 6 2026", d: "OP17-020|OP12-034*4 OP17-021*4 OP17-032*4 OP17-029*4 OP17-033*4 ST32-002*4 OP17-031*4 OP17-027*4 ST16-004*4 ST24-004*2 OP17-022*4 OP17-036*4 OP17-037*4"},
+  {n: "Red-Green Luffy & Ace", e: "1st (5-0), Japanese store event, Oct 12 2026", d: "ST30-001|OP01-016*4 EB04-002*2 OP12-015*4 ST21-014*4 ST31-001*4 EB02-017*4 OP15-035*2 ST30-012*4 OP15-032*1 OP04-016*3 OP12-018*3 ST31-005*4 OP17-017*4 OP06-018*2 OP12-037*3 OP13-040*2"},
+  {n: "Red-Black Sabo", e: "1st (5-0), Japanese store event, Oct 11 2026", d: "OP13-004|OP17-084*3 OP17-086*3 OP17-080*4 OP17-081*1 OP17-082*4 OP17-083*2 OP17-087*3 OP17-095*4 OP17-089*4 OP15-088*3 OP17-119*4 OP17-093*1 OP01-016*1 ST01-011*3 EB04-007*4 OP14-096*1 OP17-096*1 OP17-098*2 OP04-016*2"},
+  {n: "Yellow Enel", e: "1st, Japanese EGB event, Oct 13 2026", d: "OP05-098|OP13-113*3 OP17-113*4 OP11-106*4 OP17-107*4 OP17-109*4 OP17-111*1 OP17-102*4 EB04-058*4 OP17-106*4 OP17-114*4 OP16-119*4 OP17-112*4 OP06-115*4 OP13-117*1 EB01-059*1"},
+  {n: "Purple Enel", e: "1st (5-0), Japanese store event, Oct 12 2026", d: "OP15-058|OP12-071*4 OP15-061*4 OP15-066*2 OP15-067*4 OP15-071*4 ST10-010*2 OP09-072*1 OP07-064*2 OP15-118*4 OP13-076*1 OP15-074*3 OP15-075*4 OP15-076*4 OP15-077*4 OP15-078*4 OP05-077*3"},
+  {n: "Red Ace", e: "Top 8 (13-2), Japanese Flame Flame Fruit Coliseum, Oct 4 2026", d: "OP16-001|OP13-016*4 OP17-014*2 PRB02-003*2 OP16-015*3 OP16-017*2 OP17-009*3 OP16-118*3 OP16-011*2 OP16-014*4 OP16-004*4 OP17-006*4 OP16-003*4 OP17-005*4 OP16-020*2 OP16-021*4 OP17-017*3"},
+  {n: "Purple-Yellow Robin", e: "9-2, Japanese Flame Flame Fruit Coliseum, Oct 4 2026", d: "OP09-062|OP17-113*4 OP17-107*4 OP17-109*4 OP17-111*2 OP12-112*2 OP17-102*4 EB04-058*2 OP17-106*3 OP14-108*3 OP17-114*4 OP16-119*4 OP17-112*4 ST34-003*2 OP17-074*4 OP11-067*1 OP09-078*3"},
+  {n: "Blue-Yellow Hancock", e: "1st (5-0), Japanese store event, Oct 6 2026", d: "OP14-041|OP06-106*2 OP17-109*4 OP14-114*4 OP15-113*4 EB04-058*4 OP16-113*4 OP14-105*4 OP14-107*4 OP14-108*2 OP14-104*4 OP14-112*4 OP08-050*3 OP14-118*4 OP07-057*1 OP06-058*2"}
+];
+let BOT_META = [];   // the most played list of each popular Leader on the Meta page, once it has loaded
+function odeckOpts(sel){
+  const o = (v, t) => `<option value="${esc(v)}"${v === sel ? " selected" : ""}>${esc(t)}</option>`;
+  return o("", "Same as yours") + o("own", "The list typed in below")
+    + `<optgroup label="Tournament decks, October 2026">${BOT_DECKS.map(x => o("t:" + x.d.split("|")[0], `${x.n} (${x.d.split("|")[0]})`)).join("")}</optgroup>`
+    + (BOT_META.length ? `<optgroup label="Most played on the Meta page">${BOT_META.map((x, i) => o("m:" + i, `${nameOf(x.l) || x.l} (${x.l}), ${x.g} game${x.g === 1 ? "" : "s"}`)).join("")}</optgroup>` : "");
+}
+function odeckPick(v){
+  if (/^t:/.test(v)) { const x = BOT_DECKS.find(x => x.d.split("|")[0] === v.slice(2)); return x ? Object.assign(deckUnpack(x.d), {why: `${x.n}: ${x.e}.`}) : null; }
+  if (/^m:/.test(v)) { const x = BOT_META[+v.slice(2)]; return x ? Object.assign(deckUnpack(x.d), {why: `Played ${x.g} time${x.g === 1 ? "" : "s"} on the Meta page, ${wr(x.w, x.g)} wins.`}) : null; }
+  return null;
+}
+function odeckNote(){ const h = $("#f-odeckh"), sel = $("#f-odeck"); if (!h || !sel) return; const x = odeckPick(sel.value); h.textContent = x ? x.why : ""; }
+// fill in the other Leader and list from the choice ("own" leaves what's typed)
+function odeckFill(){
+  const sel = $("#f-odeck"); if (!sel) return;
+  const x = odeckPick(sel.value);
+  if (x) { $("#f-leader2").value = x.l + " " + (nameOf(x.l) || ""); $("#f-deck2").value = x.deck; }
+  else if (!sel.value) { $("#f-leader2").value = ""; $("#f-deck2").value = ""; }
+  odeckNote();
+}
+// add the Meta page's most played list for each of the top Leaders once the shared matches load
+function odeckMeta(){
+  gamesLoad().then(recs => {
+    if (!recs || !recs.length) return;
+    const pick = metaPick(recs, {f: "std", days: 30});
+    BOT_META = metaAgg(pick).slice(0, 12).map(x => { const m = metaLeader(pick, x.l), y = m.lists[0]; return y ? {l: x.l, d: y.d, g: y.g, w: y.w} : null; }).filter(Boolean);
+    const sel = $("#f-odeck"); if (!sel || !modal || modal.type !== "setup" || !BOT_META.length) return;
+    const v = sel.value; sel.innerHTML = odeckOpts(v); sel.value = v;
+  }, () => {});
+}
+// the Meta page's "Play the computer with it"
+function metaBot(i){
+  const s = modal && modal.lists && modal.lists[i], dk = deckUnpack(s); if (!dk) return;
+  closeModal(); openSetup({bot: true, odeck: {l: dk.l + " " + (nameOf(dk.l) || ""), deck: dk.deck}});
+  toast(`The computer will play this ${nameOf(dk.l) || dk.l} list. Pick your own deck and press Play the computer.`);
 }
 // ---------- tutorial: a guided first game against the computer ----------
 // The Zoro starter list with Blockers in it, a fixed opening hand, and you going first. A panel over the card
@@ -3540,11 +3706,13 @@ function tutSkip(){ TUT = null; tutMark(); render(); toast("Tutorial closed. The
 // how well the computer plays. Easy: one Character a turn, no abilities to activate, DON!! all on its Leader, straight
 // at your Leader, and it only defends when a hit would lose. Normal: the strategy guides. Hard: Normal, and it defends
 // sooner, raises each attacker past your Leader's power so one small counter can't stop it, and goes after Blockers.
-const DIFFS = ["Easy", "Normal", "Hard"];
+const DIFFS = ["Easy", "Normal", "Hard", "Expert"];
 const DIFF_HINT = ["Plays one Character a turn, doesn't use its abilities on its turn, and only defends when a hit would lose.",
   "Plays like the strategy guides: blocks, counters, uses its card abilities and goes for the win when it can.",
-  "Defends sooner, spreads DON!! so each attack needs more counters, and takes out your Blockers first."];
-const botLv = () => PR && (PR.diff === 0 || PR.diff === 2) ? PR.diff : 1;
+  "Defends sooner, spreads DON!! so each attack needs more counters, and takes out your Blockers first.",
+  "Hard, and it plans each turn: spends its DON!! on the best mix of cards, holds them back when it can win that turn, counters with no more than it needs, and takes early hits while it has Life to spare."];
+const diffOf = d => d === 0 || d === 2 || d === 3 ? d : 1;
+const botLv = () => PR ? diffOf(PR.diff) : 1;
 let botT = null;
 function botSoon(ms){ if (!PR || !PR.bot || botT) return; botT = setTimeout(botTick, ms == null ? 700 : ms); }
 // run fn as the computer, then show what it did from your side
@@ -3809,13 +3977,46 @@ function botGiveDon(atks, max){
   }
   if (left > 0 && S.donActive > 0) give(atks.find(a => a.f === S.leader) || atks[0], left);
 }
+// Expert: the Characters (and a Stage when it has none) from hand that spend the most of the DON!! it has, giving up
+// as little Counter as it can and then the most power; it plays the dearest of them first
+function botPlan(don){
+  const room = 5 - S.chars.length, cs = S.hand.map((c, i) => ({i, hc: handCost(c), e: CARDDB.get(c.c) || {}}))
+    .filter(x => x.hc && x.hc.cost <= don && (x.e.t === "Character" ? !playTiming(S.hand[x.i], "chars") : x.e.t === "Stage" && !S.stage && !playTiming(S.hand[x.i], "stage"))).slice(0, 14);
+  const val = x => x.hc.cost * 100 - (x.e.ctr || 0) / 100 + (x.e.p || 0) / 1000;
+  let best = {v: 0, set: []};
+  (function go(k, left, ch, st, set, v){
+    if (v > best.v) best = {v, set: set.slice()};
+    for (let j = k; j < cs.length; j++) {
+      const x = cs[j], isSt = x.e.t === "Stage";
+      if (x.hc.cost > left || (isSt ? st : ch >= room)) continue;
+      set.push(x); go(j + 1, left - x.hc.cost, ch + (isSt ? 0 : 1), st || isSt, set, v + val(x)); set.pop();
+    }
+  })(0, don, 0, false, [], 0);
+  return best.set.sort((a, b) => b.hc.cost - a.hc.cost);
+}
+// Expert: the counter cards that just reach amt: the least Counter spent, then the fewest cards, then the least useful
+function botCtrSet(ctrs, amt){
+  let best = null;
+  const cs = ctrs.slice(0, 12), sc = set => [set.reduce((s, x) => s + x.v, 0), set.length, set.reduce((s, x) => s + botVal(x.c.c), 0)];
+  (function go(k, sum, set){
+    if (sum >= amt) { const v = sc(set); if (!best || (v[0] - best.v[0] || v[1] - best.v[1] || v[2] - best.v[2]) < 0) best = {v, set: set.slice()}; return; }
+    for (let j = k; j < cs.length; j++) { set.push(cs[j]); go(j + 1, sum + cs[j].v, set); set.pop(); }
+  })(0, 0, []);
+  return best ? best.set : null;
+}
 function botMain(){
+  // Expert: at the start of its turn's plays, check whether its attackers can win this turn; then it keeps the DON!!
+  if (botLv() === 3 && PR.bwt !== S.turn) { PR.bwt = S.turn; PR.bwin = botLethal(botAttackers()); }
+  if (botLv() === 3 && !PR.bwin) {
+    const plan = botPlan(S.donActive - botCtrKeep())[0];
+    if (plan) { moveCard("hand:" + plan.i, plan.e.t === "Stage" ? "stage" : "chars", false, plan.hc.cost); return 1000; }
+  }
   // 1. play the most expensive Character the active DON!! pay for
-  if (S.chars.length < 5 && !(botLv() === 0 && PR.bpl === S.turn)) {
+  if (botLv() < 3 && S.chars.length < 5 && !(botLv() === 0 && PR.bpl === S.turn)) {
     const opts = S.hand.map((c, i) => ({i, hc: handCost(c), e: CARDDB.get(c.c) || {}})).filter(x => x.e.t === "Character" && x.hc && x.hc.cost <= S.donActive && !playTiming(S.hand[x.i], "chars")).sort((a, b) => b.hc.cost - a.hc.cost || (b.e.p || 0) - (a.e.p || 0));
     if (opts.length) { PR.bpl = S.turn; moveCard("hand:" + opts[0].i, "chars", false, opts[0].hc.cost); return 1000; }
   }
-  if (!S.stage) {
+  if (!S.stage && botLv() < 3) {
     const st = S.hand.map((c, i) => ({i, hc: handCost(c), e: CARDDB.get(c.c) || {}})).filter(x => x.e.t === "Stage" && x.hc && x.hc.cost <= S.donActive && !playTiming(S.hand[x.i], "stage")).sort((a, b) => b.hc.cost - a.hc.cost)[0];
     if (st) { moveCard("hand:" + st.i, "stage", false, st.hc.cost); return 1000; }
   }
@@ -3876,11 +4077,13 @@ function botDefend(){
       const one = ctrs.filter(x => x.v >= amt).sort((x, y) => x.v - y.v)[0];
       let set = one ? [one] : null;
       if (!set) { set = []; let sum = 0; for (const x of ctrs.slice().sort((x, y) => y.v - x.v)) { if (sum >= amt) break; set.push(x); sum += x.v; } if (sum < amt) set = null; }
+      if (lv > 2) set = botCtrSet(ctrs, amt);
       const want = set && (!lv ? r.onLeader && life === 0
+        : lv > 2 ? (r.onLeader ? life <= 2 || (life === 3 && set.length === 1) : (cost(r.f) >= 3 && set.length === 1 && set[0].v <= cost(r.f) * 1000) || (cost(r.f) >= 5 && set.length <= 2))
         : lv > 1 ? (r.onLeader ? life <= 3 || (set.length === 1 && S.hand.length >= 4) : (cost(r.f) >= 3 && set.length === 1) || (cost(r.f) >= 5 && set.length <= 2))
         : (r.onLeader ? life === 0 || life <= 2 || (set.length === 1 && S.hand.length >= 5) : cost(r.f) >= 4 && set.length === 1));
       // worth saving, but the counter cards don't reach: a [Counter] Event that adds power first
-      if (!set && lv && (r.onLeader ? life <= lv + 1 : cost(r.f) >= 6 - lv)) {
+      if (!set && lv && (r.onLeader ? life <= (lv > 2 ? 2 : lv + 1) : cost(r.f) >= Math.max(3, 6 - lv))) {
         const ev = botCounterEvent(amt - ctrs.reduce((s, x) => s + x.v, 0));
         if (ev) { moveCard("hand:" + ev.i, "event", false, ev.cost); return botDefend(); }
       }
@@ -6045,9 +6248,14 @@ document.addEventListener("click", e => {
   const dobtn = t.closest("[data-do]");
   if (dobtn) doAction(dobtn.dataset.do);
 });
+document.addEventListener("input", e => {
+  const t = e.target, sel = $("#f-odeck");
+  if (t && (t.id === "f-leader2" || t.id === "f-deck2") && sel && sel.value !== "own") { sel.value = "own"; odeckNote(); }
+});
 document.addEventListener("change", e => {
   const t = e.target;
   if (t && t.id === "f-diff") { const h = $("#f-diffh"); if (h) h.textContent = DIFF_HINT[+t.value] || ""; return; }
+  if (t && t.id === "f-odeck") { odeckFill(); return; }
   if (t && (t.id === "bd-set" || t.id === "bd-sortset")) {
     bdSetVal = t.value;
     ["bd-set", "bd-sortset"].forEach(id => { const s = document.getElementById(id); if (s) s.value = bdSetVal; });
@@ -6181,6 +6389,9 @@ function doAction(a){
     else if (k === "all") { modal.ld = null; renderMeta(); }
     else if (k === "open") metaOpen(+x);
     else if (k === "copy") metaCopy(+x);
+    else if (k === "bot") metaBot(+x);
+    else if (k === "view") { modal.view = x === "recent" ? "recent" : "ld"; renderMeta(); }
+    else if (k === "rp") { const id = (modal.recent || [])[+x]; if (id) rpFeed(id); }
     return;
   }
   if (a.startsWith("tn:")) {
@@ -6204,6 +6415,8 @@ function doAction(a){
   if (a === "stopwatch") { stopWatch(); return; }
   if (a.startsWith("rpopen:")) { rpOpen(a.slice(7), "list"); return; }
   if (a.startsWith("rpfile:")) { rpDownload(a.slice(7)); return; }
+  if (a.startsWith("rpshare:")) { rpShare(a.slice(8)); return; }
+  if (a === "rpcode") { rpCode(); return; }
   if (a === "rpimport") { const f = $("#rp-file"); if (f) f.click(); return; }
   if (a.startsWith("rpdel:")) { const id = a.slice(6); rpStore(rpList().filter(e => e.id !== id)); if (REC && REC.id === id) REC.dirty = false; openReplays(); toast("Replay deleted."); return; }
   if (a.startsWith("rp:")) {
