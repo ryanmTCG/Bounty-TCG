@@ -587,7 +587,7 @@
     "P-055": {
       "a": "Strike",
       "c": "Blue",
-      "ctr": 0,
+      "ctr": 1000,
       "k": 4,
       "kw": "-",
       "n": "Monkey.D.Luffy (055) (College Basketball US Voyage)",
@@ -684,7 +684,7 @@
     },
     "P-065": {
       "a": "Wisdom",
-      "c": "Yellow",
+      "c": "Black",
       "ctr": 1000,
       "k": 3,
       "kw": "-",
@@ -753,7 +753,7 @@
       "k": 4,
       "kw": "-",
       "n": "Marco",
-      "p": 0,
+      "p": 6000,
       "s": "Whitebeard Pirates",
       "t": "Character"
     },
@@ -762,25 +762,27 @@
       "k": 4,
       "kw": "-",
       "n": "Ryuma",
-      "p": 0,
+      "p": 6000,
       "s": "MONSTERS",
       "t": "Character"
     },
     "P-073": {
       "c": "Yellow",
+      "ctr": 2000,
       "k": 5,
       "kw": "-",
       "n": "Sabo",
-      "p": 0,
+      "p": 5000,
       "s": "Dressrosa / Revolutionary Army",
       "t": "Character"
     },
     "P-074": {
       "c": "Blue",
+      "ctr": 1000,
       "k": 3,
       "kw": "-",
       "n": "Portgas .D. Ace",
-      "p": 0,
+      "p": 4000,
       "s": "Whitebeard Pirates",
       "t": "Character"
     },
@@ -807,15 +809,17 @@
     },
     "P-077": {
       "c": "Purple",
+      "ctr": 1000,
       "k": 6,
       "kw": "-",
       "n": "Ulti",
-      "p": 5000,
+      "p": 6000,
       "s": "Animal Kingdom Pirates",
       "t": "Character"
     },
     "P-078": {
       "c": "Green",
+      "ctr": 2000,
       "k": 4,
       "kw": "-",
       "n": "Adio",
@@ -825,6 +829,7 @@
     },
     "P-079": {
       "c": "Green",
+      "ctr": 1000,
       "k": 2,
       "kw": "Blocker",
       "n": "Lim",
@@ -843,6 +848,7 @@
     },
     "P-081": {
       "c": "Blue",
+      "ctr": 1000,
       "k": 4,
       "kw": "-",
       "n": "Dracule Mihawk",
@@ -861,6 +867,7 @@
     },
     "P-083": {
       "c": "Red",
+      "ctr": 1000,
       "k": 6,
       "kw": "-",
       "n": "Shanks",
@@ -873,16 +880,17 @@
       "k": 7,
       "kw": "-",
       "n": "Buggy",
-      "p": 3000,
+      "p": 8000,
       "s": "Cross Guild / Four Emperors",
       "t": "Character"
     },
     "P-085": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 5,
       "kw": "-",
       "n": "Jewelry Bonney",
-      "p": 5000,
+      "p": 6000,
       "s": "Supernova / Bonney Pirates",
       "t": "Character"
     },
@@ -907,6 +915,7 @@
     },
     "P-088": {
       "c": "Yellow",
+      "ctr": 2000,
       "k": 4,
       "kw": "-",
       "n": "Trafalgar Law",
@@ -916,6 +925,7 @@
     },
     "P-089": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 5,
       "kw": "-",
       "n": "Tony Tony.Chopper",
@@ -925,6 +935,7 @@
     },
     "P-090": {
       "c": "Purple",
+      "ctr": 1000,
       "k": 7,
       "kw": "-",
       "n": "Charlotte Smoothie",
@@ -934,6 +945,7 @@
     },
     "P-091": {
       "c": "Green",
+      "ctr": 1000,
       "k": 4,
       "kw": "-",
       "n": "Shirahoshi",
@@ -943,6 +955,7 @@
     },
     "P-092": {
       "c": "Red",
+      "ctr": 1000,
       "k": 7,
       "kw": "-",
       "n": "Coby",
@@ -979,6 +992,7 @@
     },
     "P-096": {
       "c": "Blue",
+      "ctr": 1000,
       "k": 2,
       "kw": "-",
       "n": "Young Girl",
@@ -1009,7 +1023,7 @@
       "k": 10,
       "kw": "-",
       "n": "Monkey.D.Luffy",
-      "p": 2000,
+      "p": 12000,
       "s": "The Four Emperors/Straw Hat Crew",
       "t": "Character"
     },
@@ -1018,12 +1032,13 @@
       "k": 10,
       "kw": "-",
       "n": "Marshall.D.Teach",
-      "p": 0,
+      "p": 12000,
       "s": "The Four Emperors/Blackbeard Pirates",
       "t": "Character"
     },
     "P-101": {
       "c": "Red",
+      "ctr": 1000,
       "k": 4,
       "kw": "Blocker",
       "n": "Tony Tony.Chopper",
@@ -1033,6 +1048,7 @@
     },
     "P-102": {
       "c": "Green",
+      "ctr": 2000,
       "k": 4,
       "kw": "-",
       "n": "Nami",
@@ -1054,7 +1070,7 @@
       "k": 8,
       "kw": "-",
       "n": "Shanks",
-      "p": 0,
+      "p": 10000,
       "s": "The Four Emperors/Red-Haired Pirates/Former Roger Pirates",
       "t": "Character"
     },
@@ -1069,6 +1085,7 @@
     },
     "P-106": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 5,
       "kw": "-",
       "n": "Monkey.D.Luffy",
@@ -1081,7 +1098,7 @@
       "k": 8,
       "kw": "-",
       "n": "Gol.D.Roger",
-      "p": 0,
+      "p": 10000,
       "s": "Pirate King/Roger Pirates",
       "t": "Character"
     },
@@ -1105,37 +1122,41 @@
     },
     "P-110": {
       "c": "Blue",
+      "ctr": 1000,
       "k": 7,
       "kw": "-",
       "n": "モンキー・D・ルフィ (Monkey.D.Luffy)",
-      "p": 0,
+      "p": 9000,
       "s": "エルバフ/四皇/麦わらの一味",
       "t": "Character"
     },
     "P-111": {
       "c": "Green",
+      "ctr": 1000,
       "k": 3,
       "kw": "-",
       "n": "Nico Robin",
-      "p": 0,
+      "p": 4000,
       "s": "Straw Hat Crew",
       "t": "Character"
     },
     "P-112": {
       "c": "Blue",
+      "ctr": 1000,
       "k": 5,
       "kw": "-",
       "n": "Nami",
-      "p": 0,
+      "p": 6000,
       "s": "Straw Hat Crew",
       "t": "Character"
     },
     "P-113": {
       "c": "Yellow",
+      "ctr": 2000,
       "k": 4,
       "kw": "Blocker",
       "n": "Jewelry Bonney",
-      "p": 0,
+      "p": 4000,
       "s": "Bonney Pirates",
       "t": "Character"
     },
@@ -1150,6 +1171,7 @@
     },
     "P-115": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 6,
       "kw": "-",
       "n": "Boa Hancock",
@@ -1185,6 +1207,7 @@
     },
     "P-119": {
       "c": "Red",
+      "ctr": 1000,
       "k": 4,
       "kw": "-",
       "n": "Portgas.D.Ace",
@@ -1327,6 +1350,7 @@
     },
     "P-135": {
       "c": "Green",
+      "ctr": 1000,
       "k": 5,
       "kw": "Blocker",
       "n": "Monkey.D.Luffy",
@@ -1506,6 +1530,7 @@
     },
     "P-155": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 4,
       "kw": "-",
       "n": "Trafalgar Law",

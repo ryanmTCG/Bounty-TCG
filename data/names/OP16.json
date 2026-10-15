@@ -675,7 +675,7 @@
       "ctr": 0,
       "k": 7,
       "kw": "-",
-      "n": "Sakazuk",
+      "n": "Sakazuki",
       "p": 8000,
       "s": "Admiral/Navy",
       "t": "Character"
@@ -1031,7 +1031,7 @@
       "t": "Character"
     },
     "OP16-099": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "I've Come Here... To Cut Those Chains!!!",
@@ -1039,7 +1039,7 @@
       "t": "Event"
     },
     "OP16-100": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "Hallowed Glacier Slash",
@@ -1047,7 +1047,7 @@
       "t": "Event"
     },
     "OP16-101": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 2,
       "kw": "-",
       "n": "Mahoroba",

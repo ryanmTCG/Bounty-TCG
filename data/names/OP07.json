@@ -964,7 +964,7 @@
       "t": "Character"
     },
     "OP07-094": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "Shave",
@@ -972,7 +972,7 @@
       "t": "Event"
     },
     "OP07-095": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 2,
       "kw": "-",
       "n": "Iron Body",
@@ -980,7 +980,7 @@
       "t": "Event"
     },
     "OP07-096": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "Tempest Kick",

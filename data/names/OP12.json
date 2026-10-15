@@ -993,7 +993,7 @@
       "t": "Character"
     },
     "OP12-096": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 4,
       "kw": "-",
       "n": "Ursa Shock",
@@ -1001,7 +1001,7 @@
       "t": "Event"
     },
     "OP12-097": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "Captains Assembled",
@@ -1009,7 +1009,7 @@
       "t": "Event"
     },
     "OP12-098": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "Hair Removal Fist",
@@ -1229,7 +1229,7 @@
       "a": "Strike",
       "c": "Yellow",
       "ctr": 1000,
-      "k": 8,
+      "k": 6,
       "kw": "-",
       "n": "Bartholomew Kuma",
       "p": 7000,

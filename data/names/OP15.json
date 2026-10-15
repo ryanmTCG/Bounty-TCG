@@ -828,6 +828,7 @@
     },
     "OP15-081": {
       "c": "Black",
+      "ctr": 2000,
       "k": 1,
       "kw": "-",
       "n": "Sanji",
@@ -837,6 +838,7 @@
     },
     "OP15-082": {
       "c": "Black",
+      "ctr": 1000,
       "k": 4,
       "kw": "-",
       "n": "Charlotte Lola",
@@ -846,6 +848,7 @@
     },
     "OP15-083": {
       "c": "Black",
+      "ctr": 2000,
       "k": 1,
       "kw": "-",
       "n": "Spoils",
@@ -855,6 +858,7 @@
     },
     "OP15-084": {
       "c": "Black",
+      "ctr": 1000,
       "k": 1,
       "kw": "-",
       "n": "Dr. Hogback",
@@ -864,6 +868,7 @@
     },
     "OP15-085": {
       "c": "Black",
+      "ctr": 1000,
       "k": 2,
       "kw": "-",
       "n": "Tony Tony.Chopper",
@@ -900,6 +905,7 @@
     },
     "OP15-089": {
       "c": "Black",
+      "ctr": 2000,
       "k": 5,
       "kw": "-",
       "n": "Franky",
@@ -909,6 +915,7 @@
     },
     "OP15-090": {
       "c": "Black",
+      "ctr": 2000,
       "k": 1,
       "kw": "-",
       "n": "Perona",
@@ -918,6 +925,7 @@
     },
     "OP15-091": {
       "c": "Black",
+      "ctr": 2000,
       "k": 1,
       "kw": "-",
       "n": "Margarita",
@@ -927,6 +935,7 @@
     },
     "OP15-092": {
       "c": "Black",
+      "ctr": 1000,
       "k": 7,
       "kw": "-",
       "n": "Monkey.D.Luffy",
@@ -936,6 +945,7 @@
     },
     "OP15-093": {
       "c": "Black",
+      "ctr": 1000,
       "k": 1,
       "kw": "Rush: Character",
       "n": "Risky Brothers",
@@ -945,6 +955,7 @@
     },
     "OP15-094": {
       "c": "Black",
+      "ctr": 1000,
       "k": 2,
       "kw": "Blocker",
       "n": "Roronoa Zoro",
@@ -953,7 +964,7 @@
       "t": "Character"
     },
     "OP15-095": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "Gum-Gum Storm",
@@ -962,7 +973,7 @@
       "t": "Event"
     },
     "OP15-096": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 0,
       "kw": "-",
       "n": "Swallow Bond en Avant",
@@ -971,7 +982,7 @@
       "t": "Event"
     },
     "OP15-097": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "I Find It Embarrassing...as a Human Being",
@@ -989,6 +1000,7 @@
     },
     "OP15-099": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 6,
       "kw": "Rush",
       "n": "Urouge",
@@ -998,6 +1010,7 @@
     },
     "OP15-100": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 5,
       "kw": "-",
       "n": "Kamakiri",
@@ -1016,6 +1029,7 @@
     },
     "OP15-102": {
       "c": "Yellow",
+      "ctr": 2000,
       "k": 4,
       "kw": "-",
       "n": "Gan.Fall",
@@ -1025,6 +1039,7 @@
     },
     "OP15-103": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 3,
       "kw": "-",
       "n": "Genbo",
@@ -1034,6 +1049,7 @@
     },
     "OP15-104": {
       "c": "Yellow",
+      "ctr": 2000,
       "k": 1,
       "kw": "-",
       "n": "Conis",
@@ -1043,6 +1059,7 @@
     },
     "OP15-105": {
       "c": "Yellow",
+      "ctr": 2000,
       "k": 1,
       "kw": "-",
       "n": "Jewelry Bonney",
@@ -1052,6 +1069,7 @@
     },
     "OP15-106": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 2,
       "kw": "-",
       "n": "Octopus Balloon",
@@ -1061,6 +1079,7 @@
     },
     "OP15-107": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 4,
       "kw": "-",
       "n": "Tony Tony.Chopper",
@@ -1070,6 +1089,7 @@
     },
     "OP15-108": {
       "c": "Yellow",
+      "ctr": 2000,
       "k": 1,
       "kw": "-",
       "n": "Nami",
@@ -1079,6 +1099,7 @@
     },
     "OP15-109": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 7,
       "kw": "-",
       "n": "Nico Robin",
@@ -1088,6 +1109,7 @@
     },
     "OP15-110": {
       "c": "Yellow",
+      "ctr": 2000,
       "k": 3,
       "kw": "-",
       "n": "Braham",
@@ -1097,6 +1119,7 @@
     },
     "OP15-111": {
       "c": "Yellow",
+      "ctr": 2000,
       "k": 4,
       "kw": "Rush",
       "n": "Mont Blanc Noland",
@@ -1106,6 +1129,7 @@
     },
     "OP15-112": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 4,
       "kw": "Blocker",
       "n": "Raki",
@@ -1124,6 +1148,7 @@
     },
     "OP15-114": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 5,
       "kw": "-",
       "n": "Wyper",
@@ -1163,16 +1188,16 @@
       "k": 6,
       "kw": "-",
       "n": "Enel",
-      "p": 0,
+      "p": 8000,
       "s": "Sky Island",
       "t": "Character"
     },
     "OP15-119": {
       "c": "Yellow",
-      "k": 8,
+      "k": 5,
       "kw": "Rush,Blocker",
       "n": "Monkey.D.Luffy",
-      "p": 0,
+      "p": 7000,
       "s": "Sky Island/Straw Hat Crew",
       "t": "Character"
     }

@@ -87,6 +87,7 @@
     },
     "EB03-009": {
       "c": "Red",
+      "ctr": 2000,
       "k": 1,
       "kw": "-",
       "n": "Makino",
@@ -512,6 +513,7 @@
     },
     "EB03-050": {
       "c": "Yellow",
+      "ctr": 1000,
       "k": 2,
       "kw": "Double Attack",
       "n": "Conis",

@@ -730,7 +730,7 @@
       "kw": "-",
       "lf": 5,
       "n": "Magellan",
-      "p": 6000,
+      "p": 5000,
       "s": "Impel Down",
       "t": "Leader"
     },
@@ -1215,7 +1215,7 @@
       "t": "Character"
     },
     "OP02-117": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "Ice Age",
@@ -1223,7 +1223,7 @@
       "t": "Event"
     },
     "OP02-118": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "Yasakani Sacred Jewel",
@@ -1231,7 +1231,7 @@
       "t": "Event"
     },
     "OP02-119": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 2,
       "kw": "-",
       "n": "Meteor Volcano",

@@ -437,7 +437,7 @@
     "OP10-043": {
       "a": "Strike",
       "c": "Blue",
-      "ctr": 1000,
+      "ctr": 2000,
       "k": 2,
       "kw": "Banish",
       "n": "Moocy",
@@ -994,7 +994,7 @@
       "t": "Character"
     },
     "OP10-096": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 4,
       "kw": "-",
       "n": "There's No Longer Any Need for the Seven Warlords of the Sea!!!",
@@ -1002,7 +1002,7 @@
       "t": "Event"
     },
     "OP10-097": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "Gum-Gum Rhino Schneider",
@@ -1010,7 +1010,7 @@
       "t": "Event"
     },
     "OP10-098": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 6,
       "kw": "-",
       "n": "Liberation",
@@ -1230,7 +1230,7 @@
       "a": "Slash",
       "c": "Yellow",
       "ctr": 0,
-      "k": 0,
+      "k": 7,
       "kw": "-",
       "n": "Trafalgar Law",
       "p": 9000,

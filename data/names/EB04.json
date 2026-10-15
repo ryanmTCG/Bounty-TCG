@@ -247,7 +247,7 @@
     "EB04-025": {
       "a": "Slash",
       "c": "Blue",
-      "ctr": 0,
+      "ctr": 1000,
       "k": 7,
       "kw": "-",
       "n": "Nefeltari Vivi",
@@ -603,7 +603,7 @@
       "c": "Yellow",
       "k": 6,
       "kw": "-",
-      "n": "Black Rope Dragon Twiste",
+      "n": "Black Rope Dragon Twister",
       "s": "Fish-Man Island/Supernovas/Straw Hat Crew",
       "t": "Event"
     },

@@ -983,7 +983,7 @@
       "t": "Character"
     },
     "OP06-095": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 2,
       "kw": "-",
       "n": "Shadows Asgard",
@@ -991,7 +991,7 @@
       "t": "Event"
     },
     "OP06-096": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 3,
       "kw": "-",
       "n": "...Nothing...at All!!!",
@@ -1192,7 +1192,7 @@
       "c": "Yellow",
       "k": 0,
       "kw": "-",
-      "n": "You're the One Who Should Disappear",
+      "n": "You're the One Who Should Disappear.",
       "s": "Sky Island",
       "t": "Event"
     },

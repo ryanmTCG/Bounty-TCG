@@ -195,7 +195,7 @@
       "n": "Roronoa Zoro",
       "p": 5000,
       "s": "East Blue / Straw Hat Crew",
-      "t": "Leader"
+      "t": "Character"
     },
     "EB02-020": {
       "c": "Green",
@@ -414,7 +414,7 @@
       "kw": "-",
       "n": "Merry Go",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Stage"
     },
     "EB02-042": {
       "a": "Strike",
@@ -513,7 +513,7 @@
       "t": "Event"
     },
     "EB02-051": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 3,
       "kw": "-",
       "n": "Three-Pace Hum Soul Notch Slash",

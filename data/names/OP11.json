@@ -819,7 +819,7 @@
       "n": "Decuplets",
       "p": 6000,
       "s": "Big Mom Pirates",
-      "t": "Event"
+      "t": "Character"
     },
     "OP11-079": {
       "c": "Purple",
@@ -1011,7 +1011,7 @@
       "t": "Character"
     },
     "OP11-097": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "After All These Years I'm Losing My Edge!!!",
@@ -1019,7 +1019,7 @@
       "t": "Event"
     },
     "OP11-098": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 3,
       "kw": "-",
       "n": "Blue Hole",
@@ -1231,7 +1231,7 @@
     },
     "OP11-119": {
       "a": "Strike",
-      "c": "Yellow",
+      "c": "Black",
       "ctr": 0,
       "k": 8,
       "kw": "-",

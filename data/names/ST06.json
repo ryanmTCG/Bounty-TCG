@@ -143,7 +143,7 @@
       "t": "Character"
     },
     "ST06-014": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 2,
       "kw": "-",
       "n": "Shockwave",
@@ -151,7 +151,7 @@
       "t": "Event"
     },
     "ST06-015": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "Great Eruption",
@@ -159,7 +159,7 @@
       "t": "Event"
     },
     "ST06-016": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "White Out",

@@ -576,7 +576,7 @@
     },
     "OP08-057": {
       "a": "Special",
-      "c": "Blue/Purple",
+      "c": "Purple/Black",
       "kw": "-",
       "lf": 4,
       "n": "King",
@@ -619,7 +619,7 @@
     "OP08-061": {
       "a": "Special",
       "c": "Purple",
-      "ctr": 0,
+      "ctr": 1000,
       "k": 5,
       "kw": "-",
       "n": "Charlotte Oven",
@@ -782,7 +782,7 @@
       "c": "Purple",
       "k": 3,
       "kw": "-",
-      "n": "It's to Die For",
+      "n": "It's to Die For...",
       "s": "The Four Emperors / Big Mom Pirates",
       "t": "Event"
     },
@@ -841,7 +841,7 @@
     "OP08-082": {
       "a": "Slash",
       "c": "Black",
-      "ctr": 1000,
+      "ctr": 2000,
       "k": 1,
       "kw": "-",
       "n": "Sasaki",
@@ -971,7 +971,7 @@
       "t": "Character"
     },
     "OP08-094": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 2,
       "kw": "-",
       "n": "Imperial Flame",
@@ -979,7 +979,7 @@
       "t": "Event"
     },
     "OP08-095": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 2,
       "kw": "-",
       "n": "Iron Body Fang Flash",
@@ -987,7 +987,7 @@
       "t": "Event"
     },
     "OP08-096": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 1,
       "kw": "-",
       "n": "People's Dreams Don't Ever End!!",
@@ -995,7 +995,7 @@
       "t": "Event"
     },
     "OP08-097": {
-      "c": "Yellow",
+      "c": "Black",
       "k": 3,
       "kw": "-",
       "n": "Heliceratops",
