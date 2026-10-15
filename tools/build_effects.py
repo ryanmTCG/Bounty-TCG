@@ -102,6 +102,7 @@ def self_step(core, base):
     if re.match(r"(?:you may )?return %s to (?:the owner's|your) hand" % SELF, low): return dict(base, a="bounce", self=True)
     if re.match(r"(?:you may )?place %s at the bottom of (?:the owner's|your) deck" % SELF, low): return dict(base, a="bottom", self=True)
     if re.match(r"(?:you may )?set %s as active(?:\.|$)" % SELF, low): return dict(base, a="stand", self=True)
+    if re.match(r"(?:you may )?k\.o\. %s(?:\.|$)" % SELF, low): return dict(base, a="ko", self=True)
     m = re.match(r"(?:you may )?play this (?:character |stage )?card(?: from your trash)?( rested)?(?:\.|$)", low)
     if m: return dict(base, a="playSelf", rested=bool(m.group(1)))
     if re.match(r"(?:you may )?add this card to your hand", low): return dict(base, a="handSelf")
@@ -178,7 +179,7 @@ def step(clause, pay=False):
     m = re.search(r"\breturn (\w+)( or more)? (?:of your (?:active )?)?don!! cards?(?: from your field)? to your don!! deck", cl)
     if m: return dict(base, a="returnDon", who="own", n=num(m.group(1)), upTo=False)
     # DON!! in the cost area: "You may rest 2 of your DON!! cards", "Set up to 2 of your DON!! cards as active"
-    m = re.match(r"(?:you may )?rest (\w+) of your don!! cards(?:\.|$)", cl)
+    m = re.match(r"(?:you may )?rest (\w+) of your (?:active )?don!! cards?(?:\.|$)", cl)
     if m: return dict(base, a="restDon", n=num(m.group(1)))
     m = re.match(r"set up to (\w+) of your don!! cards? as active(?:\.|$)", cl)
     if m: return dict(base, a="standDon", n=num(m.group(1)))
@@ -446,6 +447,91 @@ def sgn(v):
     return int(v[1:]) * (-1 if v[0] in "-−" else 1)
 
 
+# "If this Character would be K.O.'d, you may trash 1 card from your hand instead.": what it stops ("ko" a K.O., "rm" any
+# way of leaving the field; after ":" who does it: "opp" your opponent's effect, "fx" any effect, "battle", "foe" your
+# opponent's effect or battle)
+RP_EV = [
+    (r"be K\.O\.'d or would be removed from the field by your opponent's effect", ["ko", "rm:opp"]),
+    (r"be removed from the field by your opponent's effect or K\.O\.'d", ["rm:opp", "ko"]),
+    (r"be K\.O\.'d in battle", ["ko:battle"]),
+    (r"be K\.O\.'d by your opponent's effect", ["ko:opp"]),
+    (r"be K\.O\.'d by an effect", ["ko:fx"]),
+    (r"be K\.O\.'d", ["ko"]),
+    (r"be removed from the field by your opponent's effect", ["rm:opp"]),
+    (r"be removed from the field by your opponent", ["rm:foe"]),
+    (r"be removed from the field", ["rm"]),
+    (r"leave the field", ["rm"]),
+]
+
+
+def when_spec(w):
+    """What a "When ..., ..." ability waits for, as a list of {"e": event, ...}: "don" DON!! returned from your field to your
+    DON!! deck ("n" or more, "by": "own" your effect), "rest" this card becomes rested ("by": "opp"), "event" you activate
+    an Event, "dmg" your attack deals damage to your opponent's Life ("self": this card's attack), "hit" you take damage,
+    "ko" a Character is K.O.'d ("side": "own" / "opp", "f" which of yours), "rm" your Character leaves the field ("by":
+    "opp" / "fx"), "discard" a card is trashed from your hand by an effect ("ty" the effect's card type), "play" you play a
+    Character ("f" which, "from": "hand" / "trash")."""
+    m = re.fullmatch(r"(?:a|(\d+) or more) DON!! cards? on (?:your|the) field (?:is|are) returned to your DON!! deck( by your effect)?", w)
+    if m: return [dict({"e": "don"}, **({"n": int(m.group(1))} if m.group(1) else {}), **({"by": "own"} if m.group(2) else {}))]
+    m = re.fullmatch(r"this (?:Character|Leader) becomes rested( by your opponent's Character's effect)?", w)
+    if m: return [dict({"e": "rest"}, **({"by": "opp"} if m.group(1) else {}))]
+    if w == "you activate an Event": return [{"e": "event"}]
+    if re.fullmatch(r"this (?:Character|Leader)'s attack deals damage to your opponent's Life", w): return [{"e": "dmg", "self": True}]
+    if w == "you deal damage to your opponent's Life": return [{"e": "dmg"}]
+    if w == "a Character is K.O.'d": return [{"e": "ko"}]
+    if w == "your opponent's Character is K.O.'d": return [{"e": "ko", "side": "opp"}]
+    m = re.fullmatch(r"(you take damage or )?(?:one of )?your (.*?\bCharacters?\b.*?) (?:is|are) K\.O\.'d", w)
+    if m: return ([{"e": "hit"}] if m.group(1) else []) + [{"e": "ko", "side": "own", "f": "your " + m.group(2)}]
+    m = re.fullmatch(r"your (.*?\bCharacters?\b.*?) is removed from the field by (your opponent's effect|an effect)", w)
+    if m: return [{"e": "rm", "f": "your " + m.group(1), "by": "opp" if "opponent" in m.group(2) else "fx"}]
+    m = re.fullmatch(r"a card is trashed from your hand by (?:an|your \{([^}]+)\} type card's) effect", w)
+    if m: return [dict({"e": "discard"}, **({"ty": m.group(1)} if m.group(1) else {}))]
+    m = re.fullmatch(r"you play an? (Character(?: with no base effect)?)( from your hand)?", w)
+    if m: return [dict({"e": "play", "f": m.group(1)}, **({"from": "hand"} if m.group(2) else {}))]
+    m = re.fullmatch(r"an? ((?:\{[^}]+\} type )?Character)(?: card)? is played from your trash", w)
+    if m: return [{"e": "play", "f": m.group(1), "from": "trash"}]
+    return None
+
+
+def replacement(body):
+    """A card that stays on the field when its owner pays something instead: {"w": "self" (this Character) or "chars"
+    (the Characters "f" describes; "n" a name, "x" not this one), "on": RP_EV, "c": a condition, "nc": "If ..., this
+    effect is negated.", "must": no "you may", "steps": the cost}. The game asks when one of those would leave the field."""
+    sents = re.split(r"(?<=\.)\s+(?=[A-Z])", body.strip())
+    nc = next((m.group(1) for m in (re.match(r"If (.+), this effect is negated\.$", x) for x in sents) if m), None)
+    for s in sents:
+        m = re.match(r"If (?:(?P<c>[^,]+?) and (?=this Character would))?(?P<who>this Character|(?:one of |any of )?your .+?|you have an? .+? that) "
+                     r"would (?P<ev>.+?), (?P<may>you may )?(?P<cost>.+?) instead(?P<that> of that Character being K\.O\.'d)?\.$", s)
+        if not m: continue
+        on = next((v for k, v in RP_EV if re.fullmatch(k, m.group("ev"))), None)
+        if not on: return None
+        rp = {"on": on}
+        who = m.group("who")
+        if who == "this Character": rp["w"] = "self"
+        else:
+            f = re.sub(r"^(?:one of |any of )?your |^you have an? | that$", "", who)
+            if re.search(r"\bother than this Character\b", f): rp["x"] = True; f = re.sub(r",? other than this Character", "", f)
+            nm = re.search(r"(?<!other than )\[([^\]]+)\]", f)
+            if nm: rp["n"] = nm.group(1); f = (f[:nm.start()] + f[nm.end():]).strip()
+            rp.update(w="chars", f="your " + (f if re.search(r"\bCharacters?\b", f) else (f + " Character").strip()))
+        if m.group("c"): rp["c"] = m.group("c")
+        if nc: rp["nc"] = nc
+        if not m.group("may"): rp["must"] = True
+        cost = m.group("cost")
+        # "add it to the top of your Life cards face-down", "give that Character -1000 power during this turn": the card
+        # that would leave the field
+        it = re.match(r"add it to the top of your Life cards( face-down| face-up)?$", cost)
+        pw = re.match(r"give that Character ([+\-−])(\d+) power during this turn$", cost)
+        if it: steps = [{"a": "life", "rt": True, "text": cost[0].upper() + cost[1:] + "."}] + ([{"a": "other"}] if it.group(1) == " face-up" else [])
+        elif pw: steps = [{"a": "pwr", "rt": True, "n": int(pw.group(2)) * (1 if pw.group(1) == "+" else -1), "text": cost[0].upper() + cost[1:] + "."}]
+        else: steps = steps_of(cost[0].upper() + cost[1:] + ".")
+        # "rest your Leader or 1 [Corrida Coliseum]": a choice the steps can't hold
+        if not steps or any(x["a"] == "other" for x in steps) or re.search(r" or 1 \[", cost): steps = [{"a": "other", "text": cost[0].upper() + cost[1:] + "."}]
+        rp["steps"] = steps
+        return rp
+    return None
+
+
 def abilities(text, is_trigger=False):
     # a misprint on OP17-076
     text = re.sub(r"\bCharactes\b", "Characters", (text or "").strip())
@@ -477,6 +563,11 @@ def abilities(text, is_trigger=False):
         if km:
             timings, koBy = ["onKO"], {"your opponent's effect": "opp", "an effect": "fx"}.get(km.group(1))
             body = km.group(2)[0].upper() + km.group(2)[1:]
+        # "When a DON!! card on your field is returned to your DON!! deck, draw 1 card.": the game offers it when that
+        # happens (wh, see when_spec)
+        wm = re.match(r"When (.+?), (.+)$", body, re.S) if set(timings) <= {"yourTurn"} and not km else None
+        wh = when_spec(wm.group(1)) if wm else None
+        if wh: body = wm.group(2)[0].upper() + wm.group(2)[1:]
         # a keyword tag followed only by its reminder text has nothing to carry out; Double Attack, Banish and
         # Unblockable are kept as always-on grants (they can need DON!!: "[DON!! x1] [Banish]")
         if kws and not timings and (not body or re.fullmatch(r"\([^()]*\)\.?", body)):
@@ -498,14 +589,14 @@ def abilities(text, is_trigger=False):
         steps = steps_of(body)
         # "[DON!! x1] This Character gains [Rush]" with no timing is always-on (the game reads it from the text), not
         # something to carry out
-        if set(timings) <= {"yourTurn"}: steps = [s for s in steps if not (s["a"] == "kw" and s.get("self"))]
+        if set(timings) <= {"yourTurn"} and not wh: steps = [s for s in steps if not (s["a"] == "kw" and s.get("self"))]
         if all(s["a"] == "other" for s in steps): steps = []
         if restDon: steps = [{"a": "restDon", "n": restDon, "pay": True, "text": f"Rest {restDon} of your DON!! cards."}] + (steps or [{"a": "other", "text": body}])
-        st = static(body, tags) if set(timings) <= {"yourTurn"} else None
+        st = static(body, tags) if set(timings) <= {"yourTurn"} and not wh else None
         # "All of your Characters gain +1 cost. If you have a Character with a cost of 8 or more, this Leader gains +1000
         # power.": each sentence that is always-on on its own is an ability of its own; the rest stays as the steps
         more = []
-        sents = re.split(r"(?<=\.)\s+(?=[A-Z])|,? and (?=if it is your opponent's turn, )", body) if st is None and set(timings) <= {"yourTurn"} else []
+        sents = re.split(r"(?<=\.)\s+(?=[A-Z])|,? and (?=if it is your opponent's turn, )", body) if st is None and set(timings) <= {"yourTurn"} and not wh else []
         if len(sents) > 1 and any(static(x, tags) for x in sents):
             more = [static(x, tags) for x in sents if static(x, tags)]
             left = " ".join(x for x in sents if not static(x, tags))
@@ -517,6 +608,8 @@ def abilities(text, is_trigger=False):
         # "... instead of drawing 1 card", "If ... would be removed ..., you may ... instead": a replacement the player
         # picks, so the whole ability is done by hand
         if re.search(r"\binstead\b", body, re.I): steps = []
+        rp = replacement(body) if set(timings) <= {"yourTurn"} and not more and not wh else None
+        if more and not st and not steps: rp = replacement(left)
         # "All Character cards in your hand without a Counter have a +1000 Counter" (while this card is on the field)
         hc = None if timings else re.match(r"all (?:of your )?(?:\{([^}]+)\} type )?character cards (?:in your hand )?without a counter have a \+(\d+) counter", body, re.I)
         if hc: steps = []
@@ -526,6 +619,8 @@ def abilities(text, is_trigger=False):
             if don: ab["don"] = don
             if donMinus: ab["donMinus"] = donMinus
             if koBy: ab["koBy"] = koBy
+            if rp: ab["rp"] = rp
+            if wh: ab["wh"] = wh
             if steps: ab["steps"] = steps
             if st: ab["s"] = st
             out.append(ab)
@@ -564,6 +659,7 @@ def main(folder, report=False):
         tab, _ = abilities(c.get("trigger"), is_trigger=True)
         for a in ab + tab:
             if "steps" in a: a["steps"] = [compact(s) for s in a["steps"]]
+            if "rp" in a: a["rp"]["steps"] = [compact(s) for s in a["rp"]["steps"]]
         entry = {"abilities": ab + tab}
         if blocker: entry["blocker"] = True
         effects[code] = entry
@@ -585,7 +681,7 @@ def print_report(effects):
         for a in e["abilities"]:
             n_ab += 1
             if a.get("s") or a.get("hc"): n_stat += 1; continue
-            st = list(walk(a.get("steps", [])))
+            st = list(walk(a["rp"]["steps"] if a.get("rp") else a.get("steps", [])))
             if st and all(s["a"] != "other" for s in st): n_auto += 1
             for s in st or [{"a": "other", "text": a["text"]}]:
                 if s["a"] == "other": rest[re.sub(r"\d+", "N", re.sub(r"\[[^\]]+\]|\{[^}]+\}", "X", s["text"]))[:100]] += 1

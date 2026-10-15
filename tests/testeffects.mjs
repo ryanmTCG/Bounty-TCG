@@ -411,6 +411,106 @@ check(cx.now[0] === !cx.my && cx.now[2] === cx.my && cx.now[1] && cx.now[3], "[O
 check(cx.buchi === true && cx.orTrig && cx.all, "\"you don't have [X]\", \"{X} type Characters or Characters with a [Trigger]\" and \"your opponent's Leader and all of their Characters\" read right");
 check(cx.fits.every(Boolean) && cx.ko, "\"When this Character is K.O.'d by your opponent's effect\" fires only for that, [Opponent's Turn] abilities only then, and \"Activate this card's [On K.O.] effect\" Triggers work");
 check(cx.st.join() === "1,1000" && cx.peq, "ST14-001's two always-on effects both count, and \"with 6000 base power\" means exactly that");
+// "If this Character would be K.O.'d, you may ... instead": the K.O. waits while you choose. Paying keeps the card, saying
+// no lets it go (EB04-030). "your {X} type Character ... by your opponent's effect" covers only those, and not battles
+// (OP13-047); "in battle" only battles (OP10-034); "add it to the top of your Life cards" moves the card itself (OP11-101)
+await fxClear();
+const rp = await page.evaluate(() => {
+  const base = JSON.parse(JSON.stringify(PR.pres[1])), ch = c => ({card: {c, n: nameOf(c), u: 94000 + Math.floor(Math.random() * 999)}, r: false, d: 0, pt: 0});
+  const hit = (code, k, v) => { base.mq = [{id: S.ack + 1, r: "ch:" + S.chars.findIndex(f => f.card.c === code), c: code, k, v: v || 0}]; oppM = oppModel(base); applyMarkReqs(); };
+  const has = c => S.chars.some(f => f.card.c === c), out = {};
+  S.chars = [ch("EB04-030")]; S.donActive = 3; S.donRested = 0; S.leader.d = 0;
+  hit("EB04-030", "ko"); out.wait = has("EB04-030") && !!(fxCur && fxCur.rpl); out.txt = /would be K\.O\.'d/.test(document.querySelector("#fxpanel").innerText);
+  doAction("fxcancel"); out.gone = !has("EB04-030") && S.trash[0].c === "EB04-030" && !fxCur;
+  S.trash.shift(); S.chars = [ch("EB04-030")];
+  hit("EB04-030", "ko"); doAction("fxrd:a"); doAction("fxrdok"); out.kept = has("EB04-030") && !fxCur && S.donActive === 2;
+  const wb = [...BFX.keys()].find(k => (CARDDB.get(k) || {}).t === "Character" && typesOf(k).some(y => y.includes("Whitebeard Pirates")) && !fxAb(k).some(a => a.rp || a.s));
+  S.chars = [ch("OP13-047"), ch(wb), ch("OP01-016")];
+  hit("OP01-016", "ko"); out.other = !has("OP01-016") && !fxCur;
+  hit(wb, "ko", -1); out.battle = !has(wb) && !fxCur;
+  S.chars = [ch("OP13-047"), ch(wb)];
+  hit(wb, "ko"); out.wbAsk = has(wb) && !!(fxCur && fxCur.rpl); doAction("fxgo"); out.wbPaid = has(wb) && !has("OP13-047") && S.trash[0].c === "OP13-047" && !fxCur;
+  S.chars = [ch("OP10-034")]; const lf = S.life.length, hd = S.hand.length;
+  hit("OP10-034", "ko"); out.fxKo = !has("OP10-034") && !fxCur;
+  S.chars = [ch("OP10-034")];
+  hit("OP10-034", "ko", -1); out.inBattle = has("OP10-034") && !!(fxCur && fxCur.rpl); doAction("fxgo"); out.lifePaid = has("OP10-034") && S.life.length === lf - 1 && S.hand.length === hd + 1;
+  const sn = [...BFX.keys()].find(k => (CARDDB.get(k) || {}).t === "Character" && hasType(k, "Supernovas") && nameOf(k) !== nameOf("OP11-101") && ((CARDDB.get(k) || {}).k || 0) <= 5 && !fxAb(k).some(a => a.rp || a.s));
+  S.chars = [ch("OP11-101"), ch(sn)]; const lf2 = S.life.length;
+  hit(sn, "bounce"); out.itAsk = !!(fxCur && fxCur.rpl) && /to the top of your Life/.test(document.querySelector("#fxpanel").innerText); doAction("fxgo");
+  out.toLife = !has(sn) && S.life.length === lf2 + 1 && S.life[0].c === sn && !S.life[0].up && !S.hand.some(c => c.c === sn);
+  out.rp = [...BFX.values()].filter(x => x.ab.some(a => a.rp)).length;
+  oppM = oppModel(PR.pres[1]); S.chars = []; commit(); return out;
+});
+console.log("instead", JSON.stringify(rp));
+check(rp.rp > 65, "the \"... instead\" abilities are read (" + rp.rp + " cards)");
+check(rp.wait && rp.txt && rp.gone && rp.kept, "a K.O. waits while you choose: \"Don't use it\" lets it go, paying keeps the card");
+check(rp.other && rp.battle && rp.wbAsk && rp.wbPaid, "\"your {X} type Character ... by your opponent's effect\" covers only those Characters, and not a battle");
+check(rp.fxKo && rp.inBattle && rp.lifePaid, "\"K.O.'d in battle\" covers only battles");
+check(rp.itAsk && rp.toLife, "\"add it to the top of your Life cards\" moves the card that would leave the field");
+// the computer pays for its own (Normal), and on Easy lets the card go
+const rpBot = async diff => page.evaluate(d => {
+  const was = PR.diff; PR.diff = d;
+  botSide(() => { S.chars = [{card: {c: "EB04-030", n: nameOf("EB04-030"), u: 95000 + d}, r: false, d: 0, pt: 0}]; S.donActive = 2; S.donRested = 0; return 0; });
+  S.mqn = Math.max(S.mqn || 0, (PR.sides[1].S.ack || 0) + 5); sendOpp({r: "ch:0", c: "EB04-030", k: "ko", v: 0}); commit();
+  PR.pres[0] = JSON.parse(JSON.stringify(pubFull())); botSide(() => 0);
+  const b = PR.sides[1].S; PR.diff = was;
+  return {kept: b.chars.some(f => f.card.c === "EB04-030"), don: b.donActive + b.donRested, tr: (b.trash[0] || {}).c, mine: !fxCur};
+}, diff);
+const rb1 = await rpBot(1), rb0 = await rpBot(0);
+console.log("instead bot", JSON.stringify(rb1), JSON.stringify(rb0));
+check(rb1.kept && rb1.don === 1 && rb1.mine, "the computer returns a DON!! to keep its EB04-030");
+check(!rb0.kept && rb0.tr === "EB04-030", "on Easy the computer lets it be K.O.'d");
+// "When ..." abilities the game offers when that happens: a DON!! returned (OP06-042, then not again that turn), this card
+// rested (OP14-032), an Event activated (OP04-053), one of your {Alabasta} Characters K.O.'d (OP18-001), an opponent's
+// Character K.O.'d (EB04-044), a card trashed from hand by an effect giving [Rush] (OP14-049), an attack dealing damage
+// (OP03-047), and the computer using its own (ST10-014)
+await fxClear();
+const wh = await page.evaluate(() => {
+  const out = {}, ld0 = S.leader.card, ch = (c, x) => Object.assign({card: {c, n: nameOf(c), u: 96000 + Math.floor(Math.random() * 999)}, r: false, d: 0, pt: 0}, x || {});
+  const job = steps => fxEnqueue(fxJob({c: "OP01-016", n: "Nami"}, normFx({abilities: [{t: "onPlay", text: "test", steps}]}).ab[0]));
+  const clear = () => { while (fxCur) { fxQueue.length = 0; fxFinish(false); } };
+  const queued = c => [fxCur, ...fxQueue].filter(Boolean).some(j => j.card.c === c);
+  S.myTurn = true; S.phase = "play"; S.chars = []; S.donActive = 4; S.donRested = 0;
+  S.leader = Object.assign({}, S.leader, {card: {c: "OP06-042", n: nameOf("OP06-042")}, mk: []});
+  job([{a: "returnDon", who: "own", n: 1, upTo: false}]); doAction("fxrd:a"); doAction("fxrdok");
+  out.don = !!fxCur && fxCur.card.c === "OP06-042"; const h0 = S.hand.length; doAction("fxdraw"); out.drew = S.hand.length === h0 + 1 && !fxCur;
+  job([{a: "returnDon", who: "own", n: 1, upTo: false}]); doAction("fxrd:a"); doAction("fxrdok"); out.once = !fxCur; clear();
+  S.leader = Object.assign({}, S.leader, {card: ld0, mk: []});
+  const hm = ch("OP14-032"); S.chars = [hm]; fxEnqueue(fxJob(hm.card, normFx({abilities: [{t: "onPlay", text: "Rest this Character.", steps: [{a: "rest", self: true}]}]}).ab[0])); doAction("fxgo");
+  out.rest = hm.r && !!fxCur && fxCur.card.c === "OP14-032" && fxCur.steps[0].a === "rest" && fxCur.steps[0].who === "opp"; clear();
+  S.chars = [ch("OP04-053", {d: 1})]; const ev = [...BFX.keys()].find(k => (CARDDB.get(k) || {}).t === "Event" && fxAb(k).some(a => a.t === "main"));
+  S.hand.push({c: ev, n: nameOf(ev), u: 96500}); moveCard("hand:" + (S.hand.length - 1), "event", true); out.event = queued("OP04-053"); clear();
+  if (S.ev) { S.trash.unshift(S.ev.card); S.ev = null; }
+  const ala = [...BFX.keys()].find(k => (CARDDB.get(k) || {}).t === "Character" && hasType(k, "Alabasta") && !fxAb(k).some(a => a.rp || a.wh));
+  S.leader = Object.assign({}, S.leader, {card: {c: "OP18-001", n: nameOf("OP18-001")}, mk: []}); S.chars = [ch(ala), ch("OP01-016")];
+  const base = JSON.parse(JSON.stringify(PR.pres[1])), hit = (code, k, v) => { base.mq = [{id: S.ack + 1, r: "ch:" + S.chars.findIndex(f => f.card.c === code), c: code, k, v: v || 0}]; oppM = oppModel(base); applyMarkReqs(); };
+  const kc0 = S.kc || 0; hit("OP01-016", "ko"); out.koOther = !queued("OP18-001"); hit(ala, "ko"); out.koAla = queued("OP18-001") && (S.kc || 0) === kc0 + 2 && pubFull().kc === kc0 + 2; clear();
+  S.leader = Object.assign({}, S.leader, {card: ld0, mk: []}); S.chars = [ch("EB04-044")];
+  base.mq = []; base.kc = (S.okc || 0) + 1; oppM = oppModel(base); applyMarkReqs(); out.oppKo = queued("EB04-044"); clear();
+  oppM = oppModel(base); applyMarkReqs(); out.oppKoOnce = !fxCur;
+  const jb = ch("OP14-049", {pt: S.turn}); S.chars = [jb]; out.rushBefore = rushNow(jb);
+  S.hand.push({c: "OP01-016", n: "Nami", u: 96600}); job([{a: "discard", who: "own", n: 1, upTo: false}]); fxPick("hand:" + (S.hand.length - 1)); if (fxCur && fxCur.card.c === "OP01-016") doAction("fxapply");
+  out.rushJob = !!fxCur && fxCur.card.c === "OP14-049"; doAction("fxgo"); out.rushAfter = rushNow(jb); clear();
+  S.chars = [ch("OP03-047", {d: 1})]; S.atk = {s: "ch:0", t: "ld", n: 7777, l0: 5}; const b2 = JSON.parse(JSON.stringify(PR.pres[1])); b2.rs = 7777; b2.lf = 4; oppM = oppModel(b2); advance();
+  out.dmg = !S.atk && queued("OP03-047"); clear();
+  oppM = oppModel(PR.pres[1]); S.chars = []; S.atk = null; commit();
+  out.bot = botSide(() => {
+    const w = {card: {c: "ST10-014", n: nameOf("ST10-014"), u: 96700}, r: false, d: 0, pt: 0}; S.chars = [w]; S.donActive = 2; S.donRested = 0;
+    const h = S.hand.length, t = S.trash.length;
+    fxEnqueue(fxJob({c: "OP01-016", n: "Nami"}, normFx({abilities: [{t: "onPlay", text: "test", steps: [{a: "returnDon", who: "own", n: 1, upTo: false}]}]}).ab[0])); botFxGo();
+    const r = {h: S.hand.length - h, t: S.trash.length - t, log: myLog.slice(-4).map(e => e[1]).join(" | ")}; S.chars = []; return r;
+  });
+  return out;
+});
+console.log("when", JSON.stringify(wh));
+check(wh.don && wh.drew && wh.once, "a DON!! returned to the DON!! deck offers OP06-042's draw, once per turn");
+check(wh.rest, "resting OP14-032 offers its \"When this Character becomes rested\"");
+check(wh.event, "activating an Event offers OP04-053's ability");
+check(wh.koOther && wh.koAla, "OP18-001 is offered only when an {Alabasta} Character is K.O.'d, and K.O.s are counted for the opponent");
+check(wh.oppKo && wh.oppKoOnce, "an opponent's Character K.O.'d offers EB04-044's draw, once");
+check(!wh.rushBefore && wh.rushJob && wh.rushAfter === "all", "OP14-049 gets [Rush] only after a card is trashed from your hand by an effect");
+check(wh.dmg, "an attack that deals damage offers OP03-047's ability");
+check(wh.bot && wh.bot.h === 0 && wh.bot.t === 1 && /ST10-014/.test(wh.bot.log), "the computer uses its own \"When ...\" ability (ST10-014)");
 await page.screenshot({ path: OUT + "/board.png" });
 check(!errs.length, "no page errors" + (errs.length ? ": " + errs.slice(0, 3).join(" / ") : ""));
 await app.close();
