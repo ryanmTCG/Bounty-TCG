@@ -529,6 +529,28 @@ select.sbtn{height:26px;min-width:88px}
 .lbbar .sp{flex:1}
 .lbcount{display:flex;gap:6px;align-items:center;font-weight:700;color:#F1DDB0}
 .lblist{display:flex;flex-direction:column;gap:10px}
+.tnhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin:2px 0 8px}
+.tnhead b{font-family:var(--slab);font-weight:400;font-size:22px;color:#FFE9B8}
+.tnhead small{color:var(--muted)}
+.tnstat{margin:6px 0 10px;padding:10px 12px;border:2px solid rgba(242,184,75,.55);border-radius:14px;background:rgba(242,184,75,.1);display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.tnhost{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}
+.tnbr{display:grid;grid-template-columns:repeat(var(--rounds),minmax(150px,1fr));gap:12px;overflow-x:auto;padding:4px 0 8px}
+.tnrd{display:flex;flex-direction:column;justify-content:space-around;gap:10px}
+.tnrd h4{margin:0;font-family:var(--slab);font-weight:400;color:#F2B84B;font-size:15px}
+.tnm{border:2px solid rgba(255,240,205,.28);border-radius:12px;background:rgba(0,0,0,.25);overflow:hidden}
+.tnm.live{border-color:rgba(242,184,75,.7)}
+.tnl{padding:5px 10px;font-size:14px}
+.tnl+.tnl{border-top:1px solid rgba(255,240,205,.18)}
+.tnl.win{background:rgba(47,166,106,.28);font-weight:700}
+.tnl.lose{opacity:.55;text-decoration:line-through}
+.tnp.me{color:#FFD27A;font-weight:700}
+.tnp.bye{color:var(--muted);font-style:italic}
+.tngive{padding:4px 10px 6px;font-size:12px;color:var(--muted);border-top:1px solid rgba(255,240,205,.18)}
+.tnrow{flex-wrap:wrap}
+.tnrow details{margin-left:auto}
+.tnrow summary{cursor:pointer;color:var(--gold-fill);font-size:13px}
+.tndeck{display:flex;flex-direction:column;gap:2px;font-size:13px;padding:6px 0 0}
+.tndeck b{font-weight:700}
 .lbrow{display:flex;gap:12px;align-items:center;padding:10px 12px;border:2px solid rgba(255,240,205,.3);border-radius:16px;background:rgba(0,0,0,.22)}
 .lbrow.mine{border-color:rgba(242,184,75,.75);background:rgba(242,184,75,.12)}
 .lbrow.full{opacity:.72}
@@ -2267,7 +2289,7 @@ async function friendsWatch(){
   if (FRV.on) return; FRV.on = true;
   const rm = await lobbyRoom();
   if (!rm || typeof rm.onPeers !== "function") { FRV.on = false; return; }
-  rm.onPeers(ch => { FRV.peers = Array.from((ch && ch.peers) || []); chalCheck(); if (modal && modal.type === "friends") renderFriends(); });
+  rm.onPeers(ch => { FRV.peers = Array.from((ch && ch.peers) || []); chalCheck(); if (modal && modal.type === "friends") renderFriends(); tourTick(); });
   lobbyUpdate();
 }
 // friend code -> {nk, st} for everyone else in the lobby right now
@@ -2371,6 +2393,276 @@ function renderFriends(){
   const seen = new Set(), recent = [];
   for (const e of STATS.h || []) { if (!e.fc || seen.has(e.fc) || isFriend(e.fc) || e.fc === STATS.fc) continue; seen.add(e.fc); recent.push(e); if (recent.length >= 6) break; }
   rc.innerHTML = recent.length ? `<h3 class="rkh">Recent opponents</h3><div class="frlist">${recent.map(e => `<div class="frrow"><span class="dot${on.has(e.fc) ? " on" : ""}"></span><div class="frinfo"><b>${esc(e.on || "Player")}</b><small>${esc(e.fc)} · ${e.r === "w" ? "you won" : "you lost"} ${e.t ? esc(ago(e.t)) : ""}</small></div><span class="sp"></span><button class="btn" data-do="fradd:${e.fc}" type="button">Add friend</button></div>`).join("")}</div>` : "";
+}
+
+// ---------- tournaments ----------
+// A tournament lives in its host's lobby presence (tn): name, format, size, players and a single-elimination bracket.
+// Players sign up by putting their deck in their own presence (tj), so decklists reach the host by themselves, and the
+// host's game seats them, pairs the bracket and moves winners on. A result counts the way ranked does: the loser's own
+// game reports it (tl). The host can also hand a match to a player, for a no-show. It all runs while the host has the
+// game open, and it's kept on the host's computer, so it carries on when they come back.
+const TOUR_KEY = "bounty:tour", TME_KEY = "bounty:tourme", TOUR_CAPS = [4, 8, 16], TOUR_ID = /^t[a-z0-9]{6,12}$/, CARD_RE = /^[A-Z]{1,4}\d{0,3}-\d{2,4}$/;
+const TOUR_ST = {reg: "Signing up", run: "Under way", done: "Finished"};
+function loadJ(k){ try { const x = JSON.parse(localStorage.getItem(k) || "null"); return x && typeof x === "object" ? x : null; } catch (e) { return null; } }
+function saveJ(k, v){ try { if (v) localStorage.setItem(k, JSON.stringify(v)); else localStorage.removeItem(k); } catch (e) {} }
+let TOUR = loadJ(TOUR_KEY), TME = loadJ(TME_KEY);   // the tournament you host; your own sign-up {id, h, n, d, lost}
+const tourSeen = new Set();
+// a deck in a few hundred characters: "OP01-001|OP01-013*4 OP01-016*4 ..."
+function deckPack(v){
+  const L = parseLines(v.leader || "")[0], rows = new Map();
+  if (!L) return "";
+  for (const e of parseLines(v.deck || "")) rows.set(e.code, Math.min(50, (rows.get(e.code) || 0) + e.count));
+  return L.code + "|" + Array.from(rows).slice(0, 60).map(([c, n]) => c + "*" + n).join(" ");
+}
+function deckUnpack(s){
+  const m = /^([A-Z]{1,4}\d{0,3}-\d{2,4})\|([A-Z0-9*\- ]{0,1200})$/.exec(String(s || "")); if (!m) return null;
+  const rows = [];
+  for (const t of m[2].split(" ").filter(Boolean)) { const x = /^([A-Z]{1,4}\d{0,3}-\d{2,4})\*(\d{1,2})$/.exec(t); if (!x || +x[2] < 1) return null; rows.push([x[1], +x[2]]); }
+  if (rows.length > 60) return null;
+  return {l: m[1], rows, deck: rows.map(([c, n]) => n + "x" + c).join("\n"), n: rows.reduce((a, r) => a + r[1], 0)};
+}
+function tourDeckBad(dk, f){
+  if (!dk) return "There's no deck to send.";
+  if (dk.n !== 50) return `Tournaments need a 50-card deck. Yours has ${dk.n}.`;
+  return illegalNote(deckIllegal({leader: dk.l, deck: dk.deck}, f), f);
+}
+function cleanTour(x, fc){
+  if (!x || typeof x !== "object" || !TOUR_ID.test(x.id || "") || !TOUR_ST[x.st] || !TOUR_CAPS.includes(x.cap) || !FC_RE.test(fc || "")) return null;
+  const pl = (Array.isArray(x.pl) ? x.pl : []).slice(0, x.cap).map(p => p && FC_RE.test(p.c) ? {c: p.c, n: clean(p.n, 20) || "Player", l: CARD_RE.test(p.l || "") ? p.l : ""} : null);
+  if (pl.some(p => !p)) return null;
+  const n = pl.length, ok = i => Number.isInteger(i) && i >= -1 && i < n;
+  const rd = (Array.isArray(x.rd) ? x.rd : []).slice(0, 5).map(r => Array.isArray(r) ? r.slice(0, 8).map(m => Array.isArray(m) && m.length === 3 && m.every(ok) ? m.slice() : null) : null);
+  if (rd.some(r => !r || r.some(m => !m))) return null;
+  const dl = x.st === "done" && Array.isArray(x.dl) ? pl.map((p, i) => deckUnpack(x.dl[i]) ? x.dl[i] : "") : null;
+  return {id: x.id, n: clean(x.n, 40) || "Tournament", f: LB_FMT[x.f] ? x.f : "any", cap: x.cap, st: x.st, h: fc, hn: clean(x.hn, 20) || "Host", pl, rd, dl, t: Number.isFinite(+x.t) ? +x.t : 0};
+}
+function tourPub(){
+  const T = TOUR; if (!T) return null;
+  return {id: T.id, n: T.n, f: T.f, cap: T.cap, st: T.st, hn: myNick(), t: T.t, pl: T.pl.map(p => ({c: p.c, n: p.n, l: p.l})), rd: T.rd, dl: T.st === "done" ? T.pl.map(p => p.d) : undefined};
+}
+// every tournament in the lobby, yours first (from this computer, so it shows even while the lobby reconnects)
+function tourList(){
+  const out = [], ids = new Set();
+  if (TOUR) { const t = cleanTour(tourPub(), myFC()); if (t) { t.mine = true; out.push(t); ids.add(t.id); } }
+  for (const p of FRV.peers) {
+    if (!p || p.isMe || !p.presence || !p.presence.tn) continue;
+    const t = cleanTour(p.presence.tn, p.presence.fc);
+    if (t && !ids.has(t.id)) { ids.add(t.id); out.push(t); }
+  }
+  const order = {run: 0, reg: 1, done: 2};
+  return out.sort((a, b) => (b.mine - a.mine) || (order[a.st] - order[b.st]) || (b.t - a.t));
+}
+const tourRoom = (id, r, m) => `tour-${id}-${r + 1}-${m + 1}`;
+function tourRoundName(t, r){ const left = t.rd[r] ? t.rd[r].length : 0; return left === 1 ? "Final" : left === 2 ? "Semifinals" : `Round ${r + 1}`; }
+// your match still to play in a running tournament: {r, m, opp}
+function tourMyMatch(t){
+  if (!t || t.st !== "run") return null;
+  const i = t.pl.findIndex(p => p.c === myFC()); if (i < 0) return null;
+  const r = t.rd.length - 1, m = (t.rd[r] || []).findIndex(x => x[2] === -1 && x[1] >= 0 && (x[0] === i || x[1] === i));
+  if (m < 0 || (TME && TME.id === t.id && TME.lost && TME.lost.r === r && TME.lost.m === m)) return null;
+  const x = t.rd[r][m];
+  return {r, m, opp: t.pl[x[0] === i ? x[1] : x[0]]};
+}
+function tourOut(t){
+  const i = t.pl.findIndex(p => p.c === myFC()); if (i < 0) return false;
+  return t.rd.some(r => r.some(m => m[2] >= 0 && m[2] !== i && (m[0] === i || m[1] === i)));
+}
+// the host's game: take sign-ups and results from everyone's presence and move the bracket on
+function tourHost(){
+  const T = TOUR; if (!T || T.st === "done") return false;
+  const me = myFC(), all = FRV.peers.filter(p => p && !p.isMe && p.presence && FC_RE.test(p.presence.fc) && p.presence.fc !== me).map(p => p.presence);
+  all.push({fc: me, nk: myNick(), tj: TME && TME.id === T.id ? {id: T.id, d: TME.d} : null, tl: TME && TME.id === T.id && TME.lost ? Object.assign({id: T.id}, TME.lost) : null});
+  let ch = false;
+  if (T.st === "reg") {
+    // a player who's online without a sign-up has withdrawn; one who's offline stays signed up
+    const keep = T.pl.filter(p => { const q = all.find(x => x.fc === p.c); return !q || (q.tj && q.tj.id === T.id); });
+    if (keep.length !== T.pl.length) { T.pl = keep; ch = true; }
+    for (const q of all) {
+      const j = q.tj; if (!j || j.id !== T.id || typeof j.d !== "string") continue;
+      const dk = deckUnpack(j.d), nk = clean(q.nk, 20) || "Player", cur = T.pl.find(x => x.c === q.fc);
+      if (!dk || tourDeckBad(dk, T.f)) { if (cur) { T.pl = T.pl.filter(x => x !== cur); ch = true; } continue; }
+      if (cur) { if (cur.d !== j.d || cur.n !== nk) { cur.d = j.d; cur.l = dk.l; cur.n = nk; ch = true; } continue; }
+      if (T.pl.length >= T.cap) continue;
+      T.pl.push({c: q.fc, n: nk, l: dk.l, d: j.d}); ch = true;
+    }
+  } else {
+    for (const q of all) {
+      const l = q.tl; if (!l || l.id !== T.id) continue;
+      const m = T.rd[l.r] && T.rd[l.r][l.m], i = T.pl.findIndex(x => x.c === q.fc);
+      if (!m || m[2] !== -1 || i < 0) continue;
+      if (i === m[0] && m[1] >= 0) { m[2] = m[1]; ch = true; } else if (i === m[1]) { m[2] = m[0]; ch = true; }
+    }
+    if (tourAdvance(T)) ch = true;
+  }
+  if (ch) { saveJ(TOUR_KEY, TOUR); lobbyUpdate(); }
+  return ch;
+}
+function tourAdvance(T){
+  let ch = false;
+  for (;;) {
+    const last = T.rd[T.rd.length - 1]; if (!last || last.some(m => m[2] === -1)) return ch;
+    const w = last.map(m => m[2]); ch = true;
+    if (w.length === 1) { T.st = "done"; T.end = Date.now(); return ch; }
+    const nx = []; for (let i = 0; i < w.length; i += 2) nx.push([w[i], w[i + 1], -1]);
+    T.rd.push(nx);
+  }
+}
+function tourStart(){
+  const T = TOUR; if (!T || T.st !== "reg") return;
+  if (T.pl.length < 2) { toast("A tournament needs at least 2 players signed up."); return; }
+  shuffle(T.pl);
+  let P = 2; while (P < T.pl.length) P *= 2;
+  const byes = P - T.pl.length, r0 = [];
+  for (let i = 0; i < byes; i++) r0.push([i, -1, i]);
+  for (let i = byes; i < T.pl.length; i += 2) r0.push([i, i + 1, -1]);
+  T.rd = [r0]; T.st = "run"; T.start = Date.now();
+  tourAdvance(T); saveJ(TOUR_KEY, TOUR); lobbyUpdate(); renderTours();
+  toast(`${T.n} has started. Players see their first match on the Tournaments page.`);
+}
+function tourGive(r, m, side){
+  const T = TOUR, x = T && T.st === "run" && T.rd[r] && T.rd[r][m];
+  if (!x || x[2] !== -1 || x[side] < 0) return;
+  x[2] = x[side]; tourAdvance(T); saveJ(TOUR_KEY, TOUR); lobbyUpdate(); renderTours();
+  toast(`${T.pl[x[side]].n} moves on.`);
+}
+function tourCreate(){
+  if (TOUR && TOUR.st !== "done") { toast("You're already hosting a tournament."); return; }
+  const n = clean(($("#tn-name") || {}).value, 40) || clean(myNick() + "'s tournament", 40);
+  const f = LB_FMT[($("#tn-fmt") || {}).value] ? $("#tn-fmt").value : "std", cap = TOUR_CAPS.includes(+($("#tn-cap") || {}).value) ? +$("#tn-cap").value : 8;
+  TOUR = {id: "t" + Date.now().toString(36).slice(-6) + Math.floor(Math.random() * 1296).toString(36).padStart(2, "0"), n, f, cap, st: "reg", pl: [], rd: [], t: Date.now()};
+  saveJ(TOUR_KEY, TOUR); friendsWatch(); lobbyUpdate();
+  modal.tid = TOUR.id; modal.host = false; renderTours();
+  toast(`${n} is open for sign-ups. Press Start when everyone's in.`);
+}
+function tourClose(){
+  if (!TOUR) return;
+  if (TOUR.st !== "done" && modal && modal.confirm !== "close") { modal.confirm = "close"; renderTours(); return; }
+  const id = TOUR.id; TOUR = null; saveJ(TOUR_KEY, null);
+  if (TME && TME.id === id) { TME = null; saveJ(TME_KEY, null); }
+  if (modal) { modal.confirm = null; modal.tid = null; }
+  lobbyUpdate(); renderTours();
+}
+function tourJoin(id){
+  const t = tourList().find(x => x.id === id);
+  if (!t || t.st !== "reg") { toast(t ? "Sign-ups for that tournament are closed." : "That tournament isn't open any more."); return; }
+  if (TME && TME.id !== id && tourList().some(x => x.id === TME.id && x.st !== "done")) { toast(`You're signed up for ${TME.n}. Withdraw from it first.`); return; }
+  if (t.pl.length >= t.cap && !t.pl.some(p => p.c === myFC())) { toast("That tournament is full."); return; }
+  const v = deckReady(); if (!v) return;
+  const d = deckPack(v), bad = tourDeckBad(deckUnpack(d), t.f);
+  if (bad) { toast(bad); return; }
+  TME = {id, h: t.h, n: t.n, d, lost: null}; saveJ(TME_KEY, TME); lobbyUpdate();
+  modal.tid = id; renderTours();
+  toast(`You're signed up for ${t.n}. Your decklist went to ${t.hn}, and it's locked in once the tournament starts.`);
+}
+function tourWithdraw(){
+  if (!TME) return;
+  const t = tourList().find(x => x.id === TME.id), mm = tourMyMatch(t);
+  if (t && t.st === "run" && t.pl.some(p => p.c === myFC()) && !tourOut(t)) {
+    if (!mm) { toast("Wait for your next match to be paired, then drop out."); return; }
+    TME.lost = {r: mm.r, m: mm.m}; saveJ(TME_KEY, TME); lobbyUpdate(); renderTours();
+    toast(`You dropped out. ${mm.opp.n} moves on.`); return;
+  }
+  TME = null; saveJ(TME_KEY, null); lobbyUpdate(); renderTours();
+  toast(t && t.st === "reg" ? `You withdrew from ${t.n}.` : "You left the tournament.");
+}
+async function tourPlay(id){
+  const t = tourList().find(x => x.id === id), mm = tourMyMatch(t);
+  if (!mm || !TME || TME.id !== id) { toast("You don't have a match to play right now."); return; }
+  const dk = deckUnpack(TME.d); if (!dk) return;
+  const room = tourRoom(t.id, mm.r, mm.m);
+  if (R && roomCode === room) { closeModal(); render(); return; }
+  const v = loadSaved(), c = Object.assign({}, v, {room, nick: myNick(), leader: dk.l, deck: dk.deck, life: 5, sleeve: v.sleeve | 0, first: false});
+  closeModal(); if (builderOpen) closeBuilder();
+  await leaveRoom(); status = "connecting";
+  newGame(c, true);
+  S.tour = {id, r: mm.r, m: mm.m}; S.pubt = true;
+  await connect(room);
+  render();
+  toast(`${t.n}, ${tourRoundName(t, mm.r)}: you play ${mm.opp.n}. Wait here at the table for them.`);
+}
+// at a tournament table: losing reports the result to the host from your own game
+function tourCheck(){
+  if (!S.tour || S.tourDone || !R || PR) return;
+  if (S.conceded) {
+    S.tourDone = true;
+    if (TME && TME.id === S.tour.id && !TME.lost) { TME.lost = {r: S.tour.r, m: S.tour.m}; saveJ(TME_KEY, TME); lobbyUpdate(); }
+  } else if (oppM && oppM.cd) { S.tourDone = true; setTimeout(() => toast("You won your tournament match. Your next one shows on the Tournaments page."), 80); }
+}
+// on every change in the lobby: run your tournament, and tell you when a match of yours is ready
+function tourTick(){
+  if (TOUR) tourHost();
+  if (TME) {
+    const t = tourList().find(x => x.id === TME.id), mm = tourMyMatch(t);
+    if (mm) {
+      const k = TME.id + ":" + mm.r + ":" + mm.m;
+      if (!tourSeen.has(k) && !(R && roomCode === tourRoom(t.id, mm.r, mm.m))) { tourSeen.add(k); toast(`Your ${t.n} match against ${mm.opp.n} is ready. Open Play, then Tournaments, to play it.`); }
+    } else if (t && t.st === "done" && !tourSeen.has(t.id + ":done")) {
+      tourSeen.add(t.id + ":done");
+      const w = t.rd.length ? t.pl[t.rd[t.rd.length - 1][0][2]] : null;
+      if (w) toast(w.c === myFC() ? `You won ${t.n}!` : `${t.n} is over. ${w.n} won it.`);
+    }
+  }
+  if (modal && modal.type === "tours") renderTours();
+}
+function openTours(){
+  modal = {type: "tours", tid: null, host: false};
+  showModal(`<h2>Tournaments</h2>
+    <p class="hint">Single-elimination tournaments with players who have the game open. Sign up with the deck you last saved in the Deck editor: your decklist goes to the host, and it's locked in once the tournament starts. Each match is one game at a table without the free board tools, and a result counts when the losing player concedes or takes damage at 0 Life.</p>
+    <div id="tn-body" aria-live="polite"></div>
+    <div class="row end">${S.phase === "none" ? '<button class="btn" data-do="homeplay" type="button">Back</button>' : '<button class="btn" data-do="closemodal" type="button">Back to table</button>'}</div>`);
+  const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
+  $("#modal").classList.add("homebg", "lobpage");
+  friendsWatch(); renderTours();
+}
+function tourDeckHTML(s){
+  const dk = deckUnpack(s); if (!dk) return `<p class="hint">No decklist.</p>`;
+  return `<div class="tndeck"><b>Leader ${esc(dk.l)} ${esc(nameOf(dk.l) || "")}</b>${dk.rows.map(([c, n]) => `<span>${n}× ${esc(c)} ${esc(nameOf(c) || "")}</span>`).join("")}</div>`;
+}
+function renderTours(){
+  const el = $("#tn-body"); if (!el || !modal || modal.type !== "tours") return;
+  const open = el.querySelectorAll("details[open]").length ? new Set([...el.querySelectorAll("details[open]")].map(d => d.dataset.k)) : new Set();
+  const list = tourList(), me = myFC(), t = modal.tid ? list.find(x => x.id === modal.tid) : null;
+  if (modal.host) {
+    el.innerHTML = `<h3 class="rkh">Host a tournament</h3>
+      <div class="row lbopts"><div style="flex:2;min-width:180px"><label for="tn-name">Name</label><input type="text" id="tn-name" maxlength="40" placeholder="${esc(myNick())}'s tournament"></div>
+      <div style="flex:1;min-width:140px"><label for="tn-fmt">Format</label><select id="tn-fmt">${Object.keys(LB_FMT).filter(k => k !== "pre" || preSets().length).map(k => `<option value="${k}">${LB_FMT[k]}</option>`).join("")}</select></div>
+      <div style="flex:1;min-width:110px"><label for="tn-cap">Players</label><select id="tn-cap">${TOUR_CAPS.map(n => `<option value="${n}"${n === 8 ? " selected" : ""}>Up to ${n}</option>`).join("")}</select></div></div>
+      <p class="hint">Keep the game open while it runs: the bracket lives on your computer. You can play in it too, by signing up like everyone else.</p>
+      <div class="row end"><button class="btn" data-do="tn:back" type="button">Cancel</button><button class="btn pri" data-do="tn:create" type="button">Open sign-ups</button></div>`;
+    return;
+  }
+  if (!t) {
+    if (modal.tid) modal.tid = null;
+    const row = x => {
+      const mine = TME && TME.id === x.id, full = x.pl.length >= x.cap;
+      const act = x.st === "reg" && !mine && !full ? `<button class="btn pri" data-do="tn:join:${x.id}" type="button">Sign up</button>` : "";
+      return `<div class="lbrow${x.mine || mine ? " mine" : ""}"><div class="lbinfo"><b>${esc(x.n)}</b><small>Host ${esc(x.hn)} · ${x.pl.length} of ${x.cap} players${mine ? " · You're in" : ""}</small><span class="lbchips"><span class="chip f${x.f}">${LB_FMT[x.f]}</span><span class="chip${x.st === "reg" ? " open" : ""}">${TOUR_ST[x.st]}</span></span></div><button class="btn" data-do="tn:view:${x.id}" type="button">View</button>${act}</div>`;
+    };
+    el.innerHTML = `<div class="lbbar">${TOUR && TOUR.st !== "done" ? "" : `<button class="btn pri" data-do="tn:host" type="button">Host a tournament</button>`}<span class="sp"></span><span class="lbcount">${FRV.peers.length > 1 ? `<span class="dot on"></span>${FRV.peers.length} players online` : `<span class="dot"></span>Looking for players online…`}</span></div>
+      ${list.length ? `<div class="lblist">${list.map(row).join("")}</div>` : `<div class="lbempty"><b>No tournaments right now</b>Host one and it shows up here for everyone who has the game open.</div>`}`;
+    return;
+  }
+  const mine = !!t.mine, i = t.pl.findIndex(p => p.c === me), mm = tourMyMatch(t), signed = TME && TME.id === t.id;
+  const champ = t.st === "done" && t.rd.length ? t.pl[t.rd[t.rd.length - 1][0][2]] : null;
+  let status = "";
+  if (champ) status = champ.c === me ? `<b>You won the tournament!</b>` : `<span><b>${esc(champ.n)}</b> won the tournament.</span>`;
+  else if (mm) status = `<span>${tourRoundName(t, mm.r)}: you play <b>${esc(mm.opp.n)}</b>.</span><button class="btn pri" data-do="tn:play:${t.id}" type="button">Play your match</button>`;
+  else if (t.st === "run" && i >= 0) status = tourOut(t) || (signed && TME.lost) ? "You're out of this one. Stay to watch how it ends." : "You're through to the next round. Wait for the others to finish.";
+  else if (t.st === "reg") status = signed ? `You're signed up with ${esc(nameOf((deckUnpack(TME.d) || {}).l) || "your deck")}. The host starts it when everyone's in.` : t.pl.length >= t.cap ? "This tournament is full." : "";
+  const hostBar = mine ? `<div class="tnhost">${t.st === "reg" ? `<button class="btn pri" data-do="tn:start" type="button"${t.pl.length < 2 ? " disabled" : ""}>Start with ${t.pl.length} player${t.pl.length === 1 ? "" : "s"}</button>` : ""}
+    ${modal.confirm === "close" ? `<span>End this tournament for everyone?</span><button class="btn warn" data-do="tn:close" type="button">End it</button><button class="btn" data-do="tn:noclose" type="button">Keep it</button>` : `<button class="btn" data-do="tn:close" type="button">${t.st === "done" ? "Take it down" : "End tournament"}</button>`}</div>` : "";
+  const pname = k => k < 0 ? `<span class="tnp bye">Bye</span>` : `<span class="tnp${t.pl[k].c === me ? " me" : ""}">${esc(t.pl[k].n)}</span>`;
+  const bracket = t.rd.length ? `<div class="tnbr" style="--rounds:${t.rd.length}">${t.rd.map((r, ri) => `<div class="tnrd"><h4>${tourRoundName(t, ri)}</h4>${r.map((m, mi) => {
+      const st = k => m[2] === -1 ? "" : m[2] === k ? " win" : " lose";
+      const give = mine && t.st === "run" && m[2] === -1 && m[1] >= 0 ? `<div class="tngive">Give the win to <button class="linkbtn" data-do="tn:give:${ri}:${mi}:0" type="button">${esc(t.pl[m[0]].n)}</button> or <button class="linkbtn" data-do="tn:give:${ri}:${mi}:1" type="button">${esc(t.pl[m[1]].n)}</button></div>` : "";
+      return `<div class="tnm${m[2] === -1 && m[1] >= 0 ? " live" : ""}"><div class="tnl${st(m[0])}">${pname(m[0])}</div><div class="tnl${st(m[1])}">${pname(m[1])}</div>${give}</div>`;
+    }).join("")}</div>`).join("")}</div>` : "";
+  const decks = mine ? TOUR.pl.map(p => p.d) : t.dl;
+  const players = `<h3 class="rkh">Players ${t.pl.length} of ${t.cap}</h3>${t.pl.length ? `<div class="frlist">${t.pl.map((p, k) => `<div class="frrow tnrow"><div class="frinfo"><b>${esc(p.n)}${p.c === me ? " (you)" : ""}</b><small>${p.l ? `Leader ${esc(p.l)} ${esc(nameOf(p.l) || "")}` : ""}</small></div>${decks && decks[k] ? `<details data-k="d${k}"${open.has("d" + k) ? " open" : ""}><summary>Decklist</summary>${tourDeckHTML(decks[k])}</details>` : ""}</div>`).join("")}</div>` : `<div class="lbempty"><b>Nobody's signed up yet</b>Players sign up from this page on their own game.</div>`}
+    ${mine && t.st !== "done" ? `<p class="hint">Only you, the host, can see the decklists until the tournament is over. Then everyone can.</p>` : t.st === "done" ? `<p class="hint">Decklists are open now that it's over.</p>` : ""}`;
+  el.innerHTML = `<div class="lbbar"><button class="linkbtn" data-do="tn:list" type="button">◀ All tournaments</button><span class="sp"></span>${t.st === "reg" && !signed && t.pl.length < t.cap ? `<button class="btn pri" data-do="tn:join:${t.id}" type="button">Sign up</button>` : ""}${signed && !champ && !(t.st === "run" && (tourOut(t) || TME.lost)) ? `<button class="btn" data-do="tn:leave" type="button">${t.st === "run" ? "Drop out" : "Withdraw"}</button>` : ""}</div>
+    <div class="tnhead"><b>${esc(t.n)}</b><small>Host ${esc(t.hn)}</small><span class="lbchips"><span class="chip f${t.f}">${LB_FMT[t.f]}</span><span class="chip${t.st === "reg" ? " open" : ""}">${TOUR_ST[t.st]}</span></span></div>
+    ${status ? `<p class="tnstat">${status}</p>` : ""}${hostBar}${bracket}${players}`;
 }
 
 // ---------- account (desktop app) ----------
@@ -2525,7 +2817,8 @@ function renderLobbies(){
 }
 async function lobbyUpdate(){
   const lb = myLobby && R && roomCode === myLobby.c ? {c: myLobby.c, n: myLobby.n, h: S.nick || "Player", l: S.leader && S.leader.card ? S.leader.card.c : "", f: myLobby.f, r: myLobby.r ? 1 : 0, s: oppPeer || (S.phase !== "wait" && S.phase !== "roll") ? 2 : 1, t: myLobby.t} : null;
-  const pres = {lb, fc: myFC(), nk: R && !PR && S.phase !== "none" && S.nick ? clean(S.nick, 20) : myNick(), st: myStatus(), w: myStatus() === "match" && !S.ranked && !S.pubt && roomCode ? roomCode : "", ch: myChal ? {to: myChal.to, r: myChal.r, id: myChal.id} : null, dc: myDc};
+  const pres = {lb, fc: myFC(), nk: R && !PR && S.phase !== "none" && S.nick ? clean(S.nick, 20) : myNick(), st: myStatus(), w: myStatus() === "match" && !S.ranked && !S.pubt && roomCode ? roomCode : "", ch: myChal ? {to: myChal.to, r: myChal.r, id: myChal.id} : null, dc: myDc,
+    tn: TOUR ? tourPub() : null, tj: TME ? {id: TME.id, d: TME.d} : null, tl: TME && TME.lost ? Object.assign({id: TME.id}, TME.lost) : null};
   const key = JSON.stringify(pres);
   if (key === lbSent) return;
   lbSent = key;
@@ -2600,7 +2893,7 @@ function render(){
   if (botQuiet) return;
   if (WATCH) { renderWatch(); return; }
   if (S.phase === "play" && S.chars.length > 5 && !modal) setTimeout(() => { if (S.chars.length > 5 && !modal) { modal = {type: "limit"}; renderModal(); } }, 0);
-  rankCheck(); statCheck();
+  rankCheck(); statCheck(); tourCheck();
   { const ok = boardTools(); for (const k of ["resetboard", "refresh", "undo"]) { const b = $(`[data-do="${k}"]`); if (b) b.hidden = !ok; } }
   { const fb = $("#startfb");
     if (fb) fb.hidden = !(R && !PR && S.phase === "play" && oppM && oppM.et == null);
@@ -2757,6 +3050,7 @@ function openHome(page){
       <button class="btn pri" data-do="homefriends" type="button">Friends only${(n => n ? ` <i class="frn">${n} online</i>` : "")(STATS.fr.filter(f => onlineMap().has(f.c)).length)}</button>
       <button class="btn" data-do="homelobby" type="button">Lobbies</button>
       <button class="btn" data-do="homeranked" type="button">Ranked</button>
+      <button class="btn" data-do="hometours" type="button">Tournaments${(n => n ? ` <i class="frn">${n} open</i>` : "")(tourList().filter(t => t.st !== "done").length)}</button>
       <button class="btn" data-do="homebot" type="button">Practice against the computer</button>
       <button class="btn" data-do="tutorial" type="button">Learn to play (tutorial)</button>
       <button class="btn" data-do="homeboth" type="button">Test a deck (play both sides)</button>
@@ -5674,6 +5968,23 @@ function doAction(a){
   if (a === "autofx" && !boardTools()) { toast("Card effects always run in public and ranked matches."); render(); return; }
   if (a === "autofx") { autoFx = !autoFx; try { localStorage.setItem("nakama:autofx", autoFx ? "1" : "0"); } catch (e) {} toast(autoFx ? "Auto card effects on." : "Auto card effects off."); return; }
   if (a.startsWith("frch:")) { challenge(a.slice(5)); return; }
+  if (a.startsWith("tn:")) {
+    const [, k, x, y, z] = a.split(":");
+    if (!modal || modal.type !== "tours") return;
+    if (k === "host") { modal.host = true; renderTours(); }
+    else if (k === "back") { modal.host = false; renderTours(); }
+    else if (k === "create") tourCreate();
+    else if (k === "list") { modal.tid = null; modal.confirm = null; renderTours(); }
+    else if (k === "view") { modal.tid = x; renderTours(); }
+    else if (k === "join") tourJoin(x);
+    else if (k === "leave") tourWithdraw();
+    else if (k === "play") tourPlay(x);
+    else if (k === "start") tourStart();
+    else if (k === "close") tourClose();
+    else if (k === "noclose") { modal.confirm = null; renderTours(); }
+    else if (k === "give") tourGive(+x, +y, +z === 1 ? 1 : 0);
+    return;
+  }
   if (a.startsWith("frwatch:")) { const o = onlineMap().get(a.slice(8)); if (o && o.w) watchTable(o.w, o.nk); else toast("That match just ended."); return; }
   if (a === "stopwatch") { stopWatch(); return; }
   if (a.startsWith("rpopen:")) { rpOpen(a.slice(7), "list"); return; }
@@ -5715,6 +6026,7 @@ function doAction(a){
     case "homeplay": openHome("play"); break;
     case "homelobby": closeModal(); if (builderOpen) closeBuilder(); openLobbies(); break;
     case "homeranked": closeModal(); if (builderOpen) closeBuilder(); openRanked(); break;
+    case "hometours": closeModal(); if (builderOpen) closeBuilder(); openTours(); break;
     case "homefriends": closeModal(); if (builderOpen) closeBuilder(); openFriends(); break;
     case "rkfind": rankedFind(); break;
     case "lbmake": openSetup({pub: true}); break;
