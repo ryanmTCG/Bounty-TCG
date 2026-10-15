@@ -3008,7 +3008,7 @@ function cleanGame(x, id){
 // the newest 1000 shared records, read again after a few minutes
 async function gamesLoad(force){
   if (COMM.busy) return COMM.busy;
-  if (COMM.recs && !force && Date.now() - COMM.at < 180000) return COMM.recs;
+  if (COMM.recs && !force && Date.now() - COMM.at < 600000) return COMM.recs;
   COMM.busy = (async () => {
     try {
       const db = await getDb(); if (!db) throw {code: "unavailable"};
@@ -3585,7 +3585,8 @@ function openSetup(opts){
   renderSaved();
   if (opts.odeck) { $("#f-leader2").value = opts.odeck.l; $("#f-deck2").value = opts.odeck.deck; odeckNote(); }
   else odeckFill();
-  odeckMeta();
+  // the Meta page's lists are read from the shared match records only when someone looks at the computer's deck
+  if (opts.bot) odeckMeta(); else { const d = $("#f-other"); if (d) d.addEventListener("toggle", () => { if (d.open) odeckMeta(); }); }
 }
 function readDeckFields(){
   { const d = deckFromCode($("#f-deck").value); if (d) { $("#f-deck").value = d.deck; $("#f-leader").value = d.l + " " + (nameOf(d.l) || ""); } }
