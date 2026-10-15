@@ -104,7 +104,7 @@ def self_step(core, base):
     if re.match(r"(?:you may )?add this card to your hand", low): return dict(base, a="handSelf")
     m = re.match(r"activate this card's \[(main|on play|counter)\] effect", low)
     if m: return dict(base, a="act", k={"main": "main", "on play": "onPlay", "counter": "counter"}[m.group(1)])
-    m = re.match(r"%s gains \[(rush|double attack|banish|unblockable)\](?: and ([+\-−])(\d+) power)? during this turn" % SELF, low)
+    m = re.match(r"%s gains \[(rush|double attack|banish|unblockable)\](?: and ([+\-−])(\d+) power)?(?: during this turn)?(?:\.|$| \()" % SELF, low)
     if m: return dict(base, a="kw", self=True, k=KW_LETTER[m.group(1)], n=int(m.group(3) or 0) * (-1 if m.group(2) in ("-", "−") else 1))
     m = re.match(r"%s gains ([+\-−])(\d+) power(?: during this (?:turn|battle)| %s)?(?:\.|$)" % (SELF, NEXT_TURN), low)
     if m: return dict(base, a="pwr", self=True, n=int(m.group(2)) * (1 if m.group(1) == "+" else -1), battle=battle, **next_turn(low))
@@ -123,10 +123,23 @@ def step(clause, pay=False):
     core = split_cond(c)
     low = c.lower()
     cl = core.lower()
-    cost, power = limits(c)
+    cost, power = limits(core)
     s = self_step(core, base)
     if s: return s
     if re.search(r"\bfor every\b", cl): return dict(base, a="other")
+    # "Negate the effect of up to 1 of your opponent's Characters with a cost of 6 or less during this turn[, and K.O. it]":
+    # a mark that turns the card's own abilities off this turn, or, with "and K.O. it", the K.O. with ng set (the mark
+    # goes first, so its [On K.O.] and "cannot be K.O.'d by effects" don't apply)
+    m = re.match(r"negate the effects? of ((?:up to \w+ of |\w+ of )?your opponent's (?:leader or character cards?|characters?|leader))(?: with [^,]*?)?(?: during this turn)?"
+                 r"(?:,? and (k\.o\. it|return it to (?:(?:the|its|their) owner'?s?'?|their) hand|give that card ([+\-−])(\d+) power))?(?: during this turn)?\.?$", cl)
+    if m:
+        t = target(core)
+        if t and t[0] == "opp":
+            kw = dict(who="opp", n=t[1], upTo=t[2], all=t[3], ld=t[4], cost=cost, power=power)
+            if not m.group(2): return dict(base, a="mark", k="ng", now=True, **kw)
+            if m.group(2).startswith("k.o."): return dict(base, a="ko", ng=True, **dict(kw, ld=False))
+            if m.group(2).startswith("return"): return dict(base, a="bounce", ng=True, **dict(kw, ld=False))
+            return dict(base, a="pwr", ng=True, battle=False, cnt=None, **dict(kw, n=int(m.group(4)) * (-1 if m.group(3) != "+" else 1)))
     m = re.match(r"reveal (\w+) cards? from the top of your (deck|life cards)\.?$", cl)
     if m: return dict(base, a="reveal", n=num(m.group(1)), lf=m.group(2) != "deck")
     # "You may reveal 2 Events from your hand": shown to the opponent, they stay in your hand
@@ -274,21 +287,32 @@ def clauses(body):
     body = re.sub(r"\b(rest|Rest|K\.O\.) this (Character|Leader) and (up to \w+ of your opponent's)", lambda m: f"{m.group(1)} this {m.group(2)} and {m.group(1).lower() if m.group(1) == 'Rest' else m.group(1)} {m.group(3)}", body)
     for sent in re.split(r"(?<=\.)\s+(?=[A-Z])", body.strip()):
         sent = re.sub(r"^Then,\s*", "", sent)
-        if out and re.match(r"(?:place|put|trash|add) the rest\b|reveal\b|play up to\b", sent, re.I) and re.search(r"look at", out[-1][0], re.I):
+        if out and re.match(r"(?:place|put|trash|add) the rest\b|reveal\b|play up to\b", sent, re.I) and re.search(r"look at", out[-1][0], re.I) and not out[-1][1]:
             out[-1] = (out[-1][0] + " " + sent, out[-1][1]); continue
-        if re.search(r"\blook at\b", sent, re.I): out.append((sent, False)); continue
-        # "You may <cost>: <effect>" is two steps, the cost first
+        # "You may <cost>: <effect>" is two steps, the cost first ("You may rest this Character and add 1 card from the
+        # top of your Life cards to your hand: ..." is two costs)
         m = re.match(r"((?:[^:]*?,\s*)?you may [^:]+):\s*(.+)$", sent, re.I)
         if m:
-            for p in re.split(r",? and (?=(?:trash|rest|return|place|reveal|turn)\b(?! (?:it|them|that|those)\b))", m.group(1)):
+            for p in re.split(r",? and (?=(?:trash|rest|return|place|reveal|turn|add|give|K\.O\.)\b(?! (?:it|them|that|those)\b))", m.group(1)):
                 if p.strip(): out.append((p.strip().rstrip(".") + ".", True))
             sent = m.group(2)
-        parts = [p.strip() for p in re.split(r",? and (?=(?:trash|draw|rest|K\.O\.|give|add|return|set|place|play)\b(?! (?:it|them|that|those)\b))", sent) if p.strip()]
+        # "Draw 1 card, look at ...": the draw first
+        dm = re.match(r"(draw \w+ cards?),\s*(?:then,\s*)?(look at .+)$", sent, re.I)
+        if dm: out.append((dm.group(1) + ".", False)); sent = dm.group(2)
+        if re.search(r"\blook at\b", sent, re.I): out.append((sent, False)); continue
+        # "X, then Y", "X and this Character gains Y": two steps
+        parts = [p.strip() for p in re.split(r",? and (?=(?:trash|draw|rest|K\.O\.|give|add|return|set|place|play)\b(?! (?:it|them|that|those)\b))"
+                                             r"|,? and (?=this (?:Character|Leader) gains\b)|, then,? (?=(?:trash|draw|rest|K\.O\.|give|add|return|set|place|play|look)\b)", sent) if p.strip()]
         # "If X, A and B": B only happens when X is so, too
         cm = re.match(r"(?:then,\s*)?(if [^,]+,)\s", parts[0], re.I) if parts else None
         if cm: parts = parts[:1] + [p if re.match(r"if\b", p, re.I) else cm.group(1) + " " + p for p in parts[1:]]
         out.extend((p.rstrip(".") + ".", False) for p in parts)
-    return out
+    # "Look at 5 cards ...; ... place the rest at the bottom of your deck in any order and trash 1 card from your hand"
+    res = []
+    for c, pay in out:
+        lm = re.match(r"(.*\blook at\b.*?)(?:,)? and (trash \w+ cards? from your hand)\.?$", c, re.I | re.S) if not pay else None
+        res.extend([(lm.group(1).rstrip(".") + ".", False), (lm.group(2)[0].upper() + lm.group(2)[1:] + ".", False)] if lm else [(c, pay)])
+    return res
 
 
 def steps_of(body):
@@ -412,11 +436,18 @@ def abilities(text, is_trigger=False):
         body = re.sub(r"^\([^)]*\)\s*", "", body) if kws else body
         if not body: continue
         steps = steps_of(body)
+        # "[DON!! x1] This Character gains [Rush]" with no timing is always-on (the game reads it from the text), not
+        # something to carry out
+        if set(timings) <= {"yourTurn"}: steps = [s for s in steps if not (s["a"] == "kw" and s.get("self"))]
         if all(s["a"] == "other" for s in steps): steps = []
         if restDon: steps = [{"a": "restDon", "n": restDon, "pay": True, "text": f"Rest {restDon} of your DON!! cards."}] + (steps or [{"a": "other", "text": body}])
         st = static(body, tags) if set(timings) <= {"yourTurn"} else None
+        # "All Character cards in your hand without a Counter have a +1000 Counter" (while this card is on the field)
+        hc = None if timings else re.match(r"all (?:of your )?(?:\{([^}]+)\} type )?character cards (?:in your hand )?without a counter have a \+(\d+) counter", body, re.I)
+        if hc: steps = []
         for t in timings or ["other"]:
             ab = {"t": t, "text": raw}
+            if hc: ab["hc"] = dict({"n": int(hc.group(2))}, **({"ty": hc.group(1)} if hc.group(1) else {}))
             if don: ab["don"] = don
             if donMinus: ab["donMinus"] = donMinus
             if steps: ab["steps"] = steps
@@ -476,7 +507,7 @@ def print_report(effects):
     for code, e in effects.items():
         for a in e["abilities"]:
             n_ab += 1
-            if a.get("s"): n_stat += 1; continue
+            if a.get("s") or a.get("hc"): n_stat += 1; continue
             st = list(walk(a.get("steps", [])))
             if st and all(s["a"] != "other" for s in st): n_auto += 1
             for s in st or [{"a": "other", "text": a["text"]}]:

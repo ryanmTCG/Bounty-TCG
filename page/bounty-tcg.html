@@ -1165,7 +1165,10 @@ const clean = (s, n = 24) => String(s == null ? "" : s).replace(/[^\p{L}\p{N} .,
 const num = (x, max = 99) => { x = Math.floor(+x); return x >= 0 && x <= max ? x : 0; };
 const hue = code => { let h = 0; for (const ch of String(code).split("-")[0]) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; };
 const ACTK = {rest:1, stand:1, ko:1, bounce:1, bottom:1, pwr:1, dmg:1, pwb:1, cst:1, life:1, lfu:1, trc:1, ltr:1, rdn:1, odn:1, odis:1, ohd:1};
-const MK = {fz:{l:"Freeze", s:"FREEZE"}, nb:{l:"No Block", s:"NO BLOCK"}, au:{l:"Ability used", s:"USED"}, nk:{l:"No K.O.", s:"NO K.O."}, na:{l:"No Attack", s:"NO ATTACK"}};
+const MK = {fz:{l:"Freeze", s:"FREEZE"}, nb:{l:"No Block", s:"NO BLOCK"}, au:{l:"Ability used", s:"USED"}, nk:{l:"No K.O.", s:"NO K.O."}, na:{l:"No Attack", s:"NO ATTACK"}, ng:{l:"Negated", s:"NEGATED"}};
+// "Negate the effect of ... during this turn": the card's own abilities, keywords and always-on effects are off until
+// the turn ends (cleared at its owner's next start or end of turn, whichever comes first)
+const negated = f => !!(f && f.mk && f.mk.includes("ng"));
 for (const k in MK) ACTK["x" + k] = 1;
 const lab = c => c.n ? c.c + " " + c.n : c.c;
 function shuffle(a){ for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
@@ -3004,7 +3007,7 @@ const TUT_STEPS = [
   {t: "Defend", x: () => defending()
       ? "The computer is attacking! Before it resolves, tap a Counter card in your hand (the +1000 or +2000 on its side goes to the card being attacked), or tap your glowing Blocker so it takes the hit instead. Then tap the button in the middle to resolve the attack."
       : "Now it's the computer's turn. Wait for its attack.",
-    hl: () => defending() ? [S.hand.map((c, i) => (CARDDB.get(c.c) || {}).ctr ? `#hand [data-src="hand:${i}"]` : "").filter(Boolean).join(","), "#me .canblk", '#mid [data-do="dfresolve"],#mid [data-do="dfdone"]'].filter(Boolean).join(",") : "",
+    hl: () => defending() ? [S.hand.map((c, i) => ctrOf(c.c) ? `#hand [data-src="hand:${i}"]` : "").filter(Boolean).join(","), "#me .canblk", '#mid [data-do="dfresolve"],#mid [data-do="dfdone"]'].filter(Boolean).join(",") : "",
     done: () => (defending() && (TUT.def = oppM.ak.n), !!TUT.def && S.rs === TUT.def)},
   {t: "You've got the basics", x: () => "That's a full turn each. A few more rules: Life cards with [Trigger] can be used for free when they're taken as damage, rested Characters can be attacked, and End turn glows when there's nothing left to do. Keep playing to beat the computer.", btn: "Finish tutorial"}
 ];
@@ -3341,7 +3344,7 @@ function botDefend(){
   const lv = botLv();
   if (r0 && r0.hits && PR.boa !== n && lv) {
     PR.boa = n; let any = false;
-    for (const f of [S.leader, ...S.chars, S.stage].filter(Boolean)) { const ab = fxAb(f.card.c).find(a => a.t === "onOppAttack"); if (ab && botWorth(f.card, ab) && botAbility(f.card, ["onOppAttack"], f.d || 0)) any = true; }
+    for (const f of [S.leader, ...S.chars, S.stage].filter(f => f && !negated(f))) { const ab = fxAb(f.card.c).find(a => a.t === "onOppAttack"); if (ab && botWorth(f.card, ab) && botAbility(f.card, ["onOppAttack"], f.d || 0)) any = true; }
     if (any) return 800;
   }
   if (r0 && r0.hits) {
@@ -3353,7 +3356,7 @@ function botDefend(){
     }
     const r = defResult();
     if (r && r.hits) {
-      const amt = r.ap - r.tp + 1, ctrs = S.hand.map((c, i) => ({c, i, v: (CARDDB.get(c.c) || {}).ctr || 0})).filter(x => x.v > 0);
+      const amt = r.ap - r.tp + 1, ctrs = S.hand.map((c, i) => ({c, i, v: ctrOf(c.c)})).filter(x => x.v > 0);
       const one = ctrs.filter(x => x.v >= amt).sort((x, y) => x.v - y.v)[0];
       let set = one ? [one] : null;
       if (!set) { set = []; let sum = 0; for (const x of ctrs.slice().sort((x, y) => y.v - x.v)) { if (sum >= amt) break; set.push(x); sum += x.v; } if (sum < amt) set = null; }
@@ -3384,7 +3387,7 @@ function botDefend(){
 const REMOVE_K = {ko: 1, bounce: 1, bottom: 1, life: 1, lfu: 1, trc: 1};
 function shielded(f, k){
   if (!f || f === S.leader) return false;
-  for (const h of [S.leader, S.stage, ...S.chars]) if (h) for (const a of fxAb(h.card.c)) {
+  for (const h of [S.leader, S.stage, ...S.chars]) if (h && !negated(h)) for (const a of fxAb(h.card.c)) {
     if (a.t !== "other" && a.t !== "yourTurn") continue;
     const t = (a.text || "").replace(/\s*\([^)]*\)/g, "");
     const m = /^(?:\[[^\]]+\]\s*)*(?:If ([^,]+), )?(this Character|all of your (?:(red|green|blue|purple|black|yellow) )?(?:\{([^}]+)\} type )?Characters)(?: gains? [^.]*? and)? cannot be (K\.O\.'d|removed from the field) by (?:your opponent's )?effects/i.exec(t);
@@ -3433,7 +3436,7 @@ function applyMarkReqs(){
         else if (f !== S.leader) {
           const i = S.chars.indexOf(f); if (i < 0) continue;
           S.chars.splice(i, 1); S.donRested += f.d || 0;
-          if (q.k === "ko") { S.trash.unshift(f.card); addLog(`${nm} was K.O.'d by ${by}`); const kc = f.card, kd = f.d || 0; setTimeout(() => runAbility(kc, ["onKO"], false, kd), 0); }
+          if (q.k === "ko") { S.trash.unshift(f.card); addLog(`${nm} was K.O.'d by ${by}`); const kc = f.card, kd = f.d || 0; if (!negated(f)) setTimeout(() => runAbility(kc, ["onKO"], false, kd), 0); }
           else if (q.k === "bounce") { S.hand.push(f.card); addLog(`${nm} was returned to hand by ${by}`); }
           else if (q.k === "bottom") { S.deck.push(f.card); addLog(`${nm} was put on the bottom of the deck by ${by}`); }
           else if (q.k === "life" || q.k === "lfu") { if (q.k === "lfu") f.card.up = true; else delete f.card.up; S.life.unshift(f.card); addLog(`${nm} was added to the top of their Life${q.k === "lfu" ? " face-up" : ""} by ${by} (Life ${S.life.length})`); }
@@ -3496,7 +3499,7 @@ function normStep(t, deep){
   t = t || {};
   const st = {a: String(t.a || "other").slice(0, 16), who: t.who === "own" ? "own" : t.who === "any" ? "any" : "opp", n: Math.max(1, Math.min(60000, Math.round(Math.abs(+t.n) || 1))) * (+t.n < 0 ? -1 : 1), upTo: t.upTo !== false, cost: Number.isFinite(+t.cost) && t.cost !== null ? +t.cost : null, power: Number.isFinite(+t.power) && t.power !== null ? +t.power : null, rested: t.rested === true, ld: typeof t.ld === "boolean" ? t.ld : null, all: t.all === true, text: fxText(t.text, 300)};
   if (st.a === "kw" && !+t.n) st.n = 0;
-  for (const k of ["self", "pay", "battle", "tb", "top", "bot", "lf", "now", "up", "dn", "nx"]) if (t[k] === true) st[k] = true;
+  for (const k of ["self", "pay", "battle", "tb", "top", "bot", "lf", "now", "up", "dn", "nx", "ng"]) if (t[k] === true) st[k] = true;
   if (typeof t.f === "string" && t.f.trim()) st.f = fxText(t.f, 160);
   if (typeof t.k === "string" && /^[a-zA-Z]{1,12}$/.test(t.k)) st.k = t.k;
   if (Number.isInteger(t.cnt) && t.cnt > 1) st.cnt = Math.min(t.cnt, 10);
@@ -3523,6 +3526,7 @@ function normFx(r){
     const steps = (Array.isArray(x && x.steps) ? x.steps : []).slice(0, 6).map(t => normStep(t));
     const o = {t: TRIG[x && x.t] ? x.t : "other", don: Math.max(0, Math.min(10, Math.round(+(x && x.don) || 0))), donMinus: Math.max(0, Math.min(10, Math.round(+(x && x.donMinus) || 0))), text: fxText(x && x.text, 600), steps};
     const st = normStat(x && x.s); if (st) o.s = st;
+    if (x && x.hc && Number.isFinite(+x.hc.n) && +x.hc.n > 0) o.hc = Object.assign({n: Math.min(5000, Math.round(+x.hc.n))}, typeof x.hc.ty === "string" ? {ty: fxText(x.hc.ty, 40)} : {});
     return o;
   }).filter(x => x.text);
   return {v: 2, ab, blocker: !!(r && r.blocker)};
@@ -3689,6 +3693,7 @@ const runOnPlay = (card, ev) => runAbility(card, ev ? (oppM && oppM.ak && S.rs !
 function abilityNow(card, a){
   if (a.s) return false;
   const onField = [S.leader, S.stage, ...S.chars].some(f => f && f.card === card), inHand = S.hand.includes(card), def = defending();
+  if (onField && negated([S.leader, S.stage, ...S.chars].find(f => f && f.card === card))) return false;
   const myMain = S.myTurn && S.phase === "play" && !S.atk && !def;
   switch (a.t) {
     case "onOppAttack": return def && onField;
@@ -3747,6 +3752,7 @@ async function offerOppAttack(){
       let fx = null; try { fx = await readEffect(f.card.c); } catch (e) { fx = null; }
       if (!fx) continue;
       const ci = S.chars.indexOf(f); 
+      if (negated(f)) continue;
       for (const ab of fx.ab) if (ab.t === "onOppAttack" && (ab.don || 0) <= (f.d || 0) && (ab.donMinus || 0) <= fieldDon()) list.push({card: f.card, ab});
     }
     $("#toast").hidden = true;
@@ -3757,11 +3763,12 @@ async function offerOppAttack(){
 }
 // the limits a target must meet, read from the step and its wording: "with 4000 power or less", "with a cost of 3 or more", "{Navy} type", Leader only / Characters only
 function fxLimits(st){
-  const t = String(st.text || ""), num = re => { const m = re.exec(t); return m ? +m[1] : null; }, rng = /cost of (\d+) to (\d+)/i.exec(t);
+  // what the step targets, without its "If ...," (a condition's "{X} type Characters with a cost of 5 or more" isn't a limit)
+  const t = String(st.text || "").replace(/^(?:then,\s*)?(?:if|when) [^,]+,\s*/i, ""), num = re => { const m = re.exec(t); return m ? +m[1] : null; }, rng = /cost of (\d+) to (\d+)/i.exec(t);
   const lim = {
     maxP: num(/(\d+) (?:base )?power or less/i) ?? (Number.isFinite(st.power) ? st.power : null), minP: num(/(\d+) (?:base )?power or more/i),
     maxK: rng ? +rng[2] : num(/cost of (\d+) or less/i) ?? (Number.isFinite(st.cost) ? st.cost : null), minK: rng ? +rng[1] : num(/cost of (\d+) or more/i),
-    eqK: num(/cost of (\d+)(?! or| to)\b/i), base: /base cost/i.test(t),
+    eqK: num(/cost of (\d+)(?! or| to)\b/i), base: /base cost/i.test(t), bp: /base power/i.test(t),
     type: (/\{([^}]+)\} type (?:Leader|Character)/i.exec(t) || [])[1] || null,
     noType: (/other than (?:the )?\{([^}]+)\} type/i.exec(t) || [])[1] || null,
     tin: (/type including "([^"]+)"/i.exec(t) || [])[1] || null,
@@ -3781,9 +3788,9 @@ function fxCands(st){
   const pow = (code, pm) => { const b = basePow(code); return Number.isFinite(b) ? b + (pm || 0) : null; };
   const cost = (code, cm) => { const k = (CARDDB.get(code) || {}).k; return Number.isFinite(k) ? Math.max(0, k + (cm || 0)) : null; };
   const ok = x => {
-    const k = lim.base ? (CARDDB.get(x.code) || {}).k : x.k;
-    if (lim.maxP != null && Number.isFinite(x.p) && x.p > lim.maxP) return false;
-    if (lim.minP != null && Number.isFinite(x.p) && x.p < lim.minP) return false;
+    const k = lim.base ? (CARDDB.get(x.code) || {}).k : x.k, p = lim.bp ? basePow(x.code) : x.p;
+    if (lim.maxP != null && Number.isFinite(p) && p > lim.maxP) return false;
+    if (lim.minP != null && Number.isFinite(p) && p < lim.minP) return false;
     if (lim.maxK != null && Number.isFinite(k) && k > lim.maxK) return false;
     if (lim.minK != null && Number.isFinite(k) && k < lim.minK) return false;
     if (lim.eqK != null && lim.maxK == null && lim.minK == null && Number.isFinite(k) && k !== lim.eqK) return false;
@@ -4038,9 +4045,10 @@ function fxApply(arg){
     if (ref === "ld" && !["rest", "stand", "pwr", "cost", "mark"].includes(kind)) continue;
     const k = kind === "cost" ? "cst" : kind === "trashCh" ? "trc" : kind === "life" && st.up ? "lfu" : kind === "mark" ? st.k : kind === "pwr" && st.battle ? "pwb" : kind;
     if (!ACTK[k] && !MK[k]) continue;
+    if (st.ng && kind !== "mark") sendOpp({r: ref, c: t.c, k: "ng", v: 1});
     sendOpp(Object.assign({r: ref, c: t.c, k, v: kind === "pwr" || kind === "cost" ? st.n : kind === "mark" && st.now ? 1 : 0}, kind === "pwr" && st.nx ? {nx: 1} : {}));
     const sg = `${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)}`;
-    addLog(`${{ko: "K.O.'d", rest: "rested", stand: "stood", bounce: "returned to hand", bottom: "put on the bottom of the deck", life: "added to its owner's Life", trashCh: "trashed", pwr: sg + " power on", cost: sg + " cost on", mark: st.k === "fz" ? "froze" : "stopped from attacking"}[kind] || kind} ${lab(t)}`);
+    addLog(`${{ko: "K.O.'d", rest: "rested", stand: "stood", bounce: "returned to hand", bottom: "put on the bottom of the deck", life: "added to its owner's Life", trashCh: "trashed", pwr: sg + " power on", cost: sg + " cost on", mark: st.k === "fz" ? "froze" : st.k === "ng" ? "negated the effect of" : "stopped from attacking"}[kind] || kind} ${lab(t)}${st.ng && kind !== "mark" ? " (its effect negated)" : ""}`);
   }
   commit(); fxNext();
 }
@@ -4114,7 +4122,7 @@ function handSummary(){
   if (!S.hand.length) return "";
   const ks = [], first = R && !PR ? (S.first ? "You go first" : "You go second") : "";
   let ctrN = 0, ctrV = 0;
-  for (const c of S.hand) { const e = CARDDB.get(c.c) || {}; if (Number.isFinite(e.k)) ks.push(e.k); if (e.ctr) { ctrN++; ctrV += e.ctr; } }
+  for (const c of S.hand) { const e = CARDDB.get(c.c) || {}, v = ctrOf(c.c); if (Number.isFinite(e.k)) ks.push(e.k); if (v) { ctrN++; ctrV += v; } }
   ks.sort((a, b) => a - b);
   const bits = [first, ks.length ? "Costs " + ks.join(", ") : "", `${ctrN} counter${ctrN === 1 ? "" : "s"}${ctrV ? " (+" + ctrV.toLocaleString("en-US") + ")" : ""}`].filter(Boolean);
   return `<small class="mhint">${esc(bits.join(" \u00B7 "))}</small>`;
@@ -4153,7 +4161,7 @@ function startTurn(){
   if (S.phase === "play" && !S.turn && oppM && oppM.kp === 0) { toast(`Waiting for ${oppM.nick} to keep their hand and set Life.`); return; }
   if (S.phase !== "play") { toast(S.phase === "pre" ? "Keep your hand and set your Life first." : (S.phase === "wait" || S.phase === "roll") ? "The match hasn't started yet." : "Set up your deck first."); return; }
   S.turn++;
-  const stand = f => { if (f.mk && f.mk.includes("na") && S.turn >= (f.nat || 0)) { f.mk = f.mk.filter(k => k !== "na"); addLog(`${lab(f.card)} can attack again`); } if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; f.mk = (f.mk || []).filter(k => k !== "au"); };
+  const stand = f => { if (f.mk && f.mk.includes("na") && S.turn >= (f.nat || 0)) { f.mk = f.mk.filter(k => k !== "na"); addLog(`${lab(f.card)} can attack again`); } if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; f.mk = (f.mk || []).filter(k => k !== "au" && k !== "ng"); };
   // power "until the start of your next turn" ends now (nx); an opponent's "until the end of your next turn" stays (nt)
   for (const f of S.chars) { stand(f); S.donRested += f.d; f.d = 0; f.pm = f.nt || 0; f.nx = 0; f.cm = 0; f.bc = 0; }
   if (S.stage) S.stage.r = false;
@@ -4202,7 +4210,7 @@ function endTurn(){
     }
   }
   S.pw = 0; S.cc = 0; S.atk = null; S.blk = null;
-  for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = f.nx || 0; f.nt = 0; f.cm = 0; f.bc = 0; }
+  for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = f.nx || 0; f.nt = 0; f.cm = 0; f.bc = 0; if (negated(f)) f.mk = f.mk.filter(k => k !== "ng"); }
   if (S.ev) { S.trash.unshift(S.ev.card); addLog(`${lab(S.ev.card)} went to the trash`); S.ev = null; }
   S.myTurn = false; S.et = (S.et || 0) + 1;
   addLog(`ended turn ${S.turn || 0}`);
@@ -4278,7 +4286,7 @@ function fxStat(f){
   if (!f || statBusy || (f !== S.leader && !S.chars.includes(f))) return out;
   statBusy = true;
   try {
-    for (const h of [S.leader, S.stage, ...S.chars]) if (h) for (const a of fxAb(h.card.c)) {
+    for (const h of [S.leader, S.stage, ...S.chars]) if (h && !negated(h)) for (const a of fxAb(h.card.c)) {
       if (!a.s || a.s.to === "opp" || !statFits(a.s, h, f) || !statOn(h, a)) continue;
       out.p += a.s.p || 0; out.k += a.s.k || 0; if (a.s.kw) out.g += a.s.kw.map(k => KW_G[k]).join("");
     }
@@ -4299,7 +4307,7 @@ const cmOf = f => (f.cm || 0) + fxStat(f).k;
 // keywords a card has right now: printed (or always-on, for cards in effects.json) and given this turn
 const kwPrinted = code => { if (BFX.has(code)) return ""; const kw = String((CARDDB.get(code) || {}).kw || ""); return Object.keys(KW_G).filter(k => kw.includes(k)).map(k => KW_G[k]).join(""); };
 function kwNow(f, st){
-  let g = kwPrinted(f.card.c) + ((st || fxStat(f)).g || "");
+  let g = (negated(f) ? "" : kwPrinted(f.card.c)) + ((st || fxStat(f)).g || "");
   if (f.g && S.myTurn) for (const k in f.g) if (f.g[k] === S.turn) g += k;
   return [...new Set(g)].join("");
 }
@@ -4595,7 +4603,7 @@ function openCardMenu(src, x, y){
     const c = S.hand[i]; if (!c) return;
     // defending: tapping a card in hand uses it as a Counter
     if (oppM && oppM.ak && S.rs !== oppM.ak.n && !fxCur) {
-      if ((CARDDB.get(c.c) || {}).ctr) { doAction("cmbhc:" + i); return; }
+      if (ctrOf(c.c)) { doAction("cmbhc:" + i); return; }
       if (fxAb(c.c).some(a => a.t === "counter")) { doAction("cmbev:" + i); return; }
     }
     title = lab(c); info = {c: c.c, n: c.n, r: 0, d: 0};
@@ -4787,7 +4795,7 @@ const isBlocker = c => { const fx = BFX.get(c) || EFX.get(c); return !!(fx && fx
 // holds ([DON!! xN], whose turn, "If you have 2 or less Life cards, ..."). A condition the game can't check counts as met.
 const SELF_BLK = /\bthis Character gains? \[Blocker\]/i;
 function blockerNow(f){
-  if (!f || !isBlocker(f.card.c)) return false;
+  if (!f || negated(f) || !isBlocker(f.card.c)) return false;
   const own = fxAb(f.card.c).filter(a => (a.t === "other" || a.t === "yourTurn") && SELF_BLK.test(a.text || ""));
   if (!own.length) return true;
   return own.some(a => {
@@ -4830,7 +4838,7 @@ function quickResolve(){
   if (handCounters().length) return;
   if (counterEvents().length) return;
   if (S.chars.some(f => !f.r && !blockBan(f) && (!knownFx(f.card.c) || blockerNow(f)))) return;
-  if ([S.leader, S.stage, ...S.chars].some(f => f && fxAb(f.card.c).some(a => a.t === "onOppAttack"))) return;
+  if ([S.leader, S.stage, ...S.chars].some(f => f && !negated(f) && fxAb(f.card.c).some(a => a.t === "onOppAttack"))) return;
   qrKey = n;
   setTimeout(() => {
     if (!oppM || !oppM.ak || oppM.ak.n !== n || S.rs === n || S.blk != null || fxCur || modal) return;
@@ -5015,9 +5023,19 @@ function endBattle(){
 function counterEvents(){
   return S.hand.map((c, i) => ({c, i, cost: (handCost(c) || {cost: 99}).cost})).filter(e => fxAb(e.c.c).some(a => a.t === "counter") && e.cost <= S.donActive);
 }
+// a card's Counter in hand: its own, or one an ability on your field gives Character cards without one ("All Character
+// cards in your hand without a Counter have a +1000 Counter": OP17-063; Oden's Leader EB01-001, for {Land of Wano})
+function ctrOf(code){
+  const e = CARDDB.get(code) || {};
+  if (e.ctr || e.t !== "Character") return e.ctr || 0;
+  let v = 0;
+  for (const f of [S.leader, S.stage, ...S.chars]) if (f && !negated(f)) for (const a of fxAb(f.card.c))
+    if (a.hc && (!a.hc.ty || hasType(code, a.hc.ty)) && (f.d || 0) >= (a.don || 0)) v = Math.max(v, a.hc.n);
+  return v;
+}
 function handCounters(){
   const g = new Map();
-  S.hand.forEach((c, i) => { const v = (CARDDB.get(c.c) || {}).ctr; if (!v) return; const e = g.get(c.c); if (e) e.n++; else g.set(c.c, {i, v, c, n: 1}); });
+  S.hand.forEach((c, i) => { const v = ctrOf(c.c); if (!v) return; const e = g.get(c.c); if (e) e.n++; else g.set(c.c, {i, v, c, n: 1}); });
   return [...g.values()].sort((a, b) => b.v - a.v);
 }
 // "7000 vs 5000" with what happens next, from the attacker's (def false) or defender's (def true) side
@@ -5432,7 +5450,7 @@ function doAction(a){
     moveCard("hand:" + i, "event"); return;
   }
   if (a.startsWith("cmbhc:")) {
-    const i = +a.slice(6), c = S.hand[i], d = myDefender(), v = c ? (CARDDB.get(c.c) || {}).ctr : 0;
+    const i = +a.slice(6), c = S.hand[i], d = myDefender(), v = c ? ctrOf(c.c) : 0;
     if (!c || !d || !v || !oppM || !oppM.ak) return;
     S.hand.splice(i, 1); S.trash.unshift(c);
     d.pm = Math.max(-60000, Math.min(60000, (d.pm || 0) + v)); d.bc = (d.bc || 0) + v;

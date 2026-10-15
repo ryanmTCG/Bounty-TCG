@@ -332,6 +332,63 @@ console.log("next turn", JSON.stringify(nx));
 check(nx.ld.flag && nx.ld.pm === 1000 && nx.ld.nx === 1000 && nx.end === 1000, "your Leader keeps +1000 from OP09-013 after your turn ends");
 check(nx.req.k === "pwr" && nx.req.v === -2000 && nx.req.nx === 1 && nx.opp.a === -2000 && nx.opp.b === 0 && nx.opp.nt === 0, "the computer's Character keeps −2000 from OP11-009 through its turn, then loses it");
 check(nx.start.my && nx.start.pm === 0 && nx.start.nx === 0, "the +1000 ends when your next turn starts");
+// OP17-063 Kaido: while it's on your field, Character cards in your hand without a Counter have +1000 Counter; its
+// Activate: Main (DON!! −1, if it was played this turn) negates a cost 6 or less Character and K.O.s it, so "cannot be
+// K.O.'d by effects" (OP03-088) doesn't stop it and an [On K.O.] (OP01-080) doesn't run
+const kd = await page.evaluate(() => {
+  while (fxCur) { fxQueue.length = 0; fxFinish(false); }
+  const noCtr = [...CARDDB.keys()].find(k => /^OP0/.test(k) && (CARDDB.get(k) || {}).t === "Character" && !(CARDDB.get(k) || {}).ctr);
+  S.chars = []; S.hand = [{c: noCtr, n: nameOf(noCtr), u: 93001}]; commit();
+  const before = ctrOf(noCtr);
+  S.chars = [{card: {c: "OP17-063", n: nameOf("OP17-063")}, r: false, d: 0, pt: S.turn}]; commit();
+  const after = ctrOf(noCtr), list = handCounters().map(x => x.v);
+  S.chars[0].mk = ["ng"]; const neg = ctrOf(noCtr); S.chars[0].mk = [];
+  return {noCtr, before, after, list, neg};
+});
+console.log("kaido counter", JSON.stringify(kd));
+check(kd.before === 0 && kd.after === 1000 && kd.list.join() === "1000" && kd.neg === 0, "OP17-063 gives Characters in your hand without a Counter a +1000 Counter while it's on your field");
+await page.evaluate(() => { botSide(() => { S.chars = ["OP03-088", "OP01-080"].map((c, i) => ({card: {c, n: nameOf(c), u: 93100 + i}, r: false, d: 0, pt: 0})); return 0; });
+  oppM = oppModel(PR.pres[1]); S.myTurn = true; S.atk = null; S.donActive = Math.max(S.donActive, 3); S.mqn = Math.max(S.mqn || 0, (PR.sides[1].S.ack || 0) + 5); commit(); });
+const kaido = async target => {
+  await page.evaluate(() => { const k = S.chars.find(f => f.card.c === "OP17-063"); k.mk = []; fxEnqueue(fxJob(k.card, fxAb("OP17-063").find(a => a.t === "activateMain"))); });
+  for (let i = 0; i < 6 && await page.evaluate(() => !!fxCur); i++) {
+    await page.evaluate(t => { const st = fxCur.steps[fxCur.i];
+      if (st.a === "returnDon") { doAction("fxrd:a"); doAction("fxrdok"); return; }
+      if (st.a === "ko") { const r = fxCands(st).find(x => (oppCardAt(x.ref) || {}).c === t); fxCur.pick = r ? [r.ref] : []; doAction("fxapply"); return; }
+      const b = document.querySelector("#fxpanel .btn.pri"); if (b) b.click(); }, target);
+    await page.waitForTimeout(200);
+  }
+  return page.evaluate(() => { PR.pres[0] = JSON.parse(JSON.stringify(pubFull())); const h = PR.sides[1].S.hand.length, mh = S.hand.length;
+    botSide(() => 0); return {h, mh, mq: (S.mqh || []).slice(-2).map(q => q.k).join()}; });
+};
+const fd0 = await page.evaluate(() => fieldDon());
+const ka = await kaido("OP03-088");
+await page.waitForTimeout(500);
+const kb = await page.evaluate(() => ({chars: PR.sides[1].S.chars.map(f => f.card.c), tr: (PR.sides[1].S.trash[0] || {}).c, fd: fieldDon()}));
+console.log("kaido ko", JSON.stringify(ka), JSON.stringify(kb), fd0);
+check(ka.mq === "ng,ko" && !kb.chars.includes("OP03-088") && kb.tr === "OP03-088" && kb.fd === fd0 - 1, "OP17-063 pays DON!! −1, negates OP03-088 and K.O.s it although it can't be K.O.'d by effects");
+const kc = await kaido("OP01-080");
+await page.waitForTimeout(600);
+const kc2 = await page.evaluate(() => ({chars: PR.sides[1].S.chars.map(f => f.card.c), h: PR.sides[1].S.hand.length, mh: S.hand.length, log: PR.sides[1].S.trash[0].c, lg: PR.sides[1].myLog.slice(-12).map(e => e[1])}));
+console.log("kaido onko", JSON.stringify(kc), JSON.stringify(kc2));
+const kAfter = kc2.lg.slice(kc2.lg.findIndex(l => /OP01-080.*was K\.O\.'d/.test(l)));
+check(!kc2.chars.includes("OP01-080") && kc2.log === "OP01-080" && kAfter.length && kAfter.some(l => /OP01-080.*Negated/.test(kc2.lg.join("|"))) && !kAfter.some(l => /drew|resolved OP01-080/.test(l)) && kc2.mh === kc.mh, "the negated OP01-080's [On K.O.] draw doesn't happen");
+const kn = await page.evaluate(() => { botSide(() => { S.chars = [{card: {c: "OP03-088", n: nameOf("OP03-088"), u: 93200}, r: false, d: 0, pt: 0, mk: ["ng"]}]; return 0; });
+  const r = botSide(() => ({blk: blockerNow(S.chars[0]), kw: kwNow(S.chars[0]), sh: shielded(S.chars[0], "ko")}));
+  botSide(() => { S.chars[0].myTurn = 0; startTurn(); const left = (S.chars[0].mk || []).includes("ng"); S.myTurn = false; return 0; });
+  const after = PR.sides[1].S.chars[0].mk || []; return Object.assign(r, {after: after.includes("ng")}); });
+console.log("negated", JSON.stringify(kn));
+check(!kn.blk && !/b/.test(kn.kw) && !kn.sh && !kn.after, "a negated Blocker can't block or shield itself, and the negation ends at its owner's turn");
+const kp = await page.evaluate(() => { const k = S.chars.find(f => f.card.c === "OP17-063"); k.pt = S.turn - 1; k.mk = []; const n = PR.sides[1].S.chars.length;
+  fxEnqueue(fxJob(k.card, fxAb("OP17-063").find(a => a.t === "activateMain"))); doAction("fxgo"); const skipped = !fxCur || fxCur.steps[fxCur.i].a !== "ko";
+  while (fxCur) { fxQueue.length = 0; fxFinish(false); } return {skipped, log: myLog.slice(-2).map(e => e[1]).join(" | ")}; });
+console.log("kaido old", JSON.stringify(kp));
+check(kp.skipped && /skipped a step/.test(kp.log), "OP17-063 does nothing if it wasn't played this turn");
+// a step's "If ...," isn't a target limit: EB04-016 rests any opponent's Character with a cost of 8 or less, not only {Neptunian} ones
+const lm = await page.evaluate(() => { const st = fxAb("EB04-016").flatMap(a => a.steps || []).find(x => x.a === "rest"), l = fxLimits(st);
+  const st2 = fxAb("OP08-085").flatMap(a => a.steps || []).find(x => x.a === "ko"), l2 = fxLimits(st2); return {type: l.type, maxK: l.maxK, minK: l2.minK, maxK2: l2.maxK}; });
+console.log("limits", JSON.stringify(lm));
+check(lm.type === null && lm.maxK === 8 && lm.minK === null && lm.maxK2 === 4, "an ability's condition doesn't narrow what it can target");
 await page.screenshot({ path: OUT + "/board.png" });
 check(!errs.length, "no page errors" + (errs.length ? ": " + errs.slice(0, 3).join(" / ") : ""));
 await app.close();
