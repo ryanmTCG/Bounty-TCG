@@ -19,6 +19,15 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['c'])
         && request.resource.data.c == get(/databases/$(database)/documents/ranks/$(request.auth.uid)).data.w + 1;
     }
+    // Shared match records for the Meta page: each signed-in player adds their own side of a finished match once
+    // (their Leader, their opponent's, the result and their own decklist), and nobody can change them afterwards.
+    match /games/{id} {
+      allow read: if true;
+      allow create: if request.auth != null && d().by == request.auth.uid
+        && d().keys().hasOnly(['v', 't', 'm', 'k', 'f', 'l', 'o', 'r', 'y', 'tn', 'd', 'n', 'on', 'by', 'rp'])
+        && d().r in ['w', 'l'] && d().l is string && d().l.size() <= 12 && d().d is string && d().d.size() <= 1300
+        && d().t is int && d().t > request.time.toMillis() - 600000 && d().t < request.time.toMillis() + 600000;
+    }
     match /ranks/{uid} {
       allow read: if true;
       allow create: if request.auth != null && request.auth.uid == uid

@@ -529,6 +529,34 @@ select.sbtn{height:26px;min-width:88px}
 .lbbar .sp{flex:1}
 .lbcount{display:flex;gap:6px;align-items:center;font-weight:700;color:#F1DDB0}
 .lblist{display:flex;flex-direction:column;gap:10px}
+.mtfil{gap:12px;align-items:flex-end;margin:4px 0 12px}
+.mtfil>div{min-width:150px}
+.mtrk{display:flex;gap:6px;align-items:center;font-size:14px;padding-bottom:8px}
+.mtgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.mtrow{display:flex;gap:10px;align-items:center;padding:8px 10px;border:2px solid rgba(255,240,205,.25);border-radius:14px;background:rgba(0,0,0,.22);color:inherit;font:inherit;text-align:left}
+button.mtrow{cursor:pointer}
+button.mtrow:hover{border-color:rgba(242,184,75,.7)}
+.mtrow .card{--cw:42px;--ch:59px;flex:0 0 auto;font-size:8px;margin:0}
+.mtinfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.mtinfo b{font-family:var(--slab);font-weight:400;font-size:16px;color:#FFE9B8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mtinfo small{color:var(--muted);font-size:12px}
+.mtbar{display:block;height:5px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
+.mtbar i{display:block;height:100%;background:#F2B84B}
+.mtwr{font-family:var(--slab);font-size:20px;color:#FFE9B8;min-width:52px;text-align:right}
+.mtwr.up{color:#7FE0A0}
+.mtwr.dn{color:#FFA091}
+.mthead{display:flex;gap:12px;align-items:center;margin:4px 0 6px}
+.mthead .card{--cw:64px;--ch:90px;font-size:10px;margin:0}
+.mthead b{display:block;font-family:var(--slab);font-weight:400;font-size:22px;color:#FFE9B8}
+.mthead small{color:var(--muted)}
+.mtlist{border:2px solid rgba(255,240,205,.25);border-radius:14px;background:rgba(0,0,0,.22);padding:8px 12px;margin:0 0 8px}
+.mtlist summary{cursor:pointer}
+.mtlist .tndeck{columns:2 220px}
+.mtcore{display:flex;flex-wrap:wrap;gap:6px}
+.mtcore span{font-size:13px;padding:2px 8px;border-radius:999px;background:rgba(0,0,0,.28);border:1px solid rgba(255,240,205,.25)}
+.mtcore i{color:var(--muted);font-style:normal}
+.pfshare{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.4}
+.pfshare input{margin-top:3px}
 .tnhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin:2px 0 8px}
 .tnhead b{font-family:var(--slab);font-weight:400;font-size:22px;color:#FFE9B8}
 .tnhead small{color:var(--muted)}
@@ -1487,7 +1515,7 @@ function oppModel(x){
     ox: Array.isArray(x.ox) ? [Math.max(-20000, Math.min(20000, Math.round(+x.ox[0] || 0))), Math.max(-10, Math.min(10, Math.round(+x.ox[1] || 0)))] : null,
     mf: x.mf && typeof x.mf === "object" && /^[A-Z0-9]{1,8}-\d{2,4}$/.test(x.mf.c) ? {c: x.mf.c, a: num(x.mf.a, 30), s: num(x.mf.s, 30), n: num(x.mf.n, 1e6)} : null,
     lu: (Array.isArray(x.lu) ? x.lu : []).slice(0, 12).filter(t => Array.isArray(t) && Number.isInteger(t[0]) && t[0] >= 0 && t[0] < 60).map(t => [t[0], clean(t[1], 16)]),
-    lf: num(x.lf, 60), kc: num(x.kc, 999), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
+    lf: num(x.lf, 60), kc: num(x.kc, 999), ns: x.ns ? 1 : 0, dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
   };
 }
@@ -1498,9 +1526,10 @@ const fld = x => { const st = fxStat(x); return {c: x.card.c, n: x.card.n, r: x.
 function pubFull(){
   const o = {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? Object.assign({s:S.atk.s, t:S.atk.t, n:S.atk.n || 0}, S.atk.u ? {u: 1} : {}, Number.isFinite(S.atk.ub) ? {ub: S.atk.ub} : {}) : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, rk:S.ranked ? 1 : 0, fc:myFC(), qc:myQc, tl:S.myTurn && S.ranked && S.tleft != null ? Math.ceil(S.tleft / 1000) : null, tp:S.atk ? 1 : 0, to:S.tmo || 0, mq:S.mq.slice(-8), ma:S.ack || 0,
     lf:S.life.length, dd:S.donDeck, da:S.donActive, dr:S.donRested, dk:S.deck.length, h:S.hand.length,
-    tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), uid:S.ranked ? acctUid() : "", mk:S.ranked ? (S.mk || (S.mk = Math.random().toString(36).slice(2, 12))) : "", lg:myLog.filter(e => pubLog(e[1])).slice(-8), kc:S.kc || 0};
+    tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), uid:S.ranked ? acctUid() : "", mk:S.mk || (S.mk = Math.random().toString(36).slice(2, 12)), lg:myLog.filter(e => pubLog(e[1])).slice(-8), kc:S.kc || 0};
   const ox = statOpp(); if (ox[0] || ox[1]) o.ox = ox;
   if (S.mf) o.mf = S.mf;
+  if (!shareOn()) o.ns = 1;
   const lu = S.life.map((c, i) => c.up ? [i, c.c] : null).filter(Boolean); if (lu.length) o.lu = lu;
   return o;
 }
@@ -1807,7 +1836,7 @@ async function rankedFind(){
   const room = open ? open.c : "ranked-" + lobbyCode();
   const c = Object.assign({}, v, {room, nick: myNick(), life: v.life || 5, sleeve: v.sleeve | 0, first: !!v.first});
   await leaveRoom(); status = "connecting";
-  newGame(c, true); S.ranked = true;
+  newGame(c, true); S.ranked = true; S.fmt = "std";
   closeModal();
   await connect(room);
   if (!open && R && roomCode === room && status === "online") { myLobby = {c: room, n: "Ranked match", f: "std", t: Date.now(), r: 1}; lobbyUpdate(); }
@@ -1819,7 +1848,7 @@ async function rankedFind(){
 // Win/loss record, most played decks (by Leader) and most played cards, counted from online matches against
 // another player. Kept in this browser and, when signed in to claude.ai, in the player's own private storage.
 const HIST_MAX = 20, FR_MAX = 50;
-function statsBlank(){ return {g: 0, w: 0, l: 0, ld: {}, cd: {}, h: [], fc: "", fr: [], nk: ""}; }
+function statsBlank(){ return {g: 0, w: 0, l: 0, ld: {}, cd: {}, h: [], fc: "", fr: [], nk: "", ns: 0}; }
 const FC_RE = /^[A-HJ-NP-Z2-9]{6}$/;
 function statsFrom(x){
   const o = statsBlank(); if (!x || typeof x !== "object") return o;
@@ -1831,6 +1860,7 @@ function statsFrom(x){
   if (Array.isArray(x.h)) o.h = x.h.slice(0, HIST_MAX).filter(e => e && typeof e === "object").map(e => ({t: +e.t || 0, me: code(e.me) ? e.me : "", op: code(e.op) ? e.op : "", on: clean(e.on, 20), fc: FC_RE.test(e.fc) ? e.fc : "", r: e.r === "w" ? "w" : "l", rk: e.rk ? 1 : 0, b: Math.max(-99999, Math.min(99999, Math.round(+e.b || 0))), y: ["cd", "dmg", "left", "time"].includes(e.y) ? e.y : ""}));
   o.fc = FC_RE.test(x.fc) ? x.fc : "";
   o.nk = clean(x.nk, 20);
+  o.ns = x.ns ? 1 : 0;
   if (Array.isArray(x.fr)) o.fr = x.fr.slice(0, FR_MAX).filter(f => f && FC_RE.test(f.c)).map(f => ({c: f.c, n: clean(f.n, 20)}));
   return o;
 }
@@ -1901,7 +1931,7 @@ function statHist(e){ STATS.h = [Object.assign({t: Date.now()}, e), ...(STATS.h 
 function statLd(code){ if (!/^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(code || "")) return null; return STATS.ld[code] || (STATS.ld[code] = {n: 0, w: 0, l: 0}); }
 function statCheck(){
   if (PR || S.statDone || S.phase === "none") return;
-  if (oppM && R) { if (oppM.ld && oppM.ld.c) S.statOpLd = oppM.ld.c; S.statOpNick = oppM.nick; if (oppM.fc) S.statOpFc = oppM.fc; }
+  if (oppM && R) { if (oppM.ld && oppM.ld.c) S.statOpLd = oppM.ld.c; S.statOpNick = oppM.nick; if (oppM.fc) S.statOpFc = oppM.fc; S.statOpNs = !!oppM.ns; }
   if (!S.statOpp) {
     if (!(R && oppM && S.phase !== "wait")) return;
     S.statOpp = true; STATS.g++;           // an opponent sat down: this game counts toward the Leader's games played
@@ -1914,6 +1944,7 @@ function statCheck(){
   const e = statLd(S.leader && S.leader.card && S.leader.card.c);
   if (won) { STATS.w++; if (e) e.w++; } else { STATS.l++; if (e) e.l++; }
   const y = lost ? (S.lostDeck ? "deck" : S.lostDmg ? "dmg" : S.tmo >= TIMEOUTS_MAX ? "time" : S.rankLeft ? "left" : "cd") : (oppM && oppM.cd ? (oppM.cdw ? (oppM.dk === 0 ? "deck" : "dmg") : (oppM.to || 0) >= TIMEOUTS_MAX ? "time" : "cd") : "left");
+  S.statWon = won; S.statY = y;
   statHist({me: (S.leader && S.leader.card && S.leader.card.c) || "", op: S.statOpLd || "", on: S.statOpNick || "", fc: S.statOpFc || "", r: won ? "w" : "l", rk: S.ranked && S.rankOpp ? 1 : 0, b: S.rankD || 0, y});
   statsSave();
 }
@@ -1960,7 +1991,10 @@ function openProfile(focusNick){
     ${cards.length ? `<div class="pfcards">${cards.map(([c, n]) => `<div class="pfcard" title="${esc(c + " " + (nameOf(c) || ""))}">${tileOf(c)}<span class="pfn">${n}×</span></div>`).join("")}</div>`
       : `<div class="lbempty"><b>No cards played yet</b>Cards you play from your hand in online matches are counted here.</div>`}
     <p class="hint">Counts online matches against another player, starting now. Test games don't count.</p>
+    <h3 class="rkh">Sharing</h3>
+    <label class="pfshare"><input type="checkbox" id="pf-share"${shareOn() ? " checked" : ""}> Share my finished online matches on the Meta page: my Leader, my opponent's Leader, the result and my own decklist, with my nickname.${acctUid() ? "" : " This needs an account, so nothing is shared until you sign in."}</label>
     <div class="row end"><button class="btn" data-do="home" type="button">Back</button></div>`);
+  { const ps = $("#pf-share"); if (ps) ps.addEventListener("change", () => { STATS.ns = ps.checked ? 0 : 1; statsSave(); toast(ps.checked ? "Your finished online matches will be shared on the Meta page." : "Your matches won't be shared from now on."); }); }
   const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
   $("#modal").classList.add("homebg", "lobpage");
   const pi = $("#pf-nick");
@@ -2575,7 +2609,7 @@ async function tourPlay(id){
   closeModal(); if (builderOpen) closeBuilder();
   await leaveRoom(); status = "connecting";
   newGame(c, true);
-  S.tour = {id, r: mm.r, m: mm.m}; S.pubt = true;
+  S.tour = {id, r: mm.r, m: mm.m}; S.pubt = true; S.fmt = t.f;
   await connect(room);
   render();
   toast(`${t.n}, ${tourRoundName(t, mm.r)}: you play ${mm.opp.n}. Wait here at the table for them.`);
@@ -2663,6 +2697,121 @@ function renderTours(){
   el.innerHTML = `<div class="lbbar"><button class="linkbtn" data-do="tn:list" type="button">◀ All tournaments</button><span class="sp"></span>${t.st === "reg" && !signed && t.pl.length < t.cap ? `<button class="btn pri" data-do="tn:join:${t.id}" type="button">Sign up</button>` : ""}${signed && !champ && !(t.st === "run" && (tourOut(t) || TME.lost)) ? `<button class="btn" data-do="tn:leave" type="button">${t.st === "run" ? "Drop out" : "Withdraw"}</button>` : ""}</div>
     <div class="tnhead"><b>${esc(t.n)}</b><small>Host ${esc(t.hn)}</small><span class="lbchips"><span class="chip f${t.f}">${LB_FMT[t.f]}</span><span class="chip${t.st === "reg" ? " open" : ""}">${TOUR_ST[t.st]}</span></span></div>
     ${status ? `<p class="tnstat">${status}</p>` : ""}${hostBar}${bracket}${players}`;
+}
+
+// ---------- community: shared match records and the meta ----------
+// A finished online match is shared by each player who's signed in to an account and hasn't turned sharing off in
+// Profile: one record per player in games/<match>-<player>, with their own Leader, their opponent's Leader, the result
+// and their own decklist (never the opponent's). The Meta page adds up the newest of them.
+const GAME_K = {rk: "Ranked", tn: "Tournament", lb: "Lobby", fr: "Friends"};
+const shareOn = () => !STATS.ns;
+const COMM = {recs: null, at: 0, busy: null, err: ""};
+function gameCheck(){
+  if (S.gameSent || PR || !R || !S.statDone || !S.statOpp) return;
+  S.gameSent = true;
+  const uid = acctUid(), me = S.leader && S.leader.card && S.leader.card.c;
+  if (!uid || !shareOn() || !CARD_RE.test(me || "")) return;
+  const k = S.ranked ? "rk" : S.tour ? "tn" : S.pubt ? "lb" : "fr";
+  const rec = {v: 1, t: Date.now(), m: S.mid || matchId() || "", k, f: k === "rk" ? "std" : LB_FMT[S.fmt] ? S.fmt : "", l: me, o: CARD_RE.test(S.statOpLd || "") ? S.statOpLd : "",
+    r: S.statWon ? "w" : "l", y: S.statY || "", tn: Math.min(999, S.turn | 0), d: deckPack(lastCfg || {}), n: clean(S.nick, 20), on: S.statOpNs ? "" : clean(S.statOpNick, 20), by: uid};
+  const id = (rec.m || "x" + Date.now().toString(36)) + "-" + (S.mk || Math.random().toString(36).slice(2, 10));
+  S.gameId = id;
+  getDb().then(db => db && db.doc("games/" + id).set(rec)).then(() => { if (COMM.recs) COMM.recs.unshift(cleanGame(rec, id)); }, () => {});
+}
+function cleanGame(x, id){
+  if (!x || typeof x !== "object" || !CARD_RE.test(x.l || "") || (x.r !== "w" && x.r !== "l")) return null;
+  return {id: String(id || "").slice(0, 80), t: Number.isFinite(+x.t) ? +x.t : 0, m: String(x.m || "").replace(/[^a-z0-9-]/g, "").slice(0, 40), k: GAME_K[x.k] ? x.k : "fr", f: LB_FMT[x.f] ? x.f : "",
+    l: x.l, o: CARD_RE.test(x.o || "") ? x.o : "", r: x.r, y: HOW.w[x.y] ? x.y : "", tn: num(x.tn, 999), d: deckUnpack(x.d) ? x.d : "", n: clean(x.n, 20), on: clean(x.on, 20), rp: x.rp ? 1 : 0};
+}
+// the newest 1000 shared records, read again after a few minutes
+async function gamesLoad(force){
+  if (COMM.busy) return COMM.busy;
+  if (COMM.recs && !force && Date.now() - COMM.at < 180000) return COMM.recs;
+  COMM.busy = (async () => {
+    try {
+      const db = await getDb(); if (!db) throw {code: "unavailable"};
+      const col = db.collection("games"), sn = await (typeof col.orderBy === "function" ? col.orderBy("t", "desc").limit(1000).get() : col.get());
+      COMM.recs = sn.docs.map(d => cleanGame(d.data(), d.id)).filter(Boolean).sort((a, b) => b.t - a.t);
+      COMM.at = Date.now(); COMM.err = "";
+    } catch (e) { COMM.err = (e && e.code) || "error"; if (!COMM.recs) COMM.recs = null; }
+    COMM.busy = null;
+    return COMM.recs;
+  })();
+  return COMM.busy;
+}
+const META_F = {std: "Standard", ext: "Extra", all: "All formats"};
+function metaPick(recs, o){
+  const since = o.days ? Date.now() - o.days * 864e5 : 0;
+  return (recs || []).filter(g => g.t >= since && (o.f === "all" || (o.f === "std" ? g.f === "std" || g.f === "pre" : g.f === o.f)) && (!o.rk || g.k === "rk" || g.k === "tn"));
+}
+function metaAgg(recs){
+  const L = new Map();
+  for (const g of recs) { const x = L.get(g.l) || {l: g.l, g: 0, w: 0}; x.g++; if (g.r === "w") x.w++; L.set(g.l, x); }
+  return Array.from(L.values()).sort((a, b) => b.g - a.g || b.w - a.w);
+}
+function metaLeader(recs, ld){
+  const mine = recs.filter(g => g.l === ld), mu = new Map(), lists = new Map(), cards = new Map();
+  for (const g of mine) {
+    if (g.o) { const x = mu.get(g.o) || {o: g.o, g: 0, w: 0}; x.g++; if (g.r === "w") x.w++; mu.set(g.o, x); }
+    if (g.d) {
+      const x = lists.get(g.d) || {d: g.d, g: 0, w: 0, t: 0}; x.g++; if (g.r === "w") x.w++; x.t = Math.max(x.t, g.t); lists.set(g.d, x);
+      for (const [c, n] of deckUnpack(g.d).rows) { const y = cards.get(c) || {c, in: 0, n: 0}; y.in++; y.n += n; cards.set(c, y); }
+    }
+  }
+  const nd = mine.filter(g => g.d).length;
+  return {g: mine.length, w: mine.filter(g => g.r === "w").length, mu: Array.from(mu.values()).sort((a, b) => b.g - a.g),
+    lists: Array.from(lists.values()).sort((a, b) => b.g - a.g || b.w - a.w || b.t - a.t).slice(0, 3), nd,
+    core: Array.from(cards.values()).filter(y => y.in * 2 >= nd).sort((a, b) => b.in - a.in || b.n - a.n).slice(0, 30)};
+}
+const wr = (w, g) => g ? Math.round(100 * w / g) + "%" : "–";
+function openMeta(){
+  modal = {type: "meta", f: "std", days: 30, rk: false, ld: null};
+  showModal(`<h2>Meta</h2>
+    <p class="hint">How each Leader is doing in real online matches, from players who share theirs. Every finished match is shared by each player who's signed in to an account, with their own Leader, the result and their own decklist. You can turn this off in Profile.</p>
+    <div class="row mtfil">
+      <div><label for="mt-f">Format</label><select id="mt-f">${Object.keys(META_F).map(k => `<option value="${k}">${META_F[k]}</option>`).join("")}</select></div>
+      <div><label for="mt-d">Played in</label><select id="mt-d"><option value="7">The last 7 days</option><option value="30" selected>The last 30 days</option><option value="0">Any time</option></select></div>
+      <label class="mtrk"><input type="checkbox" id="mt-rk"> Ranked and tournaments only</label>
+    </div>
+    <div id="mt-body" aria-live="polite"><div class="lbempty"><b>Loading matches…</b></div></div>
+    <div class="row end">${S.phase === "none" ? '<button class="btn" data-do="home" type="button">Back</button>' : '<button class="btn" data-do="closemodal" type="button">Back to table</button>'}</div>`);
+  const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
+  $("#modal").classList.add("homebg", "lobpage");
+  for (const id of ["mt-f", "mt-d", "mt-rk"]) $("#" + id).addEventListener("change", () => { if (!modal || modal.type !== "meta") return; modal.f = $("#mt-f").value; modal.days = +$("#mt-d").value; modal.rk = $("#mt-rk").checked; renderMeta(); });
+  gamesLoad().then(renderMeta);
+}
+function renderMeta(){
+  const el = $("#mt-body"); if (!el || !modal || modal.type !== "meta") return;
+  if (!COMM.recs) {
+    el.innerHTML = COMM.busy ? `<div class="lbempty"><b>Loading matches…</b></div>` : `<div class="lbempty"><b>Can't load the meta right now</b>${COMM.err === "not_granted" ? "Shared matches aren't switched on for this game yet." : "Check your internet connection and open Meta again."}</div>`;
+    return;
+  }
+  const recs = metaPick(COMM.recs, modal), tot = recs.length, foot = `<p class="hint">From ${tot} shared result${tot === 1 ? "" : "s"} (each player's side of a match counts once)${acctUid() ? (shareOn() ? ". Yours are shared." : ". Yours aren't shared: turn it on in Profile.") : ". Sign in to share yours."}</p>`;
+  if (!tot) { el.innerHTML = `<div class="lbempty"><b>No shared matches yet</b>Finished online matches from players signed in to an account show up here.</div>` + foot; return; }
+  if (modal.ld) {
+    const m = metaLeader(recs, modal.ld), ld = modal.ld;
+    el.innerHTML = `<div class="lbbar"><button class="linkbtn" data-do="mt:all" type="button">◀ All Leaders</button></div>
+      <div class="mthead">${tile({c: ld, n: nameOf(ld)}, "", false, 0)}<div><b>${esc(nameOf(ld) || ld)}</b><small>${esc(ld)} · ${m.g} game${m.g === 1 ? "" : "s"} · ${wr(m.w, m.g)} wins</small></div></div>
+      <h3 class="rkh">Matchups</h3>
+      ${m.mu.length ? `<div class="mtgrid">${m.mu.map(x => `<div class="mtrow">${tile({c: x.o, n: nameOf(x.o)}, "", false, 0)}<div class="mtinfo"><b>vs ${esc(nameOf(x.o) || x.o)}</b><small>${esc(x.o)} · ${x.g} game${x.g === 1 ? "" : "s"}</small></div><span class="mtwr${x.g >= 3 ? (x.w * 2 > x.g ? " up" : x.w * 2 < x.g ? " dn" : "") : ""}">${wr(x.w, x.g)}</span></div>`).join("")}</div>` : `<p class="hint">No matchups yet.</p>`}
+      <h3 class="rkh">Most played lists</h3>
+      ${m.lists.length ? m.lists.map((x, i) => `<details class="mtlist"${i ? "" : " open"}><summary><b>List ${i + 1}</b> · played ${x.g} time${x.g === 1 ? "" : "s"} · ${wr(x.w, x.g)} wins</summary>${tourDeckHTML(x.d)}<div class="row"><button class="btn pri" data-do="mt:open:${i}" type="button">Open in the Deck editor</button><button class="btn" data-do="mt:copy:${i}" type="button">Copy list</button></div></details>`).join("") : `<p class="hint">No decklists shared yet.</p>`}
+      ${m.core.length ? `<h3 class="rkh">Cards in most lists</h3><div class="mtcore">${m.core.map(y => `<span title="In ${y.in} of ${m.nd} lists, ${(y.n / y.in).toFixed(1)} copies on average">${(y.n / y.in).toFixed(1)}× ${esc(y.c)} ${esc(nameOf(y.c) || "")} <i>${Math.round(100 * y.in / m.nd)}%</i></span>`).join("")}</div>` : ""}` + foot;
+    modal.lists = m.lists.map(x => x.d);
+    return;
+  }
+  const rows = metaAgg(recs);
+  el.innerHTML = `<div class="mtgrid">${rows.map(x => `<button class="mtrow" data-do="mt:ld:${esc(x.l)}" type="button">${tile({c: x.l, n: nameOf(x.l)}, "", false, 0)}<div class="mtinfo"><b>${esc(nameOf(x.l) || x.l)}</b><small>${esc(x.l)} · ${x.g} game${x.g === 1 ? "" : "s"} · ${Math.round(100 * x.g / tot)}% of play</small><i class="mtbar"><i style="width:${Math.round(100 * x.w / x.g)}%"></i></i></div><span class="mtwr${x.g >= 5 ? (x.w * 2 > x.g ? " up" : x.w * 2 < x.g ? " dn" : "") : ""}">${wr(x.w, x.g)}</span></button>`).join("")}</div>` + foot;
+}
+function metaOpen(i){
+  const s = modal && modal.lists && modal.lists[i], dk = deckUnpack(s); if (!dk) return;
+  closeModal(); openBuilder(); bdImport("Leader: " + dk.l + "\n" + dk.deck); renderBdDeck(); renderLib();
+  toast(`Loaded a ${nameOf(dk.l) || dk.l} list into the Deck editor. Save it to keep it.`);
+}
+function metaCopy(i){
+  const s = modal && modal.lists && modal.lists[i], dk = deckUnpack(s); if (!dk) return;
+  const txt = "1x" + dk.l + "\n" + dk.deck;
+  try { navigator.clipboard.writeText(txt).then(() => toast("List copied. Paste it into any deck builder."), () => toast("Couldn't copy the list.")); } catch (e) { toast("Couldn't copy the list."); }
 }
 
 // ---------- account (desktop app) ----------
@@ -2893,7 +3042,7 @@ function render(){
   if (botQuiet) return;
   if (WATCH) { renderWatch(); return; }
   if (S.phase === "play" && S.chars.length > 5 && !modal) setTimeout(() => { if (S.chars.length > 5 && !modal) { modal = {type: "limit"}; renderModal(); } }, 0);
-  rankCheck(); statCheck(); tourCheck();
+  rankCheck(); statCheck(); tourCheck(); gameCheck();
   { const ok = boardTools(); for (const k of ["resetboard", "refresh", "undo"]) { const b = $(`[data-do="${k}"]`); if (b) b.hidden = !ok; } }
   { const fb = $("#startfb");
     if (fb) fb.hidden = !(R && !PR && S.phase === "play" && oppM && oppM.et == null);
@@ -3060,6 +3209,7 @@ function openHome(page){
       <button class="btn" data-do="homebuilder" type="button">Deck editor</button>
       <button class="btn" data-do="homeprofile" type="button">Profile</button>
       <button class="btn" data-do="homereplays" type="button">Replays</button>
+      <button class="btn" data-do="homemeta" type="button">Meta</button>
       <button class="btn" data-do="homesign" type="button">${acctBtn()}</button>
       ${back}`;
   showModal(`<div>
@@ -3160,7 +3310,7 @@ async function startGame(join){
   save(Object.assign({}, c, {pub: false}));
   if (join) { await leaveRoom(); status = "connecting"; }
   newGame(c, !!join);
-  S.pubt = !!(pub || jl);
+  S.pubt = !!(pub || jl); S.fmt = fmt;
   closeModal();
   if (jl && bad) toast("Heads up: " + bad);
   if (join) {
@@ -5968,6 +6118,15 @@ function doAction(a){
   if (a === "autofx" && !boardTools()) { toast("Card effects always run in public and ranked matches."); render(); return; }
   if (a === "autofx") { autoFx = !autoFx; try { localStorage.setItem("nakama:autofx", autoFx ? "1" : "0"); } catch (e) {} toast(autoFx ? "Auto card effects on." : "Auto card effects off."); return; }
   if (a.startsWith("frch:")) { challenge(a.slice(5)); return; }
+  if (a.startsWith("mt:")) {
+    const [, k, x] = a.split(":");
+    if (!modal || modal.type !== "meta") return;
+    if (k === "ld") { modal.ld = /^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(x) ? x : null; renderMeta(); $("#modal .sheet").scrollTop = 0; }
+    else if (k === "all") { modal.ld = null; renderMeta(); }
+    else if (k === "open") metaOpen(+x);
+    else if (k === "copy") metaCopy(+x);
+    return;
+  }
   if (a.startsWith("tn:")) {
     const [, k, x, y, z] = a.split(":");
     if (!modal || modal.type !== "tours") return;
@@ -6033,6 +6192,7 @@ function doAction(a){
     case "homebuilder": closeModal(); openBuilder(); break;
     case "homeprofile": closeModal(); openProfile(); break;
     case "homereplays": closeModal(); openReplays(); break;
+    case "homemeta": closeModal(); if (builderOpen) closeBuilder(); openMeta(); break;
     case "rpwatch": if (REC) rpOpen(REC.id, "match"); break;
     case "homenick": closeModal(); openProfile(true); break;
     case "pfnick": if (setNick(($("#pf-nick") || {}).value)) openProfile(); break;

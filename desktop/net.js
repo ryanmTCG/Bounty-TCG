@@ -332,11 +332,34 @@
       onSnapshot(cb) { const s = {kind: "doc", path, cb}; subs.add(s); seedReady.then(() => { if (subs.has(s)) cb(docSnap(path)); }); return () => subs.delete(s); }
     };
   }
+  // a filtered, ordered, limited view of a collection (claude.ai's db Query): where(field, "==", value), one orderBy, limit
+  function query(load, q) {
+    const run = async () => {
+      let docs = (await load(q)).docs;
+      for (const w of q.where) docs = docs.filter(d => { const v = (d.data() || {})[w[0]]; return w[1] === "==" ? v === w[2] : w[1] === "!=" ? v !== w[2] : w[1] === ">=" ? v >= w[2] : w[1] === "<=" ? v <= w[2] : w[1] === ">" ? v > w[2] : w[1] === "<" ? v < w[2] : true; });
+      if (q.order) { const [f, dir] = q.order, s = dir === "desc" ? -1 : 1; docs = docs.filter(d => (d.data() || {})[f] != null).sort((a, b) => { const x = a.data()[f], y = b.data()[f]; return x < y ? -s : x > y ? s : 0; }); }
+      if (q.lim) docs = docs.slice(0, q.lim);
+      return {docs, size: docs.length, empty: !docs.length};
+    };
+    const next = o => query(load, Object.assign({}, q, o));
+    return {
+      where: (f, op, v) => next({where: q.where.concat([[f, op, v]])}),
+      orderBy: (f, dir) => next({order: [f, dir === "desc" ? "desc" : "asc"]}),
+      limit: n => next({lim: Math.max(1, Math.min(1000, n | 0))}),
+      get: run,
+      onSnapshot(cb, err) { let on = true; run().then(x => { if (on) cb(x); }, e => { if (on && err) err(e); }); return () => { on = false; }; }
+    };
+  }
+  const Q0 = {where: [], order: null, lim: 0};
   function colRef(path) {
+    const load = async () => { await seedReady; return colSnap(path); };
     return {
       path,
       doc: id => docRef(path + "/" + id),
       async get() { await seedReady; return colSnap(path); },
+      where: (f, op, v) => query(load, Q0).where(f, op, v),
+      orderBy: (f, dir) => query(load, Q0).orderBy(f, dir),
+      limit: n => query(load, Q0).limit(n),
       onSnapshot(cb) { const s = {kind: "col", path, cb}; subs.add(s); seedReady.then(() => { if (subs.has(s)) cb(colSnap(path)); }); return () => subs.delete(s); }
     };
   }
@@ -418,7 +441,8 @@
     if (!r.ok && r.status !== 404) throw {code: r.status === 403 ? "not_granted" : "unavailable", message: "Couldn't reach your account's saved data."};
     return r;
   }
-  const isCloud = path => !!FB && (path === "ranks" || path.startsWith("ranks/") || path.startsWith("results/")
+  const SHARED = ["ranks", "results", "games", "replays", "reports"];
+  const isCloud = path => !!FB && (SHARED.includes(path.split("/")[0])
     || (!!auth && (path === "data/users/" + auth.uid || path.startsWith("data/users/" + auth.uid + "/"))));
   const cloudSubs = new Set();
   const cloudNotify = path => cloudSubs.forEach(s => { if (s.path === path || (s.col && childOf(s.path, path))) s.refresh(); });
@@ -440,17 +464,20 @@
     };
   }
   function cloudColRef(path) {
-    const list = async () => {
-      const docs = []; let tok = "";
-      for (let i = 0; i < 10; i++) {
-        const r = await fsFetch(path, null, "?pageSize=300" + (tok ? "&pageToken=" + encodeURIComponent(tok) : ""));
+    // an orderBy and limit go to Firestore (newest games first without reading them all); filters run here
+    const list = async q => {
+      const docs = [], want = (q && q.lim) || 3000, ord = q && q.order ? "&orderBy=" + encodeURIComponent(q.order[0] + (q.order[1] === "desc" ? " desc" : "")) : "";
+      let tok = "";
+      for (let i = 0; i < 10 && docs.length < want; i++) {
+        const r = await fsFetch(path, null, "?pageSize=" + Math.min(300, want - docs.length) + ord + (tok ? "&pageToken=" + encodeURIComponent(tok) : ""));
         const j = r.status === 404 ? {} : await r.json();
         for (const d of j.documents || []) { const data = jsf(d.fields); docs.push({id: d.name.split("/").pop(), exists: true, data: () => clone(data)}); }
         if (!j.nextPageToken) break; tok = j.nextPageToken;
       }
       return {docs, size: docs.length, empty: !docs.length};
     };
-    return {path, doc: id => cloudDocRef(path + "/" + id), get: list, onSnapshot: (cb, err) => cloudWatch(path, true, list, cb, err)};
+    return {path, doc: id => cloudDocRef(path + "/" + id), get: () => list(), onSnapshot: (cb, err) => cloudWatch(path, true, () => list(), cb, err),
+      where: (f, op, v) => query(list, Q0).where(f, op, v), orderBy: (f, dir) => query(list, Q0).orderBy(f, dir), limit: n => query(list, Q0).limit(n)};
   }
   const dbNS = Object.freeze({
     collection: path => isCloud(path) ? cloudColRef(path) : colRef(path),
