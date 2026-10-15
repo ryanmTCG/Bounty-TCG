@@ -974,6 +974,13 @@ select.sbtn{font-family:var(--slab)}
 .diffrow .hint{flex:1 1 220px;margin:0}
 .pfh .rpacts{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
 .rprow .pfres{font-size:13px}
+#rep-msg{min-height:120px}
+.replist{display:grid;gap:8px}
+.repr{flex-wrap:wrap;align-items:flex-start}
+.repr .pfinfo{flex:1 1 300px;min-width:0}
+.repmsg{display:block;white-space:pre-wrap;overflow-wrap:anywhere;color:#FFF6E0;font-size:15px;margin-bottom:4px}
+.repdet{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;background:rgba(0,0,0,.35);border-radius:8px;padding:8px;margin:8px 0 0;max-height:260px;overflow:auto}
+.homesm{font-size:13px;padding:6px 12px;opacity:.9}
 .rprow{flex-wrap:wrap}
 .rprow .pfinfo{flex:1 1 150px;min-width:0}
 .rprow .rpacts{flex:1 1 100%;margin-left:0}
@@ -1225,6 +1232,12 @@ body.watching .turnbar,body.watching .tbopts{opacity:.4}
 
 <script>
 "use strict";
+// ---------- errors kept for bug reports ----------
+const ERRS = [];
+function errNote(m){ ERRS.push([Date.now(), String(m).slice(0, 500)]); if (ERRS.length > 30) ERRS.shift(); }
+window.addEventListener("error", e => errNote((e.message || "error") + (e.filename ? ` (${String(e.filename).split("/").pop()}:${e.lineno})` : "")));
+window.addEventListener("unhandledrejection", e => { const r = e.reason; errNote("promise: " + (r && (r.stack || r.message) || r)); });
+for (const k of ["warn", "error"]) { const f = console[k].bind(console); console[k] = (...a) => { try { errNote(k + ": " + a.map(x => x && x.stack ? x.stack : typeof x === "object" ? JSON.stringify(x) : String(x)).join(" ")); } catch (e) {} f(...a); }; }
 // ---------- helpers ----------
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -2055,8 +2068,9 @@ function openProfile(focusNick){
       : `<div class="lbempty"><b>No cards played yet</b>Cards you play from your hand in online matches are counted here.</div>`}
     <p class="hint">Counts online matches against another player, starting now. Test games don't count.</p>
     <h3 class="rkh">Sharing</h3>
-    <label class="pfshare"><input type="checkbox" id="pf-share"${shareOn() ? " checked" : ""}> Share my finished online matches on the Meta page: my Leader, my opponent's Leader, the result and my own decklist, with my nickname.${acctUid() ? "" : " This needs an account, so nothing is shared until you sign in."}</label>
-    <div class="row end"><button class="btn" data-do="home" type="button">Back</button></div>`);
+    <label class="pfshare"><input type="checkbox" id="pf-share"${shareOn() ? " checked" : ""}> Share my finished online matches on the Meta page: my Leader, my opponent's Leader, the result, my own decklist and a replay of both boards (no hands), with my nickname.${acctUid() ? "" : " This needs an account, so nothing is shared until you sign in."}</label>
+    <div class="row end"><span id="pf-admin"></span><button class="btn" data-do="report" type="button">Report a problem</button><button class="btn" data-do="home" type="button">Back</button></div>`);
+  reportsAdmin().then(ok => { const a = $("#pf-admin"); if (ok && a && modal && modal.type === "profile") a.innerHTML = '<button class="btn" data-do="reports" type="button">Bug reports</button>'; });
   { const ps = $("#pf-share"); if (ps) ps.addEventListener("change", () => { STATS.ns = ps.checked ? 0 : 1; statsSave(); toast(ps.checked ? "Your finished online matches will be shared on the Meta page." : "Your matches won't be shared from now on."); }); }
   const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
   $("#modal").classList.add("homebg", "lobpage");
@@ -2241,7 +2255,7 @@ async function rpInflate(b64, max){
 // checks a replay file: its entry and frames, or what's wrong with it
 async function rpCheck(txt){
   let o = null; try { o = typeof txt === "string" && txt.length <= RP_FILE_MAX ? JSON.parse(txt) : null; } catch (er) {}
-  const e = o && o.bounty === "replay" && o.e && typeof o.e === "object" ? o.e : null;
+  const e = o && (o.bounty === "replay" || o.bounty === "report") && o.e && typeof o.e === "object" ? o.e : null;
   if (!e || typeof e.z !== "string" || !/^[zj]/.test(e.z)) return {err: "That isn't a Bounty TCG replay file."};
   let fr = null;
   try { const raw = e.z[0] === "z" ? await rpInflate(e.z.slice(1), RP_TEXT_MAX) : e.z.slice(1); fr = JSON.parse(raw); } catch (er) { fr = null; }
@@ -2329,6 +2343,121 @@ async function rpFeedText(){
   const e = rpMeta(REC); e.z = await rpPack(JSON.stringify(REC.fr.map(f => [f[0], noHd(f[1]), noHd(f[2])])));
   return JSON.stringify({bounty: "replay", v: 1, e});
 }
+// ---------- bug reports ----------
+// "Report a problem" sends what went wrong with this game so far: the replay (both boards, your hand, and the computer's
+// at practice tables, never an online opponent's), the table state, the log and recent errors. Signed in, it goes to
+// reports/<id>, which only admins (an admins/<uid> document added in the Firebase console) can read, here under
+// Profile > Bug reports. Anyone can save it as a file instead, which also opens as a replay.
+let APPV = "";
+fetch("version.json").then(r => r.ok ? r.json() : null).then(v => { if (v) APPV = String(v.version || "").slice(0, 20); }).catch(() => {});
+const REP_MAX = 900000;
+function reportState(){
+  const cp = x => { try { return x == null ? null : JSON.parse(JSON.stringify(x)); } catch (e) { return null; } };
+  const mode = PR ? (PR.bot ? "computer" : "both sides") : WATCH ? (WATCH.replay ? "replay" : "watching") : R ? "online" : "none";
+  return {mode, phase: S.phase, turn: S.turn, pr: PR ? {bot: PR.bot, diff: PR.diff, cur: PR.cur, order: cp(PR.order)} : null,
+    sides: PR ? PR.sides.map((t, i) => i === PR.cur ? cp(S) : t ? cp(t.S) : null) : [cp(S)], opp: PR ? null : cp(oppM),
+    log: LOG.slice(-120).map(e => [e.who, e.m]), fx: fxCur ? {c: fxCur.card && fxCur.card.c, i: fxCur.i, text: String(fxCur.text || "").slice(0, 400)} : null,
+    errs: ERRS.slice(), ua: navigator.userAgent.slice(0, 200), w: innerWidth, h: innerHeight};
+}
+const reportHasGame = () => S.phase !== "none" || !!PR || !!R;
+async function reportBuild(msg, withGame){
+  const st = withGame ? reportState() : {mode: "", errs: ERRS.slice(), ua: navigator.userAgent.slice(0, 200)};
+  let e = null;
+  if (withGame && REC && REC.k === (recS0() || {}).rid) { const txt = await rpFileText(REC.id); e = txt ? JSON.parse(txt).e : null; }
+  return {v: 1, t: Date.now(), ver: APPV, msg: String(msg || "").slice(0, 2000), where: st.mode || "", st, e};
+}
+function openReport(){
+  if (RPV) rpExit();
+  modal = {type: "report"};
+  const g = reportHasGame();
+  showModal(`<h2>Report a problem</h2>
+    <p class="hint">Say what happened and what you expected: which card, what you did, and what the game did instead.${g ? " The report includes this game so far, so it can be played back: both boards, the log, your hand (and the computer's at practice tables). It never includes an online opponent's hand." : ""}</p>
+    <textarea id="rep-msg" maxlength="2000" spellcheck="true" placeholder="What went wrong?"></textarea>
+    ${g ? '<label class="pfshare"><input type="checkbox" id="rep-game" checked> Include this game</label>' : ""}
+    <p class="hint">${acctUid() ? "Send report sends it to the game's maker." : "Sending needs an account (sign in from Home). Without one, save the report as a file and send it to the game's maker."}</p>
+    <div class="row end"><button class="btn" data-do="${S.phase === "none" ? "home" : "closemodal"}" type="button">${S.phase === "none" ? "Back" : "Back to table"}</button><button class="btn" data-do="repsave" type="button">Save report file</button>${acctUid() ? '<button class="btn pri" data-do="repsend" type="button">Send report</button>' : ""}</div>`);
+  const t = $("#rep-msg"); if (t) t.focus();
+}
+const repMsg = () => ($("#rep-msg") || {value: ""}).value.trim(), repGame = () => !!($("#rep-game") && $("#rep-game").checked);
+async function reportSend(){
+  const msg = repMsg(); if (!msg) { toast("Say what went wrong first."); return; }
+  const uid = acctUid(); if (!uid) { toast("Sending needs an account. Save the report file instead."); return; }
+  const r = await reportBuild(msg, repGame());
+  let z = await rpPack(JSON.stringify({st: r.st, e: r.e}));
+  if (z.length > REP_MAX) z = await rpPack(JSON.stringify({st: Object.assign({}, r.st, {sides: null}), e: null}));
+  if (z.length > REP_MAX) { toast("That report is too large to send. Save it as a file instead."); return; }
+  const db = await getDb(); if (!db) { toast("Couldn't send the report. Check your internet connection, or save it as a file."); return; }
+  const id = Date.now().toString(36) + Array.from(crypto.getRandomValues(new Uint8Array(6)), b => RP_CODE_A[b % RP_CODE_A.length]).join("");
+  try { await db.doc("reports/" + id).set({v: 1, t: r.t, by: uid, ver: r.ver, msg: r.msg, where: r.where, z}); }
+  catch (e) { toast("Couldn't send the report right now. Try again, or save it as a file."); return; }
+  if (modal && modal.type === "report") { if (S.phase === "none") openHome(); else closeModal(); }
+  toast("Thanks! Your report was sent" + (r.e ? " with this game." : "."));
+}
+function reportFile(r){
+  const txt = JSON.stringify(Object.assign({bounty: "report"}, r));
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([txt], {type: "application/json"}));
+  a.download = `bounty-report-${new Date(+r.t || Date.now()).toISOString().slice(0, 19).replace(/[:T]/g, "-")}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+}
+async function reportSave(){
+  const msg = repMsg(); if (!msg) { toast("Say what went wrong first."); return; }
+  reportFile(await reportBuild(msg, repGame()));
+  toast("Report saved as a file. Send it to the game's maker.");
+}
+// admins only: can this account read reports?
+async function reportsAdmin(){
+  const uid = acctUid(); if (!uid) return false;
+  const k = "bounty:radm:" + uid;
+  try { const c = sessionStorage.getItem(k); if (c) return c === "1"; } catch (e) {}
+  let ok = false;
+  try { const db = await getDb(), col = db && db.collection("reports"); if (col && typeof col.orderBy === "function") { await col.orderBy("t", "desc").limit(1).get(); ok = true; } } catch (e) { ok = false; }
+  try { sessionStorage.setItem(k, ok ? "1" : "0"); } catch (e) {}
+  return ok;
+}
+async function openReports(){
+  modal = {type: "reports", list: null};
+  showModal(`<h2>Bug reports</h2><p class="hint">The newest 50 reports players sent. Watch the game a report came with, or save it as a file.</p><div id="rep-list"><div class="lbempty"><b>Loading…</b></div></div><div class="row end"><button class="btn" data-do="homeprofile" type="button">Back</button></div>`);
+  const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
+  $("#modal").classList.add("homebg", "lobpage");
+  let docs = [];
+  try { const db = await getDb(); docs = (await db.collection("reports").orderBy("t", "desc").limit(50).get()).docs.map(d => Object.assign({id: d.id}, d.data() || {})); }
+  catch (e) { const el = $("#rep-list"); if (el) el.innerHTML = `<div class="lbempty"><b>Can't load reports</b>This account can't read them, or the connection dropped.</div>`; return; }
+  if (!modal || modal.type !== "reports") return;
+  modal.list = docs.map(d => ({id: String(d.id).slice(0, 40), t: +d.t || 0, ver: clean(d.ver, 20), msg: String(d.msg || "").slice(0, 2000), where: clean(d.where, 20), by: String(d.by || "").replace(/[^A-Za-z0-9]/g, "").slice(0, 8), z: typeof d.z === "string" ? d.z : ""}));
+  const el = $("#rep-list"); if (!el) return;
+  el.innerHTML = modal.list.length ? `<div class="replist">${modal.list.map((r, i) => `<div class="pfh repr"><div class="pfinfo"><span class="repmsg">${esc(r.msg)}</span><small>${esc([r.where || "no game", r.ver ? "version " + r.ver : "", "player " + r.by, r.t ? ago(r.t) : ""].filter(Boolean).join(" · "))}</small><pre class="repdet" id="rep-det-${i}" hidden></pre></div><div class="rpacts"><button class="btn pri" data-do="repwatch:${i}" type="button">Watch the game</button><button class="btn" data-do="repdet:${i}" type="button">Details</button><button class="btn" data-do="repfile:${i}" type="button">Save file</button></div></div>`).join("")}</div>`
+    : `<div class="lbempty"><b>No reports yet</b>Reports players send show up here.</div>`;
+}
+// a report's contents are someone else's: unpacked with a size cap, and the game goes through the replay checks
+async function reportUnpack(i){
+  const r = modal && modal.list && modal.list[i]; if (!r || !r.z) return null;
+  try { const raw = r.z[0] === "z" ? await rpInflate(r.z.slice(1), RP_TEXT_MAX) : r.z.slice(1); const o = JSON.parse(raw); return o && typeof o === "object" ? Object.assign({}, r, {st: o.st && typeof o.st === "object" ? o.st : null, e: o.e && typeof o.e === "object" ? o.e : null}) : null; }
+  catch (e) { return null; }
+}
+async function reportWatch(i){
+  const r = await reportUnpack(i); if (!r || !r.e) { toast("That report didn't come with a game."); return; }
+  const c = await rpCheck(JSON.stringify({bounty: "replay", v: 1, e: r.e})).catch(() => ({err: "Couldn't open that game."}));
+  if (c.err) { toast(c.err); return; }
+  rpOpenFrames(c.ent, c.frs, "reports");
+}
+async function reportDetails(i){
+  const el = $("#rep-det-" + i); if (!el) return;
+  if (!el.hidden) { el.hidden = true; return; }
+  const r = await reportUnpack(i), st = r && r.st;
+  const lines = !st ? ["Couldn't read this report."] : [
+    `${st.mode || "?"} · phase ${st.phase || "?"} · turn ${num(st.turn, 999)}${st.pr ? ` · computer level ${num(st.pr.diff, 9)}` : ""} · ${num(st.w, 9999)}×${num(st.h, 9999)}`,
+    st.fx ? `In the middle of: ${st.fx.c || ""} ${st.fx.text || ""}` : "",
+    ...(Array.isArray(st.errs) ? st.errs.slice(-10).map(x => Array.isArray(x) ? `${new Date(+x[0] || 0).toLocaleTimeString()} ${x[1]}` : "") : []),
+    "Last moves:", ...(Array.isArray(st.log) ? st.log.slice(-15).map(x => Array.isArray(x) ? `${x[0]}: ${x[1]}` : "") : [])];
+  el.textContent = lines.filter(Boolean).map(x => String(x).slice(0, 600)).join("\n");
+  el.hidden = false;
+}
+async function reportSaveFile(i){
+  const r = await reportUnpack(i); if (!r) { toast("Couldn't read this report."); return; }
+  reportFile({v: 1, t: r.t, ver: r.ver, msg: r.msg, where: r.where, st: r.st, e: r.e});
+}
 async function rpOpenFile(f){
   if (f.size > RP_FILE_MAX) { toast("That file is too large to be a replay."); return; }
   const r = await rpImport(await f.text()).catch(() => ({err: "Couldn't open that file."}));
@@ -2409,6 +2538,7 @@ function rpExit(){
   render(); renderLog();
   if (v && v.from === "list") openReplays();
   else if (v && v.from === "feed") { openMeta(); modal.view = "recent"; renderMeta(); }
+  else if (v && v.from === "reports") openReports();
   else if (S.phase === "none" && !R) openHome();
   if (PR && PR.bot) botSoon();
 }
@@ -3374,6 +3504,7 @@ function openHome(page){
       <button class="btn" data-do="homereplays" type="button">Replays</button>
       <button class="btn" data-do="homemeta" type="button">Meta</button>
       <button class="btn" data-do="homesign" type="button">${acctBtn()}</button>
+      <button class="btn homesm" data-do="report" type="button">Report a problem</button>
       ${back}`;
   showModal(`<div>
     <h2>Bounty TCG</h2>
@@ -6416,6 +6547,13 @@ function doAction(a){
   if (a.startsWith("rpopen:")) { rpOpen(a.slice(7), "list"); return; }
   if (a.startsWith("rpfile:")) { rpDownload(a.slice(7)); return; }
   if (a.startsWith("rpshare:")) { rpShare(a.slice(8)); return; }
+  if (a === "report") { openReport(); return; }
+  if (a === "repsend") { reportSend(); return; }
+  if (a === "repsave") { reportSave(); return; }
+  if (a === "reports") { openReports(); return; }
+  if (a.startsWith("repwatch:")) { reportWatch(+a.slice(9)); return; }
+  if (a.startsWith("repdet:")) { reportDetails(+a.slice(7)); return; }
+  if (a.startsWith("repfile:")) { reportSaveFile(+a.slice(8)); return; }
   if (a === "rpcode") { rpCode(); return; }
   if (a === "rpimport") { const f = $("#rp-file"); if (f) f.click(); return; }
   if (a.startsWith("rpdel:")) { const id = a.slice(6); rpStore(rpList().filter(e => e.id !== id)); if (REC && REC.id === id) REC.dirty = false; openReplays(); toast("Replay deleted."); return; }

@@ -1,10 +1,10 @@
 // A small stand-in for Firebase's sign-in and Firestore REST APIs, for tests: users, documents, listing with orderBy
 // and pages, and the parts of tools/firestore.rules the tests rely on (each player's own data, the ranked board, and
-// the shared collections anyone signed in can add to but nobody can change).
+// the shared collections anyone signed in can add to but nobody can change; bug reports only admins can read).
 import http from "http";
 const sv = f => f == null ? undefined : "stringValue" in f ? f.stringValue : "integerValue" in f ? Number(f.integerValue) : "doubleValue" in f ? f.doubleValue : "booleanValue" in f ? f.booleanValue : undefined;
 export async function startFakeFire(port) {
-  const users = new Map(), docs = new Map(), log = [];
+  const users = new Map(), docs = new Map(), log = [], admins = new Set();
   let n = 0;
   const server = http.createServer((req, res) => {
     const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Authorization, Content-Type", "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS" };
@@ -33,7 +33,7 @@ export async function startFakeFire(port) {
       if (segs[0] === "ranks" && write && segs[1] !== who) return deny();
       if (segs[0] === "results" && write && !who) return deny();
       if (["games", "replays"].includes(segs[0]) && write && (!who || docs.has(p) || req.method === "DELETE" || sv((j.fields || {}).by) !== who)) return deny();
-      if (segs[0] === "reports" && (req.method === "GET" || (write && (docs.has(p) || req.method === "DELETE")))) return deny();
+      if (segs[0] === "reports" && ((req.method === "GET" && !admins.has(who)) || (write && (!who || docs.has(p) || req.method === "DELETE" || sv((j.fields || {}).by) !== who)))) return deny();
       if (!["data", "ranks", "results", "games", "replays", "reports"].includes(segs[0])) return deny();
       if (segs.length % 2 === 1) {   // a collection: list its documents, ordered and in pages like Firestore
         let keys = [...docs.keys()].filter(k => k.startsWith(p + "/") && !k.slice(p.length + 1).includes("/"));
@@ -54,5 +54,5 @@ export async function startFakeFire(port) {
   // plain JSON for a stored document, and a way to put one in directly
   const plain = f => Object.fromEntries(Object.entries(f || {}).map(([k, v]) => [k, sv(v)]));
   const fsv = v => typeof v === "number" ? (Number.isInteger(v) ? { integerValue: String(v) } : { doubleValue: v }) : typeof v === "boolean" ? { booleanValue: v } : { stringValue: String(v) };
-  return { users, docs, log, plain, put: (path, obj) => docs.set(path, Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fsv(v)]))), close: () => server.close() };
+  return { users, docs, log, admins, plain, put: (path, obj) => docs.set(path, Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fsv(v)]))), close: () => server.close() };
 }

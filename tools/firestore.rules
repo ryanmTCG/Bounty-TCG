@@ -39,6 +39,14 @@ service cloud.firestore {
         && d().e is string && d().e.size() <= 900000 && id.matches('^[a-z0-9-]{4,80}$')
         && d().t is int && d().t > request.time.toMillis() - 600000 && d().t < request.time.toMillis() + 600000;
     }
+    // Bug reports: a signed-in player sends one, once. Only admins read them: add a document admins/<your uid> here in the
+    // Firebase console (Firestore > Data) to see them in the game under Profile > Bug reports. Nobody can write admins.
+    match /reports/{id} {
+      allow read: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      allow create: if request.auth != null && d().by == request.auth.uid && d().keys().hasOnly(['v', 't', 'by', 'ver', 'msg', 'where', 'z'])
+        && d().msg is string && d().msg.size() <= 2000 && d().z is string && d().z.size() <= 900000
+        && d().t is int && d().t > request.time.toMillis() - 600000 && d().t < request.time.toMillis() + 600000;
+    }
     match /ranks/{uid} {
       allow read: if true;
       allow create: if request.auth != null && request.auth.uid == uid
