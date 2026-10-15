@@ -389,6 +389,25 @@ const lm = await page.evaluate(() => { const st = fxAb("EB04-016").flatMap(a => 
   const st2 = fxAb("OP08-085").flatMap(a => a.steps || []).find(x => x.a === "ko"), l2 = fxLimits(st2); return {type: l.type, maxK: l.maxK, minK: l2.minK, maxK2: l2.maxK}; });
 console.log("limits", JSON.stringify(lm));
 check(lm.type === null && lm.maxK === 8 && lm.minK === null && lm.maxK2 === 4, "an ability's condition doesn't narrow what it can target");
+// card wording: "X or Y" picks, "from your hand or trash", target limits, when by-hand abilities can be used, two-part always-on effects
+const cx = await page.evaluate(() => {
+  const f = cardFilter("[Sanji] or Event card"), ps = playSpec("Play up to 1 [Sabo], [Portgas.D.Ace], or [Monkey.D.Luffy] with a cost of 2 from your hand or trash.");
+  const L = (code, a) => fxLimits(fxAb(code).flatMap(x => x.steps || []).find(s => s.a === a));
+  const at = L("EB05-057", "giveDon"), ty = L("OP14-040", "giveDon"), dn = L("OP15-027", "rest"), bk = L("ST01-016", "ko"), fl = L("ST27-001", "rest"), z = L("OP14-064", "ko");
+  const c = S.leader.card, my = S.myTurn, opp = {t: "other", text: "[Opponent's Turn] All of your Characters gain +1000 power."}, rep = {t: "other", text: "If this Character would be K.O.'d, you may trash 1 card from your hand instead."};
+  const now = [abilityNow(c, opp), abilityNow(c, rep)]; S.myTurn = !my; now.push(abilityNow(c, opp), abilityNow(c, rep)); S.myTurn = my;
+  return {sanji: f("OP01-013"), ev: f("OP01-026"), nami: f("OP01-016"), from: ps.from, luffy: ps.pred("OP01-024"), usopp: ps.pred("OP01-004"),
+    attr: at.attr, types: ty.types, don: dn.don, blk: bk.blk, stage: fl.stage, eqP: z.eqP, bp: z.bp, my, now,
+    st: fxAb("ST14-001").map(a => a.s && (a.s.k || a.s.p)), buchi: condCheck("you don't have [Buchi]", S.leader), orTrig: L("OP05-002", "pwr").orTrig,
+    all: fxAb("OP12-018").flatMap(a => a.steps || []).some(s => s.n === -1000 && s.all && s.ld), peq: statFits({to: "chars", peq: 6000}, S.leader, {card: {c: "ST01-012"}}) && !statFits({to: "chars", peq: 6000}, S.leader, {card: {c: "OP01-013"}})};
+});
+console.log("card wording", JSON.stringify(cx));
+check(cx.sanji && cx.ev && !cx.nami, "\"[Sanji] or Event card\" takes either one");
+check(cx.from === "both" && cx.luffy && !cx.usopp, "\"from your hand or trash\" offers both, with the names and cost kept");
+check(cx.attr.join() === "Special,Wisdom" && cx.types.join() === "Fish-Man,Merfolk" && cx.don === 1 && cx.blk && cx.stage && cx.eqP === 0 && cx.bp, "attributes, types, DON!! given, [Blocker], a named Stage and base power 0 limit targets");
+check(cx.now[0] === !cx.my && cx.now[2] === cx.my && cx.now[1] && cx.now[3], "[Opponent's Turn] abilities are used on the opponent's turn, and \"would be K.O.'d ... instead\" on either");
+check(cx.buchi === true && cx.orTrig && cx.all, "\"you don't have [X]\", \"{X} type Characters or Characters with a [Trigger]\" and \"your opponent's Leader and all of their Characters\" read right");
+check(cx.st.join() === "1,1000" && cx.peq, "ST14-001's two always-on effects both count, and \"with 6000 base power\" means exactly that");
 await page.screenshot({ path: OUT + "/board.png" });
 check(!errs.length, "no page errors" + (errs.length ? ": " + errs.slice(0, 3).join(" / ") : ""));
 await app.close();

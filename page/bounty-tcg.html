@@ -1500,7 +1500,7 @@ function commit(){
   render(); publish();
 }
 function sendOpp(q){ q.id = ++S.mqn; S.mq.push(q); S.mqh = (S.mqh || []).concat(Object.assign({}, q)).slice(-30); }
-const OPP_BACK = {pwr: q => q.nx ? {k: "pwr", v: -q.v, nx: 1} : {k: "pwr", v: -q.v}, pwb: q => ({k: "pwb", v: -q.v}), cst: q => ({k: "cst", v: -q.v}), rest: () => ({k: "stand"}), stand: () => ({k: "rest"})};
+const OPP_BACK = {pwr: q => q.nx ? {k: "pwr", v: -q.v, nx: 1} : {k: "pwr", v: -q.v}, pwb: q => ({k: "pwb", v: -q.v}), cst: q => q.nx ? {k: "cst", v: -q.v, nx: 1} : {k: "cst", v: -q.v}, rest: () => ({k: "stand"}), stand: () => ({k: "rest"})};
 // Reset board, Refresh and Undo would let someone take back moves against a stranger, so public lobby tables
 // (S.pubt) and ranked matches don't have them. Friends only tables and practice do.
 const boardTools = () => !S.ranked && !S.pubt;
@@ -3192,11 +3192,12 @@ function botFxStep(m, st){
   }
   const ps = (st.a === "other" || st.a === "play") ? m.play : null;
   if (ps) {
-    const i0 = m.i, pool = ps.from === "hand" ? S.hand : S.trash;
+    const i0 = m.i, from = z => ps.from === "both" || ps.from === z;
     for (let n = ps.n; n > 0 && fxCur === m && m.i === i0; n--) {
-      const best = pool.map((c, i) => ({i, c})).filter(x => ps.pred(x.c.c) && (playDest(x.c.c) !== "chars" || S.chars.length < 5)).sort((a, b) => botVal(b.c.c) - botVal(a.c.c))[0];
+      const pool = [...(from("hand") ? S.hand.map((c, i) => ({src: "hand:" + i, c})) : []), ...(from("trash") ? S.trash.map((c, i) => ({src: "tr:" + i, c})) : [])];
+      const best = pool.filter(x => ps.pred(x.c.c) && (playDest(x.c.c) !== "chars" || S.chars.length < 5)).sort((a, b) => botVal(b.c.c) - botVal(a.c.c))[0];
       if (!best) break;
-      fxPlay((ps.from === "hand" ? "hand:" : "tr:") + best.i);
+      fxPlay(best.src);
     }
     if (fxCur === m && m.i === i0 && m.res) fxNext();
     return;
@@ -3422,7 +3423,7 @@ function applyMarkReqs(){
       if (ACTK[q.k]) {
         const nm = lab(f.card), by = oppM.nick;
         if (FX_OPP[q.k]) { FX_OPP[q.k](q, by); continue; }
-        if (q.k === "cst") { f.cm = Math.max(-20, Math.min(20, (f.cm || 0) + q.v)); addLog(q.u ? `${by} undid ${q.v > 0 ? "-" : "+"}${Math.abs(q.v)} cost on ${nm}` : `${nm} got ${q.v > 0 ? "+" : "-"}${Math.abs(q.v)} cost from ${by}`); continue; }
+        if (q.k === "cst") { f.cm = Math.max(-20, Math.min(20, (f.cm || 0) + q.v)); if (q.nx) f.ct = Math.max(-20, Math.min(20, (f.ct || 0) + q.v)); addLog(q.u ? `${by} undid ${q.v > 0 ? "-" : "+"}${Math.abs(q.v)} cost on ${nm}` : `${nm} got ${q.v > 0 ? "+" : "-"}${Math.abs(q.v)} cost from ${by}`); continue; }
         if (q.k === "pwb") { f.pm = Math.max(-60000, Math.min(60000, (f.pm || 0) + q.v)); f.bc = (f.bc || 0) + q.v; addLog(`${nm} got ${q.v > 0 ? "+" : "-"}${Math.abs(q.v)} power for this battle from ${by}`); continue; }
         if (q.k === "dmg") {
           if (S.life.length) { const lc = S.life.shift(); S.hand.push(lc); addLog(`took 1 damage from ${by} (Life ${S.life.length})`); offerTrigger(lc); toast(`${by}'s attack hit your Leader. Life card added to your hand.`); }
@@ -3499,7 +3500,7 @@ function normStep(t, deep){
   t = t || {};
   const st = {a: String(t.a || "other").slice(0, 16), who: t.who === "own" ? "own" : t.who === "any" ? "any" : "opp", n: Math.max(1, Math.min(60000, Math.round(Math.abs(+t.n) || 1))) * (+t.n < 0 ? -1 : 1), upTo: t.upTo !== false, cost: Number.isFinite(+t.cost) && t.cost !== null ? +t.cost : null, power: Number.isFinite(+t.power) && t.power !== null ? +t.power : null, rested: t.rested === true, ld: typeof t.ld === "boolean" ? t.ld : null, all: t.all === true, text: fxText(t.text, 300)};
   if (st.a === "kw" && !+t.n) st.n = 0;
-  for (const k of ["self", "pay", "battle", "tb", "top", "bot", "lf", "now", "up", "dn", "nx", "ng"]) if (t[k] === true) st[k] = true;
+  for (const k of ["self", "pay", "battle", "tb", "top", "bot", "lf", "now", "up", "dn", "nx", "nt", "ng"]) if (t[k] === true) st[k] = true;
   if (typeof t.f === "string" && t.f.trim()) st.f = fxText(t.f, 160);
   if (typeof t.k === "string" && /^[a-zA-Z]{1,12}$/.test(t.k)) st.k = t.k;
   if (Number.isInteger(t.cnt) && t.cnt > 1) st.cnt = Math.min(t.cnt, 10);
@@ -3515,7 +3516,7 @@ function normStat(s){
   if (s.turn === "own" || s.turn === "opp") o.turn = s.turn;
   if (typeof s.if === "string") o.if = fxText(s.if, 200);
   for (const k of ["col", "ty", "tin"]) if (typeof s[k] === "string") o[k] = fxText(s[k], 40);
-  for (const k of ["kmax", "kmin", "keq"]) if (s[k] != null && Number.isFinite(+s[k])) o[k] = +s[k];
+  for (const k of ["kmax", "kmin", "keq", "pmax", "peq"]) if (s[k] != null && Number.isFinite(+s[k])) o[k] = +s[k];
   if (s.other === true) o.other = true;
   if (Array.isArray(s.kw)) o.kw = s.kw.filter(x => KW_G[x]).slice(0, 3);
   return o.p || o.k || (o.kw && o.kw.length) ? o : null;
@@ -3600,7 +3601,7 @@ function renderFx(){
   const st = fxCur.steps[fxCur.i]; if (!st) return;
   const glow = (e, ref) => { if (e) e.classList.add(fxCur.pick.includes(ref) ? "fxpicked" : "fxtarget"); };
   if (HAND_PICK[st.a]) { const pr = fxHandPred(st); S.hand.forEach((c, i) => { if (!pr || pr(c.c)) glow(document.querySelector(`#hand [data-src="hand:${i}"]`), "hand:" + i); }); }
-  else if (fxCur.play && fxCur.play.from === "hand") S.hand.forEach((c, i) => { if (fxCur.play.pred(c.c)) glow(document.querySelector(`#hand [data-src="hand:${i}"]`), "hand:" + i); });
+  else if (fxCur.play && fxCur.play.from !== "trash") S.hand.forEach((c, i) => { if (fxCur.play.pred(c.c)) glow(document.querySelector(`#hand [data-src="hand:${i}"]`), "hand:" + i); });
   else if (!st.self && fxVerb(st, "it")) fxCands(st).forEach(x => glow(document.querySelector(x.mine ? `#me [data-src="${x.ref.replace(/^m:/, "")}"]` : `#opp [data-opp="${x.ref}"]`), x.ref));
 }
 // a step left to the player that the opponent carries out ("your opponent places 3 cards from their trash ..."):
@@ -3639,6 +3640,8 @@ function fxHandPred(st){
 }
 // cards an effect takes from the trash: "add up to 1 {Navy} type Character card ... from your trash to your hand"
 function fxZonePred(st){
+  // "Add this Character card from your trash to your hand": only the card itself
+  if (/\b(?:add|place|return) this (?:Character |Event |Stage )?card from your trash/i.test(st.text || "")) { const c = fxCur && fxCur.card && fxCur.card.c; return code => code === c; }
   const m = /(?:add|place|return) (?:up to )?\w+ (.*?) from your trash/i.exec(st.text || "");
   return m && !/^cards?$/i.test(m[1].trim()) ? cardFilter(m[1]) : null;
 }
@@ -3652,7 +3655,7 @@ function fxPick(ref){
 function fxTap(t){
   const st = fxCur && fxCur.steps[fxCur.i]; if (!st) return false;
   let ref = null;
-  if (fxCur.play && fxCur.play.from === "hand") { const h = t.closest("#hand [data-src^='hand:']"); if (h && fxCur.play.pred((S.hand[+h.dataset.src.slice(5)] || {}).c)) { fxPlay(h.dataset.src); return true; } return false; }
+  if (fxCur.play && fxCur.play.from !== "trash") { const h = t.closest("#hand [data-src^='hand:']"); if (h && fxCur.play.pred((S.hand[+h.dataset.src.slice(5)] || {}).c)) { fxPlay(h.dataset.src); return true; } return false; }
   if (HAND_PICK[st.a]) { const h = t.closest("#hand [data-src^='hand:']"), pr = fxHandPred(st); if (h && (!pr || pr((S.hand[+h.dataset.src.slice(5)] || {}).c))) ref = h.dataset.src; }
   else if (!st.self && fxVerb(st, "it")) {
     const me = t.closest("#me [data-src]"), op = t.closest("#opp [data-opp]");
@@ -3704,7 +3707,8 @@ function abilityNow(card, a){
     case "onBlock": return !!(def && S.blk != null && S.chars[S.blk] && S.chars[S.blk].card === card);
     case "trigger": return boardTools() && !onField && !inHand;
     case "onPlay": case "onKO": case "endOfTurn": return false;
-    default: return S.myTurn && onField;
+    // "If this Character would be K.O.'d, you may ... instead" can happen on either turn
+    default: return /\bwould (?:be|leave)\b/i.test(a.text || "") ? onField : /\[Opponent's Turn\]/.test(a.text || "") ? !S.myTurn && onField : S.myTurn && onField;
   }
 }
 async function useAbility(card, x, y){
@@ -3761,25 +3765,59 @@ async function offerOppAttack(){
     renderModal();
   } catch (e) { $("#toast").hidden = true; }
 }
+// power that outlasts this turn: nx "until the end of your opponent's next turn" (kept past your end of turn), nt "until
+// the end of your next turn" (used on the opponent's turn, it's kept through your next turn)
+function fxLast(f, st){
+  const c = v => Math.max(-60000, Math.min(60000, v));
+  if (st.nx || (st.nt && S.myTurn)) f.nx = c((f.nx || 0) + st.n);
+  else if (st.nt) f.nt = c((f.nt || 0) + st.n);
+}
 // the limits a target must meet, read from the step and its wording: "with 4000 power or less", "with a cost of 3 or more", "{Navy} type", Leader only / Characters only
 function fxLimits(st){
-  // what the step targets, without its "If ...," (a condition's "{X} type Characters with a cost of 5 or more" isn't a limit)
-  const t = String(st.text || "").replace(/^(?:then,\s*)?(?:if|when) [^,]+,\s*/i, ""), num = re => { const m = re.exec(t); return m ? +m[1] : null; }, rng = /cost of (\d+) to (\d+)/i.exec(t);
+  // what the step targets, without its "If ...," (a condition's "{X} type Characters with a cost of 5 or more" isn't a limit);
+  // "a cost 5 or less" (a misprint on some cards) reads as "a cost of 5 or less"
+  const t = String(st.text || "").replace(/^(?:then,\s*)?(?:if|when) [^,]+,\s*/i, "").replace(/\bcost (\d)/gi, "cost of $1");
+  const num = re => { const m = re.exec(t); return m ? +m[1] : null; }, rng = /cost of (\d+) to (\d+)/i.exec(t), prng = /(\d+) to (\d+) (?:base )?power/i.exec(t);
   const lim = {
-    maxP: num(/(\d+) (?:base )?power or less/i) ?? (Number.isFinite(st.power) ? st.power : null), minP: num(/(\d+) (?:base )?power or more/i),
+    maxP: prng ? +prng[2] : num(/(\d+) (?:base )?power or less/i) ?? num(/power of (\d+) or less/i) ?? (Number.isFinite(st.power) ? st.power : null),
+    minP: prng ? +prng[1] : num(/(\d+) (?:base )?power or more/i) ?? num(/power of (\d+) or more/i),
+    eqP: num(/with (\d+) (?:base )?power\b(?! or)/i) ?? num(/power of (\d+)\b(?! or| to)/i),
     maxK: rng ? +rng[2] : num(/cost of (\d+) or less/i) ?? (Number.isFinite(st.cost) ? st.cost : null), minK: rng ? +rng[1] : num(/cost of (\d+) or more/i),
-    eqK: num(/cost of (\d+)(?! or| to)\b/i), base: /base cost/i.test(t), bp: /base power/i.test(t),
-    type: (/\{([^}]+)\} type (?:Leader|Character)/i.exec(t) || [])[1] || null,
+    eqK: num(/cost of (\d+)\b(?! or (?:less|more)| to \d)/i), base: /base cost/i.test(t), bp: /base power/i.test(t),
+    // "{Land of Wano} or {Whitebeard Pirates} type": either one
+    types: ((/((?:\{[^}]+\}(?:,? or |, ))*\{[^}]+\}) type (?:Leader|Character|card)/i.exec(t) || [])[1] || "").match(/[^{}]+(?=\})/g) || [],
     noType: (/other than (?:the )?\{([^}]+)\} type/i.exec(t) || [])[1] || null,
     tin: (/type including "([^"]+)"/i.exec(t) || [])[1] || null,
     noName: [...t.matchAll(/other than \[([^\]]+)\]/g)].map(x => x[1]),
     name: (/of your (?:opponent's )?\[([^\]]+)\]/i.exec(t) || [])[1] || null,
     notSelf: /other than this (?:Character|card)/i.test(t),
-    rested: /\brested (?:\{[^}]+\} type )?(?:Characters?|Leader|cards?)\b/i.test(t), active: /\bactive (?:\{[^}]+\} type )?Characters?\b(?! during)/i.test(t) && !/as active/i.test(t)
+    rested: /\brested (?:\{[^}]+\} type )?(?:Characters?|Leader|cards?)\b/i.test(t), active: /\bactive (?:\{[^}]+\} type )?Characters?\b(?! during)/i.test(t) && !/as active/i.test(t),
+    col: (/\b(red|green|blue|purple|black|yellow) (?:\{[^}]+\} type )?(?:Leader|Characters?|cards?)\b/i.exec(t) || [])[1] || null,
+    // "the <Special> or <Wisdom> attribute": either one
+    attr: ((/((?:\b(?:Slash|Strike|Ranged|Special|Wisdom)\b\s*>?\s*(?:,? or\s*<?\s*|,\s*<?\s*)?)+)attribute/i.exec(t) || [])[1] || "").match(/Slash|Strike|Ranged|Special|Wisdom/gi) || [],
+    vanilla: /no base effect/i.test(t),
+    // "with a [Trigger]", "[Blocker] Characters"
+    trig: /\[Trigger\]/i.test(t), blk: /\[Blocker\] (?:Characters?|cards?)/i.test(t),
+    // "with a DON!! card given", "that has 2 or more DON!! cards given"
+    don: /with (?:a|\d+ or more) DON!! cards? given|that ha(?:s|ve) (?:a|\d+ or more) DON!! cards? given/i.test(t) ? num(/(\d+) or more DON!! cards? given/i) || 1 : 0,
+    // "your [Roronoa Zoro] Leader", "your Leader [Yamato]", "your Characters or [Silvers Rayleigh]"
+    ldName: (/your (?:\{[^}]+\} type )?\[([^\]]+)\] Leader|your Leader \[([^\]]+)\]|Characters? or \[([^\]]+)\]/i.exec(t) || []).slice(1).find(Boolean) || null,
+    stage: /\bStages?\b/i.test(t) && /\bLeader or Stage\b|\bStage cards?\b/i.test(t)
   };
+  // "rest 1 of your [Fullalead] cards": a named card can be a Stage
+  if (lim.name && new RegExp("of your \\[" + lim.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\] cards?\\b", "i").test(t)) lim.stage = true;
+  if (lim.name && /^(?:Trigger|Blocker|Rush|Double Attack|Banish|Unblockable)$/i.test(lim.name)) lim.name = null;
+  // "{Revolutionary Army} type Characters or Characters with a [Trigger]": either one
+  lim.orTrig = lim.trig && lim.types.length > 0 && /type (?:Leader or )?Characters? or Characters? with a \[Trigger\]/i.test(t);
+  lim.type = lim.types[0] || null;
+  // "a cost equal to or less than the number of your opponent's Life cards" (and the total of both players' Life, or yours)
+  const dyn = /cost equal to or less than (the number of your opponent's Life cards|the total of your and your opponent's Life cards|your number of Life cards|the number of your Life cards)/i.exec(t);
+  if (dyn) { const mine = S.life.length, theirs = oppM ? oppM.lf || 0 : 0, w = dyn[1].toLowerCase(); lim.maxK = w.includes("total") ? mine + theirs : w.includes("opponent") ? theirs : mine; }
   const L = /\bLeader\b/i.test(t), C = /\bCharacters?\b/i.test(t);
-  lim.leader = ["rest", "stand", "pwr", "giveDon", "kw", "mark"].includes(st.a) && (st.ld === true || (st.ld == null && L)) && !(C && !L);
-  lim.chars = !(L && !C && st.ld === true);
+  lim.leader = ["rest", "stand", "pwr", "giveDon", "kw", "mark"].includes(st.a) && (st.ld === true || (st.ld == null && L) || (!!lim.ldName && /Characters? or \[/i.test(t))) && !(C && !L && !/Characters? or \[/i.test(t));
+  lim.chars = !(L && !C && (st.ld === true || !!lim.ldName));
+  // "your [X] Leader": only that Leader, and no name limit on Characters from it
+  if (lim.ldName && lim.name === lim.ldName) lim.name = null;
   return lim;
 }
 function fxCands(st){
@@ -3794,7 +3832,16 @@ function fxCands(st){
     if (lim.maxK != null && Number.isFinite(k) && k > lim.maxK) return false;
     if (lim.minK != null && Number.isFinite(k) && k < lim.minK) return false;
     if (lim.eqK != null && lim.maxK == null && lim.minK == null && Number.isFinite(k) && k !== lim.eqK) return false;
-    if (lim.type && !hasType(x.code, lim.type)) return false;
+    const tyOk = !lim.types.length || lim.types.some(ty => hasType(x.code, ty)), trOk = !lim.trig || fxAb(x.code).some(a => a.t === "trigger");
+    if (lim.orTrig ? !(tyOk || trOk) : !(tyOk && trOk)) return false;
+    if (lim.eqP != null && lim.maxP == null && lim.minP == null && Number.isFinite(p) && p !== lim.eqP) return false;
+    const info = CARDDB.get(x.code) || {};
+    if (lim.col && !String(info.c || "").toLowerCase().includes(lim.col.toLowerCase())) return false;
+    if (lim.attr.length && !lim.attr.some(a => String(info.a || "").toLowerCase().includes(a.toLowerCase()))) return false;
+    if (lim.vanilla && !(BFX.has(x.code) && !fxAb(x.code).length && !isBlocker(x.code))) return false;
+    if (lim.blk && !isBlocker(x.code)) return false;
+    if (lim.don && (x.d || 0) < lim.don) return false;
+    if (lim.ldName && x.ref === "ld" && nameOf(x.code) !== lim.ldName) return false;
     if (lim.noType && hasType(x.code, lim.noType)) return false;
     if (lim.tin && !typesOf(x.code).some(y => y.includes(lim.tin))) return false;
     if (lim.noName.includes(nameOf(x.code))) return false;
@@ -3806,12 +3853,13 @@ function fxCands(st){
     return true;
   };
   const src = !lim.chars ? [] : own
-    ? S.chars.map((f, i) => { const pm = pmOf(f); return {ref: "ch:" + i, code: f.card.c, card: f.card, c: Object.assign({}, f.card, {pm}), k: cost(f.card.c, cmOf(f)), p: pow(f.card.c, pm), r: !!f.r}; })
-    : (oppM ? oppM.ch.map((f, i) => ({ref: "ch:" + i, code: f.c, c: f, k: cost(f.c, f.cm), p: pow(f.c, f.pm), r: !!f.r})) : []);
+    ? S.chars.map((f, i) => { const pm = pmOf(f); return {ref: "ch:" + i, code: f.card.c, card: f.card, c: Object.assign({}, f.card, {pm}), k: cost(f.card.c, cmOf(f)), p: pow(f.card.c, pm), r: !!f.r, d: f.d || 0}; })
+    : (oppM ? oppM.ch.map((f, i) => ({ref: "ch:" + i, code: f.c, c: f, k: cost(f.c, f.cm), p: pow(f.c, f.pm), r: !!f.r, d: f.d || 0})) : []);
   for (const x of src) if (ok(x)) out.push(x);
+  if (lim.stage && own && S.stage && ["rest", "stand"].includes(st.a)) { const x = {ref: "st", code: S.stage.card.c, card: S.stage.card, c: S.stage.card, k: cost(S.stage.card.c, 0), p: null, r: !!S.stage.r}; if (ok(x)) out.push(x); }
   if (lim.leader) {
     const l = own ? S.leader : (oppM && oppM.ld);
-    if (l) { const code = own ? l.card.c : l.c, pm = own ? pmOf(l) : l.pm, x = {ref: "ld", code, card: own ? l.card : null, c: own ? l.card : l, k: null, p: pow(code, pm), r: !!l.r}; if (ok(x)) out.unshift(x); }
+    if (l) { const code = own ? l.card.c : l.c, pm = own ? pmOf(l) : l.pm, x = {ref: "ld", code, card: own ? l.card : null, c: own ? l.card : l, k: null, p: pow(code, pm), r: !!l.r, d: l.d || 0}; if (ok(x)) out.unshift(x); }
   }
   return out;
 }
@@ -3911,9 +3959,9 @@ function fxStepHTML(m){
   if (st.a === "kw") { m.manual = true; return say(`Give a card [${esc(KW_NAME[st.k] || st.k)}].`, cancel + go("Next", "fxskip")); }
   const ps = st.a === "other" || st.a === "play" ? (m.play || (m.play = playSpec(st.text || m.text))) : null;
   if (ps) {
-    const pool = ps.from === "hand" ? S.hand : S.trash, ok = pool.filter(c => ps.pred(c.c)).length;
-    return say(ok ? `Tap a glowing card in your ${ps.from} to play it${ps.rested ? " rested" : ""} for free (up to ${ps.n}).` : `No card in your ${ps.from} fits this effect.`,
-      `${cancel}${ps.from === "trash" && ok ? '<button class="btn" data-do="fxtrash" type="button">Open trash</button>' : ""}<button class="btn pri" data-do="fxskip" type="button">${ok ? "Done" : "Next"}</button>`);
+    const pool = ps.from === "hand" ? S.hand : ps.from === "trash" ? S.trash : [...S.hand, ...S.trash], ok = pool.filter(c => ps.pred(c.c)).length, where = ps.from === "both" ? "hand or trash" : ps.from;
+    return say(ok ? `Tap a glowing card in your ${where} to play it${ps.rested ? " rested" : ""} for free (up to ${ps.n}).` : `No card in your ${where} fits this effect.`,
+      `${cancel}${ps.from !== "hand" && ok ? '<button class="btn" data-do="fxtrash" type="button">Open trash</button>' : ""}<button class="btn pri" data-do="fxskip" type="button">${ok ? "Done" : "Next"}</button>`);
   }
   m.manual = true;
   return say(m.forced ? `Your opponent's card has you do this on your side of the board. Then tap Next.` : `Do this one yourself on the board, then tap Next.`, `${cancel}<button class="btn pri" data-do="fxskip" type="button">Next</button>`);
@@ -3935,7 +3983,7 @@ function fxApply(arg){
     const nm = lab(f.card), ref = fxRef(f);
     if (st.a === "rest") { f.r = true; addLog(`rested ${nm}`); }
     else if (st.a === "stand") { f.r = false; addLog(`set ${nm} as active`); }
-    else if (st.a === "pwr") { f.pm = clampP((f.pm || 0) + st.n); if (st.battle) f.bc = (f.bc || 0) + st.n; if (st.nx) f.nx = clampP((f.nx || 0) + st.n); addLog(`gave ${nm} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} power${st.nx ? " until their next turn" : ""}`); }
+    else if (st.a === "pwr") { f.pm = clampP((f.pm || 0) + st.n); if (st.battle) f.bc = (f.bc || 0) + st.n; fxLast(f, st); addLog(`gave ${nm} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} power${st.nx ? " until their next turn" : ""}`); }
     else if (st.a === "kw") { fxGrant(f, st.k); if (st.n) f.pm = clampP((f.pm || 0) + st.n); }
     else if (st.a === "giveDon") fxGiveDon(f, st);
     else if (ref !== "ld") { fxRemoveOwn(ref, st.a); fxNext(); return; }
@@ -4030,13 +4078,14 @@ function fxApply(arg){
   }
   const mine = st.who === "any" ? refs.filter(r => r.startsWith("m:")).map(r => r.slice(2)) : fxOwn(st) ? refs : [];
   const theirs = st.who === "any" ? refs.filter(r => !r.startsWith("m:")) : fxOwn(st) ? [] : refs;
-  mine.sort((a, b) => (b === "ld" ? -1 : +b.slice(3)) - (a === "ld" ? -1 : +a.slice(3)));
+  mine.sort((a, b) => (b === "ld" || b === "st" ? -1 : +b.slice(3)) - (a === "ld" || a === "st" ? -1 : +a.slice(3)));
   for (const ref of mine) {
-    const f = ref === "ld" ? S.leader : S.chars[+ref.slice(3)]; if (!f) continue;
+    const f = ref === "ld" ? S.leader : ref === "st" ? S.stage : S.chars[+ref.slice(3)]; if (!f) continue;
+    if (ref === "st" && !["rest", "stand"].includes(kind)) continue;
     if (kind === "rest") { f.r = true; addLog(`rested ${lab(f.card)}`); }
     else if (kind === "stand") { f.r = false; addLog(`stood ${lab(f.card)}`); }
-    else if (kind === "pwr") { f.pm = clampP((f.pm || 0) + st.n); if (st.battle) f.bc = (f.bc || 0) + st.n; if (st.nx) f.nx = clampP((f.nx || 0) + st.n); addLog(`gave ${lab(f.card)} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} power${st.nx ? " until their next turn" : ""}`); }
-    else if (kind === "cost") { f.cm = Math.max(-20, Math.min(20, (f.cm || 0) + st.n)); addLog(`gave ${lab(f.card)} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} cost`); }
+    else if (kind === "pwr") { f.pm = clampP((f.pm || 0) + st.n); if (st.battle) f.bc = (f.bc || 0) + st.n; fxLast(f, st); addLog(`gave ${lab(f.card)} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} power${st.nx ? " until their next turn" : ""}`); }
+    else if (kind === "cost") { f.cm = Math.max(-20, Math.min(20, (f.cm || 0) + st.n)); if (st.nx) f.cx = Math.max(-20, Math.min(20, (f.cx || 0) + st.n)); addLog(`gave ${lab(f.card)} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} cost`); }
     else if (kind === "kw") fxGrant(f, st.k);
     else if (ref !== "ld") fxRemoveOwn(ref, kind);
   }
@@ -4046,7 +4095,7 @@ function fxApply(arg){
     const k = kind === "cost" ? "cst" : kind === "trashCh" ? "trc" : kind === "life" && st.up ? "lfu" : kind === "mark" ? st.k : kind === "pwr" && st.battle ? "pwb" : kind;
     if (!ACTK[k] && !MK[k]) continue;
     if (st.ng && kind !== "mark") sendOpp({r: ref, c: t.c, k: "ng", v: 1});
-    sendOpp(Object.assign({r: ref, c: t.c, k, v: kind === "pwr" || kind === "cost" ? st.n : kind === "mark" && st.now ? 1 : 0}, kind === "pwr" && st.nx ? {nx: 1} : {}));
+    sendOpp(Object.assign({r: ref, c: t.c, k, v: kind === "pwr" || kind === "cost" ? st.n : kind === "mark" && st.now ? 1 : 0}, (kind === "pwr" || kind === "cost") && st.nx ? {nx: 1} : {}));
     const sg = `${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)}`;
     addLog(`${{ko: "K.O.'d", rest: "rested", stand: "stood", bounce: "returned to hand", bottom: "put on the bottom of the deck", life: "added to its owner's Life", trashCh: "trashed", pwr: sg + " power on", cost: sg + " cost on", mark: st.k === "fz" ? "froze" : st.k === "ng" ? "negated the effect of" : "stopped from attacking"}[kind] || kind} ${lab(t)}${st.ng && kind !== "mark" ? " (its effect negated)" : ""}`);
   }
@@ -4163,9 +4212,9 @@ function startTurn(){
   S.turn++;
   const stand = f => { if (f.mk && f.mk.includes("na") && S.turn >= (f.nat || 0)) { f.mk = f.mk.filter(k => k !== "na"); addLog(`${lab(f.card)} can attack again`); } if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; f.mk = (f.mk || []).filter(k => k !== "au" && k !== "ng"); };
   // power "until the start of your next turn" ends now (nx); an opponent's "until the end of your next turn" stays (nt)
-  for (const f of S.chars) { stand(f); S.donRested += f.d; f.d = 0; f.pm = f.nt || 0; f.nx = 0; f.cm = 0; f.bc = 0; }
+  for (const f of S.chars) { stand(f); S.donRested += f.d; f.d = 0; f.pm = f.nt || 0; f.nx = 0; f.cm = f.ct || 0; f.cx = 0; f.bc = 0; }
   if (S.stage) S.stage.r = false;
-  stand(S.leader); S.donRested += S.leader.d; S.leader.d = 0; S.leader.pm = S.leader.nt || 0; S.leader.nx = 0; S.leader.cm = 0; S.leader.bc = 0;
+  stand(S.leader); S.donRested += S.leader.d; S.leader.d = 0; S.leader.pm = S.leader.nt || 0; S.leader.nx = 0; S.leader.cm = S.leader.ct || 0; S.leader.cx = 0; S.leader.bc = 0;
   S.donActive += S.donRested; S.donRested = 0;
   S.myTurn = true; S.tleft = TURN_MS; S.tw = false; if (R && !PR) snd("turn");
   addLog(`started turn ${S.turn}`);
@@ -4210,7 +4259,7 @@ function endTurn(){
     }
   }
   S.pw = 0; S.cc = 0; S.atk = null; S.blk = null;
-  for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = f.nx || 0; f.nt = 0; f.cm = 0; f.bc = 0; if (negated(f)) f.mk = f.mk.filter(k => k !== "ng"); }
+  for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = f.nx || 0; f.nt = 0; f.cm = f.cx || 0; f.ct = 0; f.bc = 0; if (negated(f)) f.mk = f.mk.filter(k => k !== "ng"); }
   if (S.ev) { S.trash.unshift(S.ev.card); addLog(`${lab(S.ev.card)} went to the trash`); S.ev = null; }
   S.myTurn = false; S.et = (S.et || 0) + 1;
   addLog(`ended turn ${S.turn || 0}`);
@@ -4278,6 +4327,8 @@ function statFits(s, h, f){
   if (s.kmax != null && !(info.k <= s.kmax)) return false;
   if (s.kmin != null && !(info.k >= s.kmin)) return false;
   if (s.keq != null && info.k !== s.keq) return false;
+  if (s.pmax != null && !(basePow(code) <= s.pmax)) return false;
+  if (s.peq != null && basePow(code) !== s.peq) return false;
   return true;
 }
 // what always-on effects add to one of my cards right now: {p: power, k: cost, g: keyword letters}
@@ -4360,7 +4411,7 @@ function condCheck(t, self){
   if ((o = t.match(/^your Leader has the (\{[^}]+\} type) or the (.+ attribute)$/i))) return any([`your Leader has the ${o[1]}`, `your Leader has the ${o[2]}`]);
   if ((o = t.match(/^your Leader has the (\{[^}]+\} type) or a type including (".+")$/i))) return any([`your Leader has the ${o[1]}`, `your Leader's type includes ${o[2]}`]);
   if ((o = t.match(/^(your Leader has the \{[^}]+\} type) and is active$/i))) return condCheck(`${o[1]} and your Leader is active`, self);
-  if ((o = t.match(/^you do not have (.+)$/i))) { const r = condCheck(`you have ${o[1]}`, self); return r === null ? null : !r; }
+  if ((o = t.match(/^you (?:do not|don't|don\u2019t) have (.+)$/i))) { const r = condCheck(`you have ${o[1]}`, self); return r === null ? null : !r; }
   // "A and B": both parts must hold
   if (/(?<!\byou) and (you|your|this|there|the)\b/i.test(t)) { const parts = t.split(/(?<!\byou) and (?=you|your|this|there|the\b)/i); if (parts.length > 1) { const r = parts.map(x => condCheck(x, self)); return r.includes(false) ? false : r.includes(null) ? null : true; } }
   let m; const L = S.leader && S.leader.card.c, oppCh = oppM ? (oppM.ch || []) : [];
@@ -4442,22 +4493,48 @@ function leadCond(text){
 // which cards an effect's wording allows, e.g. "{Straw Hat Crew} type Character card with a cost of 3 or less other
 // than [Nami]". Returns a test on a card number, or null when nothing in the wording narrows it down.
 function cardFilter(seg){
-  seg = String(seg || "");
+  seg = String(seg || "").replace(/\bcost (\d)/gi, "cost of $1");
+  // "[Sanji] or {Big Mom Pirates} type card", "<Slash> attribute card or green Event": either kind will do. Not an "or"
+  // inside "3 or less", "{A} or {B} type", "Character or Event", "red or green", "top or bottom"
+  const COL = "red|green|blue|purple|black|yellow";
+  const prot = seg.replace(/ or (less|more)\b/gi, " \u0001 $1").replace(/\} or \{/g, "} \u0001 {")
+    .replace(new RegExp(`\\b(Characters?|Events?|Stages?|${COL})((?: cards?)?) or (?=(?:an? )?(?:Characters?|Events?|Stages?|${COL})\\b)`, "gi"), "$1$2 \u0001 ")
+    .replace(/top or bottom/gi, "top \u0001 bottom");
+  const parts = prot.split(/,? or /).map(x => x.replace(/\u0001/g, "or"));
+  // what the last kind says applies to the others when they leave it out: "{Muggy Kingdom} type or <Slash> attribute
+  // Character card with a cost of 4 or less", "[Sabo], [Portgas.D.Ace], or [Monkey.D.Luffy] with a cost of 2"
+  const last = parts[parts.length - 1], noun = /\b(?:Characters?|Events?|Stages?|cards?)\b.*$/.exec(last), tail = /\bwith\b.*$/.exec(last);
+  for (let i = 0; i < parts.length - 1; i++) {
+    if (/\b(?:type|attribute)\s*$/i.test(parts[i]) && noun) parts[i] += " " + noun[0];
+    else if (/^[\s,]*(?:\[[^\]]+\][\s,]*)+$/.test(parts[i]) && /^\s*\[/.test(last) && tail) parts[i] += " " + tail[0];
+  }
+  if (parts.length > 1) { const ps = parts.map(cardFilter1); return ps.some(x => !x) ? null : (code => ps.some(f => f(code))); }
+  return cardFilter1(seg);
+}
+function cardFilter1(seg){
   const tests = []; let m;
-  // "a card with a [Trigger]" is about the card's text, not its name
-  if (/with an? \[Trigger\]/i.test(seg)) { tests.push((i, code) => fxAb(code).some(a => a.t === "trigger")); seg = seg.replace(/with an? \[Trigger\]/ig, ""); }
-  const plain = seg.replace(/\{[^}]*\}|"[^"]*"|\[[^\]]*\]/g, "");
-  const col = plain.match(/\b(red|green|blue|purple|black|yellow)\b/i);
-  if (col) tests.push(i => String(i.c || "").toLowerCase().includes(col[1].toLowerCase()));
+  // "a card with a [Trigger]", "and a [Trigger]", "[Blocker] Characters": what the card has, not its name
+  if (/\[Trigger\]/i.test(seg)) { tests.push((i, code) => fxAb(code).some(a => a.t === "trigger")); seg = seg.replace(/(?:with|and|that has) an? \[Trigger\]|\[Trigger\]/ig, ""); }
+  if (/\[Blocker\]/i.test(seg)) { tests.push((i, code) => isBlocker(code)); seg = seg.replace(/(?:with|and|that has) an? \[Blocker\]|\[Blocker\]/ig, ""); }
+  seg = seg.replace(/\[(?:Rush|Double Attack|Banish|Unblockable)\]/gi, "");
+  if (/no base effect/i.test(seg)) tests.push((i, code) => BFX.has(code) && !fxAb(code).length && !isBlocker(code));
+  const plain = seg.replace(/\{[^}]*\}|"[^"]*"|\[[^\]]*\]|<[^>]*>/g, "");
+  const cols = [...plain.matchAll(/\b(red|green|blue|purple|black|yellow)\b/gi)].map(x => x[1].toLowerCase());
+  if (cols.length) tests.push(i => cols.some(c => String(i.c || "").toLowerCase().includes(c)));
   const tys = [...seg.matchAll(/\{([^}]+)\}/g)].map(x => x[1]);
-  if (tys.length) tests.push((i, code) => tys.some(t => hasType(code, t)));
+  // "with both the {Animal} and {Alabasta} types": all of them
+  if (tys.length) tests.push(/\bboth the\b/i.test(seg) ? ((i, code) => tys.every(t => hasType(code, t))) : ((i, code) => tys.some(t => hasType(code, t))));
   if ((m = seg.match(/type including "([^"]+)"/))) { const w = m[1]; tests.push((i, code) => typesOf(code).some(y => y.includes(w))); }
-  const cat = plain.match(/\b(Character|Event|Stage)s?\b/);
-  if (cat) tests.push(i => i.t === cat[1]);
-  if ((m = seg.match(/cost of (\d+) or (less|more)/))) { const n = +m[1], le = m[2] === "less"; tests.push(i => Number.isFinite(i.k) && (le ? i.k <= n : i.k >= n)); }
+  // "<Slash> attribute" (the game's text shows it without the angle brackets)
+  if ((m = seg.match(/\b(Slash|Strike|Ranged|Special|Wisdom)\b\s*>?\s*attribute/i))) { const w = m[1].toLowerCase(); tests.push(i => String(i.a || "").toLowerCase().includes(w)); }
+  const cats = [...new Set([...plain.matchAll(/\b(Character|Event|Stage)s?\b/g)].map(x => x[1]))];
+  if (cats.length) tests.push(i => cats.includes(i.t));
+  if ((m = seg.match(/cost of (\d+) to (\d+)/))) { const lo = +m[1], hi = +m[2]; tests.push(i => Number.isFinite(i.k) && i.k >= lo && i.k <= hi); }
+  else if ((m = seg.match(/cost of (\d+) or (less|more)/))) { const n = +m[1], le = m[2] === "less"; tests.push(i => Number.isFinite(i.k) && (le ? i.k <= n : i.k >= n)); }
   else if ((m = seg.match(/cost of (\d+)\b/))) { const n = +m[1]; tests.push(i => i.k === n); }
-  if ((m = seg.match(/(\d+) power or (less|more)/))) { const n = +m[1], le = m[2] === "less"; tests.push(i => Number.isFinite(i.p) && (le ? i.p <= n : i.p >= n)); }
-  else if ((m = seg.match(/with (\d+) power\b/))) { const n = +m[1]; tests.push(i => i.p === n); }
+  if ((m = seg.match(/(\d+) to (\d+) (?:base )?power/))) { const lo = +m[1], hi = +m[2]; tests.push(i => Number.isFinite(i.p) && i.p >= lo && i.p <= hi); }
+  else if ((m = seg.match(/(\d+) (?:base )?power or (less|more)/) || seg.match(/power of (\d+) or (less|more)/))) { const n = +m[1], le = m[2] === "less"; tests.push(i => Number.isFinite(i.p) && (le ? i.p <= n : i.p >= n)); }
+  else if ((m = seg.match(/with (\d+) (?:base )?power\b/) || seg.match(/power of (\d+)\b/))) { const n = +m[1]; tests.push(i => i.p === n); }
   const not = [...seg.matchAll(/other than \[([^\]]+)\]/g)].map(x => x[1]);
   if (not.length) tests.push((i, code) => !not.includes(nameOf(code)));
   const names = [...seg.replace(/other than \[[^\]]+\]/g, "").matchAll(/\[([^\]]+)\]/g)].map(x => x[1]);
@@ -4473,9 +4550,11 @@ function lookSpec(text){
 }
 // "Play up to 1 X from your hand/trash"
 function playSpec(text){
-  const m = String(text || "").match(/play up to (\d+) (.+?) from your (hand|trash)( rested)?/i);
+  // "play up to 1 [Enel] from your hand or trash": from "both"; "... from your hand with a cost of 5 or less" keeps the limit
+  const m = String(text || "").match(/play up to (\d+) (.+?) from your (hand or trash|trash or hand|hand|trash)( rested)?((?: with [^.]*?)?)(?:\.|$| and | rested)/i);
   if (!m) return null;
-  return {n: +m[1], pred: cardFilter(m[2]) || (() => true), from: m[3].toLowerCase(), rested: !!m[4] || /\brested\b/i.test(m[2])};
+  const from = /or/.test(m[3]) ? "both" : m[3].toLowerCase();
+  return {n: +m[1], pred: cardFilter(m[2] + (m[5] || "")) || (() => true), from, rested: !!m[4] || /\brested\b/i.test(m[2])};
 }
 const playDest = code => { const t = (CARDDB.get(code) || {}).t; return t === "Stage" ? "stage" : t === "Event" ? "event" : "chars"; };
 function fxPlay(src){
@@ -4628,7 +4707,7 @@ function openCardMenu(src, x, y){
     items = [M("Trash", "trash"), M("Return to hand", "hand"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot")];
   } else if (k === "tr") {
     const c = S.trash[i]; if (!c) return; title = lab(c); info = {c: c.c, n: c.n, r: 0, d: 0};
-    if (fxCur && fxCur.play && fxCur.play.from === "trash" && fxCur.play.pred(c.c)) items.push(["Play it (from the effect)", () => fxPlay(src)]);
+    if (fxCur && fxCur.play && fxCur.play.from !== "hand" && fxCur.play.pred(c.c)) items.push(["Play it (from the effect)", () => fxPlay(src)]);
     items.push(M("Return to hand", "hand"), M("Play to Character area", "chars"), M("Play as Stage", "stage"), M("Play as Event", "event"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"));
   } else if (k === "dk") {
     const c = S.deck[i]; if (!c) return; title = lab(c); info = {c: c.c, n: c.n, r: 0, d: 0};

@@ -62,12 +62,14 @@ def target(clause):
         if m.group(1).lower() == "all": return ("opp", 1, False, True, "leader" in kind)
         n = num(m.group(2) or m.group(3))
         return ("opp", n, bool(m.group(2)), False, "leader" in kind)
+    if re.search(r"\byour opponent's Leader and all of (?:their|your opponent's) Characters\b", clause, re.I): return ("opp", 1, False, True, True)
     if re.search(r"\byour opponent's Leader\b", clause, re.I): return ("opp", 1, False, False, True)
     m = re.search(r"\b(all|up to (\w+)|(\w+)) of your (?:%s)(Leader or Character cards?|Characters?|Leader|cards?)\b" % QUAL, clause, re.I)
     if m:
         kind = m.group(4).lower()
         if kind.startswith("card"): kind = "leader or character"
-        if m.group(1).lower() == "all": return ("own", 1, False, True, "leader" in kind)
+        # "your Leader and all of your Characters"
+        if m.group(1).lower() == "all": return ("own", 1, False, True, "leader" in kind or bool(re.search(r"\byour Leader and all of your", clause, re.I)))
         n = num(m.group(2) or m.group(3))
         return ("own", n, bool(m.group(2)), False, "leader" in kind or bool(re.search(r"your Leader or", clause, re.I)))
     if re.search(r"\byour Leader\b", clause, re.I) and not re.search(r"\bif your Leader\b", clause, re.I): return ("own", 1, False, False, True)
@@ -85,15 +87,16 @@ def split_cond(c):
 
 
 # power that lasts through the opponent's next turn, not just this one
-NEXT_TURN = r"until the (?:start of your next turn|end of your opponent's next turn)"
-def next_turn(low): return {"nx": True} if re.search(NEXT_TURN, low) else {}
+NEXT_TURN = r"until the (?:start of your next turn|end of your opponent's next (?:turn|end phase))"
+# "until the end of your next turn": through your next turn, too (nt; the game treats it as nx when it's used on your own turn)
+def next_turn(low): return {"nx": True} if re.search(NEXT_TURN, low) else {"nt": True} if "until the end of your next turn" in low else {}
 
 
 def self_step(core, base):
     """Steps that act on the card itself: "You may rest this Character", "Play this card", "This Leader gains +2000 power"."""
     low = core.lower()
     battle = "during this battle" in low
-    if re.search(r"\bfor every\b", low): return None
+    if re.search(r"\bfor every\b|\bat the end of (?:this|the) turn\b", low): return None
     if re.match(r"(?:you may )?rest %s(?:\.|$)" % SELF, low): return dict(base, a="rest", self=True)
     if re.match(r"(?:you may )?trash %s(?:\.|$)" % SELF, low): return dict(base, a="trash", self=True)
     if re.match(r"(?:you may )?return %s to (?:the owner's|your) hand" % SELF, low): return dict(base, a="bounce", self=True)
@@ -106,7 +109,7 @@ def self_step(core, base):
     if m: return dict(base, a="act", k={"main": "main", "on play": "onPlay", "counter": "counter"}[m.group(1)])
     m = re.match(r"%s gains \[(rush|double attack|banish|unblockable)\](?: and ([+\-−])(\d+) power)?(?: during this turn)?(?:\.|$| \()" % SELF, low)
     if m: return dict(base, a="kw", self=True, k=KW_LETTER[m.group(1)], n=int(m.group(3) or 0) * (-1 if m.group(2) in ("-", "−") else 1))
-    m = re.match(r"%s gains ([+\-−])(\d+) power(?: during this (?:turn|battle)| %s)?(?:\.|$)" % (SELF, NEXT_TURN), low)
+    m = re.match(r"%s gains ([+\-−])(\d+) power(?: during this (?:turn|battle)| %s| until the end of your next turn)?(?:\.|$)" % (SELF, NEXT_TURN), low)
     if m: return dict(base, a="pwr", self=True, n=int(m.group(2)) * (1 if m.group(1) == "+" else -1), battle=battle, **next_turn(low))
     m = re.match(r"give %s ([+\-−])(\d+) power(?: during this (?:turn|battle))?(?:\.|$)" % SELF, low)
     if m: return dict(base, a="pwr", self=True, n=int(m.group(2)) * (1 if m.group(1) == "+" else -1), battle=battle)
@@ -127,6 +130,17 @@ def step(clause, pay=False):
     s = self_step(core, base)
     if s: return s
     if re.search(r"\bfor every\b", cl): return dict(base, a="other")
+    # later in the turn ("at the end of this turn"), a choice of two actions ("K.O. or rest", "to the owner's hand or the
+    # bottom of their deck", "top or bottom of the owner's Life"), "for each", "1 each of", a total power, the opponent
+    # choosing, "any number" of targets, and a Leader gaining a keyword and power at once
+    if re.search(r"\bat the end of (?:this|the) turn\b|\b(?:k\.o\.|rest|return|place|trash) or (?:k\.o\.|rest|return|place|trash)\b|"
+                 r"\bor (?:place|return) it\b|, or return it\b|hand or the bottom of|\btop or bottom of (?:the owner's|your opponent's|their) life|"
+                 r"\bfor each\b|\b\w+ each of\b|\bany number of\b|\bthe same number\b|\band that character will\b|\bwould (?:be|leave)\b.*\binstead\b|\btotal (?:power|cost) of\b|\bboth the\b|"
+                 r"\bgains? \[[^\]]+\] and [+\-−]\d+ power|\binstead of\b|\bplay up to \w+ [^.]*? and up to \w+ |\byour opponent's [^.]*?\bor stages?\b|"
+                 r"\byour leader with [^.]*? and (?:up to \w+ |all )of your characters\b|\byour leader and up to \w+ of your characters\b|"
+                 r"\bfrom your hand or (?:(?:rest|trash|return|place|add) )?(?:\d|up to|an?|one|this|that)\b|\bof your opponent's stages?\b|\bor your opponent's stages?\b|\bcharacters? or don!! cards?\b|"
+                 r"\bplay up to \w+ [^.]*different card names\b|\bequal to or less than the number of don!!|\bof your [^.]*? or \w+ cards? from your hand\b", cl) and not re.match(r"(?:you may )?trash (?:up to )?\w+ cards? from the top or bottom of your life", cl):
+        return dict(base, a="other")
     # "Negate the effect of up to 1 of your opponent's Characters with a cost of 6 or less during this turn[, and K.O. it]":
     # a mark that turns the card's own abilities off this turn, or, with "and K.O. it", the K.O. with ng set (the mark
     # goes first, so its [On K.O.] and "cannot be K.O.'d by effects" don't apply)
@@ -147,12 +161,15 @@ def step(clause, pay=False):
     if m: return dict(base, a="revealHand", n=num(m.group(2)), f=m.group(3), upTo=bool(m.group(1)))
     m = re.search(r"\bdraw (\w+) cards?\b", cl)
     if m and not re.search(r"\bwhen (?:you|your opponent) draws?\b", low): return dict(base, a="draw", who="own", n=num(m.group(1)))
+    m = re.search(r"\btrash (any number of|all) ((?:[^.]*? )?)(?:cards?|events?|characters?|stages?) ?((?:with [^.]*?)?)from your hand\b", cl)
+    if m and "your opponent" not in cl[:m.start()]: return dict(base, a="other")
     m = re.search(r"\btrash (up to )?(\w+) ((?:[^.]*? )?)(?:cards?|events?|characters?|stages?) ?((?:with [^.]*?)?)from your hand\b", cl)
     if m and "your opponent" not in cl[:m.start()]:
         return dict(base, a="discard", who="own", n=num(m.group(2)), upTo=bool(m.group(1)) or cl.startswith("you may"))
     m = re.search(r"\blook at (\w+) cards? from the top of your deck\b", cl)
     if m: return dict(base, a="look", who="own", n=num(m.group(1)))
     m = re.search(r"\badd (up to )?(\w+) (additional )?don!! cards?(?: from your don!! deck)?", cl)
+    if m and re.search(r"\byour opponent (?:may )?adds?\b", cl): return dict(base, a="other")
     if m: return dict(base, a="don", who="own", n=num(m.group(2)), rested="rest" in cl[m.end():])
     m = re.search(r"\bgive (?:up to )?(\w+) (rested )?don!! cards?", cl)
     if m and "your opponent" not in cl:
@@ -192,6 +209,7 @@ def step(clause, pay=False):
     m = re.match(r"(?:you may )?turn (all|\w+) (?:of your (?:face-up )?life cards|cards? from the top(?: or bottom)? of your life cards) face-(up|down)(?:\.|$)", cl)
     if m: return dict(base, a="lifeUp" if m.group(2) == "up" else "lifeDown", who="own", n=99 if m.group(1) == "all" else num(m.group(1)), all=m.group(1) == "all")
     m = re.search(r"\btrash (up to )?(\w+) cards? from the top( or bottom)? of your life cards", cl)
+    if m and m.group(3): return dict(base, a="other")
     if m: return dict(base, a="lifeTrash", who="own", n=num(m.group(2)))
     m = re.search(r"\btrash up to (\w+) cards? from the top of your opponent's life cards", cl)
     if m: return dict(base, a="lifeTrash", n=num(m.group(1)))
@@ -218,7 +236,7 @@ def step(clause, pay=False):
         t = target(c)
         if t and t[0] != "any":
             v = int(m.group(2)) * (-1 if m.group(1) != "+" else 1)
-            return dict(base, a="cost", who=t[0], n=v, upTo=t[2], all=t[3], ld=False, cost=cost, power=power, cnt=t[1] if t[1] > 1 else None)
+            return dict(base, a="cost", who=t[0], n=v, upTo=t[2], all=t[3], ld=False, cost=cost, power=power, cnt=t[1] if t[1] > 1 else None, **next_turn(cl))
     # power changes: "Give up to 1 of your opponent's Characters -2000 power", "Up to 1 of your Characters gains +1000 power"
     m = re.search(r"([+\-−])(\d{3,5}) power", c)
     if m and not re.search(r"\bthis (character|leader|card)\b", low[:m.start()]):
@@ -284,34 +302,58 @@ def clauses(body):
     body = re.sub(r"(reveal \w+ cards? from the top of your deck), (play|add) ", lambda m: m.group(1) + ". " + m.group(2).capitalize() + " ", body, flags=re.I)
     body = re.sub(r"\brest (\w+) of your DON!! cards and this (Character|Leader|Stage)\b", r"rest \1 of your DON!! cards and rest this \2", body)
     body = re.sub(r"\brest this (Character|Leader|Stage|card) and (\w+) of your\b", r"rest this \1 and rest \2 of your", body)
+    # "You may rest 1 of your [Gonbe] and this Character:" is two costs
+    body = re.sub(r"\b(rest \w+ of your [^:.]+?) and this (Character|Leader|Stage)\b", r"\1 and rest this \2", body, flags=re.I)
+    # "You can trash ...:", "you may trash 1 card from your hand to activate this effect. <effect>": a cost like any other
+    body = re.sub(r"\bYou can (?=[^:]+:)", "You may ", body)
+    body = re.sub(r"\b(you may [^.:]+?) to activate this effect\.\s*", r"\1: ", body, flags=re.I)
+    # "K.O. up to 1 of X and up to 1 of Y", "Return up to 1 X and up to 1 Y to the owner's hand": a step for each
+    body = re.sub(r"\b(K\.O\.|Rest|rest) (up to \w+ of your opponent's [^.:]*?) and (up to \w+ (?:of your opponent's )?Characters?\b)",
+                  lambda m: f"{m.group(1)} {m.group(2)} and {'rest' if m.group(1) == 'Rest' else m.group(1)} {m.group(3)}", body)
+    body = re.sub(r"\b(Return|return|Place|place) (up to \w+ (?:of your opponent's )?Characters? [^.:]*?) and (up to \w+ (?:of your opponent's )?Characters? [^.:]*?) "
+                  r"((?:to the owner's hand|at the bottom of the owner's deck)(?: in any order)?)",
+                  lambda m: f"{m.group(1)} {m.group(2)} {m.group(4)} and {m.group(1).lower()} {m.group(3)} {m.group(4)}", body)
+    # "Draw 1 card if you have 5 or less cards in your hand": the condition first, like the game reads it
+    body = re.sub(r"(^|(?<=[.:]\s)|(?<=Then,\s))(Draw \w+ cards?|draw \w+ cards?) if ([^.,]+)\.", lambda m: f"{m.group(1)}If {m.group(3)}, {m.group(2).lower()}.", body)
+    body = re.sub(r"\b([Ss]et up to \w+ of your [^.:]*?) and your Leader as active\b", r"\1 as active and set your Leader as active", body)
     body = re.sub(r"\b(rest|Rest|K\.O\.) this (Character|Leader) and (up to \w+ of your opponent's)", lambda m: f"{m.group(1)} this {m.group(2)} and {m.group(1).lower() if m.group(1) == 'Rest' else m.group(1)} {m.group(3)}", body)
     for sent in re.split(r"(?<=\.)\s+(?=[A-Z])", body.strip()):
         sent = re.sub(r"^Then,\s*", "", sent)
-        if out and re.match(r"(?:place|put|trash|add) the rest\b|reveal\b|play up to\b", sent, re.I) and re.search(r"look at", out[-1][0], re.I) and not out[-1][1]:
+        # "When your opponent plays a Character, if your Leader has ..., rest ...": the condition leads the step
+        sent = re.sub(r"^When [^,.]+, if ", "If ", sent)
+        if out and re.match(r"(?:place|put|trash|add) the rest\b|reveal\b|play up to\b(?![^.]*\bfrom your (?:hand|trash)\b)", sent, re.I) and re.search(r"look at", out[-1][0], re.I) and not out[-1][1]:
             out[-1] = (out[-1][0] + " " + sent, out[-1][1]); continue
         # "You may <cost>: <effect>" is two steps, the cost first ("You may rest this Character and add 1 card from the
         # top of your Life cards to your hand: ..." is two costs)
         m = re.match(r"((?:[^:]*?,\s*)?you may [^:]+):\s*(.+)$", sent, re.I)
         if m:
-            for p in re.split(r",? and (?=(?:trash|rest|return|place|reveal|turn|add|give|K\.O\.)\b(?! (?:it|them|that|those)\b))", m.group(1)):
+            for p in re.split(r",? and (?=(?:trash|rest|return|place|reveal|turn|add|give)\b(?! (?:it|them|that|those)\b)|K\.O\. (?!(?:it|them|that|those)\b))", m.group(1)):
                 if p.strip(): out.append((p.strip().rstrip(".") + ".", True))
             sent = m.group(2)
         # "Draw 1 card, look at ...": the draw first
-        dm = re.match(r"(draw \w+ cards?),\s*(?:then,\s*)?(look at .+)$", sent, re.I)
+        dm = re.match(r"(draw \w+ cards?|add up to \w+ DON!! cards? from your DON!! deck(?: and rest (?:it|them))?),\s*(?:then,\s*)?(look at .+)$", sent, re.I)
         if dm: out.append((dm.group(1) + ".", False)); sent = dm.group(2)
         if re.search(r"\blook at\b", sent, re.I): out.append((sent, False)); continue
         # "X, then Y", "X and this Character gains Y": two steps
-        parts = [p.strip() for p in re.split(r",? and (?=(?:trash|draw|rest|K\.O\.|give|add|return|set|place|play)\b(?! (?:it|them|that|those)\b))"
-                                             r"|,? and (?=this (?:Character|Leader) gains\b)|, then,? (?=(?:trash|draw|rest|K\.O\.|give|add|return|set|place|play|look)\b)", sent) if p.strip()]
+        # (K.O. has no word boundary after its last dot, so it's matched by the space after it)
+        parts = [p.strip() for p in re.split(r",? and (?=(?:trash|draw|rest|give|add|return|set|place|play)\b(?! (?:it|them|that|those)\b)|K\.O\. (?!(?:it|them|that|those)\b))"
+                                             r"|,? and (?=(?:this|your) (?:Character|Leader) gains\b)|, and (?=you may\b)|,? and,? (?=if\b)"
+                                             r"|,? and then,? (?=(?:(?:trash|draw|rest|give|add|return|set|place|play|look)\b|K\.O\. ))|, then,? (?=(?:(?:trash|draw|rest|give|add|return|set|place|play|look|up to)\b|K\.O\. ))"
+                                             r"|(?:(?<=[Dd]raw \w card)|(?<=[Dd]raw \w cards)),? and ", sent) if p.strip()]
         # "If X, A and B": B only happens when X is so, too
         cm = re.match(r"(?:then,\s*)?(if [^,]+,)\s", parts[0], re.I) if parts else None
-        if cm: parts = parts[:1] + [p if re.match(r"if\b", p, re.I) else cm.group(1) + " " + p for p in parts[1:]]
+        # ("A and, if Y, B": B needs X and Y)
+        if cm: parts = parts[:1] + ["If " + cm.group(1)[3:-1] + " and " + p[3:] if re.match(r"if\b", p, re.I) else cm.group(1) + " " + p for p in parts[1:]]
         out.extend((p.rstrip(".") + ".", False) for p in parts)
     # "Look at 5 cards ...; ... place the rest at the bottom of your deck in any order and trash 1 card from your hand"
     res = []
     for c, pay in out:
-        lm = re.match(r"(.*\blook at\b.*?)(?:,)? and (trash \w+ cards? from your hand)\.?$", c, re.I | re.S) if not pay else None
-        res.extend([(lm.group(1).rstrip(".") + ".", False), (lm.group(2)[0].upper() + lm.group(2)[1:] + ".", False)] if lm else [(c, pay)])
+        lm = re.match(r"(.*\blook at\b.*?)(?:,)? and (trash \w+ cards? from your hand|set up to \w+ of your DON!! cards? as active|play up to \w+ [^.;]*? from your hand)\.?$", c, re.I | re.S) if not pay else None
+        if not lm: res.append((c, pay)); continue
+        # with the look's "If X," in front of the second part too
+        cm = re.match(r"(if [^,;]+,)\s", c, re.I)
+        second = cm.group(1) + " " + lm.group(2) if cm else lm.group(2)[0].upper() + lm.group(2)[1:]
+        res += [(lm.group(1).rstrip(".") + ".", False), (second + ".", False)]
     return res
 
 
@@ -332,8 +374,12 @@ def steps_of(body):
         p = pre.strip()[:-1]
         cut2 = p.rfind(". ")
         out = ([step(c, pay) for c, pay in clauses(p[:cut2 + 1])] if cut2 >= 0 else []) + [step(c, True) for c, _ in clauses(p[cut2 + 2 if cut2 >= 0 else 0:] + ".")]
-    opts = []
-    for o in [x.strip() for x in re.split(r"\s*•\s*", body[m.end():]) if x.strip()][:4]:
+    opts, tail = [], ""
+    bul = [x.strip() for x in re.split(r"\s*•\s*", body[m.end():]) if x.strip()][:4]
+    if bul:
+        tm = re.search(r"(?<=\.)\s+Then,\s*(.+)$", bul[-1])
+        if tm: bul[-1], tail = bul[-1][:tm.start()].strip(), tm.group(1)
+    for o in bul:
         st = [step(c, pay) for c, pay in clauses(o)]
         opts.append({"text": o, "steps": st})
     ch = {"a": "choose", "text": (lead + " choose one.").strip() if re.match(r"(?:if|draw)\b", lead, re.I) else "Choose one.", "opts": opts}
@@ -342,6 +388,7 @@ def steps_of(body):
         out.append(step(re.sub(r",?\s*then,?\s*$", "", lead).strip() + "."))
         ch["text"] = "Choose one."
     out.append(ch)
+    if tail: out += [step(c, pay) for c, pay in clauses(tail)]
     return out
 
 
@@ -352,7 +399,10 @@ def static(body, tags):
     s = {}
     if "Your Turn" in tags: s["turn"] = "own"
     if "Opponent's Turn" in tags: s["turn"] = "opp"
-    m = re.match(r"If (.+?), (?=(?:this|all|your|give)\b)(.+)$", b, re.I)
+    m = re.match(r"if it is your opponent's turn, (.+)$", b, re.I)
+    if m: s["turn"], b = "opp", m.group(1)
+    # the condition stays in its own sentence ("K.O.'d" has dots, but no sentence ends inside it)
+    m = re.match(r"If ((?:[^.]|\.(?=\S))+?), (?=(?:this|all|your|give)\b)(.+)$", b, re.I)
     if m: s["if"], b = m.group(1), m.group(2)
     # "this Character gains [Double Attack]" (kept), "gains [Blocker] and +1000 power", "gains +1000 power and cannot be K.O.'d by effects"
     m = re.match(r"((this (?:Character|Leader)|your Leader) gains )((?:\[[^\]]+\](?:,? and |, )?)+)(.*)$", b, re.I)
@@ -363,7 +413,8 @@ def static(body, tags):
         if not b: return dict(s, to="leader" if m.group(2).lower() == "your leader" else "self") if kw else None
     b = re.sub(r"gains? \[[^\]]+\] and ", "gains ", b)
     b = re.sub(r" and cannot be [^,]+$", "", b)
-    m = re.fullmatch(r"(?:this (?:Character|Leader)) gains ([+\-−]\d+) power(?: and ([+\-−]\d+) cost)?", b, re.I)
+    b = re.sub(r"\bcannot be (?:k\.o\.'d|removed)[^,]*? and (gains?)\b", r"\1", b, flags=re.I)
+    m = re.fullmatch(r"(?:this (?:Character|Leader|card)) gains ([+\-−]\d+) power(?: and ([+\-−]\d+) cost)?", b, re.I)
     if m:
         s.update(to="self", p=sgn(m.group(1)))
         if m.group(2): s["k"] = sgn(m.group(2))
@@ -373,9 +424,10 @@ def static(body, tags):
     m = re.fullmatch(r"give this (?:Character|Leader) ([+\-−]\d+) power", b, re.I)
     if m: return dict(s, to="self", p=sgn(m.group(1)))
     m = re.fullmatch(r"(?:all of )?your (?:(red|green|blue|purple|black|yellow) )?(?:\{([^}]+)\} type )?(Leader and all of your Characters|Leader or Character cards|Characters|Leader)"
-                     r"(?: with a type including \"([^\"]+)\")?(?: with a (?:base )?cost of (\d+)(?: or (less|more))?)?(?: other than this Character)? gains? ([+\-−]\d+) (power|cost)", b, re.I)
+                     r"(?: with a type including \"([^\"]+)\")?(?: with a (?:base )?cost of (\d+)(?: or (less|more))?)?(?: with (\d+) base power( or less)?)?(?: other than this Character)? gains? ([+\-−]\d+) (power|cost)", b, re.I)
     if m:
-        col, ty, kind, tin, kv, kd, v, what = m.groups()
+        col, ty, kind, tin, kv, kd, pv, pd, v, what = m.groups()
+        if pv: s["pmax" if pd else "peq"] = int(pv)
         kind = kind.lower()
         s["to"] = "leader" if kind == "leader" else "all" if kind.startswith("leader") else "chars"
         if col: s["col"] = col.capitalize()
@@ -395,7 +447,8 @@ def sgn(v):
 
 
 def abilities(text, is_trigger=False):
-    text = (text or "").strip()
+    # a misprint on OP17-076
+    text = re.sub(r"\bCharactes\b", "Characters", (text or "").strip())
     if not text or text == "-": return [], False
     # "this Character gains [Blocker]" when a condition holds still makes it a possible blocker
     blocker = bool(re.search(r"\bgains? \[Blocker\]", text))
@@ -428,7 +481,7 @@ def abilities(text, is_trigger=False):
                 out.append(ab)
             continue
         donMinus = 0
-        m = re.match(r"DON!!\s*[−\-](\d+)\s*(?:\([^)]*\))?\s*[:,]\s*", body)
+        m = re.match(r"DON!!\s*[−\-](\d+)\s*(?:\([^)]*\))?\s*[:,]?\s*", body)
         if m: donMinus = int(m.group(1)); body = body[m.end():]
         restDon = 0
         m = re.match(r"([%s])\s*(?:\([^)]*\))?\s*[:,]?\s*" % "".join(CIRCLED), body)
@@ -442,6 +495,21 @@ def abilities(text, is_trigger=False):
         if all(s["a"] == "other" for s in steps): steps = []
         if restDon: steps = [{"a": "restDon", "n": restDon, "pay": True, "text": f"Rest {restDon} of your DON!! cards."}] + (steps or [{"a": "other", "text": body}])
         st = static(body, tags) if set(timings) <= {"yourTurn"} else None
+        # "All of your Characters gain +1 cost. If you have a Character with a cost of 8 or more, this Leader gains +1000
+        # power.": each sentence that is always-on on its own is an ability of its own; the rest stays as the steps
+        more = []
+        sents = re.split(r"(?<=\.)\s+(?=[A-Z])|,? and (?=if it is your opponent's turn, )", body) if st is None and set(timings) <= {"yourTurn"} else []
+        if len(sents) > 1 and any(static(x, tags) for x in sents):
+            more = [static(x, tags) for x in sents if static(x, tags)]
+            left = " ".join(x for x in sents if not static(x, tags))
+            steps = steps_of(left) if left else []
+            if steps and all(s["a"] == "other" for s in steps): steps = []
+            if restDon: steps = [{"a": "restDon", "n": restDon, "pay": True, "text": f"Rest {restDon} of your DON!! cards."}] + (steps or [{"a": "other", "text": left}])
+            # with nothing else to do by hand, the first always-on sentence is this ability's own
+            if not left: st = more.pop(0)
+        # "... instead of drawing 1 card", "If ... would be removed ..., you may ... instead": a replacement the player
+        # picks, so the whole ability is done by hand
+        if re.search(r"\binstead\b", body, re.I): steps = []
         # "All Character cards in your hand without a Counter have a +1000 Counter" (while this card is on the field)
         hc = None if timings else re.match(r"all (?:of your )?(?:\{([^}]+)\} type )?character cards (?:in your hand )?without a counter have a \+(\d+) counter", body, re.I)
         if hc: steps = []
@@ -453,6 +521,7 @@ def abilities(text, is_trigger=False):
             if steps: ab["steps"] = steps
             if st: ab["s"] = st
             out.append(ab)
+            for m2 in more: out.append(dict({"t": t, "text": raw, "s": m2}, **({"don": don} if don else {})))
     return out, blocker
 
 
