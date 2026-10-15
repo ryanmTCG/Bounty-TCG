@@ -975,6 +975,10 @@ select.sbtn{font-family:var(--slab)}
 .pfh .rpacts{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
 .rprow .pfres{font-size:13px}
 #rep-msg{min-height:120px}
+.dsimg{margin:0 0 10px}
+.dsimg img{display:block;width:100%;height:auto;border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.45)}
+.dsrow{gap:8px;align-items:center}
+.dsrow input{flex:1 1 240px;font-family:ui-monospace,monospace;font-size:13px}
 .replist{display:grid;gap:8px}
 .repr{flex-wrap:wrap;align-items:flex-start}
 .repr .pfinfo{flex:1 1 300px;min-width:0}
@@ -1152,6 +1156,7 @@ body.watching .turnbar,body.watching .tbopts{opacity:.4}
     <select id="bd-load" aria-label="Load a saved deck"><option value="">Load saved deck…</option></select>
     <button class="btn" data-do="bdsave" type="button">Save deck</button>
     <button class="btn" data-do="bdcopy" type="button">Copy list</button>
+    <button class="btn" data-do="bdshare" type="button" title="A deck code and a picture of the deck to share">Share</button>
     <button class="btn" data-do="bdclear" type="button" title="Empty the builder and start a fresh deck">Clear deck</button>
     <button class="btn" data-do="carddata" type="button">Card data</button>
     <button class="btn" data-do="reader" type="button">Card reader</button>
@@ -1542,7 +1547,7 @@ function oppModel(x){
     ox: Array.isArray(x.ox) ? [Math.max(-20000, Math.min(20000, Math.round(+x.ox[0] || 0))), Math.max(-10, Math.min(10, Math.round(+x.ox[1] || 0)))] : null,
     mf: x.mf && typeof x.mf === "object" && /^[A-Z0-9]{1,8}-\d{2,4}$/.test(x.mf.c) ? {c: x.mf.c, a: num(x.mf.a, 30), s: num(x.mf.s, 30), n: num(x.mf.n, 1e6)} : null,
     lu: (Array.isArray(x.lu) ? x.lu : []).slice(0, 12).filter(t => Array.isArray(t) && Number.isInteger(t[0]) && t[0] >= 0 && t[0] < 60).map(t => [t[0], clean(t[1], 16)]),
-    lf: num(x.lf, 60), kc: num(x.kc, 999), ns: x.ns ? 1 : 0, rb: x.rb == null ? null : num(x.rb, 1e8), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
+    lf: num(x.lf, 60), kc: num(x.kc, 999), ns: x.ns ? 1 : 0, dl: typeof x.dl === "string" && x.dl.length <= 1300 && deckUnpack(x.dl) ? x.dl : "", rb: x.rb == null ? null : num(x.rb, 1e8), dd: num(x.dd, 20), da: num(x.da, 20), dr: num(x.dr, 20), dk: num(x.dk, 200), h: num(x.h, 200),
     tr: (Array.isArray(x.tr) ? x.tr : []).slice(0, 80).map(t => Array.isArray(t) ? [clean(t[0], 16), clean(t[1], 24)] : ["", ""])
   };
 }
@@ -1558,6 +1563,8 @@ function pubFull(){
   if (S.mf) o.mf = S.mf;
   if (!shareOn()) o.ns = 1;
   if (S.ranked) o.rb = RANK.b;
+  // once the match is over, your decklist for your opponent to see, unless you turned sharing off
+  if ((S.conceded || (oppM && oppM.cd)) && shareOn() && !PR && lastCfg) { const d = deckPack(lastCfg); if (d) o.dl = d; }
   const lu = S.life.map((c, i) => c.up ? [i, c.c] : null).filter(Boolean); if (lu.length) o.lu = lu;
   return o;
 }
@@ -1568,6 +1575,7 @@ function doPublish(){
   matchSave();
   const p = S.phase === "none" ? {p:0, nick:S.nick} : pubFull();
   if (p.tr && JSON.stringify(p).length > 3400) p.tr = p.tr.map(t => [t[0]]);
+  if (p.dl && JSON.stringify(p).length > 3400) p.tr = [];
   R.presence(p).catch(() => {});
   if (!PR) recMine = p;
   recTick();
@@ -2068,7 +2076,7 @@ function openProfile(focusNick){
       : `<div class="lbempty"><b>No cards played yet</b>Cards you play from your hand in online matches are counted here.</div>`}
     <p class="hint">Counts online matches against another player, starting now. Test games don't count.</p>
     <h3 class="rkh">Sharing</h3>
-    <label class="pfshare"><input type="checkbox" id="pf-share"${shareOn() ? " checked" : ""}> Share my finished online matches on the Meta page: my Leader, my opponent's Leader, the result, my own decklist and a replay of both boards (no hands), with my nickname.${acctUid() ? "" : " This needs an account, so nothing is shared until you sign in."}</label>
+    <label class="pfshare"><input type="checkbox" id="pf-share"${shareOn() ? " checked" : ""}> Share my finished online matches on the Meta page: my Leader, my opponent's Leader, the result, my own decklist and a replay of both boards (no hands), with my nickname. My opponent also sees my decklist when a match ends.${acctUid() ? "" : " The Meta page needs an account, so your matches aren't shared there until you sign in."}</label>
     <div class="row end"><span id="pf-admin"></span><button class="btn" data-do="report" type="button">Report a problem</button><button class="btn" data-do="home" type="button">Back</button></div>`);
   reportsAdmin().then(ok => { const a = $("#pf-admin"); if (ok && a && modal && modal.type === "profile") a.innerHTML = '<button class="btn" data-do="reports" type="button">Bug reports</button>'; });
   { const ps = $("#pf-share"); if (ps) ps.addEventListener("change", () => { STATS.ns = ps.checked ? 0 : 1; statsSave(); toast(ps.checked ? "Your finished online matches will be shared on the Meta page." : "Your matches won't be shared from now on."); }); }
@@ -3363,8 +3371,9 @@ function render(){
   { const k = oppM && oppM.ak ? oppM.ak.s + ">" + oppM.ak.t : ""; if (k !== oppAtkKey) { oppAtkKey = k; if (k) { offerOppAttack(); const ak = oppM.ak; setTimeout(() => fxAttack(`#opp [data-opp="${ak.s}"]`, `#me [data-src="${ak.t}"]`), 0); } } }
   const cdMsg = oppM && oppM.cd ? (oppM.cdw ? (oppM.dk === 0 ? `${oppM.nick} has no cards left in their deck. You win!` : `${oppM.nick} took damage at 0 Life. You win!`) : `${oppM.nick} conceded. You win!`) : "";
   const res = S.conceded ? (S.lostDeck ? "Your deck is empty. You lose!" : S.lostDmg ? "You took damage at 0 Life. You lose!" : "You conceded the match.") : (oppM && oppM.cd ? esc(cdMsg) : "");
-  if (oppM && oppM.cd && !oppCdSeen) { oppCdSeen = true; toast(cdMsg); } else if (!(oppM && oppM.cd)) oppCdSeen = false;
-  const ch = res ? `<span>\u2691 ${res}</span>${REC && REC.k === (recS0() || {}).rid && REC.fr.length >= 6 ? '<button class="btn" data-do="rpwatch" type="button">Watch replay</button>' : ""}` : S.phase === "none" ? "" : combatHTML(), midEl = $("#mid");
+  if (oppM && oppM.cd && !oppCdSeen) { oppCdSeen = true; toast(cdMsg); if (shareOn() && !PR) publish(); } else if (!(oppM && oppM.cd)) oppCdSeen = false;   // publishing once more sends your list to the opponent
+  if (res && oppM && oppM.dl && !PR) S.oppDl = {d: oppM.dl, n: oppM.nick};
+  const ch = res ? `<span>\u2691 ${res}</span>${REC && REC.k === (recS0() || {}).rid && REC.fr.length >= 6 ? '<button class="btn" data-do="rpwatch" type="button">Watch replay</button>' : ""}${S.oppDl ? '<button class="btn" data-do="oppdeck" type="button">See their deck</button>' : ""}` : S.phase === "none" ? "" : combatHTML(), midEl = $("#mid");
   midEl.classList.toggle("combat", !!ch);
   if (ch) midEl.innerHTML = ch; else midEl.textContent = mid;
   markCombat(); updTimers(); fxWatch(); markTargets(); markPlayable(); markOppNew(); quickResolve(); renderCoach();
@@ -3579,6 +3588,7 @@ function openSetup(opts){
   odeckMeta();
 }
 function readDeckFields(){
+  { const d = deckFromCode($("#f-deck").value); if (d) { $("#f-deck").value = d.deck; $("#f-leader").value = d.l + " " + (nameOf(d.l) || ""); } }
   const sp = splitLeader($("#f-deck").value), ld = $("#f-leader").value.trim();
   if (sp.leader) { $("#f-deck").value = sp.deck; if (!ld) $("#f-leader").value = sp.leader.code + (sp.leader.name ? " " + sp.leader.name : ""); }
   return {
@@ -6548,6 +6558,13 @@ function doAction(a){
   if (a.startsWith("rpfile:")) { rpDownload(a.slice(7)); return; }
   if (a.startsWith("rpshare:")) { rpShare(a.slice(8)); return; }
   if (a === "report") { openReport(); return; }
+  if (a === "bdshare") { openDeckShare(); return; }
+  if (a === "dssave") { dsSave(); return; }
+  if (a === "dscopyimg") { dsCopyImg(); return; }
+  if (a === "dscode") { dsCopyCode(); return; }
+  if (a === "oppdeck") { openOppDeck(); return; }
+  if (a === "oppdeckopen") { oppDeckOpen(); return; }
+  if (a === "oppdeckcopy") { oppDeckCopy(); return; }
   if (a === "repsend") { reportSend(); return; }
   if (a === "repsave") { reportSave(); return; }
   if (a === "reports") { openReports(); return; }
@@ -6636,7 +6653,7 @@ function doAction(a){
     case "bdmore": bdShow += 60; renderLib(); break;
     case "bdaddgo": bdAddByNumber(); break;
     case "bdclear": BD.cards = new Map(); BD.leader = null; BD.life = 5; $("#bd-name").value = ""; $("#bd-life").value = 5; { const ld = $("#bd-load"); if (ld) ld.value = ""; } renderBdDeck(); renderLib(); toast("Deck cleared. Ready for a new one."); break;
-    case "bdimport": { const txt = $("#bd-paste").value; if (!parseLines(txt).length) { toast("Paste a decklist first."); break; } learnNames(txt); const had = BD.leader && BD.leader.c; bdImport(txt); renderBdDeck(); renderLib(); toast(`Deck replaced from your list${BD.leader && BD.leader.c !== had ? `, with ${BD.leader.c} as Leader` : ""}. ${bdTotal()} cards.`); break; }
+    case "bdimport": { const txt = codeOrList($("#bd-paste").value); if (!parseLines(txt).length) { toast("Paste a decklist first."); break; } learnNames(txt); const had = BD.leader && BD.leader.c; bdImport(txt); renderBdDeck(); renderLib(); toast(`Deck replaced from your list${BD.leader && BD.leader.c !== had ? `, with ${BD.leader.c} as Leader` : ""}. ${bdTotal()} cards.`); break; }
     case "bdcopy":
       try { navigator.clipboard.writeText(deckExport()).then(() => toast("Decklist copied."), () => toast("Open Paste or copy a decklist and copy the text there.")); }
       catch (err) { toast("Open Paste or copy a decklist and copy the text there."); }
@@ -7402,7 +7419,115 @@ const bdLeaderStr = () => BD.leader ? BD.leader.c + (BD.leader.n ? " " + BD.lead
 function deckExport(){
   return (BD.leader ? `1x${BD.leader.c}\n` : "") + Array.from(BD.cards.keys()).sort(natural).map(k => `${BD.cards.get(k).count}x${k}`).join("\n");
 }
+// a deck code: "BTCG1-" and the packed list (deckPack) in URL-safe base64, one line to paste anywhere
+const DECKCODE_RE = /^\s*BTCG1-([A-Za-z0-9_-]{8,2000})\s*$/;
+const deckCode = v => { const d = deckPack(v); return d ? "BTCG1-" + btoa(d).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "") : ""; };
+function deckFromCode(txt){
+  const m = DECKCODE_RE.exec(String(txt || "")); if (!m) return null;
+  try { return deckUnpack(atob(m[1].replace(/-/g, "+").replace(/_/g, "/"))); } catch (e) { return null; }
+}
+// a pasted list or deck code as "Leader: X" and lines
+const codeOrList = txt => { const d = deckFromCode(txt); return d ? "Leader: " + d.l + "\n" + d.deck : txt; };
+// the shared deck: the Deck editor's, or a packed list
+function deckShareOf(){ return {leader: bdLeaderStr(), deck: bdText(), name: clean(($("#bd-name") || {}).value, 40)}; }
+const DS_TYPE = {Character: 0, Event: 1, Stage: 2};
+async function deckCanvas(dk, title){
+  const ty = c => { const t = (CARDDB.get(c) || {}).t; return t in DS_TYPE ? DS_TYPE[t] : 3; }, cost = c => (CARDDB.get(c) || {}).k || 0;
+  const cards = dk.rows.slice().sort((a, b) => ty(a[0]) - ty(b[0]) || cost(a[0]) - cost(b[0]) || natural(a[0], b[0]));
+  const W = 1400, PAD = 28, LW = 230, LH = 322, TW = 124, TH = 174, GAP = 12, top = 104, x0 = PAD + LW + 28;
+  const cols = Math.max(1, Math.floor((W - x0 - PAD + GAP) / (TW + GAP))), nr = Math.ceil(cards.length / cols);
+  const H = Math.max(top + LH + 70, top + nr * (TH + GAP) + 58);
+  try { await Promise.all(["28px 'Alfa Slab One'", "600 16px 'Barlow Semi Condensed'"].map(f => document.fonts.load(f))); } catch (e) {}
+  const load = c => new Promise(res => { const id = ART.get(c); if (!id) return res(null); const im = new Image(), t = setTimeout(() => res(null), 4000); im.onload = () => { clearTimeout(t); res(im); }; im.onerror = () => { clearTimeout(t); res(null); }; im.src = "/_blob/" + id; });
+  const imgs = new Map(await Promise.all([dk.l, ...cards.map(r => r[0])].map(async c => [c, await load(c)])));
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const g = cv.getContext("2d");
+  const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, "#14394A"); bg.addColorStop(1, "#08202B");
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  g.strokeStyle = "#F2B84B"; g.lineWidth = 6; g.strokeRect(3, 3, W - 6, H - 6);
+  const rr = (x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
+  const wrap = (t, x, y, w, lh, max) => { const words = String(t).split(" "); let line = "", n = 0; for (const wd of words) { const tt = line ? line + " " + wd : wd; if (g.measureText(tt).width > w && line) { g.fillText(line, x, y + n * lh); line = wd; if (++n >= max) return; } else line = tt; } if (line) g.fillText(line, x, y + n * lh); };
+  const card = (c, x, y, w, h) => {
+    const im = imgs.get(c), e = CARDDB.get(c) || {}, sc = w / TW;
+    g.save(); rr(x, y, w, h, 10 * sc); g.clip();
+    if (im) g.drawImage(im, x, y, w, h);
+    else {
+      const cg = g.createLinearGradient(x, y, x, y + h); cg.addColorStop(0, colorGroup(c).hex); cg.addColorStop(1, "#1B2B33");
+      g.fillStyle = cg; g.fillRect(x, y, w, h); g.fillStyle = "rgba(255,255,255,.92)"; g.fillRect(x + 6 * sc, y + 42 * sc, w - 12 * sc, h - 50 * sc);
+      g.fillStyle = "#1B1B1B"; g.font = `600 ${Math.round(15 * sc)}px 'Barlow Semi Condensed', sans-serif`; g.fillText(c, x + 12 * sc, y + 62 * sc);
+      g.font = `${Math.round(14 * sc)}px 'Barlow Semi Condensed', sans-serif`; wrap(nameOf(c) || "", x + 12 * sc, y + 82 * sc, w - 24 * sc, 16 * sc, 4);
+      if (e.t !== "Leader" && e.k != null) { g.fillStyle = "#1B1B1B"; g.beginPath(); g.arc(x + 20 * sc, y + 21 * sc, 15 * sc, 0, 7); g.fill(); g.fillStyle = "#FFF"; g.font = `600 ${Math.round(18 * sc)}px 'Barlow Semi Condensed', sans-serif`; g.textAlign = "center"; g.fillText(String(e.k), x + 20 * sc, y + 27 * sc); g.textAlign = "left"; }
+    }
+    g.restore(); g.strokeStyle = "rgba(0,0,0,.65)"; g.lineWidth = 2; rr(x, y, w, h, 10 * sc); g.stroke();
+  };
+  const L = CARDDB.get(dk.l) || {}, ill = deckIllegal({leader: dk.l, deck: dk.deck}, "std");
+  g.fillStyle = "#F2B84B"; g.font = "30px 'Alfa Slab One', Georgia, serif"; g.fillText(clean(title, 40) || `${nameOf(dk.l) || dk.l} deck`, PAD, 50);
+  g.fillStyle = "#F1DDB0"; g.font = "600 18px 'Barlow Semi Condensed', sans-serif";
+  g.fillText(`Leader ${dk.l} ${nameOf(dk.l) || ""}${L.c ? " · " + L.c : ""} · ${dk.n} cards · ${ill.length ? "not legal in Standard" : "legal in Standard"}`, PAD, 80);
+  card(dk.l, PAD, top, LW, LH);
+  cards.forEach(([c, n], i) => {
+    const x = x0 + (i % cols) * (TW + GAP), y = top + Math.floor(i / cols) * (TH + GAP);
+    card(c, x, y, TW, TH);
+    g.fillStyle = "#F2B84B"; g.beginPath(); g.arc(x + TW - 18, y + TH - 18, 17, 0, 7); g.fill(); g.strokeStyle = "#2A1D00"; g.lineWidth = 2; g.stroke();
+    g.fillStyle = "#2A1D00"; g.font = "600 20px 'Barlow Semi Condensed', sans-serif"; g.textAlign = "center"; g.fillText("×" + n, x + TW - 18, y + TH - 11); g.textAlign = "left";
+  });
+  const cnt = {0: 0, 1: 0, 2: 0}, ctr = {1000: 0, 2000: 0};
+  for (const [c, n] of dk.rows) { const t = ty(c); if (t in cnt) cnt[t] += n; const v = (CARDDB.get(c) || {}).ctr; if (v in ctr) ctr[v] += n; }
+  g.fillStyle = "#F1DDB0"; g.font = "600 17px 'Barlow Semi Condensed', sans-serif";
+  g.fillText(`${cnt[0]} Characters · ${cnt[1]} Events · ${cnt[2]} Stages · Counters: ${ctr[1000]} × 1000, ${ctr[2000]} × 2000`, PAD, H - 22);
+  g.textAlign = "right"; g.fillStyle = "#F2B84B"; g.font = "20px 'Alfa Slab One', Georgia, serif"; g.fillText("Bounty TCG", W - PAD, H - 20); g.textAlign = "left";
+  return cv;
+}
+let DS = null;   // the deck being shared: {dk, name, cv}
+async function openDeckShare(){
+  const v = deckShareOf(), d = deckPack(v), dk = deckUnpack(d);
+  if (!dk || !dk.rows.length) { toast("Pick a Leader and add cards first."); return; }
+  DS = {dk, name: v.name, code: deckCode(v), cv: null};
+  modal = {type: "deckshare"};
+  showModal(`<h2>Share this deck</h2>
+    <div class="dsimg"><div class="lbempty"><b>Drawing the picture…</b></div></div>
+    <label for="ds-code">Deck code</label>
+    <div class="row dsrow"><input type="text" id="ds-code" readonly value="${esc(DS.code)}" spellcheck="false"><button class="btn" data-do="dscode" type="button">Copy code</button></div>
+    <p class="hint">Anyone with Bounty TCG can paste the code in the Deck editor (Paste a decklist, then Replace deck with this list) or in the decklist box when they sit down. Copy list gives the usual text other simulators and deck sites take.</p>
+    <div class="row end"><button class="btn" data-do="closemodal" type="button">Back</button><button class="btn" data-do="bdcopy" type="button">Copy list</button><button class="btn" data-do="dscopyimg" type="button">Copy picture</button><button class="btn pri" data-do="dssave" type="button">Save picture</button></div>`);
+  const cv = await deckCanvas(dk, v.name);
+  if (!DS || !modal || modal.type !== "deckshare") return;
+  DS.cv = cv;
+  const box = $(".dsimg"); if (box) { box.innerHTML = ""; const im = new Image(); im.alt = "Picture of the deck"; im.id = "ds-img"; im.src = cv.toDataURL("image/png"); box.appendChild(im); }
+}
+const dsName = () => ((DS && (DS.name || nameOf(DS.dk.l) || DS.dk.l)) || "deck").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "deck";
+function dsSave(){
+  if (!DS || !DS.cv) { toast("The picture isn't ready yet."); return; }
+  DS.cv.toBlob(b => { if (!b) { toast("Couldn't make the picture."); return; } const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `bounty-${dsName()}.png`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000); toast("Picture saved."); }, "image/png");
+}
+function dsCopyImg(){
+  if (!DS || !DS.cv) { toast("The picture isn't ready yet."); return; }
+  DS.cv.toBlob(b => { try { navigator.clipboard.write([new ClipboardItem({"image/png": b})]).then(() => toast("Picture copied. Paste it into a chat."), () => toast("Couldn't copy the picture. Save it instead.")); } catch (e) { toast("Couldn't copy the picture. Save it instead."); } }, "image/png");
+}
+function dsCopyCode(){
+  if (!DS) return;
+  try { navigator.clipboard.writeText(DS.code).then(() => toast("Deck code copied."), () => toast("Couldn't copy. Select the code and copy it.")); } catch (e) { toast("Couldn't copy. Select the code and copy it."); }
+}
+// the opponent's decklist after a match
+function openOppDeck(){
+  const o = S.oppDl, dk = o && deckUnpack(o.d); if (!dk) return;
+  modal = {type: "oppdeck"};
+  showModal(`<h2>${esc(o.n)}'s deck</h2>
+    <p class="hint">${esc(o.n)} shared the deck they played, as they do after every match unless they turn sharing off in Profile. ${dk.n} cards.</p>
+    ${tourDeckHTML(o.d)}
+    <div class="row end"><button class="btn" data-do="closemodal" type="button">Back to table</button><button class="btn" data-do="oppdeckcopy" type="button">Copy list</button><button class="btn pri" data-do="oppdeckopen" type="button">Open in the Deck editor</button></div>`);
+}
+function oppDeckOpen(){
+  const dk = S.oppDl && deckUnpack(S.oppDl.d); if (!dk) return;
+  closeModal(); openBuilder(); bdImport("Leader: " + dk.l + "\n" + dk.deck); renderBdDeck(); renderLib();
+  toast(`Loaded ${S.oppDl.n}'s ${nameOf(dk.l) || dk.l} list into the Deck editor. Save it to keep it.`);
+}
+function oppDeckCopy(){
+  const dk = S.oppDl && deckUnpack(S.oppDl.d); if (!dk) return;
+  try { navigator.clipboard.writeText("1x" + dk.l + "\n" + dk.deck).then(() => toast("List copied."), () => toast("Couldn't copy the list.")); } catch (e) { toast("Couldn't copy the list."); }
+}
 function bdImport(txt){
+  txt = codeOrList(txt);
   BD.cards = new Map();
   const sp = splitLeader(txt);
   if (sp.leader) BD.leader = {c: sp.leader.code, n: sp.leader.name || nameOf(sp.leader.code) || ""};
