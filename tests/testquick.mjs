@@ -39,6 +39,23 @@ await B.page.evaluate(() => openQuick()); await wait(2500);
 await B.page.click('[data-do="qkfind"]');
 check(await until(async () => (await A.page.evaluate(() => !!oppM && S.quick && S.pubt && !S.ranked)) && (await B.page.evaluate(() => !!oppM && roomCode.startsWith("quick-")))), "the next player is paired into the same public table");
 check(await until(async () => /0 in the queue · 2 in a match/.test(await line(2))), "both show as in a match");
+// the match shows under Watch a match, and C can watch it
+check(await until(async () => /Ryan.*vs.*Bea|Bea.*vs.*Ryan/.test(await C.page.evaluate(() => (document.querySelector("#live-list") || {}).innerText || ""))), "the quick match is listed to watch, with both players");
+await C.page.screenshot({ path: OUT + "/live.png" });
+// quick chat: Bea sees Ryan's message, then mutes him
+const blog = () => B.page.evaluate(() => LOG.filter(l => /says/.test(l.m) && !l.mine).length);
+await A.page.evaluate(() => { qcLast = 0; quickChat(0); });
+check(await until(async () => await blog() === 1), "a quick chat message reaches the opponent");
+await B.page.evaluate(() => { qcMenu(); const it = [...document.querySelectorAll("#menu button")].find(b => /Mute their messages/.test(b.textContent)); it.click(); });
+await A.page.evaluate(() => { qcLast = 0; quickChat(QC.length - 1); });
+await wait(2500);
+check(await blog() === 1 && await B.page.evaluate(() => qcMute), "muting stops their messages for the match");
+await C.page.click('#live-list [data-do^="livewatch:"]');
+check(await until(() => C.page.evaluate(() => !!WATCH && !!WATCH.a && !!WATCH.b && document.body.classList.contains("watching"))), "watching shows both boards");
+check(await C.page.evaluate(() => !(WATCH.a.hd || WATCH.b.hd)), "a watcher never gets a hand");
+await C.page.screenshot({ path: OUT + "/watching.png" });
+check(await A.page.evaluate(() => !!oppM && oppM.nick === "Bea"), "the watcher doesn't take a seat");
+await C.page.evaluate(() => stopWatch()); await wait(800);
 await C.page.evaluate(() => findMatch(1));
 await wait(500);
 const D = await launch("d");

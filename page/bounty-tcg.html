@@ -1364,7 +1364,7 @@ async function leaveRoom(){
   if (WATCH) { rpStop(); RPV = null; WATCH = null; document.body.classList.remove("watching", "replaying"); $("#mid").classList.remove("rpmid"); }
   rankForfeit(); matchForget();
   if (R) { try { await R.leave(); } catch (e) {} }
-  R = null; oppPeer = null; oppM = null; PR = null; TUT = null; myQc = null; qcSeen = null;
+  R = null; oppPeer = null; oppM = null; PR = null; TUT = null; myQc = null; qcSeen = null; qcMute = false;
   if (myChal) { myChal = null; clearTimeout(chalT); }
   if (myLobby) { myLobby = null; lobbyUpdate(); }
 }
@@ -1504,8 +1504,8 @@ function fxWatch(){
 // a log line about a K.O., from either side
 function fxLogLine(m, mine){ if (/was K\.O\.'d/.test(m)) setTimeout(() => { snd("ko"); fxFloat($(mine ? "#me" : "#opp"), "K.O.!", "ko"); }, 30); }
 // ---------- quick chat: a fixed set of phrases and emotes, so there's nothing to moderate ----------
-const QC = ["\uD83D\uDC4B Hi, good luck!", "\uD83D\uDC4D Nice play!", "\uD83E\uDD14 Thinking\u2026", "\u23F3 One moment, please", "\u2705 Your turn", "\uD83D\uDE4F Thanks!", "\uD83D\uDE05 Oops!", "\uD83C\uDF89 Good game!", "\uD83D\uDE02", "\uD83D\uDE2E", "\uD83D\uDD25", "\uD83D\uDE24"];
-let myQc = null, qcLast = 0, qcSeen = null; const qcBubT = {};
+const QC = ["\uD83D\uDC4B Hi, good luck!", "\uD83D\uDC4D Nice play!", "\uD83E\uDD14 Thinking\u2026", "\u23F3 One moment, please", "\u2705 Your turn", "\uD83D\uDE4F Thanks!", "\uD83D\uDE05 Oops!", "\uD83C\uDF89 Good game!", "\uD83D\uDE02", "\uD83D\uDE2E", "\uD83D\uDD25", "\uD83D\uDE24", "\uD83D\uDC4F Well played!", "\uD83D\uDE2C Close one!", "\u2694\uFE0F Let's go!", "\uD83D\uDE0E", "\uD83D\uDE2D"];
+let myQc = null, qcLast = 0, qcSeen = null, qcMute = false; const qcBubT = {};
 function quickChat(k){
   if (!R || PR || !QC[k]) return;
   const now = Date.now(); if (now - qcLast < 1500) { toast("Give it a second before the next one."); return; }
@@ -1515,7 +1515,7 @@ function quickChat(k){
 }
 function qcMenu(){
   const btn = $("#qcbtn"); if (!btn) return; const r = btn.getBoundingClientRect();
-  showMenu("Quick chat", QC.map((t, k) => [t, () => quickChat(k)]), r.left, r.top);
+  showMenu("Quick chat", QC.map((t, k) => [t, () => quickChat(k)]).concat([[qcMute ? "\uD83D\uDD0A Show their messages again" : "\uD83D\uDD07 Mute their messages", () => { qcMute = !qcMute; toast(qcMute ? `You won't see ${oppM ? oppM.nick + "'s" : "their"} messages this match.` : "Their messages show again."); }]]), r.left, r.top);
   const m = $("#menu"); if (m) m.style.top = Math.max(8, r.top - m.getBoundingClientRect().height - 6) + "px";
 }
 function qcBubble(opp, text){
@@ -1534,7 +1534,7 @@ function qcBubble(opp, text){
 function qcCheck(){
   const id = oppM ? (oppM.qc ? oppM.qc.id : 0) : null;
   if (id === null || id === qcSeen) return;
-  if (qcSeen !== null && id) { snd("chat"); qcBubble(true, QC[oppM.qc.k]); LOG.push({who: oppM.nick, mine: false, m: `says \u201C${QC[oppM.qc.k]}\u201D`}); renderLog(); }
+  if (qcSeen !== null && id && !qcMute) { snd("chat"); qcBubble(true, QC[oppM.qc.k]); LOG.push({who: oppM.nick, mine: false, m: `says \u201C${QC[oppM.qc.k]}\u201D`}); renderLog(); }
   qcSeen = id;
 }
 function oppModel(x){
@@ -1910,10 +1910,28 @@ function queueCounts(k){
   const play = LBV.peers.filter(p => p && p.kind === "viewer" && p.presence && p.presence.st === "match" && p.presence.mk === mk).length;
   return {wait, play};
 }
+// matches anyone can watch: public, quick and ranked tables, one row per table with both players
+function liveMatches(){
+  const m = new Map();
+  for (const p of LBV.peers) {
+    const x = p && !p.isMe && p.kind === "viewer" && p.presence; if (!x || x.st !== "match" || typeof x.pw !== "string" || !/^[a-z0-9][a-z0-9_.-]{2,39}$/.test(x.pw)) continue;
+    const row = m.get(x.pw) || {room: x.pw, k: x.mk === "r" ? "Ranked" : x.mk === "q" ? "Quick match" : /^tour-/.test(x.pw) ? "Tournament" : "Lobby", pl: []};
+    if (row.pl.length < 2) row.pl.push({nk: clean(x.nk, 20) || "Player", ld: CARD_RE.test(x.ld || "") ? x.ld : ""});
+    m.set(x.pw, row);
+  }
+  return Array.from(m.values()).sort((a, b) => (b.k === "Ranked") - (a.k === "Ranked") || b.pl.length - a.pl.length).slice(0, 20);
+}
+function renderLive(){
+  const el = $("#live-list"); if (!el) return;
+  const rows = liveMatches();
+  el.innerHTML = rows.length ? rows.map((r, i) => `<div class="frrow on"><span class="dot on"></span><div class="frinfo"><b>${r.pl.map(p => esc(p.nk) + (p.ld ? ` (${esc(nameOf(p.ld) || p.ld)})` : "")).join(" vs ")}</b><small>${esc(r.k)}</small></div><span class="sp"></span><button class="btn" data-do="livewatch:${esc(r.room)}" type="button">Watch</button></div>`).join("")
+    : `<div class="lbempty"><b>No matches to watch right now</b>Ranked, quick and lobby matches show up here while they're played.</div>`;
+}
 const queueLine = k => { const q = queueCounts(k); return `<span class="dot${q.wait ? " on" : ""}"></span>${q.wait} in the queue · ${q.play} in a match`; };
 function rankedCount(){
   if (LBV.err) { for (const e of document.querySelectorAll(".lbcount[data-q]")) e.textContent = ""; return; }
   for (const e of document.querySelectorAll(".lbcount[data-q]")) e.innerHTML = queueLine(+e.dataset.q);
+  renderLive();
 }
 function openQuick(){
   modal = {type: "quick"};
@@ -1923,6 +1941,9 @@ function openQuick(){
     <div class="rkdeck">Your deck: ${ld ? `<b>${esc(ld.code)} ${esc(ld.name || nameOf(ld.code) || "")}</b>, ${n} cards` : "<b>none picked yet</b>"} <button class="linkbtn" data-do="homebuilder" type="button">Change it in the Deck editor</button>${bad ? `<div class="hint">${esc(bad)}</div>` : ""}</div>
     <div class="qrow"><div><b>Quick match</b><span class="lbcount" data-q="2"></span></div><button class="btn pri" data-do="qkfind" type="button">Find a quick match</button></div>
     <div class="qrow"><div><b>Ranked</b><span class="lbcount" data-q="1"></span></div><button class="btn" data-do="rkfind" type="button">Find a ranked match</button></div>
+    <h3 class="rkh">Watch a match</h3>
+    <p class="hint">You see both boards as they're played, never anyone's hand.</p>
+    <div class="frlist" id="live-list"><div class="lbempty"><b>Looking for matches…</b></div></div>
     <div class="row end">${S.phase === "none" ? '<button class="btn" data-do="homeplay" type="button">Back</button>' : '<button class="btn" data-do="closemodal" type="button">Back to table</button>'}</div>`);
   const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
   $("#modal").classList.add("homebg", "lobpage");
@@ -2628,7 +2649,7 @@ function onlineMap(){
   const m = new Map();
   for (const p of FRV.peers) {
     if (!p || p.isMe || !p.presence || !FC_RE.test(p.presence.fc) || p.presence.fc === STATS.fc) continue;
-    m.set(p.presence.fc, {nk: clean(p.presence.nk, 20) || "Player", st: ST[p.presence.st] ? p.presence.st : "home", w: typeof p.presence.w === "string" && /^[A-Za-z0-9-]{3,40}$/.test(p.presence.w) ? p.presence.w : ""});
+    m.set(p.presence.fc, {nk: clean(p.presence.nk, 20) || "Player", st: ST[p.presence.st] ? p.presence.st : "home", w: [p.presence.w, p.presence.pw].find(w => typeof w === "string" && /^[A-Za-z0-9-]{3,40}$/.test(w)) || ""});
   }
   return m;
 }
@@ -3289,7 +3310,7 @@ function renderLobbies(){
 }
 async function lobbyUpdate(){
   const lb = myLobby && R && roomCode === myLobby.c ? {c: myLobby.c, n: myLobby.n, h: S.nick || "Player", l: S.leader && S.leader.card ? S.leader.card.c : "", f: myLobby.f, r: myLobby.r === 2 ? 2 : myLobby.r ? 1 : 0, s: oppPeer || (S.phase !== "wait" && S.phase !== "roll") ? 2 : 1, t: myLobby.t} : null;
-  const pres = {lb, fc: myFC(), nk: R && !PR && S.phase !== "none" && S.nick ? clean(S.nick, 20) : myNick(), st: myStatus(), mk: R && !PR && S.phase !== "none" ? (S.ranked ? "r" : S.quick ? "q" : "") : "", w: myStatus() === "match" && !S.ranked && !S.pubt && roomCode ? roomCode : "", ch: myChal ? {to: myChal.to, r: myChal.r, id: myChal.id} : null, dc: myDc,
+  const pres = {lb, fc: myFC(), nk: R && !PR && S.phase !== "none" && S.nick ? clean(S.nick, 20) : myNick(), st: myStatus(), mk: R && !PR && S.phase !== "none" ? (S.ranked ? "r" : S.quick ? "q" : "") : "", w: myStatus() === "match" && !S.ranked && !S.pubt && roomCode ? roomCode : "", pw: myStatus() === "match" && (S.ranked || S.pubt) && roomCode ? roomCode : "", ld: myStatus() === "match" && S.leader && S.leader.card ? S.leader.card.c : "", ch: myChal ? {to: myChal.to, r: myChal.r, id: myChal.id} : null, dc: myDc,
     tn: TOUR ? tourPub() : null, tj: TME ? {id: TME.id, d: TME.d} : null, tl: TME && TME.lost ? Object.assign({id: TME.id}, TME.lost) : null};
   const key = JSON.stringify(pres);
   if (key === lbSent) return;
@@ -6608,6 +6629,7 @@ function doAction(a){
     else if (k === "give") tourGive(+x, +y, +z === 1 ? 1 : 0);
     return;
   }
+  if (a.startsWith("livewatch:")) { const r = liveMatches().find(x => x.room === a.slice(10)); if (r) watchTable(r.room, r.pl.map(p => p.nk).join(" and ")); else toast("That match just ended."); return; }
   if (a.startsWith("frwatch:")) { const o = onlineMap().get(a.slice(8)); if (o && o.w) watchTable(o.w, o.nk); else toast("That match just ended."); return; }
   if (a === "stopwatch") { stopWatch(); return; }
   if (a.startsWith("rpopen:")) { rpOpen(a.slice(7), "list"); return; }
