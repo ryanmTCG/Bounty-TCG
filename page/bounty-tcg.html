@@ -3871,12 +3871,13 @@ function tutSkip(){ TUT = null; tutMark(); render(); toast("Tutorial closed. The
 // how well the computer plays. Easy: one Character a turn, no abilities to activate, DON!! all on its Leader, straight
 // at your Leader, and it only defends when a hit would lose. Normal: the strategy guides. Hard: Normal, and it defends
 // sooner, raises each attacker past your Leader's power so one small counter can't stop it, and goes after Blockers.
-const DIFFS = ["Easy", "Normal", "Hard", "Expert"];
+const DIFFS = ["Easy", "Normal", "Hard", "Expert", "Master"];
 const DIFF_HINT = ["Plays one Character a turn, doesn't use its abilities on its turn, and only defends when a hit would lose.",
   "Plays like the strategy guides: blocks, counters, uses its card abilities and goes for the win when it can.",
   "Defends sooner, spreads DON!! so each attack needs more counters, and takes out your Blockers first.",
-  "Hard, and it plans each turn: spends its DON!! on the best mix of cards, holds them back when it can win that turn, counters with no more than it needs, and takes early hits while it has Life to spare."];
-const diffOf = d => d === 0 || d === 2 || d === 3 ? d : 1;
+  "Hard, and it plans each turn: spends its DON!! on the best mix of cards, holds them back when it can win that turn, counters with no more than it needs, and takes early hits while it has Life to spare.",
+  "Expert, and it looks ahead to your next turn: it takes out the Characters that could hurt it most, keeps its Blockers home when you could win, and weighs whether each attack is likely to get through your counters."];
+const diffOf = d => d === 0 || d === 2 || d === 3 || d === 4 ? d : 1;
 const botLv = () => PR ? diffOf(PR.diff) : 1;
 let botT = null;
 function botSoon(ms){ if (!PR || !PR.bot || botT) return; botT = setTimeout(botTick, ms == null ? 700 : ms); }
@@ -4102,6 +4103,35 @@ function botLethal(atks){
   for (const n of atks.filter(a => a.k === "all").map(a => Math.max(0, Math.ceil((lp - (botPow(a.f) || 0)) / 1000))).sort((a, b) => a - b)) if (n <= don) { don -= n; hits++; }
   return hits >= (oppM.lf || 0) + 1 + (oppM.ch || []).filter(c => !c.r && isBlocker(c.c)).length;
 }
+// Master: your attacks next turn. Your Leader and Characters all stand up, each needs DON!! to reach its Leader's power,
+// and you'll have the DON!! on your field plus 2; it counts the hits, cheapest first, against its Life and the Blockers
+// it keeps home
+function botThreat(){
+  if (!oppM || !oppM.ld) return {hits: 0, lethal: false};
+  const lp = botPow(S.leader) || 5000; let don = Math.min(10, 10 - (oppM.dd || 0) + 2), hits = 0;
+  const ps = [oppM.ld, ...(oppM.ch || [])].map(c => (CARDDB.get(c.c) || {}).p).filter(p => p != null);
+  for (const n of ps.map(p => Math.max(0, Math.ceil((lp - p) / 1000))).sort((a, b) => a - b)) if (n <= don) { don -= n; hits++; }
+  const home = S.chars.filter(f => !f.r && blockerNow(f)).length;
+  return {hits, lethal: hits >= S.life.length + 1 + home};
+}
+// Master: the attack worth most. A hit on your Leader is worth more the less Life you have, less the card it gives you;
+// a K.O. is worth the Character's cost, more for a Blocker and more for one that can hurt it next turn (much more when
+// you could win). Each is weighed by the odds your counters don't stop it: better the more power it has to spare.
+function botTargetAhead(a, lethal, danger){
+  if (lethal) return botTarget(a, true);
+  const ap = botPow(a.f); if (ap == null || !oppM) return null;
+  const lp = oppM.ld ? powNum(oppM.ld) : null, act = canHitActive(a.f), myLp = botPow(S.leader) || 5000;
+  const odds = over => over >= 2000 ? 0.9 : over >= 1000 ? 0.7 : (oppM.h || 0) ? 0.45 : 0.9, opts = [];
+  if (a.k === "all" && lp != null && ap >= lp) opts.push({t: "ld", v: odds(ap - lp) * ((oppM.lf || 0) <= 2 ? 4 : 1.5)});
+  (oppM.ch || []).forEach((c, i) => {
+    const p = powNum(c), e = CARDDB.get(c.c) || {};
+    if (p == null || ap < p || !(c.r || act)) return;
+    const threat = (e.p || 0) + 2000 >= myLp ? (danger ? 4 : 1.5) : 0;
+    opts.push({t: "ch:" + i, v: odds(ap - p) * ((e.k || 0) * 0.8 + (isBlocker(c.c) ? 2.5 : 0) + threat)});
+  });
+  opts.sort((x, y) => y.v - x.v);
+  return opts.length && opts[0].v >= 0.6 ? opts[0].t : null;
+}
 function botLimit(){
   while (S.chars.length > 5) {
     const i = S.chars.slice(0, -1).map((f, i) => ({i, k: (CARDDB.get(f.card.c) || {}).k || 0})).sort((a, b) => a.k - b.k)[0].i, f = S.chars.splice(i, 1)[0];
@@ -4144,10 +4174,10 @@ function botGiveDon(atks, max){
 }
 // Expert: the Characters (and a Stage when it has none) from hand that spend the most of the DON!! it has, giving up
 // as little Counter as it can and then the most power; it plays the dearest of them first
-function botPlan(don){
+function botPlan(don, danger){
   const room = 5 - S.chars.length, cs = S.hand.map((c, i) => ({i, hc: handCost(c), e: CARDDB.get(c.c) || {}}))
     .filter(x => x.hc && x.hc.cost <= don && (x.e.t === "Character" ? !playTiming(S.hand[x.i], "chars") : x.e.t === "Stage" && !S.stage && !playTiming(S.hand[x.i], "stage"))).slice(0, 14);
-  const val = x => x.hc.cost * 100 - (x.e.ctr || 0) / 100 + (x.e.p || 0) / 1000;
+  const val = x => x.hc.cost * 100 - (x.e.ctr || 0) / 100 + (x.e.p || 0) / 1000 + (danger && isBlocker(S.hand[x.i].c) ? 150 : 0);
   let best = {v: 0, set: []};
   (function go(k, left, ch, st, set, v){
     if (v > best.v) best = {v, set: set.slice()};
@@ -4171,9 +4201,9 @@ function botCtrSet(ctrs, amt){
 }
 function botMain(){
   // Expert: at the start of its turn's plays, check whether its attackers can win this turn; then it keeps the DON!!
-  if (botLv() === 3 && PR.bwt !== S.turn) { PR.bwt = S.turn; PR.bwin = botLethal(botAttackers()); }
-  if (botLv() === 3 && !PR.bwin) {
-    const plan = botPlan(S.donActive - botCtrKeep())[0];
+  if (botLv() >= 3 && PR.bwt !== S.turn) { PR.bwt = S.turn; PR.bwin = botLethal(botAttackers()); PR.bdg = botLv() === 4 && botThreat().lethal; }
+  if (botLv() >= 3 && !PR.bwin) {
+    const plan = botPlan(S.donActive - botCtrKeep(), PR.bdg)[0];
     if (plan) { moveCard("hand:" + plan.i, plan.e.t === "Stage" ? "stage" : "chars", false, plan.hc.cost); return 1000; }
   }
   // 1. play the most expensive Character the active DON!! pay for
@@ -4204,8 +4234,10 @@ function botMain(){
   if (S.donActive > keep && atks.length) { botGiveDon(atks, S.donActive - keep); return 1000; }
   // 4. attack one at a time, weaker attacks first and the Leader last; you answer each one. All at your Leader when
   // that wins the game
+  const danger = botLv() === 4 && !lethal && botThreat().lethal;
   for (const a of atks) {
-    const t = botTarget(a, lethal);
+    if (danger && a.f !== S.leader && blockerNow(a.f)) { PR.bskip.push(a.f); continue; }   // Master: Blockers stay home
+    const t = botLv() === 4 ? botTargetAhead(a, lethal, danger) : botTarget(a, lethal);
     if (!t) { PR.bskip.push(a.f); continue; }
     attackWith(a.r, t);
     if (!S.atk) PR.bskip.push(a.f);

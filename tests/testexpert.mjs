@@ -28,7 +28,7 @@ await page.click('[data-do="homebot"]'); await wait(1200);
 const s0 = await page.evaluate(() => ({diffs: [...document.querySelectorAll("#f-diff option")].map(o => o.textContent), open: document.querySelector("#f-other").open, sum: document.querySelector("#f-other summary").textContent,
   t: [...document.querySelectorAll('#f-odeck optgroup[label^="Tournament"] option')].map(o => o.textContent), m: [...document.querySelectorAll('#f-odeck optgroup[label^="Most played"] option')].map(o => o.textContent), v: document.querySelector("#f-odeck").value}));
 console.log("setup", JSON.stringify(s0));
-check(s0.diffs.join() === "Easy,Normal,Hard,Expert", "the computer has an Expert level");
+check(s0.diffs.join() === "Easy,Normal,Hard,Expert,Master", "the computer has Expert and Master levels");
 check(s0.open && s0.sum === "The computer's deck" && s0.v === "", "the computer's deck shows, set to your own deck to start");
 check(s0.t.length === 12 && s0.t.some(t => /^Black Luffy \(OP17-079\)/.test(t)) && s0.t.some(t => /^Blue Xebec \(OP17-039\)/.test(t)), "twelve tournament decks to pick from");
 check(s0.m.length === 1 && /OP05-001\), 2 games/.test(s0.m[0]), "the Meta page's most played list is there too");
@@ -98,11 +98,38 @@ for (const n of [2, 3]) { await lvl(n); hold.push(await page.evaluate(c => botSi
 console.log("hold", JSON.stringify(hold));
 check(hold[0] === "1:0" && hold[1] === "0:1", "Hard plays a Character first; Expert, with a winning attack, keeps the DON!!");
 
+// ---- Master looks ahead to your next turn ----
+const pick = await page.evaluate(() => { const ks = [...CARDDB.keys()].filter(c => /^OP0[1-9]-/.test(c) && (CARDDB.get(c) || {}).t === "Character");
+  return {small: ks.find(c => CARDDB.get(c).k <= 2 && (CARDDB.get(c).p || 0) <= 3000 && !isBlocker(c) && !fxAb(c).length),
+    blk: ks.find(c => isBlocker(c) && CARDDB.get(c).k >= 3 && (CARDDB.get(c).p || 0) <= 5000 && fxAb(c).every(a => a.t === "other" && !/DON!!|Turn/.test(a.text || ""))),
+    big: ks.find(c => (CARDDB.get(c).p || 0) >= 6000 && !isBlocker(c) && !fxAb(c).length)}; });
+console.log("master cards", JSON.stringify(pick));
+const mine = (c, r) => ({card: {c, n: nameOf(c), u: Math.random()}, r, d: 0, pm: 0, t: 0});
+// your board: a small rested Character and a rested Blocker. Master's 9000 Leader goes for the Blocker, not your Leader
+await page.evaluate(([p, mk]) => { const mk2 = eval(mk); S.trash.push(...S.life.splice(0)); for (let i = 0; i < 5; i++) S.life.push(S.deck.shift()); S.chars = [mk2(p.small, true), mk2(p.blk, true)]; S.myTurn = false; S.atk = null; commit(); }, [pick, mine.toString()]);
+await sync();
+await lvl(4);
+const tgt = await page.evaluate(() => botSide(() => { S.leader.r = false; S.leader.pm = 4000; const t = botTargetAhead({r: "ld", f: S.leader, k: "all"}, false, false); S.leader.pm = 0; return t; }));
+console.log("master target", tgt);
+check(!!pick.small && tgt === "ch:1", "Master takes out your Blocker instead of hitting a Leader at 5 Life");
+// your next turn could win: four big Characters and 10 DON!! against its 1 Life. Expert attacks with its Blocker, Master keeps it home
+await page.evaluate(([p, mk]) => { const mk2 = eval(mk); S.chars = [mk2(p.big, false), mk2(p.big, false), mk2(p.big, false), mk2(p.big, false)]; S.donDeck = 0; S.myTurn = false; S.atk = null; commit(); }, [pick, mine.toString()]);
+await sync();
+const home = [];
+for (const n of [3, 4]) { await lvl(n); home.push(await page.evaluate(([b, mk]) => botSide(() => { const mk2 = eval(mk);
+  S.myTurn = true; S.atk = null; S.turn += 1; S.hand = []; S.leader.r = true; S.leader.d = 0; S.donActive = 0; S.donRested = 0; PR.bwt = null; PR.bt = null;
+  S.trash.push(...S.life.splice(0)); S.life.push(S.deck.shift()); S.chars = [Object.assign(mk2(b, false), {t: S.turn - 2})];
+  const th = botThreat(); for (let i = 0; i < 4 && !S.atk; i++) botMain(); const r = (th.lethal ? "danger" : "safe") + ":" + (S.chars[0].r ? "attacked" : "home");
+  S.atk = null; S.myTurn = false; S.chars = []; return r; }), [pick.blk, mine.toString()])); }
+console.log("blocker", JSON.stringify(home));
+check(home[1] === "danger:home" && home[0].endsWith("attacked"), "Master keeps its Blocker home when your next turn could win");
+await page.evaluate(() => { S.chars = []; S.myTurn = false; S.atk = null; commit(); }); await sync();
+
 // ---- a few turns of tournament deck against tournament deck, with Expert ----
 await page.evaluate(() => { closeModal(); openSetup({bot: true}); }); await wait(500);
 await page.selectOption("#f-odeck", "t:OP17-079");
 await page.fill("#f-leader", "OP17-058"); await page.evaluate(() => { const x = BOT_DECKS.find(x => x.d.startsWith("OP17-058")); $("#f-deck").value = deckUnpack(x.d).deck; });
-await page.selectOption("#f-diff", "3");
+await page.selectOption("#f-diff", "4");
 await page.click('[data-do="vsbot"]'); await wait(800);
 await page.evaluate(() => { PR.roll = [6, 1]; practiceFirst(0); }); await wait(2500);
 await page.click('[data-do="keep"]'); await wait(1500);
@@ -118,7 +145,7 @@ for (let step = 0; step < 300 && seen.turns < 5; step++) {
 }
 console.log("game", JSON.stringify(seen));
 await page.screenshot({ path: OUT + "/game.png" });
-check(seen.turns >= 4 && seen.played > 0 && seen.atk > 0, "Expert plays and attacks with the Black Luffy list");
+check(seen.turns >= 4 && seen.played > 0 && seen.atk > 0, "Master plays and attacks with the Black Luffy list");
 
 // ---- the Meta page: play the computer with a popular list ----
 await page.evaluate(() => { closeModal(); openMeta(); }); await wait(1500);
