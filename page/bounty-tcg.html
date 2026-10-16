@@ -527,6 +527,7 @@ select.sbtn{height:26px;min-width:88px}
 .sheet.lobsheet{width:min(760px,100%)}
 .lbbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 12px}
 .lbbar .sp{flex:1}
+.qrow{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px;margin:10px 0;border:1px solid rgba(242,184,75,.35);border-radius:10px}.qrow>div{display:flex;flex-direction:column;gap:4px}
 .lbcount{display:flex;gap:6px;align-items:center;font-weight:700;color:#F1DDB0}
 .lblist{display:flex;flex-direction:column;gap:10px}
 .rkseason{display:flex;flex-direction:column;gap:2px;margin:4px 0 10px;padding:8px 12px;border:2px solid rgba(242,184,75,.5);border-radius:14px;background:rgba(242,184,75,.08)}
@@ -1663,7 +1664,7 @@ function cleanLobby(x){
   if (!x || typeof x !== "object" || Array.isArray(x)) return null;
   const c = normRoom(x.c); if (!c) return null;
   const l = String(x.l || "").toUpperCase();
-  return {c, n: clean(x.n, 40) || "Open table", h: clean(x.h, 20) || "Player", l: /^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(l) ? l : "", f: LB_FMT[x.f] ? x.f : "any", s: x.s === 2 ? 2 : 1, t: Number.isFinite(+x.t) ? +x.t : 0, r: x.r === 1 ? 1 : 0};
+  return {c, n: clean(x.n, 40) || "Open table", h: clean(x.h, 20) || "Player", l: /^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(l) ? l : "", f: LB_FMT[x.f] ? x.f : "any", s: x.s === 2 ? 2 : 1, t: Number.isFinite(+x.t) ? +x.t : 0, r: x.r === 1 || x.r === 2 ? x.r : 0};   // r: 1 ranked, 2 quick match
 }
 function lobbyList(){
   const out = [], codes = new Set();
@@ -1889,7 +1890,7 @@ function openRanked(){
     <div class="rkseason"><b>${esc(seasonName(seasonKey()))}</b><span>Ends in ${Math.max(1, Math.ceil((seasonEnd(seasonKey()) - Date.now()) / 864e5))} day${Math.ceil((seasonEnd(seasonKey()) - Date.now()) / 864e5) === 1 ? "" : "s"}. When the next season starts, every bounty is halved (to ฿300,000 at most) and the win–loss record starts again. Your final bounty each season is kept in your Profile.</span></div>
     <div class="rkme"><span class="rkbadge">${esc(rankName(RANK.b))}</span><div><b>${berry(RANK.b)}</b> bounty<small>${RANK.w} win${RANK.w === 1 ? "" : "s"} · ${RANK.l} loss${RANK.l === 1 ? "" : "es"}</small></div></div>
     <div class="rkdeck">Your deck: ${ld ? `<b>${esc(ld.code)} ${esc(ld.name || nameOf(ld.code) || "")}</b>, ${n} cards` : "<b>none picked yet</b>"} <button class="linkbtn" data-do="homebuilder" type="button">Change it in the Deck editor</button>${bad ? `<div class="rkbad">${esc(bad)}</div>` : ""}</div>
-    <div class="lbbar"><button class="btn pri" data-do="rkfind" type="button">Find a match</button><span class="sp"></span><span class="lbcount" id="lb-count"></span></div>
+    <div class="lbbar"><button class="btn pri" data-do="rkfind" type="button">Find a match</button><span class="sp"></span><span class="lbcount" id="lb-count" data-q="1"></span></div>
     <h3 class="rkh">Leaderboard, ${esc(seasonName(seasonKey()).replace(/ \(.*\)$/, ""))}</h3>
     <div class="rkboard" id="rk-board"><div class="lbempty"><b>Loading…</b></div></div>
     <div class="row end">${S.phase === "none" ? '<button class="btn" data-do="homeplay" type="button">Back</button>' : '<button class="btn" data-do="closemodal" type="button">Back to table</button>'}</div>`);
@@ -1903,28 +1904,49 @@ function openRanked(){
       : `<div class="lbempty"><b>No ranked games yet</b>Win a ranked match to be the first on the board.</div>`;
   });
 }
-function rankedCount(){
-  const cnt = $("#lb-count"); if (!cnt) return;
-  const n = lobbyList().filter(l => l.r && l.s < 2 && !l.mine).length;
-  cnt.innerHTML = LBV.err ? "" : `<span class="dot${n ? " on" : ""}"></span>${n ? `${n} player${n === 1 ? "" : "s"} looking for a match` : "Nobody's looking right now"}`;
+// players waiting in the queue and playing right now, for ranked (1) or quick matches (2)
+function queueCounts(k){
+  const wait = lobbyList().filter(l => l.r === k && l.s < 2).length, mk = k === 1 ? "r" : "q";
+  const play = LBV.peers.filter(p => p && p.kind === "viewer" && p.presence && p.presence.st === "match" && p.presence.mk === mk).length;
+  return {wait, play};
 }
-async function rankedFind(){
-  const v = loadSaved();
+const queueLine = k => { const q = queueCounts(k); return `<span class="dot${q.wait ? " on" : ""}"></span>${q.wait} in the queue · ${q.play} in a match`; };
+function rankedCount(){
+  if (LBV.err) { for (const e of document.querySelectorAll(".lbcount[data-q]")) e.textContent = ""; return; }
+  for (const e of document.querySelectorAll(".lbcount[data-q]")) e.innerHTML = queueLine(+e.dataset.q);
+}
+function openQuick(){
+  modal = {type: "quick"};
+  const v = loadSaved(), ld = parseLines(v.leader || "")[0], n = deckCount(v.deck || ""), bad = illegalNote(deckIllegal(v, "std"), "std");
+  showModal(`<h2>Find a match</h2>
+    <p class="hint">Get paired with the next player who's looking, with Standard rules. A quick match doesn't change your bounty; ranked does.</p>
+    <div class="rkdeck">Your deck: ${ld ? `<b>${esc(ld.code)} ${esc(ld.name || nameOf(ld.code) || "")}</b>, ${n} cards` : "<b>none picked yet</b>"} <button class="linkbtn" data-do="homebuilder" type="button">Change it in the Deck editor</button>${bad ? `<div class="hint">${esc(bad)}</div>` : ""}</div>
+    <div class="qrow"><div><b>Quick match</b><span class="lbcount" data-q="2"></span></div><button class="btn pri" data-do="qkfind" type="button">Find a quick match</button></div>
+    <div class="qrow"><div><b>Ranked</b><span class="lbcount" data-q="1"></span></div><button class="btn" data-do="rkfind" type="button">Find a ranked match</button></div>
+    <div class="row end">${S.phase === "none" ? '<button class="btn" data-do="homeplay" type="button">Back</button>' : '<button class="btn" data-do="closemodal" type="button">Back to table</button>'}</div>`);
+  const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
+  $("#modal").classList.add("homebg", "lobpage");
+  lobbyWatch();
+}
+const rankedFind = () => findMatch(1);
+// join the oldest open table in the queue, or open one and wait: ranked (1) or quick (2), both Standard
+async function findMatch(k){
+  const v = loadSaved(), what = k === 1 ? "Ranked" : "Quick matches";
   if (!parseLines(v.deck || "").length || !parseLines(v.leader || "").length) { toast("Pick a deck with a Leader first: open the Deck editor, build or load a deck, then press Play."); return; }
   const bad = illegalNote(deckIllegal(v, "std"), "std");
-  if (bad) { toast("Ranked uses Standard rules. " + bad); return; }
+  if (bad) { toast(`${what} use${k === 1 ? "s" : ""} Standard rules. ` + bad); return; }
   const n = deckCount(v.deck);
-  if (n !== 50) { toast(`Ranked needs a 50-card deck. Yours has ${n}.`); return; }
-  const open = lobbyList().find(l => l.r && l.s < 2 && !l.mine);
-  const room = open ? open.c : "ranked-" + lobbyCode();
+  if (n !== 50) { toast(`${what} need${k === 1 ? "s" : ""} a 50-card deck. Yours has ${n}.`); return; }
+  const open = lobbyList().filter(l => l.r === k && l.s < 2 && !l.mine).sort((a, b) => a.t - b.t)[0];
+  const room = open ? open.c : (k === 1 ? "ranked-" : "quick-") + lobbyCode();
   const c = Object.assign({}, v, {room, nick: myNick(), life: v.life || 5, sleeve: v.sleeve | 0, first: !!v.first});
   await leaveRoom(); status = "connecting";
-  newGame(c, true); S.ranked = true; S.fmt = "std";
+  newGame(c, true); if (k === 1) S.ranked = true; else { S.quick = true; S.pubt = true; } S.fmt = "std";
   closeModal();
   await connect(room);
-  if (!open && R && roomCode === room && status === "online") { myLobby = {c: room, n: "Ranked match", f: "std", t: Date.now(), r: 1}; lobbyUpdate(); }
+  if (!open && R && roomCode === room && status === "online") { myLobby = {c: room, n: k === 1 ? "Ranked match" : "Quick match", f: "std", t: Date.now(), r: k}; lobbyUpdate(); }
   render();
-  toast(open ? `Found a ranked match with ${open.h}.` : "Looking for a ranked opponent. Stay at the table and they'll join you.");
+  const kind = k === 1 ? "ranked" : "quick"; toast(open ? `Found a ${kind} match with ${open.h}.` : `Looking for a ${kind} opponent. Stay at the table and they'll join you.`);
 }
 
 // ---------- profile ----------
@@ -3241,7 +3263,7 @@ function lobbyUnwatch(){
   for (const k of ["unsub", "unconn"]) { if (LBV[k]) { try { LBV[k](); } catch (e) {} } LBV[k] = null; }
 }
 function renderLobbies(){
-  if (modal && modal.type === "ranked") { rankedCount(); return; }
+  if (modal && (modal.type === "ranked" || modal.type === "quick")) { rankedCount(); return; }
   const el = $("#lb-list"), cnt = $("#lb-count");
   if (!el || !modal || modal.type !== "lobbies") return;
   if (LBV.err) {
@@ -3266,8 +3288,8 @@ function renderLobbies(){
   }).join("");
 }
 async function lobbyUpdate(){
-  const lb = myLobby && R && roomCode === myLobby.c ? {c: myLobby.c, n: myLobby.n, h: S.nick || "Player", l: S.leader && S.leader.card ? S.leader.card.c : "", f: myLobby.f, r: myLobby.r ? 1 : 0, s: oppPeer || (S.phase !== "wait" && S.phase !== "roll") ? 2 : 1, t: myLobby.t} : null;
-  const pres = {lb, fc: myFC(), nk: R && !PR && S.phase !== "none" && S.nick ? clean(S.nick, 20) : myNick(), st: myStatus(), w: myStatus() === "match" && !S.ranked && !S.pubt && roomCode ? roomCode : "", ch: myChal ? {to: myChal.to, r: myChal.r, id: myChal.id} : null, dc: myDc,
+  const lb = myLobby && R && roomCode === myLobby.c ? {c: myLobby.c, n: myLobby.n, h: S.nick || "Player", l: S.leader && S.leader.card ? S.leader.card.c : "", f: myLobby.f, r: myLobby.r === 2 ? 2 : myLobby.r ? 1 : 0, s: oppPeer || (S.phase !== "wait" && S.phase !== "roll") ? 2 : 1, t: myLobby.t} : null;
+  const pres = {lb, fc: myFC(), nk: R && !PR && S.phase !== "none" && S.nick ? clean(S.nick, 20) : myNick(), st: myStatus(), mk: R && !PR && S.phase !== "none" ? (S.ranked ? "r" : S.quick ? "q" : "") : "", w: myStatus() === "match" && !S.ranked && !S.pubt && roomCode ? roomCode : "", ch: myChal ? {to: myChal.to, r: myChal.r, id: myChal.id} : null, dc: myDc,
     tn: TOUR ? tourPub() : null, tj: TME ? {id: TME.id, d: TME.d} : null, tl: TME && TME.lost ? Object.assign({id: TME.id}, TME.lost) : null};
   const key = JSON.stringify(pres);
   if (key === lbSent) return;
@@ -3500,6 +3522,7 @@ function openHome(page){
   const btns = page === "play" ? `
       <button class="btn pri" data-do="homefriends" type="button">Friends only${(n => n ? ` <i class="frn">${n} online</i>` : "")(STATS.fr.filter(f => onlineMap().has(f.c)).length)}</button>
       <button class="btn" data-do="homelobby" type="button">Lobbies</button>
+      <button class="btn" data-do="homequick" type="button">Find a match</button>
       <button class="btn" data-do="homeranked" type="button">Ranked</button>
       <button class="btn" data-do="hometours" type="button">Tournaments${(n => n ? ` <i class="frn">${n} open</i>` : "")(tourList().filter(t => t.st !== "done").length)}</button>
       <button class="btn" data-do="homebot" type="button">Practice against the computer</button>
@@ -6613,6 +6636,8 @@ function doAction(a){
     case "hometours": closeModal(); if (builderOpen) closeBuilder(); openTours(); break;
     case "homefriends": closeModal(); if (builderOpen) closeBuilder(); openFriends(); break;
     case "rkfind": rankedFind(); break;
+    case "qkfind": findMatch(2); break;
+    case "homequick": closeModal(); if (builderOpen) closeBuilder(); openQuick(); break;
     case "lbmake": openSetup({pub: true}); break;
     case "homebuilder": closeModal(); openBuilder(); break;
     case "homeprofile": closeModal(); openProfile(); break;
