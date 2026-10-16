@@ -511,6 +511,46 @@ check(wh.oppKo && wh.oppKoOnce, "an opponent's Character K.O.'d offers EB04-044'
 check(!wh.rushBefore && wh.rushJob && wh.rushAfter === "all", "OP14-049 gets [Rush] only after a card is trashed from your hand by an effect");
 check(wh.dmg, "an attack that deals damage offers OP03-047's ability");
 check(wh.bot && wh.bot.h === 0 && wh.bot.t === 1 && /ST10-014/.test(wh.bot.log), "the computer uses its own \"When ...\" ability (ST10-014)");
+// more card text the game carries out: "that card gains an additional +2000", your own active Leader as a cost,
+// "draw so that you have 3 cards", and a Leader of a named type
+const more = await page.evaluate(() => {
+  const clear = () => { while (fxCur) { fxQueue.length = 0; fxFinish(false); } }, tr0 = S.trash.slice(), out = {};
+  out.ctr = [];
+  for (const n of [20, 0]) {
+    clear(); S.trash = S.deck.slice(0, n); S.leader.pm = 0; S.leader.bc = 0; S.leader.r = false; commit();
+    fxEnqueue(fxJob({c: "OP04-095", n: nameOf("OP04-095")}, fxAb("OP04-095").find(a => a.t === "counter")));
+    fxCur.pick = ["ld"]; doAction("fxapply"); if (fxCur && fxCur.i === 1) doAction("fxgo");
+    out.ctr.push(S.leader.pm);
+  }
+  clear(); S.trash = tr0; S.leader.pm = 0; S.leader.bc = 0;
+  // OP04-006: pay with your active Leader's power; a rested Leader can't pay
+  const ch = {c: "OP04-006", n: nameOf("OP04-006")}; S.chars = [{card: ch, r: false, d: 0, pt: 0}]; commit();
+  fxEnqueue(fxJob(ch, fxAb("OP04-006").find(a => a.t === "whenAttacking"))); doAction("fxgo");
+  out.paid = {ld: S.leader.pm, step: fxCur ? fxCur.i : -1};
+  if (fxCur) doAction("fxgo");
+  out.after = S.chars[0].pm || 0;
+  clear(); S.leader.pm = 0; S.leader.r = true; S.chars[0].pm = 0; commit();
+  fxEnqueue(fxJob(ch, fxAb("OP04-006").find(a => a.t === "whenAttacking")));
+  out.rested = document.querySelector("#fxpanel").innerText; doAction("fxgo"); out.restedPm = S.leader.pm;
+  clear(); S.leader.r = false; S.chars = [];
+  // OP02-051: draw until you have 3 cards
+  const h0 = S.hand.slice(); S.hand = S.hand.slice(0, 1); commit();
+  fxEnqueue(fxJob({c: "OP02-051", n: nameOf("OP02-051")}, fxAb("OP02-051").find(a => a.t === "onPlay")));
+  out.drawTxt = document.querySelector("#fxpanel").innerText; doAction("fxdraw"); out.hand = S.hand.length;
+  clear(); S.hand = h0;
+  // EB05-013 on a Leader that isn't {Fish-Man} or {Merfolk}: nothing happens
+  S.donActive = 2; commit();
+  fxEnqueue(fxJob({c: "EB05-013", n: nameOf("EB05-013")}, fxAb("EB05-013").find(a => a.t === "onOppAttack")));
+  doAction("fxgo"); out.typeTxt = document.querySelector("#fxpanel").innerText; out.typePm = S.leader.pm || 0;
+  clear(); commit();
+  return out;
+});
+console.log("more", JSON.stringify(more));
+check(more.ctr[0] === 4000 && more.ctr[1] === 2000, "OP04-095 gives the chosen card an additional +2000 only with 15 or more cards in the trash");
+check(more.paid.ld === -5000 && more.paid.step === 1 && more.after === 2000, "OP04-006 pays with its Leader's −5000 power, then gains +2000");
+check(/Leader is rested/.test(more.rested) && more.restedPm === 0, "a rested Leader can't pay that cost");
+check(/until you have 3 cards in hand: 2 cards/.test(more.drawTxt) && more.hand === 3, "OP02-051 draws until you have 3 cards");
+check(/isn't \{Fish-Man\} or \{Merfolk\} type/.test(more.typeTxt) && more.typePm === 0, "EB05-013 only powers up a {Fish-Man} or {Merfolk} Leader");
 await page.screenshot({ path: OUT + "/board.png" });
 check(!errs.length, "no page errors" + (errs.length ? ": " + errs.slice(0, 3).join(" / ") : ""));
 await app.close();

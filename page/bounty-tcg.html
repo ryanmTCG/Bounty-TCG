@@ -4446,7 +4446,9 @@ function normStep(t, deep){
   t = t || {};
   const st = {a: String(t.a || "other").slice(0, 16), who: t.who === "own" ? "own" : t.who === "any" ? "any" : "opp", n: Math.max(1, Math.min(60000, Math.round(Math.abs(+t.n) || 1))) * (+t.n < 0 ? -1 : 1), upTo: t.upTo !== false, cost: Number.isFinite(+t.cost) && t.cost !== null ? +t.cost : null, power: Number.isFinite(+t.power) && t.power !== null ? +t.power : null, rested: t.rested === true, ld: typeof t.ld === "boolean" ? t.ld : null, all: t.all === true, text: fxText(t.text, 300)};
   if (st.a === "kw" && !+t.n) st.n = 0;
-  for (const k of ["self", "pay", "battle", "tb", "top", "bot", "lf", "now", "up", "dn", "nx", "nt", "ng", "rt"]) if (t[k] === true) st[k] = true;
+  for (const k of ["self", "pay", "battle", "tb", "top", "bot", "lf", "now", "up", "dn", "nx", "nt", "ng", "rt", "same", "myLd", "act"]) if (t[k] === true) st[k] = true;
+  if (Array.isArray(t.ty) && t.ty.length) st.ty = t.ty.slice(0, 4).map(x => fxText(x, 40));
+  if (Number.isInteger(t.to) && t.to > 0 && t.to <= 10) st.to = t.to;
   if (typeof t.f === "string" && t.f.trim()) st.f = fxText(t.f, 160);
   if (typeof t.k === "string" && /^[a-zA-Z]{1,12}$/.test(t.k)) st.k = t.k;
   if (Number.isInteger(t.cnt) && t.cnt > 1) st.cnt = Math.min(t.cnt, 10);
@@ -4610,6 +4612,13 @@ let fxCur = null;
 function fxEnqueue(job){ if (fxCur) fxQueue.push(job); else { fxCur = job; fxSettle(); } renderFx(); }
 // the card an ability belongs to, when it's on my field
 const fxSelf = m => m ? [S.leader, S.stage, ...S.chars].find(f => f && f.card === m.card) || null : null;
+// the card a "self" step acts on: this card, your Leader (myLd; with ty, only a Leader of one of those types), or the
+// card the step before gave power to (same: "that card gains an additional +2000 power")
+function fxTgt(m, st){
+  if (st && st.same) return m && m.lastCard ? [S.leader, ...S.chars].find(f => f && f.card === m.lastCard) || null : null;
+  if (st && st.myLd) return S.leader && (!st.ty || st.ty.some(t => hasType(S.leader.card.c, t))) ? S.leader : null;
+  return fxSelf(m);
+}
 const fxRef = f => f === S.leader ? "ld" : f === S.stage ? "st" : "ch:" + S.chars.indexOf(f);
 // a step's own "If ...," (the ability's first one is checked before it starts)
 const stepCond = st => { const m = /^(?:then,\s*)?if ([^,]+),/i.exec(String(st && st.text || "")); return m ? m[1] : null; };
@@ -4678,6 +4687,8 @@ function fxFinish(done){
   S.mf = null; fxCur = fxQueue.shift() || null; if (fxCur) fxSettle(); commit(); renderFx();
 }
 const fxOwn = st => st.who === "own" || st.a === "giveDon" || st.a === "kw";
+// how many a draw step draws: N, or for "so that you have N cards in your hand" what's missing
+const drawN = st => st.to ? Math.max(0, st.to - S.hand.length) : st.n;
 const fxLim = st => st.all ? 99 : st.a === "pwr" || st.a === "cost" ? st.cnt || 1 : st.a === "giveDon" ? 1 : Math.max(1, st.n || 1);
 const KW_NAME = {r: "Rush", d: "Double Attack", b: "Banish", u: "Unblockable"};
 const fxVerb = (st, it) => ({rest: `rest ${it}`, stand: `set ${it} active`, ko: `K.O. ${it}`, bounce: `return ${it} to its owner's hand`, bottom: `put ${it} on the bottom of its owner's deck`, pwr: `give ${it} ${st.n > 0 ? "+" : "−"}${Math.abs(st.n)} power`, giveDon: `give ${it} ${st.n} ${st.rested ? "rested " : ""}DON!!`,
@@ -4933,8 +4944,9 @@ function fxStepHTML(m){
     return say(st.a === "life" ? `Add ${nm} to the top of your Life face-down.` : `${nm} gets ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} power this turn.`, cancel + go(st.pay ? "Pay" : "Do it"));
   }
   if (st.self) {
-    const f = fxSelf(m);
-    if (!f) return say(`${esc(lab(m.card))} isn't on your field, so this does nothing.`, next);
+    const f = fxTgt(m, st);
+    if (!f) return say(st.same ? "No card of yours got power from this ability, so this does nothing." : st.myLd ? `Your Leader isn't ${(st.ty || []).map(t => "{" + esc(t) + "}").join(" or ")} type, so this does nothing.` : `${esc(lab(m.card))} isn't on your field, so this does nothing.`, next);
+    if (st.act && f.r) return say("Your Leader is rested, so this can't be paid.", cancel || next);
     const nm = `<b>${esc(lab(f.card))}</b>`, sg = v => (v > 0 ? "+" : "\u2212") + Math.abs(v);
     const what = {rest: `Rest ${nm}.`, stand: `Set ${nm} as active.`, trash: `Trash ${nm}.`, ko: `Trash ${nm}.`, bounce: `Return ${nm} to your hand.`, bottom: `Put ${nm} on the bottom of your deck.`,
       pwr: `${nm} gets ${sg(st.n)} power ${st.battle ? "for this battle" : "this turn"}.`, giveDon: `Give ${nm} ${pl(st.n, (st.rested ? "rested " : "") + "DON!!").replace(/DON!!s$/, "DON!!")}.`,
@@ -4959,7 +4971,7 @@ function fxStepHTML(m){
     const can = st.upTo ? tot > 0 : tot === st.n;
     return say(`Return ${st.n} DON!! to your DON!! deck (${tot} chosen). Tap a button once per DON!!.`, `<button class="btn" data-do="fxrdclr" type="button">Clear</button>${st.must || st.pay ? cancel : cancel + skip}<button class="btn pri" data-do="fxrdok" type="button" ${can ? "" : "disabled"}>Return ${tot}</button>`, `<div class="fxcol">${rows || "<p>You have no DON!! to return.</p>"}</div>`);
   }
-  if (st.a === "draw") return say(`Draw ${pl(st.n, "card")}.`, `${cancel}${skip}<button class="btn pri" data-do="fxdraw" type="button">Draw ${st.n}</button>`);
+  if (st.a === "draw") { const n = drawN(st); return say(st.to ? `Draw until you have ${st.to} cards in hand: ${pl(n, "card")}.` : `Draw ${pl(n, "card")}.`, `${cancel}${skip}<button class="btn pri" data-do="fxdraw" type="button">${n ? "Draw " + n : "OK"}</button>`); }
   if (st.a === "look") return say(`Look at the top ${st.n} cards of your deck.`, `${cancel}${skip}<button class="btn pri" data-do="fxlook" type="button">Look</button>`);
   if (st.a === "don") return say(`Add ${st.n} DON!! from your DON!! deck.`, `${cancel}${skip}<button class="btn" data-do="fxdon:r" type="button">Add rested</button><button class="btn pri" data-do="fxdon:a" type="button">Add active</button>`);
   if (HAND_PICK[st.a]) {
@@ -5045,7 +5057,9 @@ function fxApply(arg){
     done(); return;
   }
   if (st.self) {
-    const f = fxSelf(m); if (!f) { fxNext(); return; }
+    const f = fxTgt(m, st); if (!f) { fxNext(); return; }
+    if (st.act && f.r) { if (botQuiet) fxFinish(false); else toast("Your Leader is rested, so this can't be paid."); return; }
+    if (st.a === "pwr" && !st.same) m.lastCard = f.card;
     const nm = lab(f.card), ref = fxRef(f);
     if (st.a === "rest") { const was = f.r; f.r = true; addLog(`rested ${nm}`); if (!was) whenFire("rest", {f, by: "own"}); }
     else if (st.a === "stand") { f.r = false; addLog(`set ${nm} as active`); }
@@ -5150,7 +5164,7 @@ function fxApply(arg){
     if (ref === "st" && !["rest", "stand"].includes(kind)) continue;
     if (kind === "rest") { const was = f.r; f.r = true; addLog(`rested ${lab(f.card)}`); if (!was) whenFire("rest", {f, by: "own"}); }
     else if (kind === "stand") { f.r = false; addLog(`stood ${lab(f.card)}`); }
-    else if (kind === "pwr") { f.pm = clampP((f.pm || 0) + st.n); if (st.battle) f.bc = (f.bc || 0) + st.n; fxLast(f, st); addLog(`gave ${lab(f.card)} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} power${st.nx ? " until their next turn" : ""}`); }
+    else if (kind === "pwr") { m.lastCard = f.card; f.pm = clampP((f.pm || 0) + st.n); if (st.battle) f.bc = (f.bc || 0) + st.n; fxLast(f, st); addLog(`gave ${lab(f.card)} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} power${st.nx ? " until their next turn" : ""}`); }
     else if (kind === "cost") { f.cm = Math.max(-20, Math.min(20, (f.cm || 0) + st.n)); if (st.nx) f.cx = Math.max(-20, Math.min(20, (f.cx || 0) + st.n)); addLog(`gave ${lab(f.card)} ${st.n > 0 ? "+" : "\u2212"}${Math.abs(st.n)} cost`); }
     else if (kind === "kw") fxGrant(f, st.k);
     else if (ref !== "ld") fxRemoveOwn(ref, kind);
@@ -6593,7 +6607,7 @@ function doAction(a){
     if (tot) whenFire("don", {n: tot, by: fxCur.forced ? "opp" : "own"});
     fxCur.res = tot > 0; commit(); fxNext(); return;
   }
-  if (a === "fxdraw" && fxCur) { const n = fxCur.steps[fxCur.i].n; draw(n); fxCur.res = true; fxNext(); return; }
+  if (a === "fxdraw" && fxCur) { const n = drawN(fxCur.steps[fxCur.i]); if (n) draw(n); fxCur.res = true; fxNext(); return; }
   if (a === "fxlook" && fxCur) { const n = fxCur.steps[fxCur.i].n, sp = lookSpec(fxCur.text), fx = fxCur.text || ""; fxCur.res = true; fxNext(); modal = {type: "peek", n, take: sp ? sp.n : 0, pred: sp && sp.pred, bottom: !!(sp && sp.bottom), fx, lim: !!sp}; renderModal(); addLog(`looked at the top ${Math.min(n, S.deck.length)} cards of their deck`); return; }
   if (a.startsWith("fxdon:") && fxCur) { addDon(fxCur.steps[fxCur.i].n, a === "fxdon:a"); fxCur.res = true; fxNext(); return; }
   if (a === "sndon") { sndOn = !sndOn; try { localStorage.setItem("bounty:snd", sndOn ? "1" : "0"); } catch (e) {} if (sndOn) snd("turn"); toast(sndOn ? "Sounds on." : "Sounds off."); return; }

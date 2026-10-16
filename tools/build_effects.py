@@ -128,6 +128,19 @@ def step(clause, pay=False):
     low = c.lower()
     cl = core.lower()
     cost, power = limits(core)
+    # "Then, if you have 2 or less Life cards, that card gains an additional +2000 power during this battle": more power
+    # for the card the step before gave power to (same)
+    m = re.match(r"that (?:card|character|leader) gains an additional ([+\-−])(\d+) power( during this battle)?(?: during this turn)?\.?$", core.strip(), re.I)
+    if m: return dict(base, a="pwr", self=True, same=True, n=int(m.group(2)) * (1 if m.group(1) == "+" else -1), battle=bool(m.group(3)))
+    # your own Leader: "You may give your 1 active Leader −5000 power during this turn" (a cost), "Your {Fish-Man} or
+    # {Merfolk} type Leader gains +2000 power during this battle" (ty: only a Leader of one of those types)
+    m = re.match(r"(?:you may )?give your (?:1 )?(active )leader ([+\-−])(\d+) power(?: during this turn)?\.?$", core.strip(), re.I)
+    if m: return dict(base, a="pwr", self=True, myLd=True, act=True, n=int(m.group(3)) * (1 if m.group(2) == "+" else -1), battle=False)
+    m = re.match(r"your ((?:\{[^}]+\}(?: or \{[^}]+\})*) type )leader gains ([+\-−])(\d+) power( during this battle)?(?: during this turn)?\.?$", core.strip(), re.I)
+    if m: return dict(base, a="pwr", self=True, myLd=True, n=int(m.group(3)) * (1 if m.group(2) == "+" else -1), battle=bool(m.group(4)), ty=re.findall(r"\{([^}]+)\}", m.group(1)))
+    # "Draw card(s) so that you have 3 cards in your hand"
+    m = re.match(r"draw (?:cards?|card\(s\)) so that you have (\w+) cards? in your hand\.?$", core.strip(), re.I)
+    if m: return dict(base, a="draw", who="own", to=num(m.group(1)), n=num(m.group(1)))
     s = self_step(core, base)
     if s: return s
     if re.search(r"\bfor every\b", cl): return dict(base, a="other")
@@ -160,8 +173,8 @@ def step(clause, pay=False):
     # "You may reveal 2 Events from your hand": shown to the opponent, they stay in your hand
     m = re.match(r"(?:you may )?reveal (up to )?(?:a total of )?(\w+) (.+?) from your hand\.?$", core.strip(), re.I)
     if m: return dict(base, a="revealHand", n=num(m.group(2)), f=m.group(3), upTo=bool(m.group(1)))
-    m = re.search(r"\bdraw (\w+) cards?\b", cl)
-    if m and not re.search(r"\bwhen (?:you|your opponent) draws?\b", low): return dict(base, a="draw", who="own", n=num(m.group(1)))
+    m = re.search(r"\bdraw (up to )?(\w+) cards?\b", cl)
+    if m and not re.search(r"\bwhen (?:you|your opponent) draws?\b", low): return dict(base, a="draw", who="own", n=num(m.group(2)), **({"upTo": True} if m.group(1) else {}))
     m = re.search(r"\btrash (any number of|all) ((?:[^.]*? )?)(?:cards?|events?|characters?|stages?) ?((?:with [^.]*?)?)from your hand\b", cl)
     if m and "your opponent" not in cl[:m.start()]: return dict(base, a="other")
     m = re.search(r"\btrash (up to )?(\w+) ((?:[^.]*? )?)(?:cards?|events?|characters?|stages?) ?((?:with [^.]*?)?)from your hand\b", cl)

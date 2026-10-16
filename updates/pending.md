@@ -6,3 +6,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - New Master level for the computer: it looks ahead to your next turn, takes out the Characters that could hurt it most, keeps its Blockers home when you could win, and weighs whether each attack is likely to get through your counters.
 - Watch a match (Play > Find a match): every ranked, quick, lobby and tournament match being played is listed with both players and their Leaders, and anyone can watch it (boards only, never hands). Friends can also watch each other's ranked and lobby matches from the Friends page.
 - Quick chat has five more messages, and "Mute their messages" in the chat menu hides your opponent's for the rest of the match.
+- 22 more card abilities are carried out by the game instead of left to the player, such as "that card gains an additional +2000 power" (OP04-095), paying with your Leader's power (OP04-006) and "draw until you have 3 cards in hand" (OP02-051).
