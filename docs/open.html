@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Open in Bounty TCG</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{color-scheme:dark}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:#04202F;color:#F4EBD8;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:16px;box-sizing:border-box}
+  main{max-width:520px;width:100%;background:#0B3347;border:2px solid #C9A24A;border-radius:16px;padding:24px}
+  h1{margin:0 0 8px;font-size:24px;color:#F5C451}
+  p{margin:0 0 12px}
+  a.btn{display:inline-block;background:#F5C451;color:#2A1D00;font-weight:700;text-decoration:none;border-radius:10px;padding:10px 18px;margin:4px 0 14px}
+  code{background:#04202F;border-radius:6px;padding:2px 6px;word-break:break-all;font-size:14px}
+  .small{font-size:14px;color:#B9C9CF}
+  .small a{color:#8FD8EE}
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title">Opening Bounty TCG…</h1>
+  <p id="what"></p>
+  <a class="btn" id="go" href="#" hidden>Open in Bounty TCG</a>
+  <p class="small" id="manual"></p>
+  <p class="small">Don't have the game? <a href="https://github.com/ryanmTCG/Bounty-TCG">Download Bounty TCG</a> (Windows).</p>
+</main>
+<script>
+// A share link from Bounty TCG: #r=<replay code> or #d=<deck code>. It sends the browser on to bounty://, which the
+// desktop app (version 1.7 and later) opens. Nothing here is sent anywhere.
+(function () {
+  var h = new URLSearchParams(location.hash.slice(1)), r = h.get("r") || "", d = h.get("d") || "", target = "";
+  var title = document.getElementById("title"), what = document.getElementById("what"), manual = document.getElementById("manual"), go = document.getElementById("go");
+  if (/^[A-Za-z0-9]{4}-?[A-Za-z0-9]{4}$/.test(r)) {
+    target = "bounty://replay/" + r;
+    what.textContent = "A replay shared from Bounty TCG.";
+    manual.textContent = "If nothing opens, open Bounty TCG, go to Replays > Open a code and type " + r.toUpperCase() + ".";
+  } else if (/^BTCG1-[A-Za-z0-9_-]{8,2000}$/.test(d)) {
+    target = "bounty://deck/" + d;
+    what.textContent = "A deck shared from Bounty TCG.";
+    manual.textContent = "If nothing opens, copy this deck code and paste it in the Deck editor: ";
+    var c = document.createElement("code"); c.textContent = d; manual.appendChild(c);
+  }
+  if (!target) { title.textContent = "This link is broken"; what.textContent = "It doesn't hold a Bounty TCG replay or deck."; return; }
+  go.href = target; go.hidden = false;
+  location.href = target;
+  setTimeout(function () { title.textContent = "Open in Bounty TCG"; }, 1500);
+})();
+</script>
+</body>
+</html>

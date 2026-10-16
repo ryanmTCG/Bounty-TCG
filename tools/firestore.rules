@@ -31,6 +31,13 @@ service cloud.firestore {
         && d().t is int && d().t > request.time.toMillis() - 600000 && d().t < request.time.toMillis() + 600000
         && (!('rp' in d()) || exists(/databases/$(database)/documents/replays/$(id)));
     }
+    // The Meta page's daily copy of the newest shared match records (meta/summary), so a visit reads one document instead
+    // of 1000. Only an admin's copy of the game writes it.
+    match /meta/{id} {
+      allow read: if true;
+      allow write: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && id == 'summary' && d().keys().hasOnly(['v', 't', 'upto', 'n', 'z']) && d().z is string && d().z.size() <= 900000;
+    }
     // Shared replays: a replay code (or a finished match's replay for the Recent games feed, under its games id) holds the
     // same text as a replay file. Anyone can open one; only a signed-in player adds one, once, and nobody changes it.
     match /replays/{id} {

@@ -34,7 +34,8 @@ export async function startFakeFire(port) {
       if (segs[0] === "results" && write && !who) return deny();
       if (["games", "replays"].includes(segs[0]) && write && (!who || docs.has(p) || req.method === "DELETE" || sv((j.fields || {}).by) !== who)) return deny();
       if (segs[0] === "reports" && ((req.method === "GET" && !admins.has(who)) || (write && (!who || docs.has(p) || req.method === "DELETE" || sv((j.fields || {}).by) !== who)))) return deny();
-      if (!["data", "ranks", "results", "games", "replays", "reports"].includes(segs[0])) return deny();
+      if (segs[0] === "meta" && write && !admins.has(who)) return deny();
+      if (!["data", "ranks", "results", "games", "replays", "reports", "meta"].includes(segs[0])) return deny();
       if (segs.length % 2 === 1) {   // a collection: list its documents, ordered and in pages like Firestore
         let keys = [...docs.keys()].filter(k => k.startsWith(p + "/") && !k.slice(p.length + 1).includes("/"));
         const ob = u.searchParams.get("orderBy");

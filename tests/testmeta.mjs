@@ -88,6 +88,23 @@ check(await until(() => games().length === before + 1), "only the player who sha
 await wait(1500);
 const last = games().filter(x => x.n === "Ryan").sort((a, b) => b.t - a.t)[0];
 check(games().length === before + 1 && last && last.on === "" && last.o === "OP01-001", "the opponent who doesn't share isn't named");
+// the daily summary: only an admin's copy writes meta/summary; everyone else reads it and only the records newer than it
+check(!fire.docs.has("meta/summary"), "a player who isn't an admin doesn't write the Meta summary");
+const uidA = await A.page.evaluate(() => acctUid()); fire.admins.add(uidA);
+await A.page.evaluate(() => { sessionStorage.clear(); COMM.recs = null; return gamesLoad(true); });
+check(await until(() => fire.docs.has("meta/summary")), "an admin's copy writes the Meta summary");
+const sumN = fire.plain(fire.docs.get("meta/summary")).n, total = await A.page.evaluate(() => COMM.recs.length);
+console.log("summary", sumN, total);
+check(sumN === total && total > 5, "it holds every record");
+fire.put("games/newest", { v: 1, t: Date.now() + 1000, k: "lb", f: "std", l: "OP03-001", o: "OP01-001", r: "w", d: "", n: "New", by: "uidy" });
+fire.log.length = 0;
+const bl = await B.page.evaluate(async () => { COMM.recs = null; const r = await gamesLoad(true); return {n: r.length, newest: r[0].id, sum: COMM.sum > 0}; });
+const reads = fire.log.filter(l => /^GET (games|meta)/.test(l));
+console.log("player reads", JSON.stringify(bl), JSON.stringify(reads));
+check(bl.sum && bl.n === total + 1 && bl.newest === "newest", "a player gets the summary plus the newer record");
+check(reads.includes("GET meta/summary") && reads.filter(l => l === "GET games").length === 1, "with one read for the summary and one small page of games");
+const tamperSum = await B.page.evaluate(async () => { try { await (await getDb()).doc("meta/summary").set({v: 1, t: Date.now(), upto: 0, n: 0, z: "j[]"}); return "written"; } catch (e) { return e.code || "error"; } });
+check(tamperSum !== "written" && fire.plain(fire.docs.get("meta/summary")).n === sumN, "a player can't overwrite the summary");
 const errs = [A, B].flatMap(x => x.errs);
 console.log("errors", JSON.stringify(errs));
 check(!errs.length, "no page errors");

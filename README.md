@@ -61,4 +61,5 @@ If `desktop/main.src.js` or `desktop/preload.js` changed, raise `SHELL_VERSION` 
 | `data/` | The card list (names, colors, types, cost, power) and card-reader settings |
 | `tools/` | `build.py` makes the desktop kit, `publish_update.py` packs an update |
 | `updates/` | `latest.json` and the newest update bundles the app downloads, and `pending.md`, the changes waiting for the next update |
+| `docs/` | `open.html`, the page share links point to (GitHub Pages, from `docs/` on `main`): it sends the browser on to a `bounty://` link the app opens |
 | `tests/` | Playwright tests that drive the built app (run with `xvfb-run -a node tests/<name>.mjs`) |

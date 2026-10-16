@@ -12,5 +12,7 @@ contextBridge.exposeInMainWorld("bountyDesktop", {
   updateState: () => ipcRenderer.invoke("update:state"),
   checkForUpdate: () => ipcRenderer.invoke("update:check"),
   restartToUpdate: () => ipcRenderer.invoke("update:restart"),
-  onUpdate: fn => ipcRenderer.on("ui:update", (_e, s) => fn(s))
+  onUpdate: fn => ipcRenderer.on("ui:update", (_e, s) => fn(s)),
+  onLink: fn => ipcRenderer.on("ui:link", (_e, u) => fn(String(u || ""))),
+  takeLink: () => ipcRenderer.invoke("link:take")
 });

@@ -151,6 +151,9 @@ button,input,textarea,select{font:inherit;color:inherit}
 .lctl button:hover{background:rgba(255,255,255,.2)}
 .lcount{position:absolute;top:-8px;left:calc(50% - var(--cw)/2 - 4px);z-index:5;background:var(--gold-fill);color:#2A1D00;border-radius:999px;font-style:normal;font-weight:700;font-size:14px;min-width:24px;height:24px;display:grid;place-items:center;padding:0 5px;box-shadow:0 1px 3px rgba(0,0,0,.5)}
 .lcount.zero{display:none}
+.lcount.own{background:#4FC3E0;color:#062033}
+.lctl .ownlbl{font-size:12px;min-width:48px;text-align:center;background:rgba(0,0,0,.7);color:#fff;border-radius:6px;padding:3px 6px}
+.bdctl span.cmiss{color:#FFA091}
 .bd-deckp{background:var(--panel);color:var(--ink);border-radius:14px;padding:12px;overflow:auto;min-height:0;border:1px solid var(--line)}
 .bd-deckp h3{font-family:"Alfa Slab One",Georgia,serif;font-weight:400;font-size:16px;margin:0 0 6px}
 .bd-leader{display:flex;gap:12px;align-items:center;margin-bottom:10px}
@@ -1137,6 +1140,7 @@ body.watching .turnbar,body.watching .tbopts{opacity:.4}
   <div class="turnbar">
     <button class="btn tb-concede" data-do="concede" type="button" title="Give up this match">Concede</button>
     <button class="btn" data-do="undo" type="button" title="Undo your last move (Ctrl+Z)">Undo action</button>
+    <button class="btn" data-do="hint" id="hintbtn" type="button" hidden title="Ask the Master computer what it would do in your seat">💡 Hint</button>
     <button class="btn qcbtn" data-do="quickchat" id="qcbtn" type="button" hidden title="Send your opponent a quick message">💬 Chat</button>
     <button class="btn pri" data-do="endturn" type="button" title="End your turn and clear power and cost bonuses">End turn</button>
     <button class="btn" data-do="startturn" id="startfb" type="button" hidden title="Your opponent's copy is older and doesn't say when their turn ends">Start my turn</button>
@@ -1209,6 +1213,8 @@ body.watching .turnbar,body.watching .tbopts{opacity:.4}
         <div class="bd-checks">
           <label class="bdart"><input type="checkbox" id="bd-artonly"> Only cards with art</label>
           <label class="bdart"><input type="checkbox" id="bd-group" checked> Group by color</label>
+          <label class="bdart" title="− and + under each card set how many you own, instead of changing the deck"><input type="checkbox" id="bd-collmode"> Collection mode</label>
+          <label class="bdart"><input type="checkbox" id="bd-ownonly"> Only cards I own</label>
           <span class="bdart bdshow" title="Banned: on the official ban list, so not allowed in any format. Rotated: Block 1 cards, out of Standard since April 1, 2026 but still allowed in Extra. Previews: cards from a set that isn't out in English yet (EB05 on Oct 30, OP18 on Nov 20, 2026). List checked October 2026.">Show <label><input type="checkbox" id="bd-showban"> Banned</label><label><input type="checkbox" id="bd-showrot"> Rotated</label><label><input type="checkbox" id="bd-showpre" checked> Previews</label></span>
         </div>
       </div>
@@ -1228,6 +1234,10 @@ body.watching .turnbar,body.watching .tbopts{opacity:.4}
         <div class="row"><button class="btn" data-do="bdimport" type="button">Replace deck with this list</button></div>
         <p class="hint">Your deck as text, Leader first, in the 1xOP01-001 / 4xOP01-016 format deck sites and simulators use. Lists copied from them can be pasted above.</p>
         <textarea id="bd-text" readonly spellcheck="false"></textarea>
+      </details>
+      <details class="bd-paste" id="bd-coll">
+        <summary>My collection</summary>
+        <div id="bd-collin"></div>
       </details>
     </aside>
   </div>
@@ -1364,7 +1374,7 @@ async function leaveRoom(){
   if (WATCH) { rpStop(); RPV = null; WATCH = null; document.body.classList.remove("watching", "replaying"); $("#mid").classList.remove("rpmid"); }
   rankForfeit(); matchForget();
   if (R) { try { await R.leave(); } catch (e) {} }
-  R = null; oppPeer = null; oppM = null; PR = null; TUT = null; myQc = null; qcSeen = null; qcMute = false;
+  R = null; oppPeer = null; oppM = null; PR = null; TUT = null; HINT = null; myQc = null; qcSeen = null; qcMute = false;
   if (myChal) { myChal = null; clearTimeout(chalT); }
   if (myLobby) { myLobby = null; lobbyUpdate(); }
 }
@@ -2026,6 +2036,61 @@ function statsSave(){
   clearTimeout(statsTimer);
   statsTimer = setTimeout(async () => { const ref = await statsDoc(); if (ref) { try { await ref.set(Object.assign({t: Date.now()}, STATS)); } catch (e) {} } }, 1500);
 }
+// ---------- my collection: the cards a player owns ----------
+// COLL maps a card number to how many the player owns. It's kept in localStorage bounty:coll, and signed in in the
+// account (data/users/<uid>/_coll, packed as "OP01-001*2 OP01-004*4"). The Deck editor's collection mode sets it, and
+// the deck panel shows what a deck still needs (collMissing).
+const COLL_MAX = 6000;
+function collUnpack(s){
+  const o = {};
+  if (typeof s !== "string") return o;
+  for (const t of s.slice(0, 120000).split(/\s+/).slice(0, COLL_MAX)) { const m = /^([A-Z]{1,4}\d{0,3}-\d{2,4})\*(\d{1,2})$/.exec(t); if (m && +m[2] > 0) o[m[1]] = +m[2]; }
+  return o;
+}
+const collPack = o => Object.keys(o).filter(k => o[k] > 0).sort(natural).slice(0, COLL_MAX).map(k => k + "*" + Math.min(99, o[k])).join(" ");
+let COLL = (() => { try { return collUnpack(localStorage.getItem("bounty:coll") || ""); } catch (e) { return {}; } })(), collRef, collTimer = null, COLLMODE = false;
+const collSize = () => Object.values(COLL).reduce((n, v) => n + v, 0);
+async function collDoc(){
+  if (collRef !== undefined) return collRef;
+  collRef = null;
+  try {
+    const db = await getDb(), user = window.claude ? await window.claude.use("user") : null, uid = user ? await user.id() : null;
+    if (db && uid) collRef = db.doc("data/users/" + uid + "/_coll");
+  } catch (e) {}
+  return collRef;
+}
+async function collLoad(){
+  const ref = await collDoc(); if (!ref) return;
+  try {
+    const sn = await ref.get();
+    if (sn.exists) { COLL = collUnpack((sn.data() || {}).c); try { localStorage.setItem("bounty:coll", collPack(COLL)); } catch (e) {} if ($("#bd-deck")) { renderBdDeck(); renderLib(); } }
+    else if (collSize()) collSave();
+  } catch (e) {}
+}
+function collSave(){
+  const txt = collPack(COLL);
+  try { localStorage.setItem("bounty:coll", txt); } catch (e) {}
+  clearTimeout(collTimer);
+  collTimer = setTimeout(async () => { const ref = await collDoc(); if (ref) { try { await ref.set({t: Date.now(), c: txt}); } catch (e) {} } }, 1500);
+}
+function collAdd(code, d){
+  const n = Math.max(0, Math.min(99, (COLL[code] || 0) + d));
+  if (n) COLL[code] = n; else delete COLL[code];
+  collSave();
+}
+// what the deck in the editor needs beyond the cards owned: [{c, need, own}]
+function collMissing(){
+  const want = new Map();
+  BD.cards.forEach((v, k) => want.set(k, v.count));
+  if (BD.leader) want.set(BD.leader.c, (want.get(BD.leader.c) || 0) + 1);
+  return Array.from(want.entries()).filter(([k, n]) => (COLL[k] || 0) < n).map(([c, n]) => ({c, need: n - (COLL[c] || 0), own: COLL[c] || 0})).sort((a, b) => natural(a.c, b.c));
+}
+function collHTML(){
+  const n = collSize(), kinds = Object.keys(COLL).length, miss = collMissing(), mn = miss.reduce((s, x) => s + x.need, 0);
+  return `<p class="hint">${n ? `You own ${n} card${n === 1 ? "" : "s"} (${kinds} different).` : "Mark the cards you own, and the deck shows which ones it still needs."} Turn on <b>Collection mode</b> above the cards to set how many of each you own with − and +, or add a whole list here.</p>`
+    + `<div class="row" style="margin:6px 0;flex-wrap:wrap;gap:6px"><button class="btn" data-do="colldeck" type="button">I own this deck</button><button class="btn" data-do="collmiss" type="button"${n && mn ? "" : " disabled"}>Copy the ${mn ? mn + " " : ""}cards I need</button>${n ? '<button class="btn" data-do="collclear" type="button">Clear my collection</button>' : ""}</div>`
+    + `<textarea id="bd-collpaste" spellcheck="false" placeholder="4xOP01-013&#10;2xOP01-016&#10;(a decklist or deck code works too)"></textarea><div class="row"><button class="btn" data-do="collimport" type="button">Add these to my collection</button></div>`;
+}
 // ---------- nickname: one name everyone sees (the table, the lobby, friends' lists, the Ranked leaderboard) ----------
 const NICK_DEF = "Player";
 function myNick(){ return clean(loadSaved().nick || STATS.nk || RANK.nick, 20) || NICK_DEF; }
@@ -2356,8 +2421,28 @@ async function rpShare(id){
   toast("Couldn't share that replay right now. Try again in a moment.");
 }
 function rpCopyCode(c){
-  const t = rpCodeShow(c), msg = `Replay code ${t}. Anyone with Bounty TCG can watch it from Replays > Open a code.`;
-  try { navigator.clipboard.writeText(t).then(() => toast(msg + " It's copied."), () => toast(msg)); } catch (e) { toast(msg); }
+  const t = rpCodeShow(c), msg = `Replay code ${t}. The link opens it in Bounty TCG, or anyone can type the code in Replays > Open a code.`;
+  try { navigator.clipboard.writeText(linkOf("r", t)).then(() => toast(msg + " The link is copied."), () => toast(msg)); } catch (e) { toast(msg); }
+}
+// ---------- links: bounty://replay/<code> and bounty://deck/<deck code> ----------
+// Chat apps only make https links clickable, so the share buttons copy a link to docs/open.html on this repository's
+// GitHub Pages site (LINK_WEB), which sends the browser on to bounty://. The desktop shell (shell 4) opens those in the
+// game through openLink(); anything in a link is untrusted and goes through rpCodeNorm/rpFetch/rpImport or deckFromCode.
+const LINK_WEB = "https://ryanmtcg.github.io/Bounty-TCG/open.html";
+const linkOf = (k, c) => LINK_WEB + "#" + k + "=" + encodeURIComponent(c);
+async function openLink(u){
+  const m = /^bounty:\/\/(replay|deck)\/([A-Za-z0-9_-]{4,1600})\/?$/i.exec(String(u || "").trim()); if (!m) return;
+  if (m[1].toLowerCase() === "deck") {
+    const d = deckFromCode(m[2]); if (!d) { toast("That deck link is broken."); return; }
+    closeModal(); openBuilder(); bdImport("Leader: " + d.l + "\n" + d.deck); renderBdDeck(); renderLib();
+    toast(`Opened a ${nameOf(d.l) || d.l} deck from a link. Save it to keep it.`); return;
+  }
+  rpOpenCode(rpCodeNorm(m[2].toLowerCase()));
+}
+function linkInit(){
+  const dk = window.bountyDesktop; if (!dk || !dk.onLink) return;
+  dk.onLink(u => openLink(u));
+  if (dk.takeLink) dk.takeLink().then(u => { if (u) setTimeout(() => openLink(u), 800); }, () => {});
 }
 const rpCodeNorm = v => { v = String(v || "").trim().toLowerCase().replace(/\s+/g, ""); return /^[a-z0-9]{4}-[a-z0-9]{4}$/.test(v) ? v.replace("-", "") : v; };
 async function rpFetch(c){
@@ -2371,6 +2456,9 @@ async function rpFetch(c){
 // a code typed on the Replays page: added to your list and played
 async function rpCode(){
   const el = $("#rp-code"), c = rpCodeNorm(el && el.value); if (!c) { toast("Type a replay code first."); return; }
+  return rpOpenCode(c);
+}
+async function rpOpenCode(c){
   if (liveMatch()) { toast("Finish or leave your match first, then watch a replay."); return; }
   const had = rpList().find(x => x.code === c); if (had) { rpOpen(had.id, "list"); return; }
   const f = await rpFetch(c); if (f.err) { toast(f.err); return; }
@@ -3048,16 +3136,39 @@ function cleanGame(x, id){
   return {id: String(id || "").slice(0, 80), t: Number.isFinite(+x.t) ? +x.t : 0, m: String(x.m || "").replace(/[^a-z0-9-]/g, "").slice(0, 40), k: GAME_K[x.k] ? x.k : "fr", f: LB_FMT[x.f] ? x.f : "",
     l: x.l, o: CARD_RE.test(x.o || "") ? x.o : "", r: x.r, y: HOW.w[x.y] ? x.y : "", tn: num(x.tn, 999), d: deckUnpack(x.d) ? x.d : "", n: clean(x.n, 20), on: clean(x.on, 20), rp: x.rp ? 1 : 0};
 }
-// the newest 1000 shared records, read again after a few minutes
+// the newest 1000 shared records, read again after a few minutes. meta/summary holds a copy of them (gzip), written by
+// an admin's copy of the game when it's more than META_AGE old (metaSummary), so each visit costs one read for it plus
+// one for each record newer than it, instead of 1000
+const META_DOC = "meta/summary", META_AGE = 20 * 3600e3, META_MAX = 900000;
+async function metaSummaryRead(db){
+  try {
+    const sn = await db.doc(META_DOC).get(), x = sn && sn.exists ? sn.data() : null;
+    if (!x || typeof x.z !== "string" || x.z.length > META_MAX || !/^[zj]/.test(x.z) || !Number.isFinite(+x.upto) || !Number.isFinite(+x.t)) return null;
+    const arr = JSON.parse(x.z[0] === "z" ? await rpInflate(x.z.slice(1), 6e6) : x.z.slice(1));
+    if (!Array.isArray(arr)) return null;
+    return {t: +x.t, upto: +x.upto, recs: arr.slice(0, 1000).map(p => Array.isArray(p) ? cleanGame(p[1], p[0]) : null).filter(Boolean)};
+  } catch (e) { return null; }
+}
+async function metaSummary(db, recs){
+  if (!recs.length || !(await reportsAdmin())) return false;
+  const z = await rpPack(JSON.stringify(recs.slice(0, 1000).map(r => { const o = Object.assign({}, r); delete o.id; return [r.id, o]; })));
+  if (z.length > META_MAX) return false;
+  try { await db.doc(META_DOC).set({v: 1, t: Date.now(), upto: recs[0].t, n: Math.min(1000, recs.length), z}); return true; } catch (e) { return false; }
+}
 async function gamesLoad(force){
   if (COMM.busy) return COMM.busy;
   if (COMM.recs && !force && Date.now() - COMM.at < 600000) return COMM.recs;
   COMM.busy = (async () => {
     try {
       const db = await getDb(); if (!db) throw {code: "unavailable"};
-      const col = db.collection("games"), sn = await (typeof col.orderBy === "function" ? col.orderBy("t", "desc").limit(1000).get() : col.get());
-      COMM.recs = sn.docs.map(d => cleanGame(d.data(), d.id)).filter(Boolean).sort((a, b) => b.t - a.t);
-      COMM.at = Date.now(); COMM.err = "";
+      const col = db.collection("games"), ord = typeof col.orderBy === "function";
+      const sum = ord ? await metaSummaryRead(db) : null;
+      const sn = await (!ord ? col.get() : sum ? col.orderBy("t", "desc").where("t", ">", sum.upto).limit(1000).get() : col.orderBy("t", "desc").limit(1000).get());
+      const all = new Map();
+      for (const g of [...sn.docs.map(d => cleanGame(d.data(), d.id)), ...(sum ? sum.recs : [])]) if (g && !all.has(g.id)) all.set(g.id, g);
+      COMM.recs = [...all.values()].sort((a, b) => b.t - a.t).slice(0, 1000);
+      COMM.at = Date.now(); COMM.err = ""; COMM.sum = sum ? sum.t : 0;
+      if (ord && (!sum || Date.now() - sum.t > META_AGE)) metaSummary(db, COMM.recs).then(ok => { if (ok) COMM.sum = Date.now(); });
     } catch (e) { COMM.err = (e && e.code) || "error"; if (!COMM.recs) COMM.recs = null; }
     COMM.busy = null;
     return COMM.recs;
@@ -3391,6 +3502,7 @@ function render(){
   { const fb = $("#startfb");
     if (fb) fb.hidden = !(R && !PR && S.phase === "play" && oppM && oppM.et == null);
     const qb = $("#qcbtn"); if (qb) qb.hidden = !(R && !PR && oppM && S.phase !== "none");
+    const hb = $("#hintbtn"); if (hb) hb.hidden = !hintOk();
     const db = $(".dicebtn"); if (db) db.classList.toggle("due", (S.phase === "roll" && !S.roll) || !!(PR && !PR.order && S.phase === "pre")); }
   { const sw = $("#pswitch"); if (sw) { sw.hidden = !PR || !!PR.bot; if (PR) sw.textContent = "Switch to Player " + (PR.cur === 0 ? 2 : 1); } }
   { const fa = $("#fx-auto"); if (fa) { fa.checked = fxOn(); fa.disabled = !boardTools(); } const so = $("#snd-on"); if (so) so.checked = sndOn; }
@@ -3871,6 +3983,7 @@ const TUT_STEPS = [
 function renderCoach(){
   const el = $("#coach"); if (!el) return;
   document.querySelectorAll(".coachhl").forEach(e => e.classList.remove("coachhl"));
+  if (!TUT && HINT) { renderHint(el); return; }
   if (!TUT || !PR || !PR.bot) { if (!el.hidden) { el.hidden = true; el.innerHTML = ""; } return; }
   while (TUT.i < TUT_STEPS.length && TUT_STEPS[TUT.i].done && TUT_STEPS[TUT.i].done()) TUT.i++;
   const st = TUT_STEPS[TUT.i]; if (!st) { TUT = null; tutMark(); el.hidden = true; return; }
@@ -3885,6 +3998,104 @@ function renderCoach(){
 }
 function tutNext(){ if (!TUT) return; TUT.i++; if (TUT.i >= TUT_STEPS.length) { TUT = null; tutMark(); toast("Tutorial done. Keep playing, or head Home to find a real opponent."); } render(); }
 function tutSkip(){ TUT = null; tutMark(); render(); toast("Tutorial closed. The game against the computer goes on."); }
+// ---------- coach hints (practice against the computer) ----------
+// "Hint" asks the Master computer's own planning what it would do in your seat: keep or mulligan, which cards to play,
+// where the DON!! goes, what to attack and how to defend, each with the reason. It never acts for you, and it isn't
+// offered online. HINT holds the advice until the board changes (hintKey).
+let HINT = null;
+const hintOk = () => !!(PR && PR.bot && !TUT && !WATCH && !RPV && PR.cur === 0 && (S.phase === "pre" || S.phase === "play") && !S.conceded && !(oppM && oppM.cd));
+const hintKey = () => [S.phase, S.turn, S.myTurn, S.hand.length, S.chars.length, S.donActive, S.leader && S.leader.d, S.chars.map(f => (f.d || 0) + (f.r ? "r" : "")).join(), S.atk ? 1 : 0, defending() ? oppM.ak.n : 0, S.blk, S.mull ? 1 : 0, oppM ? oppM.lf + "/" + (oppM.ch || []).length : ""].join("|");
+const hName = c => esc(nameOf(c.c) || lab(c)), hHand = i => `#hand [data-src="hand:${i}"]`, hSrc = f => f === S.leader ? '#me [data-src="ld"]' : `#me [data-src="ch:${S.chars.indexOf(f)}"]`;
+function hintAttackers(){
+  if (!(S.turn > 1)) return [];
+  return [["ld", S.leader], ...S.chars.map((f, i) => ["ch:" + i, f])]
+    .filter(([r, f]) => f && !f.r && !(f.mk || []).includes("na") && typeof rushNow(f) === "string" && !cantAttack(f))
+    .map(([r, f]) => ({r, f, k: rushNow(f)}))
+    .sort((x, y) => (x.f === S.leader) - (y.f === S.leader) || (botPow(x.f) || 0) - (botPow(y.f) || 0));
+}
+function coachHint(){
+  const out = [], add = (t, hl) => out.push({t: t.replace(/!!\.$/, "!!"), hl: hl || ""}), d0 = PR.diff;
+  PR.diff = 4;
+  try {
+    if (S.phase === "pre") {
+      const cheap = S.hand.filter(c => { const e = CARDDB.get(c.c) || {}; return e.t === "Character" && e.k >= 1 && e.k <= 4; }).length;
+      if (S.mull) add("Keep this hand: you've already used your mulligan.", '[data-do="keep"]');
+      else if (cheap < 2) add(`Mulligan: only ${cheap} of these cards ${cheap === 1 ? "is a Character" : "are Characters"} costing 1 to 4, so your first turns may have nothing to play.`, '[data-do="mulligan"]');
+      else add(`Keep: ${cheap} Characters costing 1 to 4 give you plays for your first turns.`, '[data-do="keep"]');
+      return out;
+    }
+    if (defending()) {
+      const r = defResult();
+      if (!r) return out;
+      if (!r.hits) { add(`This attack doesn't reach (${r.ap} against ${r.tp}). Let it resolve without spending any cards.`, '#mid [data-do="dfresolve"],#mid [data-do="dfdone"]'); return out; }
+      const life = S.life.length, cost = f => (CARDDB.get(f.card.c) || {}).k || 0;
+      if (r.onLeader && S.blk == null) {
+        const b = S.chars.map((f, i) => ({f, i, p: powNum({c: f.card.c, pm: pmOf(f)})})).filter(x => !x.f.r && blockerNow(x.f) && !blockBan(x.f) && x.p != null && x.p > r.ap).sort((x, y) => cost(x.f) - cost(y.f))[0];
+        if (b) { add(`Block with ${hName(b.f.card)}: at ${b.p} power it beats the attack (${r.ap}) and stays on the field.`, `#me [data-src="ch:${b.i}"]`); return out; }
+      }
+      const amt = r.ap - r.tp + 1, ctrs = S.hand.map((c, i) => ({c, i, v: ctrOf(c.c)})).filter(x => x.v > 0), set = botCtrSet(ctrs, amt);
+      const want = set && (r.onLeader ? life <= 2 || (life === 3 && set.length === 1) : (cost(r.f) >= 3 && set.length === 1 && set[0].v <= cost(r.f) * 1000) || (cost(r.f) >= 5 && set.length <= 2));
+      if (want) add(`Counter with ${set.map(x => hName(x.c)).join(" and ")} (+${set.reduce((n, x) => n + x.v, 0)}): it needs +${Math.ceil(amt / 1000) * 1000} to stop ${r.onLeader ? `a hit on your Leader at ${life} Life` : `the K.O. of ${hName(r.f.card)} (cost ${cost(r.f)})`}.`, set.map(x => hHand(x.i)).join(","));
+      else if (!set && (r.onLeader ? life <= 2 : cost(r.f) >= 4) && (ev => ev && add(`Play ${hName(S.hand[ev.i])} (a [Counter] Event, cost ${ev.cost}) to stop it: your Counter cards alone don't reach +${Math.ceil(amt / 1000) * 1000}.`, hHand(ev.i)))(botCounterEvent(amt - ctrs.reduce((n, x) => n + x.v, 0)))) {}
+      else if (r.onLeader) add(set ? `Take the hit: at ${life} Life the Life card you get is worth more than the ${set.length === 1 ? "Counter card" : set.length + " Counter cards"} it would cost. Save them for when you're lower.` : `Take the hit: your Counter cards don't add up to the +${Math.ceil(amt / 1000) * 1000} it needs.`, '#mid [data-do="dfresolve"],#mid [data-do="dfdone"]');
+      else add(set ? `Let ${hName(r.f.card)} go: it costs ${cost(r.f)}, less than the counters it would take to save.` : `Let ${hName(r.f.card)} go: your Counter cards don't add up to the +${Math.ceil(amt / 1000) * 1000} it needs.`, '#mid [data-do="dfresolve"],#mid [data-do="dfdone"]');
+      return out;
+    }
+    if (!S.myTurn) { add("It's the computer's turn. When it attacks, ask again for how to defend."); return out; }
+    if (S.atk) { add("Your attack is being answered. Wait for it to resolve."); return out; }
+    if (fxCur || fxQueue.length) { add("Finish the card ability on screen first."); return out; }
+    const atks = hintAttackers(), lethal = botLethal(atks), th = botThreat(), keep = lethal ? 0 : botCtrKeep();
+    if (lethal) add(`You can win this turn: give DON!! so each attacker reaches their Leader's power (${powNum(oppM.ld) || 5000}), then attack their Leader with everything.`, atks.map(a => hSrc(a.f)).join(","));
+    else {
+      const plan = botPlan(S.donActive - keep, th.lethal);
+      if (plan.length) {
+        const spend = plan.reduce((n, x) => n + x.hc.cost, 0);
+        add(`Play ${plan.map(x => hName(S.hand[x.i])).join(", then ")}: that uses ${spend} of your ${S.donActive} active DON!!${keep ? `, keeping ${keep} for the [Counter] Event in your hand` : ""}${th.lethal && plan.some(x => isBlocker(S.hand[x.i].c)) ? ". A Blocker helps, because the computer could win on its next turn" : ""}.`, plan.map(x => hHand(x.i)).join(","));
+      }
+      for (const f of [S.leader, S.stage, ...S.chars]) {
+        const ab = f && fxAb(f.card.c).find(a => a.t === "activateMain" && botWorth(f.card, a));
+        if (ab) { add(`Use ${hName(f.card)}'s [Activate: Main]: ${esc(fxText(ab.text.replace(/^(\[[^\]]+\]\s*)+/, ""), 140))}`, f === S.stage ? '#me [data-src="st"]' : hSrc(f)); break; }
+      }
+      const left = S.donActive - keep - plan.reduce((n, x) => n + x.hc.cost, 0);
+      const ev = S.hand.map((c, i) => ({c, i, hc: handCost(c), ab: fxAb(c.c).find(a => a.t === "main")})).find(x => (CARDDB.get(x.c.c) || {}).t === "Event" && x.hc && x.hc.cost <= left && x.ab && !playTiming(x.c, "event") && botWorth(x.c, x.ab));
+      if (ev) add(`Play ${hName(ev.c)} (Event, cost ${ev.hc.cost}) with the DON!! left over.`, hHand(ev.i));
+    }
+    if (atks.length) {
+      const lp = oppM && oppM.ld ? powNum(oppM.ld) || 5000 : 5000, spare = S.donActive - keep;
+      const need = atks.filter(a => a.k === "all").map(a => ({a, n: Math.max(0, Math.ceil((lp - (botPow(a.f) || 0)) / 1000))})).filter(x => x.n > 0).sort((x, y) => x.n - y.n);
+      let d = spare; const give = [];
+      for (const x of need) if (x.n <= d) { d -= x.n; give.push(x); }
+      if (give.length && !out.some(o => /^Play /.test(o.t))) add(`Give DON!! to reach their Leader's ${lp} power: ${give.map(x => `${x.n} to ${hName(x.a.f.card)}`).join(", ")}.`, give.map(x => hSrc(x.a.f)).join(","));
+      for (const a of atks) {
+        const t = botTargetAhead(a, lethal, th.lethal); if (!t) continue;
+        if (t === "ld") add(`Attack their Leader with ${hName(a.f.card)} (${botPow(a.f)} against ${lp})${a.f === S.leader ? "" : ": weaker attackers go first, so the computer spends its counters before your Leader swings"}.`, hSrc(a.f) + ',#opp [data-opp="ld"]');
+        else { const c = oppM.ch[+t.slice(3)]; add(`Attack their ${c.r ? "rested " : ""}${hName(c)} with ${hName(a.f.card)} to K.O. it (${botPow(a.f)} against ${powNum(c)})${isBlocker(c.c) ? ": it's a Blocker" : ""}.`, hSrc(a.f) + `,#opp [data-opp="${t}"]`); }
+        break;
+      }
+    }
+    if (th.lethal && !lethal) add(`Careful: the computer could land ${th.hits} hits next turn, enough to win. Keep your Blockers active and Counter cards in hand.`);
+    if (!out.length) add("Nothing left worth doing this turn. End your turn.", '.turnbar [data-do="endturn"]');
+    return out;
+  } catch (e) { console.warn("hint:", e); return out; }
+  finally { PR.diff = d0; }
+}
+function openHint(){
+  if (!hintOk()) { toast("Hints are for practice games against the computer."); return; }
+  const items = coachHint();
+  HINT = {k: hintKey(), items: items.length ? items : [{t: "No advice right now.", hl: ""}]};
+  render();
+}
+function renderHint(el){
+  if (!hintOk() || HINT.k !== hintKey()) { HINT = null; el.hidden = true; el.innerHTML = ""; el.dataset.k = ""; return; }
+  const key = "hint|" + HINT.k;
+  if (el.dataset.k !== key) {
+    el.dataset.k = key;
+    el.innerHTML = `<p class="cstep">Coach hint</p><h3>What the Master computer would do</h3>${HINT.items.map(x => `<p>${x.t}</p>`).join("")}<div class="row"><button class="btn" data-do="hintclose" type="button">Close</button></div>`;
+  }
+  el.hidden = false;
+  const sel = HINT.items.map(x => x.hl).filter(Boolean).join(",");
+  if (sel) try { document.querySelectorAll(sel).forEach(e => e.classList.add("coachhl")); } catch (e) {}
+}
 // ---------- practice: the computer opponent (Player 2) ----------
 // It plays its side between your actions: keeps a playable hand, plays the biggest Characters it can pay for,
 // gives its DON!! to the cards that attack, attacks your Leader or a rested Character it can K.O., and defends
@@ -6453,7 +6664,7 @@ document.addEventListener("click", e => {
   const sbn = t.closest("[data-sort]");
   if (sbn) { setSort(sbn.dataset.sort); return; }
   const bdb = t.closest("[data-bd]");
-  if (bdb) { const i = bdb.dataset.bd.indexOf(":"), a = bdb.dataset.bd.slice(0, i), c = bdb.dataset.bd.slice(i + 1); if (a === "+") bdAdd(c, 1); else if (a === "-") bdAdd(c, -1); else if (a === "L") bdLeader(c); else if (a === "LX") { BD.leader = null; renderBdDeck(); } else if (a === "H") bdHand(c); return; }
+  if (bdb) { const i = bdb.dataset.bd.indexOf(":"), a = bdb.dataset.bd.slice(0, i), c = bdb.dataset.bd.slice(i + 1); if (a === "+") bdAdd(c, 1); else if (a === "-") bdAdd(c, -1); else if (a === "L") bdLeader(c); else if (a === "LX") { BD.leader = null; renderBdDeck(); } else if (a === "H") bdHand(c); else if (a === "O+" || a === "O-") { collAdd(c, a === "O+" ? 1 : -1); collRefresh(c); } return; }
   const lib = t.closest("[data-lib]");
   if (lib) { bdAdd(lib.dataset.lib, 1); return; }
   const ld = t.closest("[data-ld]"); if (ld) { loadDeck(ld.dataset.ld); return; }
@@ -6494,7 +6705,7 @@ document.addEventListener("change", e => {
     if (t.id === "bd-sortset") { bdSort = {key: "set", dir: 1}; updateSortUI(); }
     bdShow = 60; renderLib(); return;
   }
-  if (t && (t.id === "bd-color" || t.id === "bd-type" || t.id === "bd-kw" || t.id === "bd-attr" || t.id === "bd-artonly" || t.id === "bd-group" || t.id === "bd-showban" || t.id === "bd-showrot" || t.id === "bd-showpre")) { bdShow = 60; renderLib(); return; }
+  if (t && (t.id === "bd-color" || t.id === "bd-type" || t.id === "bd-kw" || t.id === "bd-attr" || t.id === "bd-artonly" || t.id === "bd-group" || t.id === "bd-ownonly" || t.id === "bd-collmode" || t.id === "bd-showban" || t.id === "bd-showrot" || t.id === "bd-showpre")) { bdShow = 60; renderLib(); return; }
   if (t && t.id === "rp-file") { const f = t.files && t.files[0]; t.value = ""; if (f) rpOpenFile(f); return; }
   if (t && t.id === "cd-file") { const f = t.files && t.files[0]; t.value = ""; if (f) { if (f.size > 12 * 1048576) toast("That file is too large (12 MB max)."); else f.text().then(importCardData); } return; }
   if (t && t.id === "f-pub") { const o = $("#f-pubopts"), b = $("#f-joinbtn"); if (o) o.hidden = !t.checked; if (b) b.textContent = t.checked ? "Open lobby" : "Join room"; return; }
@@ -6654,6 +6865,7 @@ function doAction(a){
   if (a === "dssave") { dsSave(); return; }
   if (a === "dscopyimg") { dsCopyImg(); return; }
   if (a === "dscode") { dsCopyCode(); return; }
+  if (a === "dslink") { if (DS) { const u = linkOf("d", DS.code); try { navigator.clipboard.writeText(u).then(() => toast("Link copied. It opens the deck in Bounty TCG."), () => toast("Couldn't copy the link.")); } catch (e) { toast("Couldn't copy the link."); } } return; }
   if (a === "oppdeck") { openOppDeck(); return; }
   if (a === "oppdeckopen") { oppDeckOpen(); return; }
   if (a === "oppdeckcopy") { oppDeckCopy(); return; }
@@ -6747,6 +6959,16 @@ function doAction(a){
     case "bdmore": bdShow += 60; renderLib(); break;
     case "bdaddgo": bdAddByNumber(); break;
     case "bdclear": BD.cards = new Map(); BD.leader = null; BD.life = 5; $("#bd-name").value = ""; $("#bd-life").value = 5; { const ld = $("#bd-load"); if (ld) ld.value = ""; } renderBdDeck(); renderLib(); toast("Deck cleared. Ready for a new one."); break;
+    case "colldeck": { let n = 0; for (const x of collMissing()) { COLL[x.c] = x.own + x.need; n += x.need; } if (n) collSave(); renderBdDeck(); renderLib(); toast(n ? `Added ${n} card${n === 1 ? "" : "s"} to your collection.` : BD.cards.size || BD.leader ? "You already own every card in this deck." : "The deck is empty."); break; }
+    case "collmiss": { const miss = collMissing(), txt = miss.map(x => x.need + "x" + x.c + (nameOf(x.c) ? " " + nameOf(x.c) : "")).join("\n");
+      if (!miss.length) { toast("You own every card in this deck."); break; }
+      try { navigator.clipboard.writeText(txt).then(() => toast(`Copied the ${miss.reduce((s, x) => s + x.need, 0)} cards you need.`), () => toast("Couldn't copy. The list is in the My collection box.")); } catch (err) {}
+      const box = $("#bd-collpaste"); if (box && !box.value) box.value = txt; break; }
+    case "collimport": { const raw = ($("#bd-collpaste") || {}).value || "", rows = parseLines(codeOrList(raw)).filter(r => CARD_RE.test(r.code));
+      if (!rows.length) { toast("Paste a list of cards first."); break; }
+      let n = 0; for (const r of rows) { COLL[r.code] = Math.min(99, (COLL[r.code] || 0) + r.count); n += r.count; }
+      collSave(); $("#bd-collpaste").value = ""; renderBdDeck(); renderLib(); toast(`Added ${n} card${n === 1 ? "" : "s"} to your collection.`); break; }
+    case "collclear": showMenu(`Clear your collection of ${collSize()} cards?`, [["Clear it", () => { COLL = {}; collSave(); renderBdDeck(); renderLib(); toast("Collection cleared."); }], ["Keep it", () => {}]], innerWidth / 2 - 150, innerHeight / 2 - 60); break;
     case "bdimport": { const txt = codeOrList($("#bd-paste").value); if (!parseLines(txt).length) { toast("Paste a decklist first."); break; } learnNames(txt); const had = BD.leader && BD.leader.c; bdImport(txt); renderBdDeck(); renderLib(); toast(`Deck replaced from your list${BD.leader && BD.leader.c !== had ? `, with ${BD.leader.c} as Leader` : ""}. ${bdTotal()} cards.`); break; }
     case "bdcopy":
       try { navigator.clipboard.writeText(deckExport()).then(() => toast("Decklist copied."), () => toast("Open Paste or copy a decklist and copy the text there.")); }
@@ -6830,6 +7052,8 @@ function doAction(a){
     case "pswitch": practiceSwitch(); break;
     case "closemodal": closeModal(); break;
     case "keep": keepHand(); break;
+    case "hint": openHint(); break;
+    case "hintclose": HINT = null; render(); break;
     case "mulligan": mulligan(); break;
     case "shuffle": shuffleDeck(); break;
     case "copyroom":
@@ -7581,8 +7805,8 @@ async function openDeckShare(){
   showModal(`<h2>Share this deck</h2>
     <div class="dsimg"><div class="lbempty"><b>Drawing the picture…</b></div></div>
     <label for="ds-code">Deck code</label>
-    <div class="row dsrow"><input type="text" id="ds-code" readonly value="${esc(DS.code)}" spellcheck="false"><button class="btn" data-do="dscode" type="button">Copy code</button></div>
-    <p class="hint">Anyone with Bounty TCG can paste the code in the Deck editor (Paste a decklist, then Replace deck with this list) or in the decklist box when they sit down. Copy list gives the usual text other simulators and deck sites take.</p>
+    <div class="row dsrow"><input type="text" id="ds-code" readonly value="${esc(DS.code)}" spellcheck="false"><button class="btn" data-do="dscode" type="button">Copy code</button><button class="btn" data-do="dslink" type="button">Copy link</button></div>
+    <p class="hint">The link opens the deck in Bounty TCG with one click. Anyone can also paste the code in the Deck editor (Paste a decklist, then Replace deck with this list) or in the decklist box when they sit down. Copy list gives the usual text other simulators and deck sites take.</p>
     <div class="row end"><button class="btn" data-do="closemodal" type="button">Back</button><button class="btn" data-do="bdcopy" type="button">Copy list</button><button class="btn" data-do="dscopyimg" type="button">Copy picture</button><button class="btn pri" data-do="dssave" type="button">Save picture</button></div>`);
   const cv = await deckCanvas(dk, v.name);
   if (!DS || !modal || modal.type !== "deckshare") return;
@@ -7632,6 +7856,8 @@ function bdImport(txt){
   }
 }
 function cell(code){
+  if (COLLMODE) { const own = COLL[code] || 0, c = esc(code), lg = legalOf(code);
+    return `<div class="lcell"><div class="lwrap${lg === "ban" ? " isban" : lg === "rot" ? " isrot" : ""}">${tile({c: code, n: nameOf(code) || ""}, `data-lib="${c}"`, false, 0)}${legalTag(code)}<span class="setno">${c}</span><em class="lcount own ${own ? "" : "zero"}" data-own="${c}">${own}</em><div class="lctl"><button type="button" data-bd="O-:${c}" aria-label="Own one fewer ${c}">−</button><span class="ownlbl">Own ${own}</span><button type="button" data-bd="O+:${c}" aria-label="Own one more ${c}">+</button></div></div>${statOf(code)}</div>`; }
   const n = BD.cards.get(code), cnt = n ? n.count : 0, c = esc(code), lg = legalOf(code);
   return `<div class="lcell"><div class="lwrap${lg === "ban" ? " isban" : lg === "rot" ? " isrot" : ""}">${tile({c: code, n: nameOf(code) || ""}, `data-lib="${c}"`, false, 0)}${legalTag(code)}<span class="setno">${c}</span><em class="lcount ${cnt ? "" : "zero"}" data-lc="${c}">${cnt}</em><div class="lctl"><button type="button" data-bd="-:${c}" aria-label="Remove one ${c}">−</button><button type="button" data-bd="+:${c}" aria-label="Add one ${c}">+</button><button type="button" data-bd="L:${c}" title="Set as Leader" aria-label="Set ${c} as Leader">Leader</button></div></div>${statOf(code)}</div>`;
 }
@@ -7732,12 +7958,14 @@ function renderLib(){
   const ats = new Set(); CARDDB.forEach(v => { if (v.a) v.a.split("/").forEach(x => { x = x.trim(); if (x) ats.add(x); }); });
   fillSel($("#bd-attr"), "All attributes", Array.from(ats).sort());
   const toks = normq($("#bd-q").value).split(" ").filter(Boolean);
-  const set = bdSetVal, ty = $("#bd-type").value, kwSel = ($("#bd-kw") || {}).value || "", atSel = ($("#bd-attr") || {}).value || "", artOnly = $("#bd-artonly").checked;
+  const set = bdSetVal, ty = $("#bd-type").value, kwSel = ($("#bd-kw") || {}).value || "", atSel = ($("#bd-attr") || {}).value || "", artOnly = $("#bd-artonly").checked, ownOnly = !!($("#bd-ownonly") || {}).checked;
+  COLLMODE = !!($("#bd-collmode") || {}).checked;
   const showBan = !$("#bd-showban") || $("#bd-showban").checked, showRot = !$("#bd-showrot") || $("#bd-showrot").checked, showPre = !$("#bd-showpre") || $("#bd-showpre").checked;
   const codes = all.filter(c => {
     if (set && c.split("-")[0] !== set) return false;
     if (!showBan || !showRot || !showPre) { const lg = legalOf(c); if ((lg === "ban" && !showBan) || (lg === "rot" && !showRot) || (lg === "pre" && !showPre)) return false; }
     if (artOnly && !ART.has(c)) return false;
+    if (ownOnly && !COLL[c]) return false;
     const m = CARDDB.get(c);
     if (bdColors.size && !(m && m.c && m.c.toLowerCase().split(/[\/,\s]+/).some(x => bdColors.has(x)))) return false;
     if (ty && !(m && m.t === ty)) return false;
@@ -7792,6 +8020,10 @@ function bdAppend(){
   const el = $("#bd-lib"), more = el && el.querySelector(".bdmore"); if (!more) return;
   more.remove(); el.insertAdjacentHTML("beforeend", bdCells(120));
 }
+function collRefresh(c){
+  document.querySelectorAll(`#bd-lib [data-own="${CSS.escape(c)}"]`).forEach(e => { const n = COLL[c] || 0; e.textContent = n; e.classList.toggle("zero", !n); const l = e.parentNode.querySelector(".ownlbl"); if (l) l.textContent = "Own " + n; });
+  renderBdDeck();
+}
 function refreshLibCounts(){
   document.querySelectorAll("#bd-lib [data-lc]").forEach(e => { const n = BD.cards.get(e.dataset.lc), c = n ? n.count : 0; e.textContent = c; e.classList.toggle("zero", !c); });
 }
@@ -7806,17 +8038,19 @@ function renderBdDeck(){
     + (rotated.length ? `<span class="chip" title="${esc(rotated.join(", "))}">${rotated.length} not in Standard</span>` : "")
     + (pre.length ? `<span class="chip pre" title="${esc(pre.map(k => k + " from " + shortDate(preDate(k))).join(", "))}. Until then, only at Standard + previews tables, Casual tables and in practice.">${pre.length} preview${pre.length === 1 ? "" : "s"}</span>` : "")
     + pairs.map(p => `<span class="chip bad" title="These two can't be in the same deck">Banned pair: ${esc(p[0])} + ${esc(p[1])}</span>`).join("")
-    + (off.length ? `<span class="chip bad" title="${esc(off.join(", "))}">${off.length} not in the Leader's color${colorsOf(L.c).length > 1 ? "s" : ""}</span>` : "") + `</div>`;
+    + (off.length ? `<span class="chip bad" title="${esc(off.join(", "))}">${off.length} not in the Leader's color${colorsOf(L.c).length > 1 ? "s" : ""}</span>` : "")
+    + ((miss, own) => !own || !used.length ? "" : miss.length ? `<span class="chip bad" id="bd-collchip" title="${esc(miss.map(x => x.need + "x" + x.c).join(", "))}">You need ${miss.reduce((s, x) => s + x.need, 0)} more card${miss.length === 1 && miss[0].need === 1 ? "" : "s"}</span>` : '<span class="chip good" id="bd-collchip">You own every card</span>')(collMissing(), collSize()) + `</div>`;
   const list = rows.length
     ? `<div class="bd-stacks">${rows.map(k => {
         const v = BD.cards.get(k);
         let cards = "";
         for (let i = 0; i < v.count; i++) cards += tile({c: k, n: v.n || nameOf(k) || ""}, "", false, 0).replace('style="--h:', `style="--i:${i};--h:`);
-        return `<div class="bdcell"><div class="bdstack" style="--n:${v.count}">${cards}<em class="bdcnt">${v.count}x</em></div><div class="bdctl"><button type="button" data-bd="-:${esc(k)}" aria-label="Remove one ${esc(k)}">−</button><span${(lg => lg ? ` class="lg-${lg}" title="${esc(legalNote(k))}"` : "")(legalOf(k))}>${esc(k)}</span><button type="button" data-bd="+:${esc(k)}" aria-label="Add one ${esc(k)}">+</button></div></div>`;
+        return `<div class="bdcell"><div class="bdstack" style="--n:${v.count}">${cards}<em class="bdcnt">${v.count}x</em></div><div class="bdctl"><button type="button" data-bd="-:${esc(k)}" aria-label="Remove one ${esc(k)}">−</button><span${(lg => lg ? ` class="lg-${lg}" title="${esc(legalNote(k))}"` : collSize() && (COLL[k] || 0) < v.count ? ` class="cmiss" title="You own ${COLL[k] || 0} of ${v.count}"` : "")(legalOf(k))}>${esc(k)}</span><button type="button" data-bd="+:${esc(k)}" aria-label="Add one ${esc(k)}">+</button></div></div>`;
       }).join("")}</div>`
     : `<p class="hint" style="padding:10px 4px">Your deck is empty. Tap a card to add it.</p>`;
   el.innerHTML = lead + stats + bdStatsHTML(rows) + list;
   const txt = $("#bd-text"); if (txt) txt.value = deckExport();
+  const co = $("#bd-collin"); if (co) { const keep = ($("#bd-collpaste") || {}).value || ""; co.innerHTML = collHTML(); $("#bd-collpaste").value = keep; }
   const td = $("#bd-tabdeck"); if (td) td.textContent = `Deck (${t})`;
 }
 // cost curve, counter total and card types for the deck being built
@@ -8644,6 +8878,8 @@ async function rdReadAll(){
 initDecks();
 try { const n = sessionStorage.getItem("bounty:acctnote"); if (n) { sessionStorage.removeItem("bounty:acctnote"); setTimeout(() => toast(n), 1200); } } catch (e) {}
 statsLoad().then(rankLoad);
+collLoad();
+linkInit();
 setTimeout(friendsWatch, 1500);   // stats first, so a ranked match left unfinished last time is added to them
 initNames();
 initSettings();

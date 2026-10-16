@@ -441,7 +441,7 @@
     if (!r.ok && r.status !== 404) throw {code: r.status === 403 ? "not_granted" : "unavailable", message: "Couldn't reach your account's saved data."};
     return r;
   }
-  const SHARED = ["ranks", "results", "games", "replays", "reports"];
+  const SHARED = ["ranks", "results", "games", "replays", "reports", "meta"];
   const isCloud = path => !!FB && (SHARED.includes(path.split("/")[0])
     || (!!auth && (path === "data/users/" + auth.uid || path.startsWith("data/users/" + auth.uid + "/"))));
   const cloudSubs = new Set();
@@ -464,15 +464,18 @@
     };
   }
   function cloudColRef(path) {
-    // an orderBy and limit go to Firestore (newest games first without reading them all); filters run here
+    // an orderBy and limit go to Firestore (newest games first without reading them all); filters run here. Newest first
+    // with where(that field, ">", x) reads small pages and stops at the first page that reaches x, so only newer ones cost reads
     const list = async q => {
       const docs = [], want = (q && q.lim) || 3000, ord = q && q.order ? "&orderBy=" + encodeURIComponent(q.order[0] + (q.order[1] === "desc" ? " desc" : "")) : "";
+      const stop = q && q.order && q.order[1] === "desc" && (q.where || []).find(w => w[0] === q.order[0] && (w[1] === ">" || w[1] === ">="));
       let tok = "";
-      for (let i = 0; i < 10 && docs.length < want; i++) {
-        const r = await fsFetch(path, null, "?pageSize=" + Math.min(300, want - docs.length) + ord + (tok ? "&pageToken=" + encodeURIComponent(tok) : ""));
+      for (let i = 0; i < (stop ? 40 : 10) && docs.length < want; i++) {
+        const r = await fsFetch(path, null, "?pageSize=" + Math.min(stop ? 50 : 300, want - docs.length) + ord + (tok ? "&pageToken=" + encodeURIComponent(tok) : ""));
         const j = r.status === 404 ? {} : await r.json();
-        for (const d of j.documents || []) { const data = jsf(d.fields); docs.push({id: d.name.split("/").pop(), exists: true, data: () => clone(data)}); }
-        if (!j.nextPageToken) break; tok = j.nextPageToken;
+        let past = false;
+        for (const d of j.documents || []) { const data = jsf(d.fields); docs.push({id: d.name.split("/").pop(), exists: true, data: () => clone(data)}); if (stop && !(stop[1] === ">" ? data[stop[0]] > stop[2] : data[stop[0]] >= stop[2])) past = true; }
+        if (past || !j.nextPageToken) break; tok = j.nextPageToken;
       }
       return {docs, size: docs.length, empty: !docs.length};
     };

@@ -13,8 +13,8 @@ const APP_DIR = __dirname;
 const WEB_DIR = path.join(APP_DIR, "web");
 // Raise SHELL_VERSION whenever main.js or preload.js change. An update whose "shell" is newer
 // than this one asks the player to download the full app instead of installing itself.
-// 2: updater. 3: desktop shortcut on first launch.
-const SHELL_VERSION = 3;
+// 2: updater. 3: desktop shortcut on first launch. 4: bounty:// links.
+const SHELL_VERSION = 4;
 const UPDATE_URL = process.env.BOUNTY_UPDATE_URL || "https://raw.githubusercontent.com/ryanmTCG/Bounty-TCG/main/updates/";
 const DOWNLOAD_PAGE = "https://github.com/ryanmTCG/Bounty-TCG";
 const STATIC_BLOBS = {
@@ -260,6 +260,20 @@ function desktopShortcut() {
   } catch (e) {}
 }
 
+// ---------- links ----------
+// bounty://replay/<code> and bounty://deck/<deck code> open in the game. Windows starts the app (or a second copy, which
+// hands the link to this one) with the link as an argument; macOS sends open-url. A link that arrives before the page
+// is ready waits in pendingLink until the page asks for it (link:take).
+const LINK_RE = /^bounty:\/\/(replay|deck)\/[A-Za-z0-9_-]{4,1600}\/?$/i;
+let pendingLink = "";
+const linkIn = argv => (argv || []).find(a => typeof a === "string" && LINK_RE.test(a)) || "";
+function sendLink(url) {
+  if (!LINK_RE.test(url || "")) return;
+  if (win && !win.isDestroyed() && !win.webContents.isLoading()) { win.webContents.send("ui:link", url); if (win.isMinimized()) win.restore(); win.focus(); }
+  else pendingLink = url;
+}
+ipcMain.handle("link:take", () => { const u = pendingLink; pendingLink = ""; return u; });
+
 // ---------- window ----------
 let win = null;
 function createWindow() {
@@ -298,7 +312,12 @@ function buildMenu() {
 
 if (process.env.BOUNTY_PROFILE) app.setPath("userData", process.env.BOUNTY_PROFILE);
 if (!app.requestSingleInstanceLock()) app.quit();
-app.on("second-instance", () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
+app.on("second-instance", (_e, argv) => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } sendLink(linkIn(argv)); });
+app.on("open-url", (e, url) => { e.preventDefault(); sendLink(url); });
+pendingLink = linkIn(process.argv);
+if (!process.env.BOUNTY_PROFILE) {
+  try { if (process.defaultApp) app.setAsDefaultProtocolClient("bounty", process.execPath, [path.resolve(process.argv[1] || ".")]); else app.setAsDefaultProtocolClient("bounty"); } catch (e) {}
+}
 app.whenReady().then(() => {
   web = pickWeb();
   protocol.handle("app", handleApp);
