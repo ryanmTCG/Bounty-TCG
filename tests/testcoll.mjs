@@ -51,9 +51,16 @@ check(await pg.evaluate(() => COLL["OP05-003"] === 4 && COLL["OP05-001"] === 2 &
 await pg.click('[data-do="collmiss"]'); await wait(300);
 const need = await pg.evaluate(() => document.querySelector("#bd-collpaste").value);
 check(/^2xOP05-004/m.test(need) && !/OP05-003/.test(need) && !/OP05-001/.test(need) && need.split("\n").length === 12, "Copy the cards I need lists only what's missing");
+const buy = await pg.evaluate(() => ({box: [...document.querySelectorAll("#bd-collin .collbuy a")].map(a => a.href), deck: [...document.querySelectorAll("#bd-deck .bdctl .tcgbuy")].map(a => a.href)}));
+console.log("buy", buy.box.length, buy.deck.length, buy.box[0]);
+check(buy.box.length === 12 && buy.deck.length === 12 && buy.box.every(u => /^https:\/\/www\.tcgplayer\.com\/search\/one-piece-card-game\/product\?.*&q=[A-Z0-9]+-\d+$/.test(u)) && buy.box.some(u => u.endsWith("q=OP05-004")), "each card the deck still needs has a TCGplayer link");
+const opened = await A.app.evaluate(async ({ shell }) => { const urls = []; shell.openExternal = u => { urls.push(u); return Promise.resolve(); }; globalThis.__urls = urls; return true; });
+await pg.click('#bd-collin .collbuy a'); await wait(500);
+const ext = await A.app.evaluate(() => globalThis.__urls);
+check(ext.length === 1 && /tcgplayer\.com.*q=OP05-/.test(ext[0]), "a link opens TCGplayer in the browser");
 await pg.fill("#bd-collpaste", "");
 await pg.click('[data-do="colldeck"]'); await wait(300);
-check(await pg.evaluate(() => document.querySelector("#bd-collchip").textContent === "You own every card" && !document.querySelector("#bd-deck .cmiss") && COLL["OP05-004"] === 4 && COLL["OP05-001"] === 2), "I own this deck adds what's missing");
+check(await pg.evaluate(() => document.querySelector("#bd-collchip").textContent === "You own every card" && !document.querySelector("#bd-deck .cmiss") && !document.querySelector(".tcgbuy") && COLL["OP05-004"] === 4 && COLL["OP05-001"] === 2), "I own this deck adds what's missing");
 // only cards I own
 await pg.uncheck("#bd-collmode"); await pg.fill("#bd-q", ""); await pg.dispatchEvent("#bd-q", "input"); await pg.check("#bd-ownonly"); await wait(500);
 const only = await pg.evaluate(() => ({n: bdLast.codes.length, k: Object.keys(COLL).length, plus: !!document.querySelector('#bd-lib [data-bd="+:OP05-004"]')}));

@@ -1,8 +1,8 @@
 {
-  "version": "1.6.0",
+  "version": "1.7.0",
   "shell": 2,
-  "bundle": "web-1.6.0.json.gz",
-  "sha256": "816d4f87ee232e81bd5d06c4d82d26bbf0270051adbd112df560195129f675c1",
-  "size": 899734,
-  "notes": "The 73 cards that keep a Character on the field \"instead\" (like EB04-030, OP13-047 and OP11-101) now stop the K.O. or removal and ask whether you want to pay for it. The computer uses its own. About 55 \"When ...\" abilities are now offered when that happens instead of being left for you to..."
+  "bundle": "web-1.7.0.json.gz",
+  "sha256": "8783454782cbf9bb3971c561ab3a17fdcc74ea55b948e805cfc0ef1c001435db",
+  "size": 914715,
+  "notes": "Find a match (Play > Find a match): press Find a quick match or Find a ranked match and you're paired with the next player who's looking. The page shows how many players are in each queue and how many are in a match right now; the Ranked page shows its own. New Master level for the computer: it..."
 }

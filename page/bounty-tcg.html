@@ -154,6 +154,10 @@ button,input,textarea,select{font:inherit;color:inherit}
 .lcount.own{background:#4FC3E0;color:#062033}
 .lctl .ownlbl{font-size:12px;min-width:48px;text-align:center;background:rgba(0,0,0,.7);color:#fff;border-radius:6px;padding:3px 6px}
 .bdctl span.cmiss{color:#FFA091}
+.tcgbuy{font-size:12px;font-weight:700;color:#8FD8EE;text-decoration:underline;white-space:nowrap}
+.collbuy{display:flex;flex-direction:column;gap:4px;max-height:260px;overflow:auto;font-size:13px}
+.collbuy div{display:flex;justify-content:space-between;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:3px 0}
+.collbuy span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bd-deckp{background:var(--panel);color:var(--ink);border-radius:14px;padding:12px;overflow:auto;min-height:0;border:1px solid var(--line)}
 .bd-deckp h3{font-family:"Alfa Slab One",Georgia,serif;font-weight:400;font-size:16px;margin:0 0 6px}
 .bd-leader{display:flex;gap:12px;align-items:center;margin-bottom:10px}
@@ -2085,11 +2089,15 @@ function collMissing(){
   if (BD.leader) want.set(BD.leader.c, (want.get(BD.leader.c) || 0) + 1);
   return Array.from(want.entries()).filter(([k, n]) => (COLL[k] || 0) < n).map(([c, n]) => ({c, need: n - (COLL[c] || 0), own: COLL[c] || 0})).sort((a, b) => natural(a.c, b.c));
 }
+// a TCGplayer search for one card by its number (opened in the browser)
+const tcgUrl = c => "https://www.tcgplayer.com/search/one-piece-card-game/product?productLineName=one-piece-card-game&view=grid&q=" + encodeURIComponent(c);
+const tcgLink = (c, t) => `<a class="tcgbuy" href="${esc(tcgUrl(c))}" target="_blank" rel="noopener noreferrer" title="Find ${esc(c)} on TCGplayer">${t || "Buy"}</a>`;
 function collHTML(){
   const n = collSize(), kinds = Object.keys(COLL).length, miss = collMissing(), mn = miss.reduce((s, x) => s + x.need, 0);
+  const buy = miss.length ? `<p class="hint" style="margin-top:10px">${n ? "Cards this deck still needs" : "Cards in this deck"}. Each link searches TCGplayer for that card number.</p><div class="collbuy">${miss.slice(0, 60).map(x => `<div><span>${x.need}x ${esc(x.c)} ${esc(nameOf(x.c) || "")}</span>${tcgLink(x.c, "Buy on TCGplayer")}</div>`).join("")}</div>` : "";
   return `<p class="hint">${n ? `You own ${n} card${n === 1 ? "" : "s"} (${kinds} different).` : "Mark the cards you own, and the deck shows which ones it still needs."} Turn on <b>Collection mode</b> above the cards to set how many of each you own with − and +, or add a whole list here.</p>`
     + `<div class="row" style="margin:6px 0;flex-wrap:wrap;gap:6px"><button class="btn" data-do="colldeck" type="button">I own this deck</button><button class="btn" data-do="collmiss" type="button"${n && mn ? "" : " disabled"}>Copy the ${mn ? mn + " " : ""}cards I need</button>${n ? '<button class="btn" data-do="collclear" type="button">Clear my collection</button>' : ""}</div>`
-    + `<textarea id="bd-collpaste" spellcheck="false" placeholder="4xOP01-013&#10;2xOP01-016&#10;(a decklist or deck code works too)"></textarea><div class="row"><button class="btn" data-do="collimport" type="button">Add these to my collection</button></div>`;
+    + `<textarea id="bd-collpaste" spellcheck="false" placeholder="4xOP01-013&#10;2xOP01-016&#10;(a decklist or deck code works too)"></textarea><div class="row"><button class="btn" data-do="collimport" type="button">Add these to my collection</button></div>` + buy;
 }
 // ---------- nickname: one name everyone sees (the table, the lobby, friends' lists, the Ranked leaderboard) ----------
 const NICK_DEF = "Player";
@@ -8045,7 +8053,7 @@ function renderBdDeck(){
         const v = BD.cards.get(k);
         let cards = "";
         for (let i = 0; i < v.count; i++) cards += tile({c: k, n: v.n || nameOf(k) || ""}, "", false, 0).replace('style="--h:', `style="--i:${i};--h:`);
-        return `<div class="bdcell"><div class="bdstack" style="--n:${v.count}">${cards}<em class="bdcnt">${v.count}x</em></div><div class="bdctl"><button type="button" data-bd="-:${esc(k)}" aria-label="Remove one ${esc(k)}">−</button><span${(lg => lg ? ` class="lg-${lg}" title="${esc(legalNote(k))}"` : collSize() && (COLL[k] || 0) < v.count ? ` class="cmiss" title="You own ${COLL[k] || 0} of ${v.count}"` : "")(legalOf(k))}>${esc(k)}</span><button type="button" data-bd="+:${esc(k)}" aria-label="Add one ${esc(k)}">+</button></div></div>`;
+        return `<div class="bdcell"><div class="bdstack" style="--n:${v.count}">${cards}<em class="bdcnt">${v.count}x</em></div><div class="bdctl"><button type="button" data-bd="-:${esc(k)}" aria-label="Remove one ${esc(k)}">−</button><span${(lg => lg ? ` class="lg-${lg}" title="${esc(legalNote(k))}"` : collSize() && (COLL[k] || 0) < v.count ? ` class="cmiss" title="You own ${COLL[k] || 0} of ${v.count}"` : "")(legalOf(k))}>${esc(k)}</span>${collSize() && (COLL[k] || 0) < v.count ? tcgLink(k) : ""}<button type="button" data-bd="+:${esc(k)}" aria-label="Add one ${esc(k)}">+</button></div></div>`;
       }).join("")}</div>`
     : `<p class="hint" style="padding:10px 4px">Your deck is empty. Tap a card to add it.</p>`;
   el.innerHTML = lead + stats + bdStatsHTML(rows) + list;
