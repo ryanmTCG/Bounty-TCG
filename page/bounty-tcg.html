@@ -943,6 +943,7 @@ select.sbtn{font-family:var(--slab)}
 .rkbadge{display:inline-block;padding:4px 14px;border-radius:999px;border:3px solid #12262D;background:linear-gradient(180deg,#FFD27A,#E8A72C);color:#2A1D00;font-family:var(--slab);font-size:18px}
 .rkbadge.sm{font-size:12px;padding:1px 9px;border-width:2px}
 .rkdeck{margin:0 0 8px;color:#F1DDB0}
+.rkdeck select{max-width:min(100%,340px);margin:0 6px}
 .rkbad{margin-top:4px;color:#FF9A8A;font-size:14px}
 .rkh{margin:14px 0 8px}
 .rklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
@@ -1896,14 +1897,31 @@ async function rankBoard(){
     return sn.docs.map(d => rankFrom(d.data() || {})).filter(x => x.w + x.l > 0 && (x.s === cur || (!x.s && seasonNo(cur) === 1))).sort((a, b) => b.b - a.b).slice(0, 25);
   } catch (e) { return null; }
 }
+// the deck you play, picked from your saved decks with a drop-down (Lobbies, Find a match, Ranked). Picking one puts
+// it in the saved setup (nakama:setup, did = the deck's id) that sitting down and every table setup start from.
+function deckBox(fmt){
+  const v = loadSaved(), ld = parseLines(v.leader || "")[0], n = deckCount(v.deck || ""), bad = fmt ? illegalNote(deckIllegal(v, fmt), fmt) : "";
+  const cur = DECKS.find(d => d.id === v.did && d.leader === v.leader && d.deck === v.deck) || DECKS.find(d => d.leader === v.leader && d.deck === v.deck);
+  const now = ld ? `${esc(ld.code)} ${esc(ld.name || nameOf(ld.code) || "")}, ${n} cards` : "No deck picked yet";
+  const opts = (cur ? "" : `<option value="" selected>${now}</option>`) + DECKS.map(d => `<option value="${esc(d.id)}"${cur === d ? " selected" : ""}>${esc(d.name)} (${deckCount(d.deck)} cards)</option>`).join("");
+  return `<div class="rkdeck" id="deckbox" data-fmt="${esc(fmt)}"><label for="deckpick">Your deck</label> <select id="deckpick" aria-label="Pick the deck you play">${opts}</select> <button class="linkbtn" data-do="homebuilder" type="button">Edit in the Deck editor</button>`
+    + (DECKS.length ? "" : `<div class="hint">Save decks in the Deck editor to switch between them here.</div>`) + (bad ? `<div class="rkbad">${esc(bad)}</div>` : "") + `</div>`;
+}
+function deckBoxRefresh(){ const b = $("#deckbox"); if (b) b.outerHTML = deckBox(b.dataset.fmt || ""); }
+function pickDeck(id){
+  const d = DECKS.find(x => x.id === id); if (!d) return;
+  const v = loadSaved();
+  Object.assign(v, {leader: d.leader, deck: d.deck, life: d.life, sleeve: d.sleeve, did: d.id});
+  save(v); deckBoxRefresh();
+  toast(`You'll play "${d.name}".`);
+}
 function openRanked(){
   modal = {type: "ranked"};
-  const v = loadSaved(), ld = parseLines(v.leader || "")[0], n = deckCount(v.deck || ""), bad = illegalNote(deckIllegal(v, "std"), "std");
   showModal(`<h2>Ranked</h2>
     <p class="hint">Play a Standard match against someone else who's looking. Beating a player with the same bounty as yours raises it by ฿27,500. Beating a higher bounty is worth more (up to ฿50,000) and a lower one less (at least ฿5,000), so your bounty follows how well you play, not how much. Every ฿300,000 earns a new rank: Rookie, Supernova, Warlord, then Yonko. A loss costs what the winner would have gained the other way round, but a Rookie only loses a quarter of that, a Supernova half and a Warlord three quarters. A result counts when the losing player concedes or takes damage at 0 Life. Leaving a ranked match early counts as a loss, and your opponent gets the win. Each turn has a 3-minute clock (paused while your opponent answers an attack, and they get 45 seconds to do it). Running out of time ends your turn, and the third time loses the match.</p>
     <div class="rkseason"><b>${esc(seasonName(seasonKey()))}</b><span>Ends in ${Math.max(1, Math.ceil((seasonEnd(seasonKey()) - Date.now()) / 864e5))} day${Math.ceil((seasonEnd(seasonKey()) - Date.now()) / 864e5) === 1 ? "" : "s"}. When the next season starts, every bounty is halved (to ฿300,000 at most) and the win–loss record starts again. Your final bounty each season is kept in your Profile.</span></div>
     <div class="rkme"><span class="rkbadge">${esc(rankName(RANK.b))}</span><div><b>${berry(RANK.b)}</b> bounty<small>${RANK.w} win${RANK.w === 1 ? "" : "s"} · ${RANK.l} loss${RANK.l === 1 ? "" : "es"}</small></div></div>
-    <div class="rkdeck">Your deck: ${ld ? `<b>${esc(ld.code)} ${esc(ld.name || nameOf(ld.code) || "")}</b>, ${n} cards` : "<b>none picked yet</b>"} <button class="linkbtn" data-do="homebuilder" type="button">Change it in the Deck editor</button>${bad ? `<div class="rkbad">${esc(bad)}</div>` : ""}</div>
+    ${deckBox("std")}
     <div class="lbbar"><button class="btn pri" data-do="rkfind" type="button">Find a match</button><span class="sp"></span><span class="lbcount" id="lb-count" data-q="1"></span></div>
     <h3 class="rkh">Leaderboard, ${esc(seasonName(seasonKey()).replace(/ \(.*\)$/, ""))}</h3>
     <div class="rkboard" id="rk-board"><div class="lbempty"><b>Loading…</b></div></div>
@@ -1949,10 +1967,9 @@ function rankedCount(){
 }
 function openQuick(){
   modal = {type: "quick"};
-  const v = loadSaved(), ld = parseLines(v.leader || "")[0], n = deckCount(v.deck || ""), bad = illegalNote(deckIllegal(v, "std"), "std");
   showModal(`<h2>Find a match</h2>
     <p class="hint">Get paired with the next player who's looking, with Standard rules. A quick match doesn't change your bounty; ranked does.</p>
-    <div class="rkdeck">Your deck: ${ld ? `<b>${esc(ld.code)} ${esc(ld.name || nameOf(ld.code) || "")}</b>, ${n} cards` : "<b>none picked yet</b>"} <button class="linkbtn" data-do="homebuilder" type="button">Change it in the Deck editor</button>${bad ? `<div class="hint">${esc(bad)}</div>` : ""}</div>
+    ${deckBox("std")}
     <div class="qrow"><div><b>Quick match</b><span class="lbcount" data-q="2"></span></div><button class="btn pri" data-do="qkfind" type="button">Find a quick match</button></div>
     <div class="qrow"><div><b>Ranked</b><span class="lbcount" data-q="1"></span></div><button class="btn" data-do="rkfind" type="button">Find a ranked match</button></div>
     <h3 class="rkh">Watch a match</h3>
@@ -3374,6 +3391,7 @@ function openLobbies(){
   modal = {type: "lobbies"};
   showModal(`<h2>Lobbies</h2>
     <p class="hint">Open tables anyone can join. Make a lobby and it shows up here for everyone playing right now. It's taken down when you leave the table.</p>
+    ${deckBox("")}
     <div class="lbbar"><button class="btn pri" data-do="lbmake" type="button">Make a lobby</button><span class="sp"></span><span class="lbcount" id="lb-count"></span></div>
     <div class="lblist" id="lb-list" aria-live="polite"></div>
     <div class="row end">${S.phase === "none" ? '<button class="btn" data-do="homeplay" type="button">Back</button>' : '<button class="btn" data-do="closemodal" type="button">Back to table</button>'}</div>`);
@@ -6707,6 +6725,7 @@ document.addEventListener("change", e => {
   const t = e.target;
   if (t && t.id === "f-diff") { const h = $("#f-diffh"); if (h) h.textContent = DIFF_HINT[+t.value] || ""; return; }
   if (t && t.id === "f-odeck") { odeckFill(); return; }
+  if (t && t.id === "deckpick") { pickDeck(t.value); return; }
   if (t && (t.id === "bd-set" || t.id === "bd-sortset")) {
     bdSetVal = t.value;
     ["bd-set", "bd-sortset"].forEach(id => { const s = document.getElementById(id); if (s) s.value = bdSetVal; });
@@ -7361,7 +7380,7 @@ async function moveLocalDecks(uid){
 }
 function deckCount(txt){ return parseLines(txt).reduce((n, e) => n + e.count, 0); }
 function renderSaved(){
-  refreshBdLoad();
+  refreshBdLoad(); deckBoxRefresh();
   if (builderOpen) renderLib();
   const list = $("#saved-list"), note = $("#saved-note");
   if (!list) return;
