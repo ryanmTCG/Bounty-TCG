@@ -126,6 +126,11 @@ button,input,textarea,select{font:inherit;color:inherit}
 .deckrow .dname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 .deckrow small{font-weight:400;color:var(--muted);margin-left:6px}
 .deckrow .btn{padding:5px 10px}
+.deckrow .dnote{display:block;font-style:normal;font-weight:400;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.dfolder{margin:10px 0 2px;font-weight:700;color:var(--gold-fill);font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.dfolder small{margin-left:6px;color:var(--muted);font-weight:400}
+#bd-folder{width:120px}
+#bd-notes{min-height:110px;font-family:inherit}
 .deckrow .btn.warn{background:var(--coral);color:#fff}
 #saved-list{max-height:190px;overflow:auto;margin-top:4px}
 .builder{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;background:#C9A66B var(--map) center/cover no-repeat;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);overflow:hidden}
@@ -540,6 +545,15 @@ select.sbtn{height:26px;min-width:88px}
 .rkseason{display:flex;flex-direction:column;gap:2px;margin:4px 0 10px;padding:8px 12px;border:2px solid rgba(242,184,75,.5);border-radius:14px;background:rgba(242,184,75,.08)}
 .rkseason b{font-family:var(--slab);font-weight:400;font-size:17px;color:#F2B84B}
 .rkseason span{font-size:13px;color:var(--muted)}
+.achgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.ach{display:flex;gap:10px;align-items:center;padding:8px 12px;border:2px solid rgba(255,240,205,.18);border-radius:14px;background:rgba(0,0,0,.22);opacity:.6}
+.ach.got{opacity:1;border-color:rgba(242,184,75,.7);background:rgba(242,184,75,.12)}
+.ach .achi{font-size:24px;flex:0 0 auto}
+.ach b{display:block;font-family:var(--slab);font-weight:400;color:#FFE9B8;font-size:15px}
+.ach small{display:block;font-size:12px;opacity:.85}
+.rkh small{font-family:var(--body,inherit);font-size:13px;opacity:.75;margin-left:6px}
+.achb{display:inline-block;margin-left:6px;font-size:12px;font-weight:600;color:#FFE9B8;white-space:nowrap}
+.serscore{font-size:13px;color:#FFE9B8;white-space:nowrap}
 .pfseasons{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
 .pfseasons div{display:flex;flex-direction:column;padding:8px 12px;border:2px solid rgba(255,240,205,.25);border-radius:14px;background:rgba(0,0,0,.22)}
 .pfseasons b{font-family:var(--slab);font-weight:400;color:#FFE9B8;font-size:16px}
@@ -1163,6 +1177,7 @@ body.watching .turnbar,body.watching .tbopts{opacity:.4}
     <h2>Deck builder</h2>
     <input type="text" id="bd-name" maxlength="40" placeholder="Deck name" aria-label="Deck name">
     <label class="bdlife">Life <input type="number" id="bd-life" min="1" max="10" value="5"></label>
+    <input type="text" id="bd-folder" maxlength="24" placeholder="Folder" aria-label="Folder" list="bd-folders" autocomplete="off"><datalist id="bd-folders"></datalist>
     <select id="bd-load" aria-label="Load a saved deck"><option value="">Load saved deck…</option></select>
     <button class="btn" data-do="bdsave" type="button">Save deck</button>
     <button class="btn" data-do="bdcopy" type="button">Copy list</button>
@@ -1235,10 +1250,14 @@ body.watching .turnbar,body.watching .tbopts{opacity:.4}
           <select id="bd-target" aria-label="Add to"><option value="deck">Main deck</option><option value="leader">Leader</option></select>
           <button class="btn" data-do="bdaddgo" type="button">Add</button>
         </div>
-        <textarea id="bd-paste" spellcheck="false" placeholder="1xOP01-001&#10;4xOP01-013&#10;4 Nami (OP01-016)"></textarea>
+        <textarea id="bd-paste" spellcheck="false" placeholder="1xOP01-001&#10;4xOP01-013&#10;4 Nami (OP01-016)&#10;or a deck code, or a link to a deck page"></textarea>
         <div class="row"><button class="btn" data-do="bdimport" type="button">Replace deck with this list</button></div>
-        <p class="hint">Your deck as text, Leader first, in the 1xOP01-001 / 4xOP01-016 format deck sites and simulators use. Lists copied from them can be pasted above.</p>
+        <p class="hint">Your deck as text, Leader first, in the 1xOP01-001 / 4xOP01-016 format deck sites and simulators use. Lists copied from them, deck codes and links to deck pages can be pasted above.</p>
         <textarea id="bd-text" readonly spellcheck="false"></textarea>
+      </details>
+      <details class="bd-paste" id="bd-notesbox">
+        <summary>Notes</summary>
+        <textarea id="bd-notes" maxlength="2000" spellcheck="true" placeholder="Matchups, cards to try, what to mulligan for… Saved with the deck."></textarea>
       </details>
       <details class="bd-paste" id="bd-coll">
         <summary>My collection</summary>
@@ -1282,6 +1301,8 @@ let S = blank();
 let LOG = [], seen = new Set(), myLog = [], logSeq = 0;
 let R = null, roomCode = "", status = "offline";
 let oppPeer = null, oppM = null, PR = null, botQuiet = false, TUT = null;
+// a best of 3 at one table: {room, w, l, g (the game being played), last ("w"/"l"), done, ahead (the opponent started the next game)}
+let SER = null;
 let modal = null;
 const ZONE = {hand:"hand", ch:"chars", st:"stage", ev:"event", tr:"trash", lf:"life", dk:"deck"};
 
@@ -1379,7 +1400,7 @@ async function leaveRoom(){
   if (WATCH) { rpStop(); RPV = null; WATCH = null; document.body.classList.remove("watching", "replaying"); $("#mid").classList.remove("rpmid"); }
   rankForfeit(); matchForget();
   if (R) { try { await R.leave(); } catch (e) {} }
-  R = null; oppPeer = null; oppM = null; PR = null; TUT = null; HINT = null; myQc = null; qcSeen = null; qcMute = false;
+  R = null; oppPeer = null; oppM = null; PR = null; TUT = null; HINT = null; myQc = null; qcSeen = null; qcMute = false; SER = null;
   if (myChal) { myChal = null; clearTimeout(chalT); }
   if (myLobby) { myLobby = null; lobbyUpdate(); }
 }
@@ -1390,7 +1411,12 @@ function pickOpp(peers){
 }
 function onPeers(change){
   oppPeer = pickOpp(change.peers);
-  oppM = oppPeer ? oppModel(oppPeer.presence) : null;
+  const om = oppPeer ? oppModel(oppPeer.presence) : null;
+  if (om && !PR && R) serPeer(om);
+  // in a best of 3, a board from another game isn't this game's opponent: one still finishing the last game
+  // keeps the finished board on screen, and one who hasn't started this game yet isn't at the table
+  if (SER && om && om.gn !== (S.gn || 1)) { if (om.gn > (S.gn || 1)) { SER.ahead = true; render(); return; } oppM = null; }
+  else oppM = om;
   if (!PR) qcCheck();
   if (!oppM || oppM.tl == null) oppTl = null; else if (!oppTl || oppTl.s !== oppM.tl || oppTl.p !== oppM.tp) oppTl = {s: oppM.tl, p: oppM.tp, at: Date.now()};
   if (myLobby) lobbyUpdate();
@@ -1555,10 +1581,10 @@ function qcCheck(){
 function oppModel(x){
   const f = o => o && typeof o === "object" ? {c: clean(o.c, 16), n: clean(o.n, 24), r: o.r ? 1 : 0, d: num(o.d, 20), pm: Math.max(-60000, Math.min(60000, Math.round(+o.pm || 0))), cm: Math.max(-20, Math.min(20, Math.round(+o.cm || 0))), mk: Array.isArray(o.mk) ? o.mk.filter(k => MK[k]).slice(0, 5) : [], g: typeof o.g === "string" ? o.g.replace(/[^dbu]/g, "").slice(0, 3) : null} : null;
   return {
-    nick: clean(x.nick, 20) || "Opponent", sl: num(x.sl, 6), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
+    nick: clean(x.nick, 20) || "Opponent", gn: Number.isInteger(x.gn) && x.gn > 0 && x.gn < 10 ? x.gn : 0, bo: x.bo === 1 ? 1 : 0, sl: num(x.sl, 6), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
     uid: typeof x.uid === "string" && /^[A-Za-z0-9_-]{4,64}$/.test(x.uid) ? x.uid : "", mk: typeof x.mk === "string" && /^[a-z0-9]{4,16}$/.test(x.mk) ? x.mk : "",
     ld: f(x.ld), ch: (Array.isArray(x.ch) ? x.ch : []).slice(0, 12).map(f).filter(Boolean), st: f(x.st), ev: f(x.ev),
-    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0, u: x.ak.u ? 1 : 0, ub: Number.isFinite(+x.ak.ub) && x.ak.ub !== null ? Math.max(0, Math.min(60000, Math.round(+x.ak.ub))) : null} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fc: x.fc === "f" || x.fc === "s" ? x.fc : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2, rk: x.rk ? 1 : 0, fc: FC_RE.test(x.fc) ? x.fc : "", tl: Number.isInteger(x.tl) && x.tl >= 0 && x.tl <= 3600 ? x.tl : null, tp: x.tp ? 1 : 0, to: num(x.to, 9), qc: Array.isArray(x.qc) && Number.isInteger(x.qc[0]) && Number.isInteger(x.qc[1]) && QC[x.qc[1]] ? {id: x.qc[0], k: x.qc[1]} : null,
+    ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0, u: x.ak.u ? 1 : 0, ub: Number.isFinite(+x.ak.ub) && x.ak.ub !== null ? Math.max(0, Math.min(60000, Math.round(+x.ak.ub))) : null} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fs: x.fs === "f" || x.fs === "s" ? x.fs : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2, rk: x.rk ? 1 : 0, fc: FC_RE.test(x.fc) ? x.fc : "", tl: Number.isInteger(x.tl) && x.tl >= 0 && x.tl <= 3600 ? x.tl : null, tp: x.tp ? 1 : 0, to: num(x.to, 9), qc: Array.isArray(x.qc) && Number.isInteger(x.qc[0]) && Number.isInteger(x.qc[1]) && QC[x.qc[1]] ? {id: x.qc[0], k: x.qc[1]} : null,
     mq: (Array.isArray(x.mq) ? x.mq : []).slice(0, 8).filter(q => q && Number.isInteger(q.id) && /^(ld|ch:\d{1,2})$/.test(q.r) && (MK[q.k] || ACTK[q.k])).map(q => ({id: q.id, r: q.r, c: clean(q.c, 16), k: q.k, v: Math.max(-60000, Math.min(60000, Math.round(+q.v || 0))), u: q.u ? 1 : 0, nx: q.nx ? 1 : 0})), ma: num(x.ma, 1000000),
     ox: Array.isArray(x.ox) ? [Math.max(-20000, Math.min(20000, Math.round(+x.ox[0] || 0))), Math.max(-10, Math.min(10, Math.round(+x.ox[1] || 0)))] : null,
     mf: x.mf && typeof x.mf === "object" && /^[A-Z0-9]{1,8}-\d{2,4}$/.test(x.mf.c) ? {c: x.mf.c, a: num(x.mf.a, 30), s: num(x.mf.s, 30), n: num(x.mf.n, 1e6)} : null,
@@ -1572,10 +1598,11 @@ const donB = f => S.myTurn && f && f.d ? f.d * 1000 : 0;
 // what the other side sees of a card: power and cost with always-on effects counted, and the keywords it has now
 const fld = x => { const st = fxStat(x); return {c: x.card.c, n: x.card.n, r: x.r ? 1 : 0, d: x.d || 0, pm: (x.pm || 0) + donB(x) + st.p, cm: (x.cm || 0) + st.k, mk: x.mk || [], g: kwNow(x, st)}; };
 function pubFull(){
-  const o = {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? Object.assign({s:S.atk.s, t:S.atk.t, n:S.atk.n || 0}, S.atk.u ? {u: 1} : {}, Number.isFinite(S.atk.ub) ? {ub: S.atk.ub} : {}) : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fc:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, rk:S.ranked ? 1 : 0, fc:myFC(), qc:myQc, tl:S.myTurn && S.ranked && S.tleft != null ? Math.ceil(S.tleft / 1000) : null, tp:S.atk ? 1 : 0, to:S.tmo || 0, mq:S.mq.slice(-8), ma:S.ack || 0,
+  const o = {p:1, nick:S.nick, sl:S.sleeve, tn:S.turn, pw:S.pw||0, cc:S.cc||0, ld:S.leader ? fld(S.leader) : null, ch:S.chars.map(fld), st:S.stage ? fld(S.stage) : null, ev:S.ev ? fld(S.ev) : null, ak:S.atk ? Object.assign({s:S.atk.s, t:S.atk.t, n:S.atk.n || 0}, S.atk.u ? {u: 1} : {}, Number.isFinite(S.atk.ub) ? {ub: S.atk.ub} : {}) : null, rs:S.rs || 0, bk:S.blk, rl:S.roll||0, fs:S.fc, kp:S.phase === "play" ? 1 : 0, et:S.et || 0, cd:S.conceded ? (S.lostDmg ? 2 : 1) : 0, rk:S.ranked ? 1 : 0, fc:myFC(), qc:myQc, tl:S.myTurn && S.ranked && S.tleft != null ? Math.ceil(S.tleft / 1000) : null, tp:S.atk ? 1 : 0, to:S.tmo || 0, mq:S.mq.slice(-8), ma:S.ack || 0,
     lf:S.life.length, dd:S.donDeck, da:S.donActive, dr:S.donRested, dk:S.deck.length, h:S.hand.length,
     tr:S.trash.map(c => [c.c, c.n.slice(0, 18)]), uid:S.ranked ? acctUid() : "", mk:S.mk || (S.mk = Math.random().toString(36).slice(2, 12)), lg:myLog.filter(e => pubLog(e[1])).slice(-8), kc:S.kc || 0};
   const ox = statOpp(); if (ox[0] || ox[1]) o.ox = ox;
+  o.gn = S.gn || 1; if (SER && !PR) o.bo = 1;
   if (S.mf) o.mf = S.mf;
   if (!shareOn()) o.ns = 1;
   if (S.ranked) o.rb = RANK.b;
@@ -1679,7 +1706,7 @@ function cleanLobby(x){
   if (!x || typeof x !== "object" || Array.isArray(x)) return null;
   const c = normRoom(x.c); if (!c) return null;
   const l = String(x.l || "").toUpperCase();
-  return {c, n: clean(x.n, 40) || "Open table", h: clean(x.h, 20) || "Player", l: /^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(l) ? l : "", f: LB_FMT[x.f] ? x.f : "any", s: x.s === 2 ? 2 : 1, t: Number.isFinite(+x.t) ? +x.t : 0, r: x.r === 1 || x.r === 2 ? x.r : 0};   // r: 1 ranked, 2 quick match
+  return {c, n: clean(x.n, 40) || "Open table", h: clean(x.h, 20) || "Player", l: /^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(l) ? l : "", f: LB_FMT[x.f] ? x.f : "any", s: x.s === 2 ? 2 : 1, t: Number.isFinite(+x.t) ? +x.t : 0, r: x.r === 1 || x.r === 2 ? x.r : 0, b: x.b === 1 ? 1 : 0};   // r: 1 ranked, 2 quick match; b: best of 3
 }
 function lobbyList(){
   const out = [], codes = new Set();
@@ -1687,7 +1714,7 @@ function lobbyList(){
     if (!p || p.kind !== "viewer" || !p.presence) continue;
     const lb = cleanLobby(p.presence.lb);
     if (!lb || codes.has(lb.c)) continue;           // one listing per table code; yours wins (peers are sorted you-first)
-    codes.add(lb.c); lb.mine = !!p.isMe; out.push(lb);
+    codes.add(lb.c); lb.mine = !!p.isMe; lb.ac = acOf(p.presence.ac); out.push(lb);
   }
   return out.sort((a, b) => (a.s - b.s) || (b.mine - a.mine) || (b.t - a.t));
 }
@@ -1798,6 +1825,7 @@ async function rankClaim(mid, step){
     const nx = Object.assign({}, x, {b: x.b + step, w: x.w + 1});
     await ref.set(rankOut(nx, {lw: mid}));
     RANK = rankFrom(Object.assign({}, nx, {nick: RANK.nick})); try { localStorage.setItem("bounty:rank", JSON.stringify(RANK)); } catch (e) {}
+    achRun();
     return true;
   } catch (e) { return false; }
 }
@@ -1903,7 +1931,7 @@ function deckBox(fmt){
   const v = loadSaved(), ld = parseLines(v.leader || "")[0], n = deckCount(v.deck || ""), bad = fmt ? illegalNote(deckIllegal(v, fmt), fmt) : "";
   const cur = DECKS.find(d => d.id === v.did && d.leader === v.leader && d.deck === v.deck) || DECKS.find(d => d.leader === v.leader && d.deck === v.deck);
   const now = ld ? `${esc(ld.code)} ${esc(ld.name || nameOf(ld.code) || "")}, ${n} cards` : "No deck picked yet";
-  const opts = (cur ? "" : `<option value="" selected>${now}</option>`) + DECKS.map(d => `<option value="${esc(d.id)}"${cur === d ? " selected" : ""}>${esc(d.name)} (${deckCount(d.deck)} cards)</option>`).join("");
+  const opts = (cur ? "" : `<option value="" selected>${now}</option>`) + deckOptions(cur && cur.id, d => `${d.name} (${deckCount(d.deck)} cards)`);
   return `<div class="rkdeck" id="deckbox" data-fmt="${esc(fmt)}"><label for="deckpick">Your deck</label> <select id="deckpick" aria-label="Pick the deck you play">${opts}</select> <button class="linkbtn" data-do="homebuilder" type="button">Edit in the Deck editor</button>`
     + (DECKS.length ? "" : `<div class="hint">Save decks in the Deck editor to switch between them here.</div>`) + (bad ? `<div class="rkbad">${esc(bad)}</div>` : "") + `</div>`;
 }
@@ -1948,7 +1976,7 @@ function liveMatches(){
   for (const p of LBV.peers) {
     const x = p && !p.isMe && p.kind === "viewer" && p.presence; if (!x || x.st !== "match" || typeof x.pw !== "string" || !/^[a-z0-9][a-z0-9_.-]{2,39}$/.test(x.pw)) continue;
     const row = m.get(x.pw) || {room: x.pw, k: x.mk === "r" ? "Ranked" : x.mk === "q" ? "Quick match" : /^tour-/.test(x.pw) ? "Tournament" : "Lobby", pl: []};
-    if (row.pl.length < 2) row.pl.push({nk: clean(x.nk, 20) || "Player", ld: CARD_RE.test(x.ld || "") ? x.ld : ""});
+    if (row.pl.length < 2) row.pl.push({nk: clean(x.nk, 20) || "Player", ac: acOf(x.ac), ld: CARD_RE.test(x.ld || "") ? x.ld : ""});
     m.set(x.pw, row);
   }
   return Array.from(m.values()).sort((a, b) => (b.k === "Ranked") - (a.k === "Ranked") || b.pl.length - a.pl.length).slice(0, 20);
@@ -1956,7 +1984,7 @@ function liveMatches(){
 function renderLive(){
   const el = $("#live-list"); if (!el) return;
   const rows = liveMatches();
-  el.innerHTML = rows.length ? rows.map((r, i) => `<div class="frrow on"><span class="dot on"></span><div class="frinfo"><b>${r.pl.map(p => esc(p.nk) + (p.ld ? ` (${esc(nameOf(p.ld) || p.ld)})` : "")).join(" vs ")}</b><small>${esc(r.k)}</small></div><span class="sp"></span><button class="btn" data-do="livewatch:${esc(r.room)}" type="button">Watch</button></div>`).join("")
+  el.innerHTML = rows.length ? rows.map((r, i) => `<div class="frrow on"><span class="dot on"></span><div class="frinfo"><b>${r.pl.map(p => esc(p.nk) + achBadge(p.ac) + (p.ld ? ` (${esc(nameOf(p.ld) || p.ld)})` : "")).join(" vs ")}</b><small>${esc(r.k)}</small></div><span class="sp"></span><button class="btn" data-do="livewatch:${esc(r.room)}" type="button">Watch</button></div>`).join("")
     : `<div class="lbempty"><b>No matches to watch right now</b>Ranked, quick and lobby matches show up here while they're played.</div>`;
 }
 const queueLine = k => { const q = queueCounts(k); return `<span class="dot${q.wait ? " on" : ""}"></span>${q.wait} in the queue · ${q.play} in a match`; };
@@ -2005,7 +2033,56 @@ async function findMatch(k){
 // Win/loss record, most played decks (by Leader) and most played cards, counted from online matches against
 // another player. Kept in this browser and, when signed in to claude.ai, in the player's own private storage.
 const HIST_MAX = 20, FR_MAX = 50;
-function statsBlank(){ return {g: 0, w: 0, l: 0, ld: {}, cd: {}, h: [], fc: "", fr: [], nk: "", ns: 0}; }
+// ---------- best of 3: the same two players play up to three games at one table ----------
+function serOk(){ return !!(R && !PR && !S.ranked && !S.quick && !S.tour); }
+function serStart(on){ SER = on && serOk() ? {room: roomCode, w: 0, l: 0, g: 1, last: "", done: false, ahead: false} : null; }
+// the opponent's presence: take up a best of 3 they asked for, and drop one their copy can't play
+function serPeer(om){
+  if (!SER && om.bo && om.gn === 1 && (S.gn || 1) === 1 && serOk() && !S.statDone) { serStart(true); toast(`${om.nick} wants a best of 3: the first to win two games takes the match.`); }
+  else if (SER && SER.g === 1 && !om.gn && om.ready) { SER = null; toast("Your opponent's copy of the game can't play a best of 3, so this is a single game."); }
+}
+function serCheck(){
+  if (!SER || S.serDone || !R || roomCode !== SER.room || (S.gn || 1) !== SER.g || S.phase === "none") return;
+  const lost = !!S.conceded, won = !lost && !!(oppM && oppM.cd);
+  if (!won && !lost) return;
+  S.serDone = true; SER.last = won ? "w" : "l"; if (won) SER.w++; else SER.l++;
+  if (SER.w >= 2 || SER.l >= 2) { SER.done = true; toast(SER.w > SER.l ? `You won the best of 3, ${SER.w}\u2013${SER.l}!` : `${(oppM && oppM.nick) || "Your opponent"} won the best of 3, ${SER.l}\u2013${SER.w}.`); }
+}
+function serNext(){
+  if (!SER || SER.done || !S.serDone || !R || roomCode !== SER.room || !lastCfg) return;
+  const pubt = S.pubt, fmt = S.fmt;
+  SER.g++; SER.ahead = false;
+  oppM = null;   // the last game's board, until the opponent starts this one
+  newGame(lastCfg, true);
+  S.gn = SER.g; S.pubt = pubt; S.fmt = fmt;
+  addLog(`is ready for game ${SER.g} of the best of 3`);
+  oppM = oppPeer ? oppModel(oppPeer.presence) : null;
+  if (oppM && oppM.gn !== SER.g) oppM = null;
+  advance(); commit(); render();
+}
+function serHTML(){
+  if (!SER || !R || roomCode !== SER.room) return "";
+  const o = esc((oppM && oppM.nick) || "Opponent");
+  return `<span class="serscore">Best of 3: you ${SER.w}, ${o} ${SER.l}</span>${S.serDone && !SER.done ? `<button class="btn pri" data-do="sernext" type="button">Next game</button>${SER.ahead ? `<span class="serscore">${o} is ready for game ${SER.g + 1}.</span>` : ""}` : ""}`;
+}
+const ACH = [
+  ["win1", "First win", "Win an online match."],
+  ["win10", "Ten wins", "Win 10 online matches."],
+  ["win50", "Fifty wins", "Win 50 online matches."],
+  ["rk10", "Ranked regular", "Win 10 ranked matches."],
+  ["nova", "Supernova", "Reach a \u0e3f300,000 bounty in Ranked."],
+  ["warl", "Warlord", "Reach a \u0e3f600,000 bounty in Ranked."],
+  ["yonko", "Yonko", "Reach a \u0e3f900,000 bounty in Ranked."],
+  ["bot2", "Hard fought", "Beat the computer on Hard."],
+  ["bot3", "Expert beaten", "Beat the computer on Expert."],
+  ["bot4", "Master beaten", "Beat the computer on Master."],
+  ["tour", "Champion", "Win a tournament."],
+  ["tut", "Set sail", "Finish the tutorial."],
+  ["decks5", "Shipwright", "Save 5 decks."],
+  ["coll500", "Collector", "Have 500 cards in My collection."],
+  ["share", "Storyteller", "Share a replay code."]
+];
+function statsBlank(){ return {g: 0, w: 0, l: 0, ld: {}, cd: {}, h: [], fc: "", fr: [], nk: "", ns: 0, rw: 0, ach: {}}; }
 const FC_RE = /^[A-HJ-NP-Z2-9]{6}$/;
 function statsFrom(x){
   const o = statsBlank(); if (!x || typeof x !== "object") return o;
@@ -2018,6 +2095,8 @@ function statsFrom(x){
   o.fc = FC_RE.test(x.fc) ? x.fc : "";
   o.nk = clean(x.nk, 20);
   o.ns = x.ns ? 1 : 0;
+  o.rw = Math.max(0, x.rw | 0);
+  if (x.ach && typeof x.ach === "object") for (const a of ACH) if (+x.ach[a[0]] > 0) o.ach[a[0]] = +x.ach[a[0]];
   if (Array.isArray(x.fr)) o.fr = x.fr.slice(0, FR_MAX).filter(f => f && FC_RE.test(f.c)).map(f => ({c: f.c, n: clean(f.n, 20)}));
   return o;
 }
@@ -2038,6 +2117,7 @@ async function statsLoad(){
     const sn = await ref.get();
     if (sn.exists) {
       const loc = STATS; STATS = statsFrom(sn.data());
+      for (const k of Object.keys(loc.ach)) if (!STATS.ach[k]) STATS.ach[k] = loc.ach[k];   // earned in this browser before signing in
       // stats saved before friends existed: keep the code and friends made in this browser
       if (!STATS.fc && loc.fc) { STATS.fc = loc.fc; STATS.fr = loc.fr; statsSave(); }
       // the nickname saved with the account wins; one picked before signing in moves into the account
@@ -2051,6 +2131,7 @@ async function statsLoad(){
   } catch (e) {}
 }
 function statsSave(){
+  achCheck();
   // keep the stored list small: only the 300 most played cards
   const cds = Object.entries(STATS.cd); if (cds.length > 300) STATS.cd = Object.fromEntries(cds.sort((a, b) => b[1] - a[1]).slice(0, 300));
   try { localStorage.setItem("bounty:stats", JSON.stringify(STATS)); } catch (e) {}
@@ -2092,6 +2173,7 @@ function collSave(){
   const txt = collPack(COLL);
   try { localStorage.setItem("bounty:coll", txt); } catch (e) {}
   clearTimeout(collTimer);
+  achRun();
   collTimer = setTimeout(async () => { const ref = await collDoc(); if (ref) { try { await ref.set({t: Date.now(), c: txt}); } catch (e) {} } }, 1500);
 }
 function collAdd(code, d){
@@ -2158,7 +2240,7 @@ function statCheck(){
   if (!won && !lost) return;
   S.statDone = true;
   const e = statLd(S.leader && S.leader.card && S.leader.card.c);
-  if (won) { STATS.w++; if (e) e.w++; } else { STATS.l++; if (e) e.l++; }
+  if (won) { STATS.w++; if (e) e.w++; if (S.ranked && S.rankOpp) STATS.rw++; } else { STATS.l++; if (e) e.l++; }
   const y = lost ? (S.lostDeck ? "deck" : S.lostDmg ? "dmg" : S.tmo >= TIMEOUTS_MAX ? "time" : S.rankLeft ? "left" : "cd") : (oppM && oppM.cd ? (oppM.cdw ? (oppM.dk === 0 ? "deck" : "dmg") : (oppM.to || 0) >= TIMEOUTS_MAX ? "time" : "cd") : "left");
   S.statWon = won; S.statY = y;
   statHist({me: (S.leader && S.leader.card && S.leader.card.c) || "", op: S.statOpLd || "", on: S.statOpNick || "", fc: S.statOpFc || "", r: won ? "w" : "l", rk: S.ranked && S.rankOpp ? 1 : 0, b: S.rankD || 0, y});
@@ -2168,6 +2250,43 @@ function statLoss(code, info){ STATS.l++; const e = statLd(code); if (e) e.l++; 
 function statPlayed(code){
   if (PR || !S.statOpp || !/^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(code || "")) return;
   STATS.cd[code] = (STATS.cd[code] | 0) + 1; statsSave();
+}
+// ---------- achievements: earned once, kept with your stats, their count shown next to your name in the lobby ----------
+const ACH_ICON = {win1: "\u2694\ufe0f", win10: "\u2694\ufe0f", win50: "\u2694\ufe0f", rk10: "\ud83c\udfc6", nova: "\u2b50", warl: "\ud83d\udc51", yonko: "\ud83c\udff4\u200d\u2620\ufe0f", bot2: "\ud83e\udd16", bot3: "\ud83e\udd16", bot4: "\ud83e\udd16", tour: "\ud83e\udd47", tut: "\u26f5", decks5: "\ud83d\udee0\ufe0f", coll500: "\ud83d\udcda", share: "\ud83c\udfac"};
+const achN = () => ACH.filter(a => STATS.ach[a[0]]).length;
+const acOf = x => Math.max(0, Math.min(ACH.length, x | 0));
+const achBadge = n => n > 0 ? `<span class="achb" title="${n} achievement${n === 1 ? "" : "s"}">\ud83c\udfc5${n}</span>` : "";
+let achOn = false;   // set once the page has started, so loading saved stats doesn't hand out toasts half set up
+// what's earned from the numbers already kept; a match against the computer, a tournament and a shared code call achGive
+function achCheck(){
+  if (!achOn) return false;
+  const tut = (() => { try { return localStorage.getItem("bounty:tut") === "1"; } catch (e) { return false; } })();
+  const best = Math.max(RANK.b || 0, ...Object.values(RANK.ps || {}).map(v => +v || 0));
+  let owned = 0, decks = 0;
+  try { owned = Object.values(COLL).reduce((n, v) => n + (v | 0), 0); decks = DECKS.length; } catch (e) {}   // not set up yet while the page starts
+  const have = {win1: STATS.w >= 1, win10: STATS.w >= 10, win50: STATS.w >= 50, rk10: Math.max(STATS.rw, RANK.w || 0) >= 10,
+    nova: best >= 300000, warl: best >= 600000, yonko: best >= 900000, tut, decks5: decks >= 5, coll500: owned >= 500};
+  const got = [];
+  for (const [id] of ACH) if (have[id] && !STATS.ach[id]) { STATS.ach[id] = Date.now(); got.push(id); }
+  if (got.length) achToast(got);
+  return got.length > 0;
+}
+function achGive(id){ if (!ACH.some(a => a[0] === id) || STATS.ach[id]) return; STATS.ach[id] = Date.now(); achToast([id]); statsSave(); }
+function achRun(){ if (achCheck()) statsSave(); }
+function achToast(ids){
+  const nm = ids.map(id => ACH.find(a => a[0] === id)[1]);
+  toast(ids.length === 1 ? `Achievement earned: ${nm[0]}. ${ACH.find(a => a[0] === ids[0])[2]}` : `${ids.length} achievements earned: ${nm.join(", ")}. See them in Profile.`);
+  if (modal && modal.type === "profile" && $("#pf-ach")) $("#pf-ach").outerHTML = achHTML();
+  lobbyUpdate();
+}
+// beating the computer at a level earns that level and every one below it, down to Hard
+function achBot(lv){ for (let d = 2; d <= Math.min(4, lv); d++) achGive("bot" + d); }
+function achHTML(){
+  const n = achN();
+  return `<div id="pf-ach"><h3 class="rkh">Achievements <small>${n} of ${ACH.length}</small></h3><div class="achgrid">${ACH.map(([id, nm, d]) => {
+    const t = STATS.ach[id];
+    return `<div class="ach${t ? " got" : ""}" title="${esc(d)}"><span class="achi">${t ? ACH_ICON[id] : "\ud83d\udd12"}</span><div><b>${esc(nm)}</b><small>${esc(d)}${t ? " Earned " + esc(ago(t)) + "." : ""}</small></div></div>`;
+  }).join("")}</div><p class="hint">Your count shows as \ud83c\udfc5 next to your name in the lobby, on your friends' lists and under live matches.</p></div>`;
 }
 function ago(t){
   const m = Math.round((Date.now() - t) / 60000);
@@ -2182,6 +2301,7 @@ function histRow(e){
 function pct(w, l){ return w + l ? Math.round(100 * w / (w + l)) + "%" : "–"; }
 function openProfile(focusNick){
   modal = {type: "profile"};
+  achCheck();
   const nick = myNick();
   const decks = Object.entries(STATS.ld).filter(([, v]) => v.n > 0).sort((a, b) => b[1].n - a[1].n || b[1].w - a[1].w).slice(0, 6);
   const cards = Object.entries(STATS.cd).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]).slice(0, 12);
@@ -2198,6 +2318,7 @@ function openProfile(focusNick){
       <div><b>${RANK.w}–${RANK.l}</b><small>Ranked record this season</small></div>
     </div>
     ${Object.keys(RANK.ps || {}).length ? `<h3 class="rkh">Past ranked seasons</h3><div class="pfseasons">${Object.keys(RANK.ps).sort().reverse().map(k => `<div><b>${esc(rankName(RANK.ps[k]))}</b><small>${esc(seasonName(k))}</small><span>${berry(RANK.ps[k])}</span></div>`).join("")}</div>` : ""}
+    ${achHTML()}
     <h3 class="rkh">Match history</h3>
     ${(STATS.h || []).length ? `<div class="pfhist">${STATS.h.map(histRow).join("")}</div>`
       : `<div class="lbempty"><b>No matches yet</b>Your last ${HIST_MAX} online matches show up here, with who you played and how it went.</div>`}
@@ -2440,7 +2561,7 @@ async function rpShare(id){
       await db.doc("replays/" + c).set({v: 1, t: Date.now(), by: uid, e: txt});
       const list = rpList(), x = list.find(x => x.id === id); if (x) { x.code = c; rpStore(list); }
       if (modal && modal.type === "replays") openReplays();
-      rpCopyCode(c); return;
+      rpCopyCode(c); achGive("share"); return;
     } catch (er) {}
   }
   toast("Couldn't share that replay right now. Try again in a moment.");
@@ -2762,7 +2883,7 @@ function onlineMap(){
   const m = new Map();
   for (const p of FRV.peers) {
     if (!p || p.isMe || !p.presence || !FC_RE.test(p.presence.fc) || p.presence.fc === STATS.fc) continue;
-    m.set(p.presence.fc, {nk: clean(p.presence.nk, 20) || "Player", st: ST[p.presence.st] ? p.presence.st : "home", w: [p.presence.w, p.presence.pw].find(w => typeof w === "string" && /^[A-Za-z0-9-]{3,40}$/.test(w)) || ""});
+    m.set(p.presence.fc, {nk: clean(p.presence.nk, 20) || "Player", ac: acOf(p.presence.ac), st: ST[p.presence.st] ? p.presence.st : "home", w: [p.presence.w, p.presence.pw].find(w => typeof w === "string" && /^[A-Za-z0-9-]{3,40}$/.test(w)) || ""});
   }
   return m;
 }
@@ -2793,12 +2914,13 @@ function deckReady(){
   if (!parseLines(v.deck || "").length || !parseLines(v.leader || "").length) { toast("Pick a deck with a Leader first: open the Deck editor, build or load a deck, then press Play."); return null; }
   return v;
 }
-async function sitAt(room, v){
+async function sitAt(room, v, bo){
   const c = Object.assign({}, v, {room, nick: myNick(), life: v.life || 5, sleeve: v.sleeve | 0, first: !!v.first});
   closeModal(); if (builderOpen) closeBuilder();
   await leaveRoom(); status = "connecting";
   newGame(c, true);
   await connect(room);
+  if (bo && R && roomCode === room) { serStart(true); publish(); }
   render();
 }
 async function challenge(code){
@@ -2807,7 +2929,7 @@ async function challenge(code){
   if (on.st === "match") { toast(`${name} is in a match right now.`); return; }
   const v = deckReady(); if (!v) return;
   const room = "friend-" + lobbyCode();
-  await sitAt(room, v);
+  await sitAt(room, v, !!v.bo3);
   if (!R || roomCode !== room) return;
   const id = Date.now() % 1e9;
   myChal = {to: code, r: room, id, n: name}; lobbyUpdate(); render();
@@ -2835,6 +2957,7 @@ function openFriends(){
       <div class="frcode"><small>Your friend code</small><b id="fr-me">${esc(myFC())}</b><button class="btn" data-do="frcopy" type="button">Copy</button></div>
       <div class="fradd"><small>Add a friend by their code</small><div class="row"><input id="fr-code" maxlength="8" placeholder="K7Q2MX" autocomplete="off" spellcheck="false"><button class="btn pri" data-do="fradd" type="button">Add</button></div></div>
     </div>
+    <label class="pfshare"><input type="checkbox" id="fr-bo3"${loadSaved().bo3 ? " checked" : ""}> Make my challenges a best of 3</label>
     <h3 class="rkh">Your friends</h3>
     <div class="frlist" id="fr-list"></div>
     <div id="fr-recent"></div>
@@ -2842,6 +2965,7 @@ function openFriends(){
   const sh = $("#modal .sheet"); if (sh) sh.classList.add("lobsheet");
   $("#modal").classList.add("homebg", "lobpage");
   const i = $("#fr-code"); if (i) i.addEventListener("keydown", e => { if (e.key === "Enter") doAction("fradd"); });
+  { const b = $("#fr-bo3"); if (b) b.addEventListener("change", () => { const v = loadSaved(); v.bo3 = b.checked; save(v); toast(b.checked ? "Your challenges are a best of 3 now." : "Your challenges are a single game now."); }); }
   friendsWatch(); renderFriends();
 }
 function renderFriends(){
@@ -2852,7 +2976,7 @@ function renderFriends(){
     return {f, o};
   }).sort((a, b) => (!!b.o - !!a.o) || (a.f.n || a.f.c).localeCompare(b.f.n || b.f.c));
   if (named) statsSave();
-  el.innerHTML = rows.length ? rows.map(({f, o}) => `<div class="frrow${o ? " on" : ""}"><span class="dot${o ? " on" : ""}"></span><div class="frinfo"><b>${esc(f.n || "Friend")}</b><small>${esc(f.c)} · ${o ? esc(ST[o.st]) : "Offline"}</small></div><span class="sp"></span>${o && o.st === "match" && o.w && !WATCH ? `<button class="btn pri" data-do="frwatch:${f.c}" type="button">Watch</button>` : ""}${o && o.st !== "match" ? `<button class="btn pri" data-do="frch:${f.c}" type="button"${myChal && myChal.to === f.c ? " disabled" : ""}>${myChal && myChal.to === f.c ? "Challenge sent" : "Challenge"}</button>` : ""}<button class="btn" data-do="frrm:${f.c}" type="button" aria-label="Remove ${esc(f.n || f.c)}">Remove</button></div>`).join("")
+  el.innerHTML = rows.length ? rows.map(({f, o}) => `<div class="frrow${o ? " on" : ""}"><span class="dot${o ? " on" : ""}"></span><div class="frinfo"><b>${esc(f.n || "Friend")}${o ? achBadge(o.ac) : ""}</b><small>${esc(f.c)} · ${o ? esc(ST[o.st]) : "Offline"}</small></div><span class="sp"></span>${o && o.st === "match" && o.w && !WATCH ? `<button class="btn pri" data-do="frwatch:${f.c}" type="button">Watch</button>` : ""}${o && o.st !== "match" ? `<button class="btn pri" data-do="frch:${f.c}" type="button"${myChal && myChal.to === f.c ? " disabled" : ""}>${myChal && myChal.to === f.c ? "Challenge sent" : "Challenge"}</button>` : ""}<button class="btn" data-do="frrm:${f.c}" type="button" aria-label="Remove ${esc(f.n || f.c)}">Remove</button></div>`).join("")
     : `<div class="lbempty"><b>No friends yet</b>Send a friend your code, or add theirs above. People you've played show up below too.</div>`;
   if (!rc) return;
   const seen = new Set(), recent = [];
@@ -3065,6 +3189,7 @@ function tourTick(){
       tourSeen.add(t.id + ":done");
       const w = t.rd.length ? t.pl[t.rd[t.rd.length - 1][0][2]] : null;
       if (w) toast(w.c === myFC() ? `You won ${t.n}!` : `${t.n} is over. ${w.n} won it.`);
+      if (w && w.c === myFC()) achGive("tour");
     }
   }
   if (modal && modal.type === "tours") renderTours();
@@ -3442,12 +3567,12 @@ function renderLobbies(){
   el.innerHTML = list.map(lb => {
     const ld = lb.l ? {c: lb.l, n: nameOf(lb.l)} : null, full = lb.s >= 2, age = lbAge(lb.t);
     const act = lb.mine ? `<span class="chip lbstate">Your lobby</span>` : full ? `<span class="chip lbstate">In a match</span>` : `<button class="btn pri" data-do="lbjoin:${esc(lb.c)}" type="button">Join</button>`;
-    return `<div class="lbrow${lb.mine ? " mine" : ""}${full ? " full" : ""}">${ld ? tile(ld, "", false, 0) : backCard("")}<div class="lbinfo"><b>${esc(lb.n)}</b><small>Host ${esc(lb.h)}${ld ? ` · Leader ${esc(ld.c)}${ld.n ? " " + esc(ld.n) : ""}` : ""}</small><span class="lbchips"><span class="chip f${lb.f}">${LB_FMT[lb.f]}</span>${full ? '<span class="chip">2/2 players</span>' : '<span class="chip open">1/2 players</span>'}${age ? `<span class="chip">${age}</span>` : ""}</span></div>${act}</div>`;
+    return `<div class="lbrow${lb.mine ? " mine" : ""}${full ? " full" : ""}">${ld ? tile(ld, "", false, 0) : backCard("")}<div class="lbinfo"><b>${esc(lb.n)}</b><small>Host ${esc(lb.h)}${achBadge(lb.ac)}${ld ? ` · Leader ${esc(ld.c)}${ld.n ? " " + esc(ld.n) : ""}` : ""}</small><span class="lbchips"><span class="chip f${lb.f}">${LB_FMT[lb.f]}</span>${lb.b ? '<span class="chip">Best of 3</span>' : ""}${full ? '<span class="chip">2/2 players</span>' : '<span class="chip open">1/2 players</span>'}${age ? `<span class="chip">${age}</span>` : ""}</span></div>${act}</div>`;
   }).join("");
 }
 async function lobbyUpdate(){
-  const lb = myLobby && R && roomCode === myLobby.c ? {c: myLobby.c, n: myLobby.n, h: S.nick || "Player", l: S.leader && S.leader.card ? S.leader.card.c : "", f: myLobby.f, r: myLobby.r === 2 ? 2 : myLobby.r ? 1 : 0, s: oppPeer || (S.phase !== "wait" && S.phase !== "roll") ? 2 : 1, t: myLobby.t} : null;
-  const pres = {lb, fc: myFC(), nk: R && !PR && S.phase !== "none" && S.nick ? clean(S.nick, 20) : myNick(), st: myStatus(), mk: R && !PR && S.phase !== "none" ? (S.ranked ? "r" : S.quick ? "q" : "") : "", w: myStatus() === "match" && !S.ranked && !S.pubt && roomCode ? roomCode : "", pw: myStatus() === "match" && (S.ranked || S.pubt) && roomCode ? roomCode : "", ld: myStatus() === "match" && S.leader && S.leader.card ? S.leader.card.c : "", ch: myChal ? {to: myChal.to, r: myChal.r, id: myChal.id} : null, dc: myDc,
+  const lb = myLobby && R && roomCode === myLobby.c ? {c: myLobby.c, n: myLobby.n, h: S.nick || "Player", l: S.leader && S.leader.card ? S.leader.card.c : "", f: myLobby.f, b: myLobby.b ? 1 : 0, r: myLobby.r === 2 ? 2 : myLobby.r ? 1 : 0, s: oppPeer || (S.phase !== "wait" && S.phase !== "roll") ? 2 : 1, t: myLobby.t} : null;
+  const pres = {lb, ac: achN(), fc: myFC(), nk: R && !PR && S.phase !== "none" && S.nick ? clean(S.nick, 20) : myNick(), st: myStatus(), mk: R && !PR && S.phase !== "none" ? (S.ranked ? "r" : S.quick ? "q" : "") : "", w: myStatus() === "match" && !S.ranked && !S.pubt && roomCode ? roomCode : "", pw: myStatus() === "match" && (S.ranked || S.pubt) && roomCode ? roomCode : "", ld: myStatus() === "match" && S.leader && S.leader.card ? S.leader.card.c : "", ch: myChal ? {to: myChal.to, r: myChal.r, id: myChal.id} : null, dc: myDc,
     tn: TOUR ? tourPub() : null, tj: TME ? {id: TME.id, d: TME.d} : null, tl: TME && TME.lost ? Object.assign({id: TME.id}, TME.lost) : null};
   const key = JSON.stringify(pres);
   if (key === lbSent) return;
@@ -3523,7 +3648,7 @@ function render(){
   if (botQuiet) return;
   if (WATCH) { renderWatch(); return; }
   if (S.phase === "play" && S.chars.length > 5 && !modal) setTimeout(() => { if (S.chars.length > 5 && !modal) { modal = {type: "limit"}; renderModal(); } }, 0);
-  rankCheck(); statCheck(); tourCheck(); gameCheck();
+  rankCheck(); statCheck(); tourCheck(); gameCheck(); serCheck();
   { const ok = boardTools(); for (const k of ["resetboard", "refresh", "undo"]) { const b = $(`[data-do="${k}"]`); if (b) b.hidden = !ok; } }
   { const fb = $("#startfb");
     if (fb) fb.hidden = !(R && !PR && S.phase === "play" && oppM && oppM.et == null);
@@ -3552,9 +3677,9 @@ function render(){
   { const k = oppM && oppM.ak ? oppM.ak.s + ">" + oppM.ak.t : ""; if (k !== oppAtkKey) { oppAtkKey = k; if (k) { offerOppAttack(); const ak = oppM.ak; setTimeout(() => fxAttack(`#opp [data-opp="${ak.s}"]`, `#me [data-src="${ak.t}"]`), 0); } } }
   const cdMsg = oppM && oppM.cd ? (oppM.cdw ? (oppM.dk === 0 ? `${oppM.nick} has no cards left in their deck. You win!` : `${oppM.nick} took damage at 0 Life. You win!`) : `${oppM.nick} conceded. You win!`) : "";
   const res = S.conceded ? (S.lostDeck ? "Your deck is empty. You lose!" : S.lostDmg ? "You took damage at 0 Life. You lose!" : "You conceded the match.") : (oppM && oppM.cd ? esc(cdMsg) : "");
-  if (oppM && oppM.cd && !oppCdSeen) { oppCdSeen = true; toast(cdMsg); if (shareOn() && !PR) publish(); } else if (!(oppM && oppM.cd)) oppCdSeen = false;   // publishing once more sends your list to the opponent
+  if (oppM && oppM.cd && !oppCdSeen) { oppCdSeen = true; toast(cdMsg); if (PR && PR.bot && !TUT) achBot(botLv()); if (shareOn() && !PR) publish(); } else if (!(oppM && oppM.cd)) oppCdSeen = false;   // publishing once more sends your list to the opponent
   if (res && oppM && oppM.dl && !PR) S.oppDl = {d: oppM.dl, n: oppM.nick};
-  const ch = res ? `<span>\u2691 ${res}</span>${REC && REC.k === (recS0() || {}).rid && REC.fr.length >= 6 ? '<button class="btn" data-do="rpwatch" type="button">Watch replay</button>' : ""}${S.oppDl ? '<button class="btn" data-do="oppdeck" type="button">See their deck</button>' : ""}` : S.phase === "none" ? "" : combatHTML(), midEl = $("#mid");
+  const ch = res ? `<span>\u2691 ${res}</span>${REC && REC.k === (recS0() || {}).rid && REC.fr.length >= 6 ? '<button class="btn" data-do="rpwatch" type="button">Watch replay</button>' : ""}${S.oppDl ? '<button class="btn" data-do="oppdeck" type="button">See their deck</button>' : ""}${serHTML()}` : S.phase === "none" ? "" : combatHTML(), midEl = $("#mid");
   midEl.classList.toggle("combat", !!ch);
   if (ch) midEl.innerHTML = ch; else midEl.textContent = mid;
   markCombat(); updTimers(); fxWatch(); markTargets(); markPlayable(); markOppNew(); quickResolve(); renderCoach();
@@ -3718,7 +3843,7 @@ function openSetup(opts){
   modal = {type: "setup", lobby: jl};
   showModal(`
     <h2>${jl ? "Join a lobby" : opts.pub ? "Make a lobby" : opts.friends ? "Friends only table" : "Deck &amp; room"}</h2>
-    ${jl ? `<p class="lbjoining">Joining <b>${esc(jl.n)}</b>, hosted by ${esc(jl.h)}. Format: ${LB_FMT[jl.f]}. Pick your deck, then press Join lobby.</p>` : ""}
+    ${jl ? `<p class="lbjoining">Joining <b>${esc(jl.n)}</b>, hosted by ${esc(jl.h)}. Format: ${LB_FMT[jl.f]}.${jl.b ? " Best of 3." : ""} Pick your deck, then press Join lobby.</p>` : ""}
     <label>Saved decks</label>
     <p class="hint" id="saved-note"></p>
     <div id="saved-list"></div>
@@ -3728,6 +3853,7 @@ function openSetup(opts){
     <div class="row"><input type="text" id="f-room" style="flex:1;min-width:160px" value="${esc(jl ? jl.c : opts.pub ? lobbyCode() : (v.room || randRoom()))}" autocapitalize="off" autocomplete="off"${jl ? " readonly" : ""}>${jl ? "" : '<button class="btn" data-do="newcode" type="button">New code</button>'}</div>
     ${jl ? "" : `<p class="hint">Share the code with your friend. You both type the same one and land at the same table.</p>
     ${opts.friends ? "" : `<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="f-pub" ${opts.pub ? "checked" : ""}> List this table in Lobbies so anyone can join. Reset board, Refresh and Undo are off at listed tables.</label>`}
+    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="f-bo3" ${v.bo3 ? "checked" : ""}> Best of 3: keep playing at this table until someone wins two games. The loser of each game chooses who goes first in the next.</label>
     <div class="row lbopts" id="f-pubopts" ${opts.pub ? "" : "hidden"}>
       <div style="flex:2;min-width:180px"><label for="f-lname">Lobby name</label><input type="text" id="f-lname" maxlength="40" value="${esc(v.lname || "")}" placeholder="Your name's table"></div>
       <div style="flex:1;min-width:140px"><label for="f-fmt">Format</label><select id="f-fmt">${Object.keys(LB_FMT).filter(k => k !== "pre" || preSets().length || k === fmt0).map(k => `<option value="${k}"${k === fmt0 ? " selected" : ""}>${LB_FMT[k]}${k === "any" ? " (any cards)" : k === "pre" && preSets().length ? " (" + preSets().join(", ") + " early)" : ""}</option>`).join("")}</select></div>
@@ -3790,7 +3916,8 @@ function readForm(){
     lname: clean(($("#f-lname") || {}).value, 40),
     fmt: LB_FMT[($("#f-fmt") || {}).value] ? $("#f-fmt").value : (loadSaved().fmt || "std"),
     diff: diffOf($("#f-diff") ? +$("#f-diff").value : +loadSaved().diff),
-    odeck: $("#f-odeck") ? $("#f-odeck").value.slice(0, 20) : loadSaved().odeck || ""
+    odeck: $("#f-odeck") ? $("#f-odeck").value.slice(0, 20) : loadSaved().odeck || "",
+    bo3: $("#f-bo3") ? $("#f-bo3").checked : !!loadSaved().bo3
   }, readDeckFields());
 }
 async function startGame(join){
@@ -3807,8 +3934,9 @@ async function startGame(join){
   if (jl && bad) toast("Heads up: " + bad);
   if (join) {
     await connect(c.room);
+    if (R && roomCode === c.room && c.bo3 && !jl) { serStart(true); publish(); }
     if (pub && R && roomCode === c.room && status === "online") {
-      myLobby = {c: c.room, n: c.lname || clean(c.nick + "'s table", 40), f: c.fmt, t: Date.now()};
+      myLobby = {c: c.room, n: c.lname || clean(c.nick + "'s table", 40), f: c.fmt, t: Date.now(), b: SER ? 1 : 0};
       lobbyUpdate(); render();
       toast(bad ? "Your lobby is open. Heads up: " + bad : "Your lobby is open. Anyone on the Lobbies page can join.");
     }
@@ -3973,7 +4101,7 @@ function metaBot(i){
 // preview says what to do next and lights up where to do it; each step moves on once you've done it.
 const TUT_DECK = SAMPLE.replace("4xOP01-029", "4xOP03-010");
 const tutSeen = () => { try { return localStorage.getItem("bounty:tut") === "1"; } catch (e) { return false; } };
-function tutMark(){ try { localStorage.setItem("bounty:tut", "1"); } catch (e) {} }
+function tutMark(){ try { localStorage.setItem("bounty:tut", "1"); } catch (e) {} achRun(); }
 async function startTutorial(){
   const v = loadSaved();
   await startPractice(true, {nick: clean(v.nick, 20) || "Player", leader: "OP01-001 Roronoa Zoro", deck: TUT_DECK, life: 5, first: true, sleeve: Math.min(6, Math.max(0, Math.floor(+v.sleeve) || 0))});
@@ -5479,18 +5607,27 @@ function advance(){
   if (S.phase === "wait" || S.phase === "roll") {
     if (!R && status !== "connecting") { S.phase = "pre"; return true; }
   }
-  if (S.phase === "wait" && oppM && oppM.ready) { S.phase = "roll"; S.roll = 0; S.fc = null; addLog(`${oppM.nick} is at the table`); ch = true; }
+  if (S.phase === "wait" && oppM && oppM.ready) {
+    S.phase = "roll"; S.roll = 0; S.fc = null; addLog(`${oppM.nick} is at the table`); ch = true;
+    if (SER && (S.gn || 1) > 1) S.roll = SER.last === "l" ? 2 : 1;   // the loser of the last game chooses who goes first
+  }
   if (S.phase === "roll" && S.roll && oppM && oppM.rl) {
     if (S.roll === oppM.rl) { addLog(`tied the roll at ${S.roll}, so they roll again`); toast(`Tie at ${S.roll}! Roll again.`); S.roll = 0; ch = true; }
     else if (S.roll > oppM.rl) { if (S.fc) { S.first = S.fc === "f"; goPre(); } }
-    else if (oppM.fc) { S.first = oppM.fc === "s"; goPre(); }
+    else if (oppM.fs) { S.first = oppM.fs === "s"; goPre(); }   // fs: their choice to go first or second (fc is their friend code)
   }
   return ch;
 }
 function matchBannerHTML(){
   if (S.phase === "wait" && myChal) return `<div class="banner"><span>Challenge sent to <b>${esc(myChal.n)}</b>. Waiting for them to accept\u2026</span><button class="btn" data-do="home" type="button">Cancel</button></div>`;
+  if (S.phase === "wait" && SER && (S.gn || 1) > 1) return `<div class="banner"><span>Game ${S.gn} of the best of 3 (you ${SER.w}, ${esc((oppPeer && oppPeer.presence && clean(oppPeer.presence.nick, 20)) || "your opponent")} ${SER.l}). Waiting for them to start it\u2026</span></div>`;
   if (S.phase === "wait") return `<div class="banner"><span>Waiting for an opponent to join room <b>${esc(roomCode || "")}</b>.${myLobby && myLobby.c === roomCode ? " Your table is listed in Lobbies, so anyone can join." : ""} The match starts when two players are at the table.</span></div>`;
   const o = oppM ? oppM.nick : "Opponent";
+  if (SER && (S.gn || 1) > 1 && S.roll) {
+    const b = `Game ${S.gn} of the best of 3 (you ${SER.w}, ${esc(o)} ${SER.l}).`;
+    if (SER.last === "l") return S.fc ? "" : `<div class="banner"><span>${b} You lost the last game, so you choose:</span><button class="btn pri" data-do="fcf" type="button">Go first</button><button class="btn" data-do="fcs" type="button">Go second</button></div>`;
+    return `<div class="banner"><span>${b} ${esc(o)} lost the last game and is choosing who goes first\u2026</span></div>`;
+  }
   if (!S.roll) return `<div class="banner"><span>${esc(o)} is here. Roll a die to see who chooses who goes first.</span><button class="btn pri" data-do="rolld" type="button">Roll die</button></div>`;
   if (!oppM || !oppM.rl) return `<div class="banner"><span>You rolled a <b>${S.roll}</b>. Waiting for ${esc(o)} to roll\u2026</span></div>`;
   if (S.roll > oppM.rl) return S.fc ? "" : `<div class="banner"><span>You rolled <b>${S.roll}</b> to ${esc(o)}'s <b>${oppM.rl}</b>. You choose:</span><button class="btn pri" data-do="fcf" type="button">Go first</button><button class="btn" data-do="fcs" type="button">Go second</button></div>`;
@@ -6894,6 +7031,7 @@ function doAction(a){
   if (a === "dscode") { dsCopyCode(); return; }
   if (a === "dslink") { if (DS) { const u = linkOf("d", DS.code); try { navigator.clipboard.writeText(u).then(() => toast("Link copied. It opens the deck in Bounty TCG."), () => toast("Couldn't copy the link.")); } catch (e) { toast("Couldn't copy the link."); } } return; }
   if (a === "oppdeck") { openOppDeck(); return; }
+  if (a === "sernext") { serNext(); return; }
   if (a === "oppdeckopen") { oppDeckOpen(); return; }
   if (a === "oppdeckcopy") { oppDeckCopy(); return; }
   if (a === "repsend") { reportSend(); return; }
@@ -6985,7 +7123,7 @@ function doAction(a){
     case "bdplay": bdPlay(); break;
     case "bdmore": bdShow += 60; renderLib(); break;
     case "bdaddgo": bdAddByNumber(); break;
-    case "bdclear": BD.cards = new Map(); BD.leader = null; BD.life = 5; $("#bd-name").value = ""; $("#bd-life").value = 5; { const ld = $("#bd-load"); if (ld) ld.value = ""; } renderBdDeck(); renderLib(); toast("Deck cleared. Ready for a new one."); break;
+    case "bdclear": BD.cards = new Map(); BD.leader = null; BD.life = 5; $("#bd-name").value = ""; $("#bd-life").value = 5; $("#bd-folder").value = ""; $("#bd-notes").value = ""; { const ld = $("#bd-load"); if (ld) ld.value = ""; } renderBdDeck(); renderLib(); toast("Deck cleared. Ready for a new one."); break;
     case "colldeck": { let n = 0; for (const x of collMissing()) { COLL[x.c] = x.own + x.need; n += x.need; } if (n) collSave(); renderBdDeck(); renderLib(); toast(n ? `Added ${n} card${n === 1 ? "" : "s"} to your collection.` : BD.cards.size || BD.leader ? "You already own every card in this deck." : "The deck is empty."); break; }
     case "collmiss": { const miss = collMissing(), txt = miss.map(x => x.need + "x" + x.c + (nameOf(x.c) ? " " + nameOf(x.c) : "")).join("\n");
       if (!miss.length) { toast("You own every card in this deck."); break; }
@@ -6996,7 +7134,7 @@ function doAction(a){
       let n = 0; for (const r of rows) { COLL[r.code] = Math.min(99, (COLL[r.code] || 0) + r.count); n += r.count; }
       collSave(); $("#bd-collpaste").value = ""; renderBdDeck(); renderLib(); toast(`Added ${n} card${n === 1 ? "" : "s"} to your collection.`); break; }
     case "collclear": showMenu(`Clear your collection of ${collSize()} cards?`, [["Clear it", () => { COLL = {}; collSave(); renderBdDeck(); renderLib(); toast("Collection cleared."); }], ["Keep it", () => {}]], innerWidth / 2 - 150, innerHeight / 2 - 60); break;
-    case "bdimport": { const txt = codeOrList($("#bd-paste").value); if (!parseLines(txt).length) { toast("Paste a decklist first."); break; } learnNames(txt); const had = BD.leader && BD.leader.c; bdImport(txt); renderBdDeck(); renderLib(); toast(`Deck replaced from your list${BD.leader && BD.leader.c !== had ? `, with ${BD.leader.c} as Leader` : ""}. ${bdTotal()} cards.`); break; }
+    case "bdimport": { if (/^\s*https?:\/\/\S+\s*$/i.test($("#bd-paste").value)) { bdImportLink($("#bd-paste").value.trim()); break; } const txt = codeOrList($("#bd-paste").value); if (!parseLines(txt).length) { toast("Paste a decklist first."); break; } learnNames(txt); const had = BD.leader && BD.leader.c; bdImport(txt); renderBdDeck(); renderLib(); toast(`Deck replaced from your list${BD.leader && BD.leader.c !== had ? `, with ${BD.leader.c} as Leader` : ""}. ${bdTotal()} cards.`); break; }
     case "bdcopy":
       try { navigator.clipboard.writeText(deckExport()).then(() => toast("Decklist copied."), () => toast("Open Paste or copy a decklist and copy the text there.")); }
       catch (err) { toast("Open Paste or copy a decklist and copy the text there."); }
@@ -7343,8 +7481,21 @@ function cleanDeck(id, d){
   return {
     id, name: clean(d.name, 40) || "Untitled deck", leader: String(d.leader || "").slice(0, 80),
     deck: String(d.deck || "").slice(0, 6000), life: Math.min(10, Math.max(1, Math.floor(+d.life) || 5)),
-    sleeve: Math.min(6, Math.max(0, Math.floor(+d.sleeve) || 0)), first: !!d.first, t: Math.floor(+d.t) || 0
+    sleeve: Math.min(6, Math.max(0, Math.floor(+d.sleeve) || 0)), first: !!d.first, t: Math.floor(+d.t) || 0,
+    folder: clean(d.folder, 24), notes: String(d.notes || "").replace(/\r/g, "").slice(0, 2000)
   };
+}
+// saved decks by folder: named folders A to Z, then the decks in no folder
+function deckGroups(){
+  const g = new Map();
+  for (const d of DECKS) { const k = d.folder || ""; if (!g.has(k)) g.set(k, []); g.get(k).push(d); }
+  return Array.from(g.entries()).sort((a, b) => (!a[0]) - (!b[0]) || a[0].toLowerCase().localeCompare(b[0].toLowerCase()));
+}
+// <option>s for saved decks, in an <optgroup> per folder once any deck has one
+function deckOptions(sel, label){
+  const gs = deckGroups(), one = d => `<option value="${esc(d.id)}"${d.id === sel ? " selected" : ""}>${esc(label(d))}</option>`;
+  if (gs.length === 1 && !gs[0][0]) return gs[0][1].map(one).join("");
+  return gs.map(([f, ds]) => `<optgroup label="${esc(f || "No folder")}">${ds.map(one).join("")}</optgroup>`).join("");
 }
 function localDecks(){ try { return (JSON.parse(localStorage.getItem("nakama:decks") || "[]") || []).map(d => cleanDeck(d.id, d)); } catch (e) { return []; } }
 function storeLocal(){ try { localStorage.setItem("nakama:decks", JSON.stringify(DECKS)); } catch (e) {} }
@@ -7374,19 +7525,21 @@ async function moveLocalDecks(uid){
   try { if (localStorage.getItem(key) || DECKS.length) return; } catch (e) { return; }
   const mine = localDecks(); if (!mine.length) return;
   try {
-    for (const d of mine.slice(0, 30)) await deckRef.doc(d.id).set({name: d.name, leader: d.leader, deck: d.deck, life: d.life, sleeve: d.sleeve | 0, first: !!d.first, t: Date.now()});
+    for (const d of mine.slice(0, 30)) await deckRef.doc(d.id).set({name: d.name, leader: d.leader, deck: d.deck, life: d.life, sleeve: d.sleeve | 0, first: !!d.first, t: Date.now(), folder: d.folder, notes: d.notes});
     localStorage.setItem(key, "1");
   } catch (e) {}
 }
 function deckCount(txt){ return parseLines(txt).reduce((n, e) => n + e.count, 0); }
 function renderSaved(){
-  refreshBdLoad(); deckBoxRefresh();
+  refreshBdLoad(); deckBoxRefresh(); achRun();
   if (builderOpen) renderLib();
   const list = $("#saved-list"), note = $("#saved-note");
   if (!list) return;
   if (note) note.textContent = deckMode === "cloud" ? "Saved to your account. Only you can see these, on any device you sign in from." : deckMode === "local" ? "Saved in this browser only, because account storage isn't available here." : "Loading your saved decks…";
   if (!DECKS.length) { list.innerHTML = `<p class="hint">No saved decks yet. Fill in a deck below and press Save deck.</p>`; return; }
-  list.innerHTML = DECKS.map(d => `<div class="deckrow"><span class="dname">${esc(d.name)}<small>${deckCount(d.deck)} cards</small></span><button class="btn" type="button" data-ld="${esc(d.id)}">Load</button><button class="btn ${pendingDel === d.id ? "warn" : ""}" type="button" data-dd="${esc(d.id)}">${pendingDel === d.id ? "Delete?" : "Delete"}</button></div>`).join("");
+  const row = d => `<div class="deckrow"><span class="dname"${d.notes ? ` title="${esc(d.notes)}"` : ""}>${esc(d.name)}<small>${deckCount(d.deck)} cards</small>${d.notes ? `<em class="dnote">${esc(d.notes.split("\n")[0].slice(0, 80))}</em>` : ""}</span><button class="btn" type="button" data-ld="${esc(d.id)}">Load</button><button class="btn ${pendingDel === d.id ? "warn" : ""}" type="button" data-dd="${esc(d.id)}">${pendingDel === d.id ? "Delete?" : "Delete"}</button></div>`;
+  const gs = deckGroups();
+  list.innerHTML = gs.length === 1 && !gs[0][0] ? gs[0][1].map(row).join("") : gs.map(([f, ds]) => `<div class="dfolder">${esc(f || "No folder")}<small>${ds.length}</small></div>` + ds.map(row).join("")).join("");
 }
 function loadDeck(id){
   const d = DECKS.find(x => x.id === id); if (!d || !$("#f-deck")) return;
@@ -7407,7 +7560,8 @@ async function persistDeck(d){
   const existing = DECKS.find(x => x.name.toLowerCase() === name.toLowerCase());
   if (!existing && DECKS.length >= 30) { toast("You can keep up to 30 saved decks. Delete one first."); return; }
   const id = existing ? existing.id : "d" + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
-  const data = {name, leader: String(d.leader || "").slice(0, 80), deck: String(d.deck || "").slice(0, 6000), life: d.life, sleeve: d.sleeve, first: !!d.first, t: Date.now()};
+  const data = {name, leader: String(d.leader || "").slice(0, 80), deck: String(d.deck || "").slice(0, 6000), life: d.life, sleeve: d.sleeve, first: !!d.first, t: Date.now(),
+    folder: clean(d.folder != null ? d.folder : existing ? existing.folder : "", 24), notes: String(d.notes != null ? d.notes : existing ? existing.notes : "").slice(0, 2000)};
   try {
     if (deckMode === "cloud" && deckRef) await deckRef.doc(id).set(data);
     else {
@@ -7773,6 +7927,52 @@ function deckFromCode(txt){
 }
 // a pasted list or deck code as "Leader: X" and lines
 const codeOrList = txt => { const d = deckFromCode(txt); return d ? "Leader: " + d.l + "\n" + d.deck : txt; };
+// ---------- a deck from a link ----------
+// A deck site's link often carries the list itself (counts and card numbers in the address, like "4nOP01-016"); if it
+// doesn't, the desktop shell reads the page (fetchPage, https only) and the first decklist on it is taken. Only card
+// numbers in the card list count, a Leader once and other cards 1 to 4 times, up to 50, so whatever the page holds the
+// result is just a list that opens in the Deck editor to check.
+function listFromText(t){
+  t = String(t || "").slice(0, 3e6);
+  const out = new Map(); let leader = null, total = 0;
+  const take = (n, c) => {
+    const e = CARDDB.get(c); if (!e || out.has(c) || c === leader) return;
+    if (e.t === "Leader") { if (!leader && n === 1) leader = c; else if (leader && total) total = 99; return; }   // a second deck's Leader: that list is done
+    if (n < 1 || n > 4 || total >= 50) return;
+    out.set(c, n); total += n;
+  };
+  const re = /(?:^|[^\w-])(\d{1,2})\s*(?:x|×|n|\*)?\s*([A-Z]{1,4}\d{0,3}-\d{2,4})(?![\w-])|([A-Z]{1,4}\d{0,3}-\d{2,4})\s*(?:x|×|\*|:)\s*(\d{1,2})(?!\d)/g;
+  let m;
+  while ((m = re.exec(t)) && total < 50) { if (m[2]) take(+m[1], m[2]); else take(+m[4], m[3]); }
+  if (!out.size) return null;
+  return {l: leader, deck: Array.from(out.entries()).map(([c, n]) => n + "x" + c).join("\n"), n: Array.from(out.values()).reduce((a, n) => a + n, 0)};
+}
+// the desktop shell's page reader (tests replace it)
+async function deskFetch(url){ const d = window.bountyDesktop; return d && d.fetchPage ? d.fetchPage(url) : {error: "none"}; }
+async function deckFromLink(url){
+  let u; try { u = new URL(String(url || "").trim()); } catch (e) { return {err: "That isn't a link."}; }
+  if (!/^https?:$/.test(u.protocol)) return {err: "That isn't a link."};
+  const raw = u.href; let dec = raw; try { dec = decodeURIComponent(raw); } catch (e) {}
+  const code = /BTCG1-[A-Za-z0-9_-]{8,2000}/.exec(raw);
+  if (code) { const d = deckFromCode(code[0]); if (d) return {l: d.l, deck: d.deck}; }
+  const inUrl = listFromText(dec.replace(/[?&#=]/g, " ").replace(/a(?=\d)/g, " "));
+  if (inUrl && inUrl.n >= 20) return inUrl;
+  const r = await deskFetch(u.href).catch(() => ({error: "x"}));
+  if (!r || r.error === "none") return {err: "This link doesn't hold a decklist. Copy the list from the page and paste it instead."};
+  if (r.error || !(r.status >= 200 && r.status < 300)) return {err: "Couldn't open that link. Copy the list from the page and paste it instead."};
+  const html = String(r.text || "");
+  const page = listFromText(html.replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ").replace(/<[^>]+>/g, " ").replace(/&nbsp;|&#160;/g, " "));
+  const hrefs = listFromText(Array.from(html.matchAll(/href="([^"]{20,4000})"/g), x => { try { return decodeURIComponent(x[1]); } catch (e) { return x[1]; } }).join(" ").replace(/[?&#=]/g, " ").replace(/a(?=\d)/g, " "));
+  const best = [page, hrefs, inUrl].filter(Boolean).sort((a, b) => b.n - a.n)[0];
+  return best ? best : {err: "Couldn't find a decklist on that page. Copy the list from the page and paste it instead."};
+}
+async function bdImportLink(url){
+  toast("Reading the deck from the link…");
+  const d = await deckFromLink(url);
+  if (d.err) { toast(d.err); return; }
+  bdImport((d.l ? "Leader: " + d.l + "\n" : "") + d.deck); renderBdDeck(); renderLib();
+  toast(`Loaded ${bdTotal()} cards${d.l ? ` with ${nameOf(d.l) || d.l} as Leader` : ""} from the link. Check the list, then save it.`);
+}
 // the shared deck: the Deck editor's, or a packed list
 function deckShareOf(){ return {leader: bdLeaderStr(), deck: bdText(), name: clean(($("#bd-name") || {}).value, 40)}; }
 const DS_TYPE = {Character: 0, Event: 1, Stage: 2};
@@ -8142,7 +8342,8 @@ function bdHand(a){
 document.addEventListener("toggle", e => { if (e.target && e.target.id === "bd-anal") { bdStatsOpen = e.target.open; try { localStorage.setItem("bounty:bdstats", bdStatsOpen ? "1" : "0"); } catch (x) {} } }, true);
 function refreshBdLoad(){
   const s = $("#bd-load"); if (!s) return;
-  s.innerHTML = '<option value="">Load saved deck…</option>' + DECKS.map(d => `<option value="${esc(d.id)}">${esc(d.name)}</option>`).join("");
+  s.innerHTML = '<option value="">Load saved deck…</option>' + deckOptions(null, d => d.name);
+  const fl = $("#bd-folders"); if (fl) fl.innerHTML = deckGroups().filter(g => g[0]).map(g => `<option value="${esc(g[0])}">`).join("");
 }
 function bdLoadSaved(id){
   const d = DECKS.find(x => x.id === id); if (!d) return;
@@ -8150,7 +8351,8 @@ function bdLoadSaved(id){
   bdImport(d.deck);
   const l = parseLines(d.leader)[0];
   BD.leader = l ? {c: l.code, n: l.name || nameOf(l.code) || ""} : null;
-  $("#bd-name").value = d.name; $("#bd-life").value = d.life;
+  $("#bd-name").value = d.name; $("#bd-life").value = d.life; $("#bd-folder").value = d.folder || ""; $("#bd-notes").value = d.notes || "";
+  { const nb = $("#bd-notesbox"); if (nb && d.notes) nb.open = true; }
   renderBdDeck(); renderLib();
   toast(`Loaded "${d.name}" into the builder.`);
 }
@@ -8184,7 +8386,7 @@ async function bdSave(){
   const v = loadSaved();
   const life = Math.min(10, Math.max(1, Math.floor(+$("#bd-life").value) || 5));
   if (!BD.cards.size) { toast("Add some cards first."); return; }
-  await persistDeck({name, leader: bdLeaderStr(), deck: bdText(), life, sleeve: S.sleeve || v.sleeve || 0, first: !!v.first});
+  await persistDeck({name, leader: bdLeaderStr(), deck: bdText(), life, sleeve: S.sleeve || v.sleeve || 0, first: !!v.first, folder: $("#bd-folder").value, notes: $("#bd-notes").value});
 }
 function bdPlay(){
   if (!BD.cards.size) { toast("Add some cards first."); return; }
@@ -8913,6 +9115,7 @@ initSettings();
 initArt();
 render(); renderLog();
 openHome();
+achOn = true; setTimeout(achRun, 2500);   // after the stats and ranked record load
 </script>
 </body>
 </html>

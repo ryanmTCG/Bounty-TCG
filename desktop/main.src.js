@@ -13,7 +13,7 @@ const APP_DIR = __dirname;
 const WEB_DIR = path.join(APP_DIR, "web");
 // Raise SHELL_VERSION whenever main.js or preload.js change. An update whose "shell" is newer
 // than this one asks the player to download the full app instead of installing itself.
-// 2: updater. 3: desktop shortcut on first launch. 4: bounty:// links.
+// 2: updater. 3: desktop shortcut on first launch. 4: bounty:// links, reading a deck page from a link.
 const SHELL_VERSION = 4;
 const UPDATE_URL = process.env.BOUNTY_UPDATE_URL || "https://raw.githubusercontent.com/ryanmTCG/Bounty-TCG/main/updates/";
 const DOWNLOAD_PAGE = "https://github.com/ryanmTCG/Bounty-TCG";
@@ -272,6 +272,20 @@ function sendLink(url) {
   if (win && !win.isDestroyed() && !win.webContents.isLoading()) { win.webContents.send("ui:link", url); if (win.isMinimized()) win.restore(); win.focus(); }
   else pendingLink = url;
 }
+// a deck page the player pasted the link of (the page can't read other sites itself): https only, no cookies, 3 MB at most
+ipcMain.handle("page:fetch", async (_e, url) => {
+  let u; try { u = new URL(String(url || "")); } catch (e) { return { error: "That isn't a link." }; }
+  if (u.protocol !== "https:") return { error: "Only https links can be read." };
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 15000);
+  try {
+    const r = await net.fetch(u.toString(), { signal: ctl.signal, credentials: "omit", headers: { "Accept": "text/html,text/plain,application/json" } });
+    if (+(r.headers.get("content-length") || 0) > 3e6) return { error: "That page is too big." };
+    const buf = Buffer.from(await r.arrayBuffer());
+    if (buf.length > 3e6) return { error: "That page is too big." };
+    return { status: r.status, text: buf.toString("utf8") };
+  } catch (e) { return { error: "Couldn't open that link." }; }
+  finally { clearTimeout(timer); }
+});
 ipcMain.handle("link:take", () => { const u = pendingLink; pendingLink = ""; return u; });
 
 // ---------- window ----------
