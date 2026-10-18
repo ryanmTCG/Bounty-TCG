@@ -9,7 +9,8 @@
       "n": "Uta",
       "p": 4000,
       "s": "FILM",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST23-002": {
       "a": "Slash",
@@ -20,7 +21,8 @@
       "n": "Shanks",
       "p": 10000,
       "s": "The Four Emperors/Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST23-003": {
       "a": "Ranged",
@@ -31,7 +33,8 @@
       "n": "Benn.Beckman",
       "p": 5000,
       "s": "Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST23-004": {
       "a": "Strike",
@@ -42,7 +45,8 @@
       "n": "Monkey.D.Luffy",
       "p": 2000,
       "s": "FILM/Supernovas/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST23-005": {
       "a": "Ranged",
@@ -53,7 +57,8 @@
       "n": "Yasopp",
       "p": 1000,
       "s": "Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     }
   }
 }

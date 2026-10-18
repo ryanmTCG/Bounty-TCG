@@ -8,7 +8,8 @@
       "n": "Kouzuki Oden",
       "p": 5000,
       "s": "Land of Wano / Kouzuki Clan",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "EB01-002": {
       "a": "Ranged",
@@ -19,7 +20,8 @@
       "n": "Izo",
       "p": 7000,
       "s": "Land of Wano / Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-003": {
       "a": "Slash / Special",
@@ -30,7 +32,8 @@
       "n": "Kid & Killer",
       "p": 5000,
       "s": "Supernovas / Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-004": {
       "a": "Ranged",
@@ -41,7 +44,8 @@
       "n": "Koza",
       "p": 3000,
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-005": {
       "a": "Slash",
@@ -52,7 +56,8 @@
       "n": "Doma",
       "p": 3000,
       "s": "Whitebeard Pirates Allies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-006": {
       "a": "Strike",
@@ -63,7 +68,8 @@
       "n": "Tony Tony.Chopper",
       "p": 4000,
       "s": "Animal / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB01-007": {
       "a": "Strike",
@@ -74,7 +80,8 @@
       "n": "Yamato",
       "p": 5000,
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-008": {
       "a": "Strike",
@@ -85,7 +92,8 @@
       "n": "LittleOars Jr.",
       "p": 7000,
       "s": "Giant / Whitebeard Pirates Allies",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-009": {
       "c": "Red",
@@ -93,7 +101,8 @@
       "kw": "-",
       "n": "Just Shut Up and Come with Us!!!!",
       "s": "Drum Kingdom / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "EB01-010": {
       "c": "Red",
@@ -101,7 +110,8 @@
       "kw": "-",
       "n": "There's No Way You Could Defeat Me!!",
       "s": "Water Seven / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "EB01-011": {
       "c": "Red",
@@ -109,7 +119,8 @@
       "kw": "-",
       "n": "Mini-Merry",
       "s": "Straw Hat Crew",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "EB01-012": {
       "a": "Slash",
@@ -120,7 +131,8 @@
       "n": "Cavendish",
       "p": 6000,
       "s": "Supernovas / Beautiful Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB01-013": {
       "a": "Wisdom",
@@ -130,7 +142,8 @@
       "kw": "-",
       "n": "Kouzuki Hiyori",
       "s": "Land of Wano/Kouzuki Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-014": {
       "a": "Strike",
@@ -141,7 +154,8 @@
       "n": "Sanji",
       "p": 5000,
       "s": "FILM / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-015": {
       "a": "Special",
@@ -152,7 +166,8 @@
       "n": "Scratchmen Apoo",
       "p": 1000,
       "s": "Supernovas / On-Air Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-016": {
       "a": "Wisdom",
@@ -162,7 +177,8 @@
       "kw": "-",
       "n": "Bingoh",
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-017": {
       "a": "Strike",
@@ -173,7 +189,8 @@
       "n": "Blueno",
       "p": 2000,
       "s": "FILM / CP0",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-018": {
       "a": "Strike",
@@ -184,7 +201,8 @@
       "n": "Mountain God",
       "p": 7000,
       "s": "Animal/Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-019": {
       "c": "Green",
@@ -192,7 +210,8 @@
       "kw": "-",
       "n": "Off-White",
       "s": "The Seven Warlords of the Sea / Donquixote Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "EB01-020": {
       "c": "Green",
@@ -200,7 +219,8 @@
       "kw": "-",
       "n": "Chambres",
       "s": "Supernovas / Heart Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "EB01-021": {
       "a": "Slash",
@@ -210,7 +230,8 @@
       "n": "Hannyabal",
       "p": 5000,
       "s": "Impel Down",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "EB01-022": {
       "a": "Slash",
@@ -221,7 +242,8 @@
       "n": "Inazuma",
       "p": 7000,
       "s": "Impel Down / Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB01-023": {
       "a": "Slash",
@@ -232,7 +254,8 @@
       "n": "Edward Weevil",
       "p": 6000,
       "s": "The Seven Warlords of the Sea",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-024": {
       "a": "Slash",
@@ -243,7 +266,8 @@
       "n": "Hamlet",
       "p": 4000,
       "s": "Animal Kingdom Pirates/SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-025": {
       "a": "Slash",
@@ -254,7 +278,8 @@
       "n": "Fourtricks",
       "p": 5000,
       "s": "Animal Kingdom Pirates / SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-026": {
       "a": "Ranged",
@@ -265,7 +290,8 @@
       "n": "Prince Bellett",
       "p": 2000,
       "s": "Impel Down",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-027": {
       "a": "Slash",
@@ -276,7 +302,8 @@
       "n": "Mr.1(Daz.Bonez)",
       "p": 6000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-028": {
       "c": "Blue",
@@ -284,7 +311,8 @@
       "kw": "-",
       "n": "Gum-Gum Champion Rifle",
       "s": "Straw Hat Crew/Impel Down",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "EB01-029": {
       "c": "Blue",
@@ -292,7 +320,8 @@
       "kw": "-",
       "n": "Sorry. I'm a Goner.",
       "s": "East Blue / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "EB01-030": {
       "c": "Blue",
@@ -300,7 +329,8 @@
       "kw": "-",
       "n": "Loguetown",
       "s": "East Blue",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "EB01-031": {
       "a": "Wisdom",
@@ -311,7 +341,8 @@
       "n": "Kalifa",
       "p": 5000,
       "s": "Water Seven / Galley-La Company",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-032": {
       "a": "Strike",
@@ -322,7 +353,8 @@
       "n": "Army Wolves",
       "p": 7000,
       "s": "Animal / Impel Down",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-033": {
       "a": "Strike",
@@ -333,7 +365,8 @@
       "n": "Blueno",
       "p": 5000,
       "s": "Water Seven",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-034": {
       "a": "Slash",
@@ -344,7 +377,8 @@
       "n": "Ms. Wednesday",
       "p": 4000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB01-035": {
       "a": "Strike",
@@ -355,7 +389,8 @@
       "n": "Ms. Monday",
       "p": 5000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-036": {
       "a": "Strike",
@@ -366,7 +401,8 @@
       "n": "Minochihuahua",
       "p": 5000,
       "s": "Impel Down / Jailer Beast",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-037": {
       "a": "Strike",
@@ -377,7 +413,8 @@
       "n": "Mr. 9",
       "p": 4000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-038": {
       "c": "Purple",
@@ -385,7 +422,8 @@
       "kw": "-",
       "n": "Oh Come My Way",
       "s": "Baroque Works",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "EB01-039": {
       "c": "Purple",
@@ -393,7 +431,8 @@
       "kw": "-",
       "n": "Conquerer of Three Worlds Ragnaraku",
       "s": "The Four Emperors / Animal Kingdom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "EB01-040": {
       "a": "Slash",
@@ -403,7 +442,8 @@
       "n": "Kyros",
       "p": 5000,
       "s": "Dressrosa",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "EB01-041": {
       "a": "Wisdom",
@@ -414,7 +454,8 @@
       "n": "Crocus",
       "p": 8000,
       "s": "Former Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-042": {
       "a": "Wisdom",
@@ -424,7 +465,8 @@
       "kw": "-",
       "n": "Scarlet",
       "s": "Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-043": {
       "a": "Wisdom",
@@ -435,7 +477,8 @@
       "n": "Spandine",
       "p": 2000,
       "s": "CP9",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-044": {
       "a": "Slash",
@@ -446,7 +489,8 @@
       "n": "Funkfreed",
       "p": 1000,
       "s": "CP9",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-045": {
       "a": "Slash",
@@ -457,7 +501,8 @@
       "n": "Brook",
       "p": 4000,
       "s": "Rumbar Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-046": {
       "a": "Slash",
@@ -468,7 +513,8 @@
       "n": "Brook",
       "p": 4000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB01-047": {
       "a": "Strike",
@@ -479,7 +525,8 @@
       "n": "Laboon",
       "p": 4000,
       "s": "Animal",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-048": {
       "a": "Strike",
@@ -490,7 +537,8 @@
       "n": "Laboon",
       "p": 5000,
       "s": "Animal",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB01-049": {
       "a": "Slash",
@@ -501,7 +549,8 @@
       "n": "T-Bone",
       "p": 5000,
       "s": "Water Seven / Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-050": {
       "c": "Black",
@@ -509,7 +558,8 @@
       "kw": "-",
       "n": "...I Want to Live!!",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "EB01-051": {
       "c": "Black",
@@ -517,7 +567,8 @@
       "kw": "-",
       "n": "Finger Pistol",
       "s": "CP9",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "EB01-052": {
       "a": "Special",
@@ -527,7 +578,8 @@
       "kw": "Blocker",
       "n": "Viola",
       "s": "Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB01-053": {
       "a": "Special",
@@ -538,7 +590,8 @@
       "n": "Gastino",
       "p": 5000,
       "s": "Scientist",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-054": {
       "a": "Slash",
@@ -549,7 +602,8 @@
       "n": "Gan.Fall",
       "p": 4000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-055": {
       "a": "Wisdom",
@@ -560,7 +614,8 @@
       "n": "Charlotte Compote",
       "p": 9000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-056": {
       "a": "Special",
@@ -571,7 +626,8 @@
       "n": "Charlotte Flampe",
       "p": 1000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB01-057": {
       "a": "Wisdom",
@@ -581,7 +637,8 @@
       "kw": "Blocker",
       "n": "Shirahoshi",
       "s": "Merfolk",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB01-058": {
       "a": "Strike",
@@ -592,7 +649,8 @@
       "n": "Mont Blanc Cricket",
       "p": 3000,
       "s": "Monkey Mountain Alliance",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB01-059": {
       "c": "Yellow",
@@ -600,7 +658,8 @@
       "kw": "-",
       "n": "Kingdom Come",
       "s": "Sky Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "EB01-060": {
       "c": "Yellow",
@@ -608,7 +667,8 @@
       "kw": "-",
       "n": "Did Someone Say...Kami?",
       "s": "Sky Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "EB01-061": {
       "a": "Special",
@@ -619,7 +679,8 @@
       "n": "Mr.2.Bon.Kurei(Bentham)",
       "p": 1000,
       "s": "Former Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     }
   }
 }

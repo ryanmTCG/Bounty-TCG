@@ -7,7 +7,8 @@
       "p": 5000,
       "s": "Animal / Drum Kingdom / Straw Hat Crew",
       "t": "Leader",
-      "lf": 4
+      "lf": 4,
+      "r": "L"
     },
     "OP08-002": {
       "a": "Special",
@@ -17,7 +18,8 @@
       "n": "Marco",
       "p": 5000,
       "s": "Whitebeard Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP08-003": {
       "a": "Wisdom",
@@ -28,7 +30,8 @@
       "n": "Twenty Doctors",
       "p": 2000,
       "s": "Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-004": {
       "a": "Strike",
@@ -39,7 +42,8 @@
       "n": "Kuromarimo",
       "p": 5000,
       "s": "Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-005": {
       "a": "Ranged",
@@ -50,7 +54,8 @@
       "n": "Chess",
       "p": 3000,
       "s": "Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-006": {
       "a": "Ranged / Strike",
@@ -61,7 +66,8 @@
       "n": "Chessmarimo",
       "p": 6000,
       "s": "Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-007": {
       "a": "Strike",
@@ -72,7 +78,8 @@
       "n": "Tony Tony.Chopper",
       "p": 5000,
       "s": "Animal / Drum Kingdom / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP08-008": {
       "a": "Slash",
@@ -83,7 +90,8 @@
       "n": "Dalton",
       "p": 6000,
       "s": "Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-009": {
       "a": "Wisdom",
@@ -94,7 +102,8 @@
       "n": "Maria Onion Bear",
       "p": 5000,
       "s": "Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-010": {
       "a": "Wisdom",
@@ -105,7 +114,8 @@
       "n": "Hiking Bear",
       "p": 3000,
       "s": "Animal/Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-011": {
       "a": "Special",
@@ -116,7 +126,8 @@
       "n": "Musshuru",
       "p": 8000,
       "s": "FILM/Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-012": {
       "a": "Strike",
@@ -127,7 +138,8 @@
       "n": "Lapins",
       "p": 3000,
       "s": "Animal / Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-013": {
       "a": "Wisdom",
@@ -138,7 +150,8 @@
       "n": "Robson",
       "p": 4000,
       "s": "Animal/Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-014": {
       "a": "Strike",
@@ -149,7 +162,8 @@
       "n": "Wapol",
       "p": 6000,
       "s": "Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-015": {
       "a": "Wisdom",
@@ -160,7 +174,8 @@
       "n": "Dr.Kureha",
       "p": 2000,
       "s": "Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-016": {
       "a": "Wisdom",
@@ -170,7 +185,8 @@
       "kw": "-",
       "n": "Dr.Hiriluk",
       "s": "Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-017": {
       "c": "Red",
@@ -178,7 +194,8 @@
       "kw": "-",
       "n": "I'd Never Shoot You!!!!",
       "s": "Drum Kingdom",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP08-018": {
       "c": "Red",
@@ -186,7 +203,8 @@
       "kw": "-",
       "n": "Cloven Rose",
       "s": "Animal / Drum Kingdom / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP08-019": {
       "c": "Red",
@@ -194,7 +212,8 @@
       "kw": "-",
       "n": "Munch-Munch Mutation",
       "s": "Drum Kingdom",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP08-020": {
       "c": "Red",
@@ -202,7 +221,8 @@
       "kw": "-",
       "n": "Drum Kingdom",
       "s": "Drum Kingdom",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP08-021": {
       "a": "Special",
@@ -212,7 +232,8 @@
       "n": "Carrot",
       "p": 5000,
       "s": "Minks",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP08-022": {
       "a": "Slash",
@@ -223,7 +244,8 @@
       "n": "Inuarashi",
       "p": 6000,
       "s": "Minks / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-023": {
       "a": "Special",
@@ -234,7 +256,8 @@
       "n": "Carrot",
       "p": 6000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP08-024": {
       "a": "Slash",
@@ -245,7 +268,8 @@
       "n": "Concelot",
       "p": 4000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-025": {
       "a": "Slash",
@@ -256,7 +280,8 @@
       "n": "Shishilian",
       "p": 4000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-026": {
       "a": "Slash",
@@ -267,7 +292,8 @@
       "n": "Giovanni",
       "p": 3000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-027": {
       "a": "Wisdom",
@@ -278,7 +304,8 @@
       "n": "Tristan",
       "p": 3000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-028": {
       "a": "Slash",
@@ -289,7 +316,8 @@
       "n": "Nekomamushi",
       "p": 6000,
       "s": "Minks / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-029": {
       "a": "Strike",
@@ -300,7 +328,8 @@
       "n": "Pekoms",
       "p": 6000,
       "s": "Minks / Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-030": {
       "a": "Slash",
@@ -311,7 +340,8 @@
       "n": "Pedro",
       "p": 5000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-031": {
       "a": "Wisdom",
@@ -322,7 +352,8 @@
       "n": "Miyagi",
       "p": 1000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-032": {
       "a": "Wisdom",
@@ -332,7 +363,8 @@
       "kw": "-",
       "n": "Milky",
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-033": {
       "a": "Slash",
@@ -343,7 +375,8 @@
       "n": "Roddy",
       "p": 2000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-034": {
       "a": "Slash",
@@ -354,7 +387,8 @@
       "n": "Wanda",
       "p": 2000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-035": {
       "a": "Strike",
@@ -365,7 +399,8 @@
       "n": "BB",
       "p": 4000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-036": {
       "c": "Green",
@@ -374,7 +409,8 @@
       "n": "Electrical Luna",
       "p": 11000,
       "s": "Minks",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP08-037": {
       "c": "Green",
@@ -382,7 +418,8 @@
       "kw": "-",
       "n": "Garchu",
       "s": "Minks",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP08-038": {
       "c": "Green",
@@ -390,7 +427,8 @@
       "kw": "-",
       "n": "We Would Never Sell a Comrade to an Enemy!!!",
       "s": "Minks/The Akazaya Nine",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP08-039": {
       "c": "Green",
@@ -398,7 +436,8 @@
       "kw": "-",
       "n": "Zou",
       "s": "Animal",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "R"
     },
     "OP08-040": {
       "a": "Slash",
@@ -409,7 +448,8 @@
       "n": "Atmos",
       "p": 5000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-041": {
       "a": "Slash",
@@ -420,7 +460,8 @@
       "n": "Aphelandra",
       "p": 4000,
       "s": "Amazon Lily",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-042": {
       "a": "Slash",
@@ -431,7 +472,8 @@
       "n": "Edward Weevil",
       "p": 5000,
       "s": "The Seven Warlords of the Sea",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-043": {
       "a": "Special",
@@ -442,7 +484,8 @@
       "n": "Edward.Newgate",
       "p": 12000,
       "s": "The Four Emperors/Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP08-044": {
       "a": "Strike",
@@ -453,7 +496,8 @@
       "n": "Kingdew",
       "p": 4000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-045": {
       "a": "Slash",
@@ -464,7 +508,8 @@
       "n": "Thatch",
       "p": 5000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-046": {
       "a": "Wisdom",
@@ -475,7 +520,8 @@
       "n": "Shakuyaku",
       "p": 6000,
       "s": "Amazon Lily",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-047": {
       "a": "Strike",
@@ -486,7 +532,8 @@
       "n": "Jozu",
       "p": 7000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-048": {
       "a": "Strike",
@@ -497,7 +544,8 @@
       "n": "Sweetpea",
       "p": 6000,
       "s": "Amazon Lily",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-049": {
       "a": "Slash",
@@ -508,7 +556,8 @@
       "n": "Speed Jil",
       "p": 5000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-050": {
       "a": "Strike",
@@ -519,7 +568,8 @@
       "n": "Namule",
       "p": 2000,
       "s": "Fish-Man / Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-051": {
       "a": "Wisdom",
@@ -530,7 +580,8 @@
       "n": "Buckin",
       "p": 2000,
       "s": "Former Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-052": {
       "a": "Special",
@@ -541,7 +592,8 @@
       "n": "Portgas.D.Ace",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-053": {
       "c": "Blue",
@@ -549,7 +601,8 @@
       "kw": "-",
       "n": "Thank You...for Loving Me!!",
       "s": "Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP08-054": {
       "c": "Blue",
@@ -557,7 +610,8 @@
       "kw": "-",
       "n": "You Can't Take Our King This Early in the Game.",
       "s": "Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP08-055": {
       "c": "Blue",
@@ -565,7 +619,8 @@
       "kw": "-",
       "n": "Phoenix Brand",
       "s": "Former Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP08-056": {
       "c": "Blue",
@@ -573,7 +628,8 @@
       "kw": "-",
       "n": "Moby Dick",
       "s": "Whitebeard Pirates",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP08-057": {
       "a": "Special",
@@ -583,7 +639,8 @@
       "n": "King",
       "p": 5000,
       "s": "Animal Kingdom Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP08-058": {
       "a": "Wisdom",
@@ -593,7 +650,8 @@
       "n": "Charlotte Pudding",
       "p": 5000,
       "s": "Big Mom Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP08-059": {
       "a": "Special",
@@ -604,7 +662,8 @@
       "n": "Alber",
       "p": 5000,
       "s": "Lunarian/Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-060": {
       "a": "Special",
@@ -615,7 +674,8 @@
       "n": "King",
       "p": 8000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-061": {
       "a": "Special",
@@ -626,7 +686,8 @@
       "n": "Charlotte Oven",
       "p": 6000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-062": {
       "a": "Strike",
@@ -637,7 +698,8 @@
       "n": "Charlotte Katakuri",
       "p": 3000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-063": {
       "a": "Strike",
@@ -648,7 +710,8 @@
       "n": "Charlotte Katakuri",
       "p": 7000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-064": {
       "a": "Slash",
@@ -659,7 +722,8 @@
       "n": "Charlotte Cracker",
       "p": 5000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-065": {
       "a": "Special",
@@ -670,7 +734,8 @@
       "n": "Charlotte Smoothie",
       "p": 9000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-066": {
       "a": "Special",
@@ -681,7 +746,8 @@
       "n": "Charlotte Brulee",
       "p": 1000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-067": {
       "a": "Wisdom",
@@ -692,7 +758,8 @@
       "n": "Charlotte Pudding",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-068": {
       "a": "Special",
@@ -703,7 +770,8 @@
       "n": "Charlotte Perospero",
       "p": 5000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-069": {
       "a": "Special",
@@ -714,7 +782,8 @@
       "n": "Charlotte Linlin",
       "p": 9000,
       "s": "Former Rocks Pirates / Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP08-070": {
       "a": "Strike",
@@ -725,7 +794,8 @@
       "n": "Baron Tamago",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-071": {
       "a": "Strike",
@@ -736,7 +806,8 @@
       "n": "Count Niwatori",
       "p": 7000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-072": {
       "a": "Slash",
@@ -747,7 +818,8 @@
       "n": "Biscuit Warrior",
       "p": 5000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-073": {
       "a": "Strike",
@@ -758,7 +830,8 @@
       "n": "Viscount Hiyoko",
       "p": 6000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-074": {
       "a": "Special",
@@ -769,7 +842,8 @@
       "n": "Black Maria",
       "p": 2000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP08-075": {
       "c": "Purple",
@@ -777,7 +851,8 @@
       "kw": "-",
       "n": "Candy Maiden",
       "s": "Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP08-076": {
       "c": "Purple",
@@ -785,7 +860,8 @@
       "kw": "-",
       "n": "It's to Die For...",
       "s": "The Four Emperors / Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP08-077": {
       "c": "Purple",
@@ -793,7 +869,8 @@
       "kw": "-",
       "n": "Conquest of the Sea",
       "s": "The Four Emperors / Animal Kingdom Pirates / Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP08-078": {
       "a": "Strike",
@@ -804,7 +881,8 @@
       "n": "Ulti",
       "p": 6000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-079": {
       "a": "Strike",
@@ -815,7 +893,8 @@
       "n": "Kaido",
       "p": 9000,
       "s": "Former Rocks Pirates/Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP08-080": {
       "a": "Strike",
@@ -826,7 +905,8 @@
       "n": "Queen",
       "p": 2000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-081": {
       "a": "Strike",
@@ -837,7 +917,8 @@
       "n": "Guernica",
       "p": 2000,
       "s": "CP0",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-082": {
       "a": "Slash",
@@ -848,7 +929,8 @@
       "n": "Sasaki",
       "p": 1000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-083": {
       "a": "Slash",
@@ -859,7 +941,8 @@
       "n": "Sheepshead",
       "p": 3000,
       "s": "Animal Kingdom Pirates / SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-084": {
       "a": "Slash",
@@ -870,7 +953,8 @@
       "n": "Jack",
       "p": 8000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP08-085": {
       "a": "Strike",
@@ -881,7 +965,8 @@
       "n": "Jinbe",
       "p": 6000,
       "s": "Fish-Man / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-086": {
       "a": "Strike",
@@ -892,7 +977,8 @@
       "n": "Ginrummy",
       "p": 3000,
       "s": "Animal Kingdom Pirates / SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-087": {
       "a": "Ranged",
@@ -903,7 +989,8 @@
       "n": "Scratchmen Apoo",
       "p": 5000,
       "s": "Animal Kingdom Pirates / On-Air Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-088": {
       "a": "Ranged",
@@ -914,7 +1001,8 @@
       "n": "Duval",
       "p": 2000,
       "s": "The Flying Fish Riders",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-089": {
       "a": "Slash",
@@ -925,7 +1013,8 @@
       "n": "Basil Hawkins",
       "p": 9000,
       "s": "Animal Kingdom Pirates / Hawkins Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-090": {
       "a": "Slash",
@@ -936,7 +1025,8 @@
       "n": "Hamlet",
       "p": 4000,
       "s": "Animal Kingdom Pirates / SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-091": {
       "a": "Slash",
@@ -947,7 +1037,8 @@
       "n": "Who's.Who",
       "p": 5000,
       "s": "Animal Kingdom Pirates / Former CP9",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-092": {
       "a": "Strike",
@@ -958,7 +1049,8 @@
       "n": "Page One",
       "p": 5000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-093": {
       "a": "Slash",
@@ -969,7 +1061,8 @@
       "n": "X.Drake",
       "p": 6000,
       "s": "Navy / Drake Pirates / Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-094": {
       "c": "Black",
@@ -977,7 +1070,8 @@
       "kw": "-",
       "n": "Imperial Flame",
       "s": "Animal Kingdom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP08-095": {
       "c": "Black",
@@ -985,7 +1079,8 @@
       "kw": "-",
       "n": "Iron Body Fang Flash",
       "s": "Animal Kingdom Pirates / Former CP9",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP08-096": {
       "c": "Black",
@@ -993,7 +1088,8 @@
       "kw": "-",
       "n": "People's Dreams Don't Ever End!!",
       "s": "Blackbeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP08-097": {
       "c": "Black",
@@ -1001,7 +1097,8 @@
       "kw": "-",
       "n": "Heliceratops",
       "s": "Animal Kingdom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP08-098": {
       "a": "Slash",
@@ -1011,7 +1108,8 @@
       "n": "Kalgara",
       "p": 5000,
       "s": "Jaya / Sky Island / Shandian Warrior",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP08-099": {
       "a": "Slash",
@@ -1022,7 +1120,8 @@
       "n": "Kalgara",
       "p": 8000,
       "s": "Jaya / Sky Island / Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-100": {
       "a": "Wisdom",
@@ -1033,7 +1132,8 @@
       "n": "South Bird",
       "p": 2000,
       "s": "Animal / Jaya / Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-101": {
       "a": "Slash",
@@ -1044,7 +1144,8 @@
       "n": "Charlotte Angel",
       "p": 3000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-102": {
       "a": "Special",
@@ -1055,7 +1156,8 @@
       "n": "Charlotte Opera",
       "p": 6000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-103": {
       "a": "Slash",
@@ -1066,7 +1168,8 @@
       "n": "Charlotte Custard",
       "p": 3000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-104": {
       "a": "Wisdom",
@@ -1077,7 +1180,8 @@
       "n": "Charlotte Poire",
       "p": 2000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-105": {
       "a": "Special",
@@ -1088,7 +1192,8 @@
       "n": "Jewelry Bonney",
       "p": 4000,
       "s": "Egghead / Bonney Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP08-106": {
       "a": "Special",
@@ -1099,7 +1204,8 @@
       "n": "Nami",
       "p": 5000,
       "s": "Egghead / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP08-107": {
       "a": "Special",
@@ -1110,7 +1216,8 @@
       "n": "Nitro",
       "p": 2000,
       "s": "Big Mom Pirates/Homies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-108": {
       "a": "Strike",
@@ -1121,7 +1228,8 @@
       "n": "Mont Blanc Cricket",
       "p": 6000,
       "s": "Jaya / Monkey Mountain Alliance",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-109": {
       "a": "Slash",
@@ -1132,7 +1240,8 @@
       "n": "Mont Blanc Noland",
       "p": 6000,
       "s": "Jaya / Botanist",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-110": {
       "a": "Ranged",
@@ -1143,7 +1252,8 @@
       "n": "Wyper",
       "p": 5000,
       "s": "Sky Island/Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-111": {
       "a": "Special",
@@ -1154,7 +1264,8 @@
       "n": "S-Shark",
       "p": 5000,
       "s": "Egghead / Seraphim",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP08-112": {
       "a": "Special",
@@ -1165,7 +1276,8 @@
       "n": "S-Snake",
       "p": 6000,
       "s": "Egghead / Seraphim",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP08-113": {
       "a": "Special",
@@ -1176,7 +1288,8 @@
       "n": "S-Bear",
       "p": 4000,
       "s": "Egghead / Seraphim",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP08-114": {
       "a": "Slash",
@@ -1187,7 +1300,8 @@
       "n": "S-Hawk",
       "p": 5000,
       "s": "Egghead / Seraphim",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP08-115": {
       "c": "Yellow",
@@ -1195,7 +1309,8 @@
       "kw": "-",
       "n": "The Earth Will Not Lose!",
       "s": "Sky Island / Shandian Warrior",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP08-116": {
       "c": "Yellow",
@@ -1203,7 +1318,8 @@
       "kw": "-",
       "n": "Burn Bazooka",
       "s": "Sky Island / Shandian Warrior",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP08-117": {
       "c": "Yellow",
@@ -1211,7 +1327,8 @@
       "kw": "-",
       "n": "Burn Blade",
       "s": "Sky Island/Shandian Warrior",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP08-118": {
       "a": "Slash",
@@ -1222,7 +1339,8 @@
       "n": "Silvers Rayleigh",
       "p": 8000,
       "s": "Former Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     },
     "OP08-119": {
       "a": "Special / Strike",
@@ -1233,7 +1351,8 @@
       "n": "Kaido & Linlin",
       "p": 12000,
       "s": "The Four Emperors / Animal Kingdom Pirates / Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     }
   }
 }

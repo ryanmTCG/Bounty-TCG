@@ -8,7 +8,8 @@
       "n": "Silvers Rayleigh",
       "p": 5000,
       "s": "Former Roger Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP12-002": {
       "a": "Special",
@@ -19,7 +20,8 @@
       "n": "Edward.Newgate",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-003": {
       "a": "Wisdom",
@@ -30,7 +32,8 @@
       "n": "Crocus",
       "p": 3000,
       "s": "Former Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-004": {
       "a": "Slash",
@@ -41,7 +44,8 @@
       "n": "Kouzuki Oden",
       "p": 3000,
       "s": "Land of Wano/Kouzuki Clan/Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-005": {
       "a": "Slash",
@@ -52,7 +56,8 @@
       "n": "Shiki",
       "p": 10000,
       "s": "FILM/Golden Lion Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-006": {
       "a": "Wisdom",
@@ -63,7 +68,8 @@
       "n": "Shakuyaku",
       "p": 2000,
       "s": "Amazon Lily",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-007": {
       "a": "Slash",
@@ -74,7 +80,8 @@
       "n": "Shanks",
       "p": 2000,
       "s": "Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-008": {
       "a": "Slash",
@@ -85,7 +92,8 @@
       "n": "Shanks",
       "p": 6000,
       "s": "The Four Emperors/Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-009": {
       "a": "Strike",
@@ -96,7 +104,8 @@
       "n": "Jinbe",
       "p": 4000,
       "s": "Fish-Man/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-010": {
       "a": "Special",
@@ -107,7 +116,8 @@
       "n": "Douglas Bullet",
       "p": 7000,
       "s": "FILM/The Pirates Fest/Former Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-011": {
       "a": "Ranged",
@@ -118,7 +128,8 @@
       "n": "Duval",
       "p": 7000,
       "s": "The Flying Fish Riders",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-012": {
       "a": "Slash",
@@ -129,7 +140,8 @@
       "n": "Buggy",
       "p": 2000,
       "s": "Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-013": {
       "a": "Slash",
@@ -140,7 +152,8 @@
       "n": "Hatchan",
       "p": 2000,
       "s": "Fish-Man/Former Arlong Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-014": {
       "a": "Special",
@@ -151,7 +164,8 @@
       "n": "Boa Hancock",
       "p": 3000,
       "s": "The Seven Warlords of the Sea/Kuja Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP12-015": {
       "a": "Strike",
@@ -162,7 +176,8 @@
       "n": "Monkey.D.Luffy",
       "p": 4000,
       "s": "Straw Hat Crew / Supernovas",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP12-016": {
       "c": "Red",
@@ -170,7 +185,8 @@
       "kw": "Blocker",
       "n": "To Never Doubt--That Is Power!",
       "s": "Former Roger Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP12-017": {
       "c": "Red",
@@ -178,7 +194,8 @@
       "kw": "-",
       "n": "Color of Observation Haki",
       "s": "Former Roger Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP12-018": {
       "c": "Red",
@@ -186,7 +203,8 @@
       "kw": "-",
       "n": "Color of the Supreme King Haki",
       "s": "Former Roger Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP12-019": {
       "c": "Red",
@@ -194,7 +212,8 @@
       "kw": "-",
       "n": "Color of Arms Haki",
       "s": "Former Roger Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP12-020": {
       "a": "Slash",
@@ -204,7 +223,8 @@
       "n": "Roronoa Zoro",
       "p": 5000,
       "s": "Supernovas/Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP12-021": {
       "a": "Wisdom",
@@ -214,7 +234,8 @@
       "kw": "Blocker",
       "n": "Ipponmatsu",
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-022": {
       "a": "Slash",
@@ -225,7 +246,8 @@
       "n": "Inuarashi",
       "p": 7000,
       "s": "Minks/Land of Wano/The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-023": {
       "a": "Slash",
@@ -236,7 +258,8 @@
       "n": "Kawamatsu",
       "p": 6000,
       "s": "Fish-Man/Land of Wano/The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-024": {
       "a": "Slash",
@@ -247,7 +270,8 @@
       "n": "Gyukimaru",
       "p": 5000,
       "s": "Animal/Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-025": {
       "a": "Slash",
@@ -258,7 +282,8 @@
       "n": "Kin'emon",
       "p": 8000,
       "s": "Land of Wano/The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-026": {
       "a": "Slash",
@@ -269,7 +294,8 @@
       "n": "Kuina",
       "p": 1000,
       "s": "East Blue/Frost Moon Village",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-027": {
       "a": "Slash",
@@ -280,7 +306,8 @@
       "n": "Koushirou",
       "p": 1000,
       "s": "East Blue/Frost Moon Village",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-028": {
       "a": "Wisdom",
@@ -290,7 +317,8 @@
       "kw": "-",
       "n": "Kouzuki Hiyori",
       "s": "Land of Wano/Kouzuki Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-029": {
       "a": "Slash",
@@ -301,7 +329,8 @@
       "n": "Shimotsuki Kouzaburou",
       "p": 2000,
       "s": "East Blue/Frost Moon Village/Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-030": {
       "a": "Slash",
@@ -312,7 +341,8 @@
       "n": "Dracule Mihawk",
       "p": 8000,
       "s": "The Seven Warlords of the Sea/Muggy Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP12-031": {
       "a": "Slash",
@@ -323,7 +353,8 @@
       "n": "Tashigi",
       "p": 7000,
       "s": "East Blue/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-032": {
       "a": "Slash",
@@ -334,7 +365,8 @@
       "n": "Nekomamushi",
       "p": 7000,
       "s": "Minks/Land of Wano/The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-033": {
       "a": "Slash",
@@ -345,7 +377,8 @@
       "n": "Helmeppo",
       "p": 5000,
       "s": "East Blue/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-034": {
       "a": "Special",
@@ -356,7 +389,8 @@
       "n": "Perona",
       "p": 2000,
       "s": "Muggy Kingdom/Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP12-035": {
       "a": "Slash",
@@ -367,7 +401,8 @@
       "n": "Morgan",
       "p": 5000,
       "s": "East Blue/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-036": {
       "a": "Slash",
@@ -378,7 +413,8 @@
       "n": "Roronoa Zoro",
       "p": 5000,
       "s": "Supernovas/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-037": {
       "c": "Green",
@@ -386,7 +422,8 @@
       "kw": "-",
       "n": "Demon Aura Nine Sword Style Asura Blades Drawn Dead Man's Game",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP12-038": {
       "c": "Green",
@@ -394,7 +431,8 @@
       "kw": "-",
       "n": "Two-Sword Style Rashomon",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP12-039": {
       "c": "Green",
@@ -402,7 +440,8 @@
       "kw": "-",
       "n": "Luffy Is the Man Who Will Become the King of Pirates!!!",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP12-040": {
       "a": "Special",
@@ -412,7 +451,8 @@
       "n": "Kuzan",
       "p": 5000,
       "s": "Navy",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP12-041": {
       "a": "Strike",
@@ -423,7 +463,8 @@
       "n": "Sanji",
       "p": 5000,
       "s": "Straw Hat Crew/The Vinsmoke Family",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP12-042": {
       "a": "Strike",
@@ -434,7 +475,8 @@
       "n": "Alvida",
       "p": 5000,
       "s": "Cross Guild",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-043": {
       "a": "Special",
@@ -445,7 +487,8 @@
       "n": "Kuzan",
       "p": 8000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-044": {
       "a": "Special",
@@ -456,7 +499,8 @@
       "n": "Sakazuki",
       "p": 8000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-045": {
       "a": "Slash",
@@ -467,7 +511,8 @@
       "n": "Jango",
       "p": 8000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-046": {
       "a": "Strike",
@@ -478,7 +523,8 @@
       "n": "Zephyr(Navy)",
       "p": 5000,
       "s": "FILM/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-047": {
       "a": "Wisdom",
@@ -489,7 +535,8 @@
       "n": "Sengoku",
       "p": 3000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-048": {
       "a": "Special",
@@ -500,7 +547,8 @@
       "n": "Donquixote Rosinante",
       "p": 1000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-049": {
       "a": "Slash",
@@ -511,7 +559,8 @@
       "n": "Buggy",
       "p": 7000,
       "s": "The Four Emperors/Cross Guild",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-050": {
       "a": "Strike",
@@ -522,7 +571,8 @@
       "n": "Jaguar.D.Saul",
       "p": 7000,
       "s": "Ohara/Giant/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-051": {
       "a": "Special",
@@ -533,7 +583,8 @@
       "n": "Hina",
       "p": 3000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-052": {
       "a": "Strike",
@@ -544,7 +595,8 @@
       "n": "Fullbody",
       "p": 6000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-053": {
       "a": "Special",
@@ -555,7 +607,8 @@
       "n": "Borsalino",
       "p": 5000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-054": {
       "a": "Special",
@@ -566,7 +619,8 @@
       "n": "Marshall.D.Teach",
       "p": 2000,
       "s": "The Seven Warlords of the Sea/Blackbeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-055": {
       "a": "Slash / Wisdom",
@@ -577,7 +631,8 @@
       "n": "Mohji & Cabaji",
       "p": 6000,
       "s": "Cross Guild",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-056": {
       "a": "Strike",
@@ -588,7 +643,8 @@
       "n": "Monkey.D.Garp",
       "p": 8000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP12-057": {
       "c": "Blue",
@@ -596,7 +652,8 @@
       "kw": "-",
       "n": "Ice Block Pheasant Peck",
       "s": "Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP12-058": {
       "c": "Blue",
@@ -604,7 +661,8 @@
       "kw": "Rush",
       "n": "I Will Make Whitebeard the King of the Pirates",
       "s": "Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP12-059": {
       "c": "Blue",
@@ -612,7 +670,8 @@
       "kw": "-",
       "n": "Concasser",
       "s": "Sky Island/Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP12-060": {
       "c": "Blue",
@@ -620,7 +679,8 @@
       "kw": "-",
       "n": "Boeuf Burst",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP12-061": {
       "a": "Special",
@@ -630,7 +690,8 @@
       "n": "Donquixote Rosinante",
       "p": 5000,
       "s": "Navy/Donquixote Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP12-062": {
       "a": "Wisdom",
@@ -640,7 +701,8 @@
       "kw": "-",
       "n": "Vinsmoke Sora",
       "s": "The Vinsmoke Family/Kingdom of GERMA",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-063": {
       "a": "Special",
@@ -651,7 +713,8 @@
       "n": "Vinsmoke Reiju",
       "p": 5000,
       "s": "The Vinsmoke Family/GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP12-064": {
       "a": "Strike",
@@ -662,7 +725,8 @@
       "n": "Vergo",
       "p": 7000,
       "s": "Punk Hazard/Navy/Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-065": {
       "a": "Special",
@@ -673,7 +737,8 @@
       "n": "Emporio.Ivankov",
       "p": 7000,
       "s": "Impel Down/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-066": {
       "a": "Slash",
@@ -684,7 +749,8 @@
       "n": "Carne",
       "p": 1000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-067": {
       "a": "Wisdom",
@@ -695,7 +761,8 @@
       "n": "Carmen",
       "p": 5000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-068": {
       "a": "Strike",
@@ -706,7 +773,8 @@
       "n": "Gin",
       "p": 7000,
       "s": "East Blue/Krieg Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-069": {
       "a": "Special",
@@ -717,7 +785,8 @@
       "n": "Crocodile",
       "p": 8000,
       "s": "The Seven Warlords of the Sea/Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-070": {
       "a": "Strike",
@@ -728,7 +797,8 @@
       "n": "Sanji",
       "p": 5000,
       "s": "Alabasta/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-071": {
       "a": "Wisdom",
@@ -739,7 +809,8 @@
       "n": "Charlotte Pudding",
       "p": 2000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-072": {
       "a": "Strike",
@@ -750,7 +821,8 @@
       "n": "Zeff",
       "p": 5000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-073": {
       "a": "Slash",
@@ -761,7 +833,8 @@
       "n": "Trafalgar Law",
       "p": 8000,
       "s": "Heart Pirates/Supernovas/Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP12-074": {
       "a": "Slash",
@@ -772,7 +845,8 @@
       "n": "Patty",
       "p": 2000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-075": {
       "a": "Wisdom",
@@ -783,7 +857,8 @@
       "n": "Ms. All Sunday",
       "p": 5000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-076": {
       "a": "Special",
@@ -794,7 +869,8 @@
       "n": "Monet",
       "p": 6000,
       "s": "Punk Hazard/Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-077": {
       "c": "Purple",
@@ -802,7 +878,8 @@
       "kw": "Blocker",
       "n": "The \"Extinguishes All Sound Created by Your Influence\" Technique",
       "s": "Heart Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP12-078": {
       "c": "Purple",
@@ -810,7 +887,8 @@
       "kw": "-",
       "n": "Brochette Blow",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP12-079": {
       "c": "Purple",
@@ -818,7 +896,8 @@
       "kw": "-",
       "n": "Luffy Is the Man Who Will Be King of the Pirates!!!",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP12-080": {
       "c": "Purple",
@@ -826,7 +905,8 @@
       "kw": "-",
       "n": "Baratie",
       "s": "East Blue",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP12-081": {
       "a": "Strike",
@@ -836,7 +916,8 @@
       "n": "Koala",
       "p": 5000,
       "s": "Revolutionary Army/Dressrosa",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP12-082": {
       "a": "Slash",
@@ -847,7 +928,8 @@
       "n": "Issho",
       "p": 10000,
       "s": "Dressrosa/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-083": {
       "a": "Slash",
@@ -858,7 +940,8 @@
       "n": "Inazuma",
       "p": 6000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-084": {
       "a": "Special",
@@ -869,7 +952,8 @@
       "n": "Emporio.Ivankov",
       "p": 4000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-085": {
       "a": "Special",
@@ -880,7 +964,8 @@
       "n": "Karasu",
       "p": 6000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-086": {
       "a": "Strike",
@@ -891,7 +976,8 @@
       "n": "Koala",
       "p": 2000,
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-087": {
       "a": "Strike",
@@ -902,7 +988,8 @@
       "n": "Nico Robin",
       "p": 7000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP12-088": {
       "a": "Slash",
@@ -913,7 +1000,8 @@
       "n": "Bastille",
       "p": 8000,
       "s": "Dressrosa/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-089": {
       "a": "Strike",
@@ -924,7 +1012,8 @@
       "n": "Hack",
       "p": 5000,
       "s": "Fish-Man / Dressrosa / Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-090": {
       "a": "Special",
@@ -935,7 +1024,8 @@
       "n": "Belo Betty",
       "p": 4000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-091": {
       "a": "Strike",
@@ -946,7 +1036,8 @@
       "n": "Poker",
       "p": 4000,
       "s": "Animal Kingdom Pirates/SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-092": {
       "a": "Strike",
@@ -957,7 +1048,8 @@
       "n": "Mizerka",
       "p": 7000,
       "s": "Animal Kingdom Pirates/SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-093": {
       "a": "Special",
@@ -968,7 +1060,8 @@
       "n": "Morley",
       "p": 5000,
       "s": "Giant/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-094": {
       "a": "Special",
@@ -979,7 +1072,8 @@
       "n": "Monkey.D.Dragon",
       "p": 8000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP12-095": {
       "a": "Special",
@@ -990,7 +1084,8 @@
       "n": "Lindbergh",
       "p": 5000,
       "s": "Minks/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-096": {
       "c": "Black",
@@ -998,7 +1093,8 @@
       "kw": "-",
       "n": "Ursa Shock",
       "s": "The Seven Warlords of the Sea/Revolutionary Army",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP12-097": {
       "c": "Black",
@@ -1006,7 +1102,8 @@
       "kw": "-",
       "n": "Captains Assembled",
       "s": "Revolutionary Army",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP12-098": {
       "c": "Black",
@@ -1014,7 +1111,8 @@
       "kw": "-",
       "n": "Hair Removal Fist",
       "s": "Impel Down/Revolutionary Army",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP12-099": {
       "a": "Slash",
@@ -1025,7 +1123,8 @@
       "n": "Kalgara",
       "p": 6000,
       "s": "Jaya/Sky Island/Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-100": {
       "a": "Special",
@@ -1036,7 +1135,8 @@
       "n": "Sabo",
       "p": 6000,
       "s": "Revolutionary Army/Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-101": {
       "a": "Special",
@@ -1047,7 +1147,8 @@
       "n": "Jewelry Bonney",
       "p": 1000,
       "s": "Supernovas/Bonney Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-102": {
       "a": "Wisdom",
@@ -1057,7 +1158,8 @@
       "kw": "-",
       "n": "Shirahoshi",
       "s": "Fish-Man Island/Merfolk",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP12-103": {
       "a": "Slash",
@@ -1068,7 +1170,8 @@
       "n": "Seto",
       "p": 6000,
       "s": "Jaya/Sky Island/Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-104": {
       "a": "Slash",
@@ -1079,7 +1182,8 @@
       "n": "Sentomaru",
       "p": 5000,
       "s": "Egghead/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-105": {
       "a": "Wisdom",
@@ -1089,7 +1193,8 @@
       "kw": "-",
       "n": "Trafalgar Lammy",
       "s": "Flevance",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-106": {
       "a": "Slash",
@@ -1100,7 +1205,8 @@
       "n": "Trafalgar Law",
       "p": 7000,
       "s": "Dressrosa/Supernovas/Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-107": {
       "a": "Special",
@@ -1111,7 +1217,8 @@
       "n": "Donquixote Doflamingo",
       "p": 8000,
       "s": "The Seven Warlords of the Sea/Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-108": {
       "a": "Special",
@@ -1122,7 +1229,8 @@
       "n": "Donquixote Rosinante",
       "p": 2000,
       "s": "Navy/Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-109": {
       "a": "Special",
@@ -1133,7 +1241,8 @@
       "n": "Pacifista",
       "p": 5000,
       "s": "Biological Weapon/Egghead/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-110": {
       "a": "Strike",
@@ -1144,7 +1253,8 @@
       "n": "Buffalo",
       "p": 5000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-111": {
       "a": "Special",
@@ -1155,7 +1265,8 @@
       "n": "Baby 5",
       "p": 4000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP12-112": {
       "a": "Special",
@@ -1166,7 +1277,8 @@
       "n": "Baby 5",
       "p": 5000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP12-113": {
       "a": "Slash",
@@ -1177,7 +1289,8 @@
       "n": "Roronoa Zoro",
       "p": 6000,
       "s": "Supernovas/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-114": {
       "a": "Ranged",
@@ -1188,7 +1301,8 @@
       "n": "Wyper",
       "p": 7000,
       "s": "Sky Island/Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP12-115": {
       "c": "Yellow",
@@ -1196,7 +1310,8 @@
       "kw": "-",
       "n": "I Love You!!",
       "s": "Navy/Donquixote Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP12-116": {
       "c": "Yellow",
@@ -1204,7 +1319,8 @@
       "kw": "-",
       "n": "We'll Ring the Bell Waiting for You!!",
       "s": "Jaya/Sky Island/Shandian Warrior",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP12-117": {
       "c": "Yellow",
@@ -1212,7 +1328,8 @@
       "kw": "-",
       "n": "Slam Gibson",
       "s": "Supernovas/Kid Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP12-118": {
       "a": "Special",
@@ -1223,7 +1340,8 @@
       "n": "Jewelry Bonney",
       "p": 6000,
       "s": "Supernovas/Bonney Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     },
     "OP12-119": {
       "a": "Strike",
@@ -1234,7 +1352,8 @@
       "n": "Bartholomew Kuma",
       "p": 7000,
       "s": "The Seven Warlords of the Sea/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     }
   }
 }

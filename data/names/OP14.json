@@ -8,7 +8,8 @@
       "n": "Trafalgar Law",
       "p": 5000,
       "s": "The Seven Warlords of the Sea/Supernovas/Heart Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP14-002": {
       "a": "Strike",
@@ -19,7 +20,8 @@
       "n": "Urouge",
       "p": 2000,
       "s": "Supernovas/Fallen Monk Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-003": {
       "a": "Ranged",
@@ -30,7 +32,8 @@
       "n": "Capone\"Gang\"Bege",
       "p": 2000,
       "s": "Supernovas/Firetank Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-004": {
       "a": "Slash",
@@ -41,7 +44,8 @@
       "n": "Cavendish",
       "p": 2000,
       "s": "Dressrosa/Supernovas/Beautiful Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-005": {
       "a": "Slash",
@@ -52,7 +56,8 @@
       "n": "Killer",
       "p": 1000,
       "s": "Supernovas/Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-006": {
       "a": "Ranged",
@@ -63,7 +68,8 @@
       "n": "Shachi & Penguin",
       "p": 2000,
       "s": "Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-007": {
       "a": "Special",
@@ -74,7 +80,8 @@
       "n": "Jewelry Bonney",
       "p": 7000,
       "s": "Supernovas/Bonney Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-008": {
       "a": "Special",
@@ -85,7 +92,8 @@
       "n": "Scratchmen Apoo",
       "p": 5000,
       "s": "Supernovas/On-Air Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-009": {
       "a": "Slash",
@@ -96,7 +104,8 @@
       "n": "Trafalgar Law",
       "p": 10000,
       "s": "The Seven Warlords of the Sea / Supernovas / Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP14-010": {
       "a": "Slash",
@@ -107,7 +116,8 @@
       "n": "Basil Hawkins",
       "p": 2000,
       "s": "Supernovas/Hawkins Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-011": {
       "a": "Special",
@@ -118,7 +128,8 @@
       "n": "Bartolomeo",
       "p": 2000,
       "s": "Dressrosa / Supernovas / Barto Club",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-012": {
       "a": "Strike",
@@ -129,7 +140,8 @@
       "n": "Bepo",
       "p": 2000,
       "s": "Minks/Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-013": {
       "a": "Strike",
@@ -139,7 +151,8 @@
       "kw": "-",
       "n": "Monkey.D.Luffy",
       "s": "Supernovas/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP14-014": {
       "a": "Special",
@@ -150,7 +163,8 @@
       "n": "Eustass\"Captain\"Kid",
       "p": 5000,
       "s": "Supernovas/Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-015": {
       "a": "Slash",
@@ -161,7 +175,8 @@
       "n": "Roronoa Zoro",
       "p": 8000,
       "s": "Supernovas/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-016": {
       "a": "Slash",
@@ -172,7 +187,8 @@
       "n": "X.Drake",
       "p": 7000,
       "s": "Navy/Supernovas/Drake Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-017": {
       "c": "Red",
@@ -180,7 +196,8 @@
       "kw": "-",
       "n": "Chambres",
       "s": "The Seven Warlords of the Sea/Supernovas/Heart Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP14-018": {
       "c": "Red",
@@ -188,7 +205,8 @@
       "kw": "-",
       "n": "Time for the Counterattack",
       "s": "The Seven Warlords of the Sea/Supernovas/Heart Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP14-019": {
       "c": "Red",
@@ -196,7 +214,8 @@
       "kw": "-",
       "n": "I Have a Plan to Take Down One of the Four Emperors!!",
       "s": "The Seven Warlords of the Sea/Supernovas/Heart Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP14-020": {
       "a": "Slash",
@@ -206,7 +225,8 @@
       "n": "Dracule Mihawk",
       "p": 5000,
       "s": "The Seven Warlords of the Sea",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP14-021": {
       "a": "Slash",
@@ -217,7 +237,8 @@
       "n": "Issho",
       "p": 7000,
       "s": "Dressrosa/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-022": {
       "a": "Ranged",
@@ -228,7 +249,8 @@
       "n": "Usopp",
       "p": 5000,
       "s": "FILM/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-023": {
       "a": "Slash",
@@ -239,7 +261,8 @@
       "n": "Kikunojo",
       "p": 2000,
       "s": "Land of Wano/The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-024": {
       "a": "Slash",
@@ -250,7 +273,8 @@
       "n": "Kin'emon",
       "p": 5000,
       "s": "Land of Wano/The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-025": {
       "a": "Slash",
@@ -261,7 +285,8 @@
       "n": "Kuro",
       "p": 8000,
       "s": "East Blue/Black Cat Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-026": {
       "a": "Slash",
@@ -272,7 +297,8 @@
       "n": "Kouzuki Oden",
       "p": 5000,
       "s": "Land of Wano/Kouzuki Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-027": {
       "a": "Slash",
@@ -283,7 +309,8 @@
       "n": "Shanks",
       "p": 9000,
       "s": "East Blue/The Four Emperors/Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-028": {
       "a": "Slash",
@@ -294,7 +321,8 @@
       "n": "Johnny",
       "p": 2000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-029": {
       "a": "Slash",
@@ -305,7 +333,8 @@
       "n": "Tashigi",
       "p": 6000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-030": {
       "a": "Slash",
@@ -316,7 +345,8 @@
       "n": "Chaka & Pell",
       "p": 7000,
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-031": {
       "a": "Special",
@@ -327,7 +357,8 @@
       "n": "Nami",
       "p": 2000,
       "s": "FILM/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP14-032": {
       "a": "Slash",
@@ -338,7 +369,8 @@
       "n": "Humandrill",
       "p": 4000,
       "s": "Animal/Muggy Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-033": {
       "a": "Special",
@@ -349,7 +381,8 @@
       "n": "Perona",
       "p": 6000,
       "s": "Muggy Kingdom/Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP14-034": {
       "a": "Strike",
@@ -360,7 +393,8 @@
       "n": "Monkey.D.Luffy",
       "p": 3000,
       "s": "FILM/Supernovas/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-035": {
       "a": "Slash",
@@ -371,7 +405,8 @@
       "n": "Yosaku",
       "p": 2000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-036": {
       "c": "Green",
@@ -379,7 +414,8 @@
       "kw": "-",
       "n": "Strive to Surpass me, Roronoa Zoro!!!",
       "s": "East Blue/The Seven Warlords of the Sea",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP14-037": {
       "c": "Green",
@@ -387,7 +423,8 @@
       "kw": "-",
       "n": "For Fun",
       "s": "East Blue/The Seven Warlords of the Sea",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP14-038": {
       "c": "Green",
@@ -395,7 +432,8 @@
       "kw": "-",
       "n": "I Never Bother to Remember the Faces of Trash",
       "s": "The Seven Warlords of the Sea",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP14-039": {
       "c": "Green",
@@ -403,7 +441,8 @@
       "kw": "-",
       "n": "Coffin Boat",
       "s": "East Blue/The Seven Warlords of the Sea",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "UC"
     },
     "OP14-040": {
       "a": "Strike",
@@ -413,7 +452,8 @@
       "n": "Jinbe",
       "p": 5000,
       "s": "Fish-Man/The Seven Warlords of the Sea/The Sun Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP14-041": {
       "a": "Special",
@@ -423,7 +463,8 @@
       "n": "Boa Hancock",
       "p": 5000,
       "s": "The Seven Warlords of the Sea/Kuja Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP14-042": {
       "a": "Slash",
@@ -434,7 +475,8 @@
       "n": "Arlong",
       "p": 3000,
       "s": "Fish-Man/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-043": {
       "a": "Slash",
@@ -445,7 +487,8 @@
       "n": "Aladine",
       "p": 5000,
       "s": "Merfolk/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-044": {
       "a": "Special",
@@ -456,7 +499,8 @@
       "n": "Edward.Newgate",
       "p": 8000,
       "s": "The Four Emperors/Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-045": {
       "a": "Strike",
@@ -467,7 +511,8 @@
       "n": "Kuroobi",
       "p": 3000,
       "s": "Fish-Man/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-046": {
       "a": "Wisdom",
@@ -477,7 +522,8 @@
       "kw": "-",
       "n": "Koala",
       "s": "Foolshout Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-047": {
       "a": "Wisdom",
@@ -487,7 +533,8 @@
       "kw": "Blocker",
       "n": "Shirahoshi",
       "s": "Merfolk/Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-048": {
       "a": "Slash",
@@ -498,7 +545,8 @@
       "n": "Shiryu",
       "p": 10000,
       "s": "Impel Down",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-049": {
       "a": "Strike",
@@ -509,7 +557,8 @@
       "n": "Jinbe",
       "p": 10000,
       "s": "Fish-Man/The Seven Warlords of the Sea/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP14-050": {
       "a": "Ranged",
@@ -520,7 +569,8 @@
       "n": "Chew",
       "p": 3000,
       "s": "Fish-Man/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-051": {
       "a": "Slash",
@@ -531,7 +581,8 @@
       "n": "Hatchan",
       "p": 3000,
       "s": "Fish-Man/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-052": {
       "a": "Slash",
@@ -542,7 +593,8 @@
       "n": "Hannyabal",
       "p": 6000,
       "s": "Impel Down",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-053": {
       "a": "Slash",
@@ -553,7 +605,8 @@
       "n": "Vista",
       "p": 4000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-054": {
       "a": "Strike",
@@ -564,7 +617,8 @@
       "n": "Fisher Tiger",
       "p": 7000,
       "s": "Fish-Man/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-055": {
       "a": "Strike",
@@ -575,7 +629,8 @@
       "n": "The Macro Gang",
       "p": 6000,
       "s": "Fish-Man/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-056": {
       "a": "Strike",
@@ -586,7 +641,8 @@
       "n": "Wadatsumi",
       "p": 5000,
       "s": "Fish-Man/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-057": {
       "c": "Blue",
@@ -594,7 +650,8 @@
       "kw": "-",
       "n": "Don't Worry!! I'm Here!!",
       "s": "Fish-Man/The Seven Warlords of the Sea/The Sun Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP14-058": {
       "c": "Blue",
@@ -602,7 +659,8 @@
       "kw": "-",
       "n": "Ocean Current Shoulder Throw",
       "s": "Fish-Man/The Seven Warlords of the Sea/The Sun Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP14-059": {
       "c": "Blue",
@@ -610,7 +668,8 @@
       "kw": "-",
       "n": "Please Take Me with You!! I Can Be of Great Help to You!!",
       "s": "Fish-Man/The Seven Warlords of the Sea/The Sun Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP14-060": {
       "a": "Special",
@@ -620,7 +679,8 @@
       "n": "Donquixote Doflamingo",
       "p": 5000,
       "s": "The Seven Warlords of the Sea/Donquixote Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP14-061": {
       "a": "Strike",
@@ -631,7 +691,8 @@
       "n": "Vergo",
       "p": 7000,
       "s": "Punk Hazard/Navy/Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-062": {
       "a": "Special",
@@ -642,7 +703,8 @@
       "n": "Gladius",
       "p": 4000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-063": {
       "a": "Special",
@@ -653,7 +715,8 @@
       "n": "Sugar",
       "p": 1000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-064": {
       "a": "Special",
@@ -664,7 +727,8 @@
       "n": "Giolla",
       "p": 1000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-065": {
       "a": "Special",
@@ -675,7 +739,8 @@
       "n": "Senor Pink",
       "p": 5000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-066": {
       "a": "Slash",
@@ -686,7 +751,8 @@
       "n": "Diamante",
       "p": 8000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-067": {
       "a": "Strike",
@@ -697,7 +763,8 @@
       "n": "Dellinger",
       "p": 2000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-068": {
       "a": "Special",
@@ -708,7 +775,8 @@
       "n": "Trebol",
       "p": 5000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-069": {
       "a": "Special",
@@ -719,7 +787,8 @@
       "n": "Donquixote Doflamingo",
       "p": 10000,
       "s": "The Seven Warlords of the Sea/Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP14-070": {
       "a": "Strike",
@@ -730,7 +799,8 @@
       "n": "Buffalo",
       "p": 1000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-071": {
       "a": "Strike",
@@ -741,7 +811,8 @@
       "n": "Pica",
       "p": 6000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-072": {
       "a": "Special",
@@ -752,7 +823,8 @@
       "n": "Baby 5",
       "p": 1000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-073": {
       "a": "Strike",
@@ -763,7 +835,8 @@
       "n": "Machvise",
       "p": 7000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-074": {
       "a": "Special",
@@ -774,7 +847,8 @@
       "n": "Monet",
       "p": 6000,
       "s": "Punk Hazard/Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-075": {
       "a": "Strike",
@@ -785,7 +859,8 @@
       "n": "Lao.G",
       "p": 4000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-076": {
       "c": "Purple",
@@ -793,7 +868,8 @@
       "kw": "-",
       "n": "Ever White",
       "s": "The Seven Warlords of the Sea/Donquixote Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP14-077": {
       "c": "Purple",
@@ -801,7 +877,8 @@
       "kw": "-",
       "n": "Penta-Chromatic String",
       "s": "The Seven Warlords of the Sea/Donquixote Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP14-078": {
       "c": "Purple",
@@ -809,7 +886,8 @@
       "kw": "-",
       "n": "Bullet String",
       "s": "The Seven Warlords of the Sea/Donquixote Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP14-079": {
       "a": "Special",
@@ -819,7 +897,8 @@
       "n": "Crocodile",
       "p": 5000,
       "s": "The Seven Warlords of the Sea/Baroque Works",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP14-080": {
       "a": "Special",
@@ -829,7 +908,8 @@
       "n": "Gecko Moria",
       "p": 5000,
       "s": "The Seven Warlords of the Sea/Thriller Bark Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP14-081": {
       "a": "Special",
@@ -840,7 +920,8 @@
       "n": "Spider Mice",
       "p": 1000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-082": {
       "a": "Slash",
@@ -851,7 +932,8 @@
       "n": "Oinkchuck",
       "p": 3000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-083": {
       "a": "Slash",
@@ -862,7 +944,8 @@
       "n": "Ms. Wednesday",
       "p": 1000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-084": {
       "a": "Strike",
@@ -873,7 +956,8 @@
       "n": "Ms. All Sunday",
       "p": 8000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP14-085": {
       "a": "Wisdom",
@@ -884,7 +968,8 @@
       "n": "Miss.Goldenweek(Marianne)",
       "p": 2000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-086": {
       "a": "Slash",
@@ -895,7 +980,8 @@
       "n": "Miss Doublefinger(Zala)",
       "p": 6000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-087": {
       "a": "Strike",
@@ -906,7 +992,8 @@
       "n": "Miss.Valentine(Mikita)",
       "p": 2000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-088": {
       "a": "Slash",
@@ -917,7 +1004,8 @@
       "n": "Miss.MerryChristmas(Drophy)",
       "p": 2000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-089": {
       "a": "Slash",
@@ -928,7 +1016,8 @@
       "n": "Ryuma",
       "p": 5000,
       "s": "Land of Wano/Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-090": {
       "a": "Slash",
@@ -939,7 +1028,8 @@
       "n": "Mr.1(Daz.Bonez)",
       "p": 6000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-091": {
       "a": "Strike",
@@ -950,7 +1040,8 @@
       "n": "Mr.2.Bon.Kurei(Bentham)",
       "p": 5000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP14-092": {
       "a": "Special",
@@ -961,7 +1052,8 @@
       "n": "Mr.3(Galdino)",
       "p": 6000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-093": {
       "a": "Strike",
@@ -972,7 +1064,8 @@
       "n": "Mr.4(Babe)",
       "p": 5000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-094": {
       "a": "Strike",
@@ -983,7 +1076,8 @@
       "n": "Mr.5(Gem)",
       "p": 6000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-095": {
       "a": "Strike",
@@ -994,7 +1088,8 @@
       "n": "Mr.9",
       "p": 6000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-096": {
       "c": "Black",
@@ -1002,7 +1097,8 @@
       "kw": "-",
       "n": "Ground Death",
       "s": "The Seven Warlords of the Sea/Baroque Works",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP14-097": {
       "c": "Black",
@@ -1010,7 +1106,8 @@
       "kw": "-",
       "n": "Hurry Up and Make Me the Pirate King!",
       "s": "The Seven Warlords of the Sea/Thriller Bark Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP14-098": {
       "c": "Black",
@@ -1018,7 +1115,8 @@
       "kw": "-",
       "n": "Crescent Cutlass",
       "s": "Impel Down/Former Baroque Works",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP14-099": {
       "c": "Black",
@@ -1026,7 +1124,8 @@
       "kw": "-",
       "n": "Disappointed?",
       "s": "The Seven Warlords of the Sea/Baroque Works",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP14-100": {
       "a": "Ranged",
@@ -1037,7 +1136,8 @@
       "n": "Absalom",
       "p": 5000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-101": {
       "a": "Strike",
@@ -1048,7 +1148,8 @@
       "n": "Oars",
       "p": 10000,
       "s": "Giant/Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-102": {
       "a": "Strike",
@@ -1059,7 +1160,8 @@
       "n": "Kumacy",
       "p": 2000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-103": {
       "a": "Wisdom",
@@ -1069,7 +1171,8 @@
       "kw": "-",
       "n": "Gloriosa (Grandma Nyon)",
       "s": "Amazon Lily",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-104": {
       "a": "Special",
@@ -1080,7 +1183,8 @@
       "n": "Gecko Moria",
       "p": 10000,
       "s": "The Seven Warlords of the Sea/Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP14-105": {
       "a": "Slash / Special",
@@ -1091,7 +1195,8 @@
       "n": "Gorgon Sisters",
       "p": 5000,
       "s": "The Seven Warlords of the Sea/Kuja Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-106": {
       "a": "Strike",
@@ -1102,7 +1207,8 @@
       "n": "Salome",
       "p": 1000,
       "s": "Animal / Amazon Lily",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-107": {
       "a": "Wisdom",
@@ -1113,7 +1219,8 @@
       "n": "Shakuyaku",
       "p": 5000,
       "s": "Amazon Lily",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-108": {
       "a": "Slash",
@@ -1124,7 +1231,8 @@
       "n": "Silvers Rayleigh",
       "p": 6000,
       "s": "Former Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-109": {
       "a": "Slash",
@@ -1135,7 +1243,8 @@
       "n": "Victoria Cindry",
       "p": 1000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-110": {
       "a": "Wisdom",
@@ -1146,7 +1255,8 @@
       "n": "Dr. Hogback",
       "p": 5000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-111": {
       "a": "Special",
@@ -1157,7 +1267,8 @@
       "n": "Perona",
       "p": 5000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP14-112": {
       "a": "Special",
@@ -1168,7 +1279,8 @@
       "n": "Boa Hancock",
       "p": 10000,
       "s": "The Seven Warlords of the Sea/Kuja Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP14-113": {
       "a": "Wisdom",
@@ -1179,7 +1291,8 @@
       "n": "Marguerite",
       "p": 5000,
       "s": "Amazon Lily",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-114": {
       "a": "Ranged",
@@ -1190,7 +1303,8 @@
       "n": "Ran",
       "p": 5000,
       "s": "Kuja Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP14-115": {
       "a": "Ranged",
@@ -1201,7 +1315,8 @@
       "n": "Rindo",
       "p": 5000,
       "s": "Kuja Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP14-116": {
       "c": "Yellow",
@@ -1209,7 +1324,8 @@
       "kw": "-",
       "n": "Salamander",
       "s": "Kuja Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP14-117": {
       "c": "Yellow",
@@ -1217,7 +1333,8 @@
       "kw": "-",
       "n": "Brick Bat",
       "s": "Thriller Bark Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP14-118": {
       "c": "Yellow",
@@ -1225,7 +1342,8 @@
       "kw": "-",
       "n": "You'll Frighten Me... ♡",
       "s": "The Seven Warlords of the Sea/Kuja Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP14-119": {
       "a": "Slash",
@@ -1236,7 +1354,8 @@
       "n": "Dracule Mihawk",
       "p": 10000,
       "s": "The Seven Warlords of the Sea",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     },
     "OP14-120": {
       "a": "Special",
@@ -1247,7 +1366,8 @@
       "n": "Crocodile",
       "p": 10000,
       "s": "The Seven Warlords of the Sea/Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     }
   }
 }

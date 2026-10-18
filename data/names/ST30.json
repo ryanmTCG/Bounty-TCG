@@ -8,7 +8,8 @@
       "n": "Luffy & Ace",
       "p": 6000,
       "s": "Impel Down/Whitebeard Pirates/Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "ST30-002": {
       "a": "Slash",
@@ -19,7 +20,8 @@
       "n": "Inazuma",
       "p": 2000,
       "s": "Impel Down/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST30-003": {
       "a": "Special",
@@ -30,7 +32,8 @@
       "n": "Edward.Newgate",
       "p": 6000,
       "s": "The Four Emperors / Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST30-004": {
       "a": "Special",
@@ -41,7 +44,8 @@
       "n": "Emporio.Ivankov",
       "p": 2000,
       "s": "Impel Down/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST30-005": {
       "a": "Strike",
@@ -52,7 +56,8 @@
       "n": "Jozu",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST30-006": {
       "a": "Strike",
@@ -63,7 +68,8 @@
       "n": "Jinbe",
       "p": 6000,
       "s": "Fish-Man/Impel Down/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST30-007": {
       "a": "Special",
@@ -74,7 +80,8 @@
       "n": "Portgas.D.Ace",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST30-008": {
       "a": "Special",
@@ -85,7 +92,8 @@
       "n": "Marco",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST30-009": {
       "a": "Strike",
@@ -96,7 +104,8 @@
       "n": "LittleOars Jr.",
       "p": 2000,
       "s": "Giant/Whitebeard Pirates Allies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST30-010": {
       "a": "Special",
@@ -107,7 +116,8 @@
       "n": "Crocodile",
       "p": 6000,
       "s": "Impel Down/Former Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST30-011": {
       "a": "Slash",
@@ -118,7 +128,8 @@
       "n": "Buggy",
       "p": 1000,
       "s": "Impel Down / Buggy Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST30-012": {
       "a": "Strike",
@@ -129,7 +140,8 @@
       "n": "Monkey.D.Luffy",
       "p": 6000,
       "s": "Impel Down / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST30-013": {
       "a": "Strike",
@@ -140,7 +152,8 @@
       "n": "Mr.2.Bon.Kurei(Bentham)",
       "p": 6000,
       "s": "Impel Down/Former Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST30-014": {
       "a": "Special",
@@ -151,7 +164,8 @@
       "n": "Mr.3(Galdino)",
       "p": 3000,
       "s": "Impel Down/Former Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST30-015": {
       "c": "Red",
@@ -159,7 +173,8 @@
       "kw": "-",
       "n": "The Name of This Era Is \"Whitebeard\"!!",
       "s": "Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST30-016": {
       "c": "Red",
@@ -167,7 +182,8 @@
       "kw": "-",
       "n": "Can You Still Fight, Luffy?! Of Course!!",
       "s": "Whitebeard Pirates/Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST30-017": {
       "c": "Red",
@@ -175,7 +191,8 @@
       "kw": "-",
       "n": "And You Get Yourself in Big Trouble!!",
       "s": "Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     }
   }
 }

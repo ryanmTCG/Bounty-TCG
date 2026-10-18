@@ -8,7 +8,8 @@
       "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "Supernovas/Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP13-002": {
       "a": "Special",
@@ -18,7 +19,8 @@
       "n": "Portgas.D.Ace",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP13-003": {
       "a": "Slash",
@@ -28,7 +30,8 @@
       "n": "Gol.D.Roger",
       "p": 7000,
       "s": "King of the Pirates / Roger Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP13-004": {
       "a": "Special",
@@ -38,7 +41,8 @@
       "n": "Sabo",
       "p": 5000,
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP13-005": {
       "a": "Slash",
@@ -49,7 +53,8 @@
       "n": "Inazuma",
       "p": 5000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-006": {
       "a": "Wisdom",
@@ -59,7 +64,8 @@
       "kw": "-",
       "n": "Woop Slap",
       "s": "Windmill Village",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-007": {
       "a": "Strike",
@@ -70,7 +76,8 @@
       "n": "Ace & Sabo & Luffy",
       "p": 1000,
       "s": "Goa Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP13-008": {
       "a": "Special",
@@ -81,7 +88,8 @@
       "n": "Emporio.Ivankov",
       "p": 3000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-009": {
       "a": "Slash",
@@ -92,7 +100,8 @@
       "n": "Curly.Dadan",
       "p": 2000,
       "s": "Mountain Bandits",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-010": {
       "a": "Strike",
@@ -103,7 +112,8 @@
       "n": "Lord of the Coast",
       "p": 8000,
       "s": "Neptunian/East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-011": {
       "a": "Wisdom",
@@ -114,7 +124,8 @@
       "n": "Nefeltari Cobra",
       "p": 6000,
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-012": {
       "a": "Wisdom",
@@ -125,7 +136,8 @@
       "n": "Nefeltari Vivi",
       "p": 2000,
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-013": {
       "a": "Slash",
@@ -136,7 +148,8 @@
       "n": "Higuma",
       "p": 3000,
       "s": "Mountain Bandits",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-014": {
       "a": "Wisdom",
@@ -146,7 +159,8 @@
       "kw": "-",
       "n": "Portgas.D.Rouge",
       "s": "Baterilla",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-015": {
       "a": "Wisdom",
@@ -156,7 +170,8 @@
       "kw": "-",
       "n": "Makino",
       "s": "Windmill Village",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-016": {
       "a": "Strike",
@@ -167,7 +182,8 @@
       "n": "Monkey.D.Garp",
       "p": 2000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-017": {
       "a": "Special",
@@ -178,7 +194,8 @@
       "n": "Monkey.D.Dragon",
       "p": 7000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-018": {
       "a": "Strike",
@@ -189,7 +206,8 @@
       "n": "Wapol",
       "p": 7000,
       "s": "Evil Black Drum Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-019": {
       "c": "Red",
@@ -197,7 +215,8 @@
       "kw": "-",
       "n": "But Ace Here Said You Deserved It!!",
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP13-020": {
       "c": "Red",
@@ -205,7 +224,8 @@
       "kw": "-",
       "n": "Meteor Fist",
       "s": "Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP13-021": {
       "c": "Red",
@@ -213,7 +233,8 @@
       "kw": "-",
       "n": "Gum-Gum Gatling Gun",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP13-022": {
       "c": "Red",
@@ -221,7 +242,8 @@
       "kw": "-",
       "n": "Windmill Village",
       "s": "Windmill Village",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP13-023": {
       "a": "Special",
@@ -232,7 +254,8 @@
       "n": "Uta",
       "p": 5000,
       "s": "FILM",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP13-024": {
       "a": "Wisdom",
@@ -242,7 +265,8 @@
       "kw": "-",
       "n": "Gordon",
       "s": "FILM",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-025": {
       "a": "Strike",
@@ -253,7 +277,8 @@
       "n": "Koby",
       "p": 6000,
       "s": "FILM/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-026": {
       "a": "Wisdom",
@@ -264,7 +289,8 @@
       "n": "Sunny-Kun",
       "p": 2000,
       "s": "FILM/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-027": {
       "a": "Strike",
@@ -275,7 +301,8 @@
       "n": "Sanji",
       "p": 7000,
       "s": "FILM/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-028": {
       "a": "Slash",
@@ -286,7 +313,8 @@
       "n": "Shanks",
       "p": 12000,
       "s": "FILM/The Four Emperors/Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP13-029": {
       "a": "Strike",
@@ -297,7 +325,8 @@
       "n": "Jinbe",
       "p": 7000,
       "s": "FILM/Fish-Man/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-030": {
       "a": "Strike",
@@ -308,7 +337,8 @@
       "n": "Tony Tony.Chopper",
       "p": 6000,
       "s": "FILM/Animal/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-031": {
       "a": "Slash",
@@ -319,7 +349,8 @@
       "n": "Trafalgar Law",
       "p": 6000,
       "s": "FILM/Supernovas/Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-032": {
       "a": "Strike",
@@ -330,7 +361,8 @@
       "n": "Nico Robin",
       "p": 7000,
       "s": "FILM/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-033": {
       "a": "Strike",
@@ -341,7 +373,8 @@
       "n": "Franky",
       "p": 5000,
       "s": "FILM/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-034": {
       "a": "Slash",
@@ -352,7 +385,8 @@
       "n": "Brook",
       "p": 4000,
       "s": "FILM/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-035": {
       "a": "Strike",
@@ -363,7 +397,8 @@
       "n": "Bepo",
       "p": 7000,
       "s": "FILM/Minks/Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-036": {
       "a": "Slash",
@@ -374,7 +409,8 @@
       "n": "Helmeppo",
       "p": 6000,
       "s": "FILM/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-037": {
       "a": "Slash",
@@ -385,7 +421,8 @@
       "n": "Roronoa Zoro",
       "p": 5000,
       "s": "FILM/Supernovas/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-038": {
       "c": "Green",
@@ -393,7 +430,8 @@
       "kw": "-",
       "n": "Gum-Gum Elephant Gun",
       "s": "Supernovas/Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP13-039": {
       "c": "Green",
@@ -401,7 +439,8 @@
       "kw": "-",
       "n": "Gum-Gum Snake Shot",
       "s": "Fish-Man Island/Supernovas/Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP13-040": {
       "c": "Green",
@@ -409,7 +448,8 @@
       "kw": "-",
       "n": "I Know You're Strong... So I'll Go All Out from the Very Start!!!",
       "s": "Supernovas/Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP13-041": {
       "a": "Ranged",
@@ -420,7 +460,8 @@
       "n": "Izo",
       "p": 6000,
       "s": "Land of Wano/Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-042": {
       "a": "Special",
@@ -431,7 +472,8 @@
       "n": "Edward.Newgate",
       "p": 12000,
       "s": "The Four Emperors/Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP13-043": {
       "a": "Special",
@@ -441,7 +483,8 @@
       "kw": "-",
       "n": "Otama",
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-044": {
       "a": "Ranged",
@@ -452,7 +495,8 @@
       "n": "Curiel",
       "p": 4000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-045": {
       "a": "Slash",
@@ -463,7 +507,8 @@
       "n": "Haruta",
       "p": 2000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-046": {
       "a": "Slash",
@@ -474,7 +519,8 @@
       "n": "Vista",
       "p": 8000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-047": {
       "a": "Slash",
@@ -485,7 +531,8 @@
       "n": "Fossa",
       "p": 3000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-048": {
       "a": "Strike",
@@ -496,7 +543,8 @@
       "n": "Blamenco",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-049": {
       "a": "Slash",
@@ -507,7 +555,8 @@
       "n": "Blenheim",
       "p": 7000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-050": {
       "a": "Strike",
@@ -518,7 +567,8 @@
       "n": "Boa Sandersonia",
       "p": 3000,
       "s": "Kuja Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-051": {
       "a": "Special",
@@ -529,7 +579,8 @@
       "n": "Boa Hancock",
       "p": 5000,
       "s": "The Seven Warlords of the Sea/Kuja Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-052": {
       "a": "Slash",
@@ -540,7 +591,8 @@
       "n": "Boa Marigold",
       "p": 4000,
       "s": "Kuja Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-053": {
       "a": "Strike",
@@ -551,7 +603,8 @@
       "n": "Marshall.D.Teach",
       "p": 5000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-054": {
       "a": "Strike",
@@ -562,7 +615,8 @@
       "n": "Yamato",
       "p": 6000,
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP13-055": {
       "a": "Strike",
@@ -573,7 +627,8 @@
       "n": "Rakuyo",
       "p": 4000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-056": {
       "a": "Strike",
@@ -584,7 +639,8 @@
       "n": "LittleOars Jr.",
       "p": 7000,
       "s": "Giant/Whitebeard Pirates Allies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-057": {
       "c": "Blue",
@@ -592,7 +648,8 @@
       "kw": "Blocker",
       "n": "If I Bowed Down to Power, What's the Point in Living?",
       "s": "Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP13-058": {
       "c": "Blue",
@@ -600,7 +657,8 @@
       "kw": "-",
       "n": "Phoenix Pyreapple",
       "s": "Former Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP13-059": {
       "c": "Blue",
@@ -608,7 +666,8 @@
       "kw": "-",
       "n": "Brilliant Punk",
       "s": "Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP13-060": {
       "a": "Wisdom",
@@ -619,7 +678,8 @@
       "n": "Amatsuki Toki",
       "p": 3000,
       "s": "Land of Wano/Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-061": {
       "a": "Slash",
@@ -630,7 +690,8 @@
       "n": "Inuarashi",
       "p": 3000,
       "s": "Minks/Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-062": {
       "a": "Wisdom",
@@ -641,7 +702,8 @@
       "n": "Crocus",
       "p": 6000,
       "s": "Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-063": {
       "a": "Slash",
@@ -652,7 +714,8 @@
       "n": "Kouzuki Oden",
       "p": 6000,
       "s": "Land of Wano/Kouzuki Clan/Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-064": {
       "a": "Slash",
@@ -663,7 +726,8 @@
       "n": "Gol.D.Roger",
       "p": 13000,
       "s": "King of the Pirates/Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP13-065": {
       "a": "Slash",
@@ -674,7 +738,8 @@
       "n": "Shanks",
       "p": 2000,
       "s": "Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-066": {
       "a": "Slash",
@@ -685,7 +750,8 @@
       "n": "Silvers Rayleigh",
       "p": 9000,
       "s": "Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP13-067": {
       "a": "Slash",
@@ -696,7 +762,8 @@
       "n": "Scopper Gaban",
       "p": 7000,
       "s": "Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-068": {
       "a": "Special",
@@ -707,7 +774,8 @@
       "n": "Douglas Bullet",
       "p": 4000,
       "s": "FILM/Former Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-069": {
       "a": "Wisdom",
@@ -718,7 +786,8 @@
       "n": "Tom",
       "p": 2000,
       "s": "Fish-Man/Water Seven",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-070": {
       "a": "Slash",
@@ -729,7 +798,8 @@
       "n": "Napoleon",
       "p": 7000,
       "s": "Big Mom Pirates/Homies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-071": {
       "a": "Slash",
@@ -740,7 +810,8 @@
       "n": "Nekomamushi",
       "p": 3000,
       "s": "Minks/Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-072": {
       "a": "Slash",
@@ -751,7 +822,8 @@
       "n": "Buggy",
       "p": 2000,
       "s": "Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-073": {
       "a": "Special",
@@ -762,7 +834,8 @@
       "n": "Prometheus",
       "p": 6000,
       "s": "Homies/Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-074": {
       "a": "Special",
@@ -773,7 +846,8 @@
       "n": "Hera",
       "p": 5000,
       "s": "Homies/Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-075": {
       "c": "Purple",
@@ -781,7 +855,8 @@
       "kw": "-",
       "n": "Guess We'll Have Another Scrap. You Can Only Risk Death While You're Still Alive!!",
       "s": "King of the Pirates / Roger Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP13-076": {
       "c": "Purple",
@@ -789,7 +864,8 @@
       "kw": "-",
       "n": "Divine Departure",
       "s": "King of the Pirates / Roger Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP13-077": {
       "c": "Purple",
@@ -797,7 +873,8 @@
       "kw": "-",
       "n": "Go All the Way to the Top!!",
       "s": "Former Roger Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP13-078": {
       "c": "Purple",
@@ -805,7 +882,8 @@
       "kw": "-",
       "n": "Oro Jackson",
       "s": "Roger Pirates",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP13-079": {
       "c": "Black",
@@ -815,7 +893,8 @@
       "n": "Imu",
       "p": 5000,
       "s": "?",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP13-080": {
       "a": "Slash",
@@ -826,7 +905,8 @@
       "n": "St. Ethanbaron V. Nusjuro",
       "p": 5000,
       "s": "Five Elders/Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-081": {
       "a": "Strike",
@@ -837,7 +917,8 @@
       "n": "Koala",
       "p": 6000,
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-082": {
       "a": "Slash / Special",
@@ -848,7 +929,8 @@
       "n": "Five Elders",
       "p": 12000,
       "s": "Five Elders/Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP13-083": {
       "a": "Special",
@@ -859,7 +941,8 @@
       "n": "St. Jaygarcia Saturn",
       "p": 5000,
       "s": "Five Elders/Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-084": {
       "a": "Special",
@@ -870,7 +953,8 @@
       "n": "St. Shepherd Ju Peter",
       "p": 5000,
       "s": "Five Elders/Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-085": {
       "a": "Ranged",
@@ -881,7 +965,8 @@
       "n": "Saint Jalmac",
       "p": 4000,
       "s": "Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-086": {
       "a": "Ranged",
@@ -891,7 +976,8 @@
       "kw": "-",
       "n": "Saint Shalria",
       "s": "Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-087": {
       "a": "Ranged",
@@ -901,7 +987,8 @@
       "kw": "Blocker",
       "n": "Saint Charlos",
       "s": "Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-088": {
       "a": "Wisdom",
@@ -912,7 +999,8 @@
       "n": "Terry Gilteo",
       "p": 6000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-089": {
       "a": "Special",
@@ -923,7 +1011,8 @@
       "n": "St. Topman Warcury",
       "p": 5000,
       "s": "Five Elders/Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-090": {
       "a": "Strike",
@@ -934,7 +1023,8 @@
       "n": "Hack",
       "p": 7000,
       "s": "Fish-Man/Dressrosa/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-091": {
       "a": "Special",
@@ -945,7 +1035,8 @@
       "n": "St. Marcus Mars",
       "p": 5000,
       "s": "Five Elders/Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-092": {
       "a": "Wisdom",
@@ -955,7 +1046,8 @@
       "kw": "-",
       "n": "Saint Mjosgard",
       "s": "Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-093": {
       "a": "Wisdom",
@@ -966,7 +1058,8 @@
       "n": "Morgans",
       "p": 4000,
       "s": "Journalist",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-094": {
       "a": "Wisdom",
@@ -977,7 +1070,8 @@
       "n": "York",
       "p": 1000,
       "s": "Scientist/Egghead",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-095": {
       "a": "Ranged",
@@ -987,7 +1081,8 @@
       "kw": "-",
       "n": "Saint Rosward",
       "s": "Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-096": {
       "c": "Black",
@@ -995,7 +1090,8 @@
       "kw": "-",
       "n": "The Five Elders Are at Your Service!!!",
       "s": "Five Elders/Celestial Dragons",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP13-097": {
       "c": "Black",
@@ -1003,7 +1099,8 @@
       "kw": "-",
       "n": "The World's Equilibrium Cannot Be Maintained Forever",
       "s": "Five Elders/Celestial Dragons",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP13-098": {
       "c": "Black",
@@ -1011,7 +1108,8 @@
       "kw": "-",
       "n": "Never Existed... in the First Place...",
       "s": "Five Elders/Celestial Dragons",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP13-099": {
       "c": "Black",
@@ -1019,7 +1117,8 @@
       "kw": "-",
       "n": "The Empty Throne",
       "s": "Mary Geoise",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP13-100": {
       "a": "Special",
@@ -1029,7 +1128,8 @@
       "n": "Jewelry Bonney",
       "p": 5000,
       "s": "Egghead/Bonney Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP13-101": {
       "a": "Wisdom",
@@ -1040,7 +1140,8 @@
       "n": "Atlas",
       "p": 6000,
       "s": "Scientist/Egghead",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-102": {
       "a": "Wisdom",
@@ -1051,7 +1152,8 @@
       "n": "Edison",
       "p": 2000,
       "s": "Egghead/Scientist",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-103": {
       "a": "Wisdom",
@@ -1062,7 +1164,8 @@
       "n": "Gyogyo",
       "p": 6000,
       "s": "Bonney Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-104": {
       "a": "Wisdom",
@@ -1072,7 +1175,8 @@
       "kw": "Blocker",
       "n": "Kouzuki Hiyori",
       "s": "Land of Wano/Kouzuki Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-105": {
       "a": "Slash",
@@ -1082,7 +1186,8 @@
       "kw": "-",
       "n": "Kouzuki Momonosuke",
       "s": "Land of Wano/Kouzuki Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-106": {
       "a": "Special",
@@ -1093,7 +1198,8 @@
       "n": "Conney",
       "p": 1000,
       "s": "Bonney Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-107": {
       "a": "Wisdom",
@@ -1104,7 +1210,8 @@
       "n": "Shaka",
       "p": 7000,
       "s": "Scientist/Egghead",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-108": {
       "a": "Special",
@@ -1115,7 +1222,8 @@
       "n": "Jewelry Bonney",
       "p": 10000,
       "s": "Egghead/Bonney Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP13-109": {
       "a": "Special",
@@ -1126,7 +1234,8 @@
       "n": "Jewelry Bonney",
       "p": 6000,
       "s": "Supernovas/Bonney Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-110": {
       "a": "Special",
@@ -1137,7 +1246,8 @@
       "n": "Stussy",
       "p": 7000,
       "s": "Egghead/CP0",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP13-111": {
       "a": "Wisdom",
@@ -1148,7 +1258,8 @@
       "n": "Pythagoras",
       "p": 7000,
       "s": "Scientist/Egghead",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP13-112": {
       "a": "Wisdom",
@@ -1159,7 +1270,8 @@
       "n": "Vegapunk",
       "p": 1000,
       "s": "Egghead / Scientist",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP13-113": {
       "a": "Wisdom",
@@ -1170,7 +1282,8 @@
       "n": "Lilith",
       "p": 2000,
       "s": "Scientist/Egghead",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-114": {
       "a": "Special",
@@ -1181,7 +1294,8 @@
       "n": "S-Snake",
       "p": 5000,
       "s": "Egghead/Seraphim",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP13-115": {
       "c": "Yellow",
@@ -1189,7 +1303,8 @@
       "kw": "-",
       "n": "Paper Art Afterimage",
       "s": "Egghead/CP0",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP13-116": {
       "c": "Yellow",
@@ -1197,7 +1312,8 @@
       "kw": "-",
       "n": "The One Who Is the Most Free Is the Pirate King!!!",
       "s": "Supernovas/Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP13-117": {
       "c": "Yellow",
@@ -1205,7 +1321,8 @@
       "kw": "-",
       "n": "Gum-Gum Dawn Stamp",
       "s": "Egghead/The Four Emperors/Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP13-118": {
       "a": "Strike",
@@ -1216,7 +1333,8 @@
       "n": "Monkey.D.Luffy",
       "p": 7000,
       "s": "Fish-Man Island/Supernovas/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     },
     "OP13-119": {
       "a": "Special",
@@ -1227,7 +1345,8 @@
       "n": "Portgas.D.Ace",
       "p": 7000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     },
     "OP13-120": {
       "a": "Special",
@@ -1238,7 +1357,8 @@
       "n": "Sabo",
       "p": 7000,
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     }
   }
 }

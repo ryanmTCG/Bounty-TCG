@@ -8,7 +8,8 @@
       "n": "Uta",
       "p": 5000,
       "s": "FILM",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "ST11-002": {
       "a": "Special",
@@ -19,7 +20,8 @@
       "n": "Uta",
       "p": 4000,
       "s": "Music / FILM",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST11-003": {
       "c": "Green",
@@ -27,7 +29,8 @@
       "kw": "-",
       "n": "Backlight",
       "s": "Music / FILM",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST11-004": {
       "c": "Green",
@@ -35,7 +38,8 @@
       "kw": "-",
       "n": "New Genesis",
       "s": "Music / FILM",
-      "t": "Event"
+      "t": "Event",
+      "r": "SR"
     },
     "ST11-005": {
       "c": "Green",
@@ -43,7 +47,8 @@
       "kw": "-",
       "n": "I'm invincible",
       "s": "音楽 / FILM",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     }
   }
 }

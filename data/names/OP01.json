@@ -8,7 +8,8 @@
       "n": "Roronoa Zoro",
       "p": 5000,
       "s": "Supernovas / Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP01-002": {
       "a": "Slash",
@@ -18,7 +19,8 @@
       "n": "Trafalgar Law",
       "p": 5000,
       "s": "Supernovas / Heart Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP01-003": {
       "a": "Strike",
@@ -28,7 +30,8 @@
       "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "Supernovas / Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP01-004": {
       "a": "Ranged",
@@ -39,7 +42,8 @@
       "n": "Usopp",
       "p": 3000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-005": {
       "a": "Special",
@@ -50,7 +54,8 @@
       "n": "Uta",
       "p": 4000,
       "s": "FILM",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-006": {
       "a": "Special",
@@ -60,7 +65,8 @@
       "kw": "-",
       "n": "Otama",
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-007": {
       "a": "Special",
@@ -71,7 +77,8 @@
       "n": "Caribou",
       "p": 4000,
       "s": "Supernovas / Caribou Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-008": {
       "a": "Slash",
@@ -82,7 +89,8 @@
       "n": "Cavendish",
       "p": 5000,
       "s": "Supernovas / Beautiful Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-009": {
       "a": "Strike",
@@ -93,7 +101,8 @@
       "n": "Carrot",
       "p": 3000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-010": {
       "a": "Strike",
@@ -104,7 +113,8 @@
       "n": "Komachiyo",
       "p": 3000,
       "s": "Animal / Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-011": {
       "a": "Wisdom",
@@ -115,7 +125,8 @@
       "n": "Gordon",
       "p": 3000,
       "s": "FILM",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-012": {
       "a": "Slash",
@@ -126,7 +137,8 @@
       "n": "Sai",
       "p": 4000,
       "s": "Happosui Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-013": {
       "a": "Strike",
@@ -137,7 +149,8 @@
       "n": "Sanji",
       "p": 3000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-014": {
       "a": "Strike",
@@ -148,7 +161,8 @@
       "n": "Jinbe",
       "p": 5000,
       "s": "Fish-Man / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-015": {
       "a": "Wisdom",
@@ -159,7 +173,8 @@
       "n": "Tony Tony.Chopper",
       "p": 4000,
       "s": "Animal / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-016": {
       "a": "Special",
@@ -170,7 +185,8 @@
       "n": "Nami",
       "p": 2000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-017": {
       "a": "Strike",
@@ -181,7 +197,8 @@
       "n": "Nico Robin",
       "p": 4000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-018": {
       "a": "Strike",
@@ -192,7 +209,8 @@
       "n": "Hajrudin",
       "p": 6000,
       "s": "Giant / New Giant Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-019": {
       "a": "Special",
@@ -203,7 +221,8 @@
       "n": "Bartolomeo",
       "p": 2000,
       "s": "Supernovas / Barto Club",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-020": {
       "a": "Strike",
@@ -214,7 +233,8 @@
       "n": "Hyogoro",
       "p": 3000,
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-021": {
       "a": "Ranged",
@@ -225,7 +245,8 @@
       "n": "Franky",
       "p": 4000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-022": {
       "a": "Slash",
@@ -236,7 +257,8 @@
       "n": "Brook",
       "p": 5000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-023": {
       "a": "Special",
@@ -247,7 +269,8 @@
       "n": "Marco",
       "p": 5000,
       "s": "Former Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-024": {
       "a": "Strike",
@@ -258,7 +281,8 @@
       "n": "Monkey.D.Luffy",
       "p": 3000,
       "s": "Supernovas / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP01-025": {
       "a": "Slash",
@@ -269,7 +293,8 @@
       "n": "Roronoa Zoro",
       "p": 5000,
       "s": "Supernovas / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP01-026": {
       "c": "Red",
@@ -277,7 +302,8 @@
       "kw": "-",
       "n": "Gum-Gum Fire-Fist Pistol Red Hawk",
       "s": "Supernovas / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP01-027": {
       "c": "Red",
@@ -285,7 +311,8 @@
       "kw": "-",
       "n": "Round Table",
       "s": "Supernovas / Beautiful Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP01-028": {
       "c": "Red",
@@ -293,7 +320,8 @@
       "kw": "-",
       "n": "Green Star Rafflesia",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP01-029": {
       "c": "Red",
@@ -301,7 +329,8 @@
       "kw": "-",
       "n": "Radical Beam!!",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP01-030": {
       "c": "Red",
@@ -309,7 +338,8 @@
       "kw": "-",
       "n": "In Two Years!! At the Sabaody Archipelago!!",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP01-031": {
       "a": "Slash",
@@ -319,7 +349,8 @@
       "n": "Kouzuki Oden",
       "p": 5000,
       "s": "Land of Wano / Kouzuki Clan",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP01-032": {
       "a": "Slash",
@@ -330,7 +361,8 @@
       "n": "Ashura Doji",
       "p": 4000,
       "s": "Land of Wano / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-033": {
       "a": "Ranged",
@@ -341,7 +373,8 @@
       "n": "Izo",
       "p": 3000,
       "s": "Land of Wano / Former Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-034": {
       "a": "Slash",
@@ -352,7 +385,8 @@
       "n": "Inuarashi",
       "p": 4000,
       "s": "Minks / Land of Wano / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-035": {
       "a": "Slash",
@@ -363,7 +397,8 @@
       "n": "Okiku",
       "p": 5000,
       "s": "Land of Wano / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-036": {
       "a": "Wisdom",
@@ -374,7 +409,8 @@
       "n": "Otsuru",
       "p": 3000,
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-037": {
       "a": "Slash",
@@ -385,7 +421,8 @@
       "n": "Kawamatsu",
       "p": 3000,
       "s": "Fish-Man / Land of Wano / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-038": {
       "a": "Slash",
@@ -396,7 +433,8 @@
       "n": "Kanjuro",
       "p": 3000,
       "s": "Land of Wano / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-039": {
       "a": "Slash",
@@ -407,7 +445,8 @@
       "n": "Killer",
       "p": 2000,
       "s": "Supernovas / Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-040": {
       "a": "Slash",
@@ -418,7 +457,8 @@
       "n": "Kin'emon",
       "p": 6000,
       "s": "Land of Wano / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP01-041": {
       "a": "Slash",
@@ -428,7 +468,8 @@
       "kw": "-",
       "n": "Kouzuki Momonosuke",
       "s": "Land of Wano / Kouzuki Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-042": {
       "a": "Wisdom",
@@ -438,7 +479,8 @@
       "kw": "-",
       "n": "Komurasaki",
       "s": "Land of Wano / Kouzuki Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-043": {
       "a": "Special",
@@ -449,7 +491,8 @@
       "n": "Shinobu",
       "p": 5000,
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-044": {
       "a": "Strike",
@@ -460,7 +503,8 @@
       "n": "Shachi",
       "p": 4000,
       "s": "Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-045": {
       "a": "Strike",
@@ -471,7 +515,8 @@
       "n": "Jean Bart",
       "p": 6000,
       "s": "Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-046": {
       "a": "Slash",
@@ -482,7 +527,8 @@
       "n": "Denjiro",
       "p": 7000,
       "s": "Land of Wano / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-047": {
       "a": "Slash",
@@ -493,7 +539,8 @@
       "n": "Trafalgar Law",
       "p": 6000,
       "s": "Supernovas / Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP01-048": {
       "a": "Slash",
@@ -504,7 +551,8 @@
       "n": "Nekomamushi",
       "p": 3000,
       "s": "Minks / Land of Wano / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-049": {
       "a": "Strike",
@@ -515,7 +563,8 @@
       "n": "Bepo",
       "p": 4000,
       "s": "Minks / Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-050": {
       "a": "Strike",
@@ -526,7 +575,8 @@
       "n": "Penguin",
       "p": 2000,
       "s": "Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-051": {
       "a": "Special",
@@ -537,7 +587,8 @@
       "n": "Eustass\"Captain\"Kid",
       "p": 8000,
       "s": "Supernovas / Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP01-052": {
       "a": "Slash",
@@ -548,7 +599,8 @@
       "n": "Raizo",
       "p": 4000,
       "s": "Land of Wano / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-053": {
       "a": "Slash",
@@ -559,7 +611,8 @@
       "n": "Wire",
       "p": 4000,
       "s": "Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-054": {
       "a": "Slash",
@@ -570,7 +623,8 @@
       "n": "X.Drake",
       "p": 6000,
       "s": "Supernovas / Navy / Drake Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-055": {
       "c": "Green",
@@ -578,7 +632,8 @@
       "kw": "-",
       "n": "You Can Be My Samurai!!",
       "s": "Land of Wano / Kouzuki Clan",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP01-056": {
       "c": "Green",
@@ -586,7 +641,8 @@
       "kw": "-",
       "n": "Demon Face",
       "s": "Supernovas / Hawkins Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP01-057": {
       "c": "Green",
@@ -594,7 +650,8 @@
       "kw": "-",
       "n": "Paradise Waterfall",
       "s": "Land of Wano / Kouzuki Clan",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP01-058": {
       "c": "Green",
@@ -602,7 +659,8 @@
       "kw": "-",
       "n": "Punk Gibson",
       "s": "Supernovas / Kid Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP01-059": {
       "c": "Green",
@@ -610,7 +668,8 @@
       "kw": "-",
       "n": "BE-BENG!!",
       "s": "Land of Wano",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP01-060": {
       "a": "Special",
@@ -620,7 +679,8 @@
       "n": "Donquixote Doflamingo",
       "p": 5000,
       "s": "The Seven Warlords of the Sea / Donquixote Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP01-061": {
       "a": "Strike",
@@ -630,7 +690,8 @@
       "n": "Kaido",
       "p": 5000,
       "s": "The Four Emperors / Animal Kingdom Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP01-062": {
       "a": "Special",
@@ -640,7 +701,8 @@
       "n": "Crocodile",
       "p": 5000,
       "s": "The Seven Warlords of the Sea / Baroque Works",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP01-063": {
       "a": "Slash",
@@ -651,7 +713,8 @@
       "n": "Arlong",
       "p": 5000,
       "s": "Fish-Man / Arlong Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-064": {
       "a": "Strike",
@@ -662,7 +725,8 @@
       "n": "Alvida",
       "p": 3000,
       "s": "Buggy Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-065": {
       "a": "Strike",
@@ -673,7 +737,8 @@
       "n": "Vergo",
       "p": 7000,
       "s": "Navy / Donquixote Pirates / Punk Hazard",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-066": {
       "a": "Slash",
@@ -684,7 +749,8 @@
       "n": "Krieg",
       "p": 6000,
       "s": "Krieg Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-067": {
       "a": "Special",
@@ -695,7 +761,8 @@
       "n": "Crocodile",
       "p": 7000,
       "s": "The Seven Warlords of the Sea / Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP01-068": {
       "a": "Special",
@@ -706,7 +773,8 @@
       "n": "Gecko Moria",
       "p": 5000,
       "s": "The Seven Warlords of the Sea / Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-069": {
       "a": "Special",
@@ -717,7 +785,8 @@
       "n": "Caesar Clown",
       "p": 5000,
       "s": "Scientist / Punk Hazard",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-070": {
       "a": "Slash",
@@ -728,7 +797,8 @@
       "n": "Dracule Mihawk",
       "p": 9000,
       "s": "The Seven Warlords of the Sea",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP01-071": {
       "a": "Strike",
@@ -739,7 +809,8 @@
       "n": "Jinbe",
       "p": 2000,
       "s": "Fish-Man / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-072": {
       "a": "Special",
@@ -750,7 +821,8 @@
       "n": "Smiley",
       "p": 1000,
       "s": "Biological Weapon / Punk Hazard",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-073": {
       "a": "Special",
@@ -761,7 +833,8 @@
       "n": "Donquixote Doflamingo",
       "p": 4000,
       "s": "The Seven Warlords of the Sea / Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-074": {
       "a": "Strike",
@@ -772,7 +845,8 @@
       "n": "Bartholomew Kuma",
       "p": 5000,
       "s": "The Seven Warlords of the Sea / Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-075": {
       "a": "Special",
@@ -783,7 +857,8 @@
       "n": "Pacifista",
       "p": 5000,
       "s": "Biological Weapon / Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-076": {
       "a": "Strike",
@@ -794,7 +869,8 @@
       "n": "Bellamy",
       "p": 4000,
       "s": "Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-077": {
       "a": "Special",
@@ -805,7 +881,8 @@
       "n": "Perona",
       "p": 2000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-078": {
       "a": "Special",
@@ -816,7 +893,8 @@
       "n": "Boa Hancock",
       "p": 5000,
       "s": "The Seven Warlords of the Sea / Kuja Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP01-079": {
       "a": "Strike",
@@ -827,7 +905,8 @@
       "n": "Ms. All Sunday",
       "p": 1000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-080": {
       "a": "Slash",
@@ -838,7 +917,8 @@
       "n": "Miss Doublefinger(Zala)",
       "p": 4000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-081": {
       "a": "Strike",
@@ -849,7 +929,8 @@
       "n": "Mocha",
       "p": 5000,
       "s": "Punk Hazard",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-082": {
       "a": "Special",
@@ -860,7 +941,8 @@
       "n": "Monet",
       "p": 3000,
       "s": "Donquixote Pirates / Punk Hazard",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-083": {
       "a": "Slash",
@@ -871,7 +953,8 @@
       "n": "Mr.1(Daz.Bonez)",
       "p": 3000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-084": {
       "a": "Strike",
@@ -882,7 +965,8 @@
       "n": "Mr.2.Bon.Kurei(Bentham)",
       "p": 4000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-085": {
       "a": "Special",
@@ -893,7 +977,8 @@
       "n": "Mr.3(Galdino)",
       "p": 3000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-086": {
       "c": "Blue",
@@ -901,7 +986,8 @@
       "kw": "-",
       "n": "Overheat",
       "s": "The Seven Warlords of the Sea / Donquixote Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP01-087": {
       "c": "Blue",
@@ -909,7 +995,8 @@
       "kw": "-",
       "n": "Officer Agents",
       "s": "Baroque Works",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP01-088": {
       "c": "Blue",
@@ -917,7 +1004,8 @@
       "kw": "-",
       "n": "Desert Spada",
       "s": "The Seven Warlords of the Sea / Baroque Works",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP01-089": {
       "c": "Blue",
@@ -925,7 +1013,8 @@
       "kw": "-",
       "n": "Crescent Cutlass",
       "s": "The Seven Warlords of the Sea / Baroque Works",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP01-090": {
       "c": "Blue",
@@ -933,7 +1022,8 @@
       "kw": "-",
       "n": "Baroque Works",
       "s": "Baroque Works",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP01-091": {
       "a": "Special",
@@ -943,7 +1033,8 @@
       "n": "King",
       "p": 5000,
       "s": "Animal Kingdom Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP01-092": {
       "a": "Strike",
@@ -954,7 +1045,8 @@
       "n": "Urashima",
       "p": 9000,
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-093": {
       "a": "Strike",
@@ -965,7 +1057,8 @@
       "n": "Ulti",
       "p": 3000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-094": {
       "a": "Strike",
@@ -976,7 +1069,8 @@
       "n": "Kaido",
       "p": 12000,
       "s": "The Four Emperors / Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP01-095": {
       "a": "Slash",
@@ -987,7 +1081,8 @@
       "n": "Kyoshirou",
       "p": 6000,
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-096": {
       "a": "Special",
@@ -998,7 +1093,8 @@
       "n": "King",
       "p": 7000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP01-097": {
       "a": "Strike",
@@ -1009,7 +1105,8 @@
       "n": "Queen",
       "p": 5000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-098": {
       "a": "Wisdom",
@@ -1020,7 +1117,8 @@
       "n": "Kurozumi Orochi",
       "p": 2000,
       "s": "Land of Wano / Kurozumi Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-099": {
       "a": "Special",
@@ -1031,7 +1129,8 @@
       "n": "Kurozumi Semimaru",
       "p": 3000,
       "s": "Land of Wano / Kurozumi Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-100": {
       "a": "Special",
@@ -1042,7 +1141,8 @@
       "n": "Kurozumi Higurashi",
       "p": 3000,
       "s": "Land of Wano / Kurozumi Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-101": {
       "a": "Slash",
@@ -1053,7 +1153,8 @@
       "n": "Sasaki",
       "p": 4000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-102": {
       "a": "Strike",
@@ -1064,7 +1165,8 @@
       "n": "Jack",
       "p": 4000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-103": {
       "a": "Ranged",
@@ -1075,7 +1177,8 @@
       "n": "Scratchmen Apoo",
       "p": 6000,
       "s": "Animal Kingdom Pirates / On-Air Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-104": {
       "a": "Strike",
@@ -1086,7 +1189,8 @@
       "n": "Speed",
       "p": 3000,
       "s": "Animal Kingdom Pirates / SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-105": {
       "a": "Wisdom",
@@ -1097,7 +1201,8 @@
       "n": "Bao Huang",
       "p": 3000,
       "s": "Animal Kingdom Pirates / SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-106": {
       "a": "Slash",
@@ -1108,7 +1213,8 @@
       "n": "Basil Hawkins",
       "p": 2000,
       "s": "Animal Kingdom Pirates / Hawkins Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-107": {
       "a": "Ranged",
@@ -1119,7 +1225,8 @@
       "n": "Babanuki",
       "p": 7000,
       "s": "Animal Kingdom Pirates / SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-108": {
       "a": "Slash",
@@ -1130,7 +1237,8 @@
       "n": "Hitokiri Kamazo",
       "p": 5000,
       "s": "Supernovas / Kid Pirates / SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-109": {
       "a": "Slash",
@@ -1141,7 +1249,8 @@
       "n": "Who's.Who",
       "p": 3000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP01-110": {
       "a": "Special",
@@ -1152,7 +1261,8 @@
       "n": "Fukurokuju",
       "p": 8000,
       "s": "Land of Wano / Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-111": {
       "a": "Special",
@@ -1163,7 +1273,8 @@
       "n": "Black Maria",
       "p": 5000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-112": {
       "a": "Strike",
@@ -1174,7 +1285,8 @@
       "n": "Page One",
       "p": 5000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-113": {
       "a": "Special",
@@ -1185,7 +1297,8 @@
       "n": "Holedem",
       "p": 4000,
       "s": "Animal Kingdom Pirates / SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP01-114": {
       "a": "Slash",
@@ -1196,7 +1309,8 @@
       "n": "X.Drake",
       "p": 5000,
       "s": "Navy / Drake Pirates / Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP01-115": {
       "c": "Purple",
@@ -1204,7 +1318,8 @@
       "kw": "-",
       "n": "Elephant's Marchoo",
       "s": "Animal Kingdom Pirates / SMILE",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP01-116": {
       "c": "Purple",
@@ -1212,7 +1327,8 @@
       "kw": "-",
       "n": "Artificial Devil Fruit SMILE",
       "s": "Animal Kingdom Pirates / SMILE",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP01-117": {
       "c": "Purple",
@@ -1220,7 +1336,8 @@
       "kw": "-",
       "n": "Sheep's Horn",
       "s": "Animal Kingdom Pirates / SMILE",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP01-118": {
       "c": "Purple",
@@ -1228,7 +1345,8 @@
       "kw": "-",
       "n": "Ulti-Mortar",
       "s": "Animal Kingdom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP01-119": {
       "c": "Purple",
@@ -1236,7 +1354,8 @@
       "kw": "-",
       "n": "Thunder Bagua",
       "s": "The Four Emperors / Animal Kingdom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP01-120": {
       "a": "Slash",
@@ -1247,7 +1366,8 @@
       "n": "Shanks",
       "p": 10000,
       "s": "The Four Emperors / Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     },
     "OP01-121": {
       "a": "Strike",
@@ -1258,7 +1378,8 @@
       "n": "Yamato",
       "p": 5000,
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     }
   }
 }

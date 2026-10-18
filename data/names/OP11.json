@@ -8,7 +8,8 @@
       "n": "Koby",
       "p": 5000,
       "s": "Navy/SWORD",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP11-002": {
       "a": "Special",
@@ -19,7 +20,8 @@
       "n": "Ain",
       "p": 4000,
       "s": "FILM / Neo Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-003": {
       "a": "Ranged",
@@ -30,7 +32,8 @@
       "n": "Usopp",
       "p": 6000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-004": {
       "a": "Special",
@@ -40,7 +43,8 @@
       "kw": "-",
       "n": "Kujyaku",
       "s": "Navy/SWORD",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP11-005": {
       "a": "Special",
@@ -51,7 +55,8 @@
       "n": "Smoker",
       "p": 5000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-006": {
       "a": "Strike",
@@ -62,7 +67,8 @@
       "n": "Zephyr",
       "p": 6000,
       "s": "FILM / Neo Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-007": {
       "a": "Slash",
@@ -73,7 +79,8 @@
       "n": "Tashigi",
       "p": 1000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-008": {
       "a": "Strike",
@@ -84,7 +91,8 @@
       "n": "Doll",
       "p": 1000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-009": {
       "a": "Strike",
@@ -95,7 +103,8 @@
       "n": "Nico Robin",
       "p": 4000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-010": {
       "a": "Ranged",
@@ -106,7 +115,8 @@
       "n": "Hibari",
       "p": 6000,
       "s": "Navy / SWORD",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP11-011": {
       "a": "Special",
@@ -117,7 +127,8 @@
       "n": "Bins",
       "p": 7000,
       "s": "FILM / Neo Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-012": {
       "a": "Strike",
@@ -128,7 +139,8 @@
       "n": "Franky",
       "p": 4000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-013": {
       "a": "Special",
@@ -139,7 +151,8 @@
       "n": "Prince Grus",
       "p": 2000,
       "s": "Navy / SWORD",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-014": {
       "a": "Special",
@@ -150,7 +163,8 @@
       "n": "Borsalino",
       "p": 3000,
       "s": "FILM / Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-015": {
       "a": "Wisdom",
@@ -161,7 +175,8 @@
       "n": "Mocha",
       "p": 6000,
       "s": "Punk Hazard",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-016": {
       "a": "Slash",
@@ -172,7 +187,8 @@
       "n": "Roronoa Zoro",
       "p": 6000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-017": {
       "a": "Slash",
@@ -183,7 +199,8 @@
       "n": "X.Drake",
       "p": 7000,
       "s": "Navy / SWORD/ Drake Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-018": {
       "c": "Red",
@@ -191,7 +208,8 @@
       "kw": "-",
       "n": "Honesty Impact",
       "s": "Navy / SWORD",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP11-019": {
       "c": "Red",
@@ -199,7 +217,8 @@
       "kw": "-",
       "n": "Glorp Web!!",
       "s": "Navy / SWORD",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP11-020": {
       "c": "Red",
@@ -207,7 +226,8 @@
       "kw": "-",
       "n": "X Calibur",
       "s": "Navy / SWORD / Drake Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP11-021": {
       "a": "Strike",
@@ -217,7 +237,8 @@
       "n": "Jinbe",
       "p": 5000,
       "s": "Fish-Man / Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP11-022": {
       "a": "Wisdom",
@@ -227,7 +248,8 @@
       "n": "Shirahoshi",
       "p": 5000,
       "s": "Merfolk / Fish-Man Island",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP11-023": {
       "a": "Slash",
@@ -238,7 +260,8 @@
       "n": "Arlong",
       "p": 7000,
       "s": "Fish-Man / Fish-Man Island / The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-024": {
       "a": "Slash",
@@ -249,7 +272,8 @@
       "n": "Aladine",
       "p": 5000,
       "s": "Merfolk / Fish-Man Island / The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-025": {
       "a": "Wisdom",
@@ -259,7 +283,8 @@
       "kw": "-",
       "n": "Ishilly",
       "s": "Merfolk/Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-026": {
       "a": "Strike",
@@ -270,7 +295,8 @@
       "n": "Scaled Neptunian",
       "p": 8000,
       "s": "Neptunian",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-027": {
       "a": "Strike",
@@ -281,7 +307,8 @@
       "n": "Bulge-Eyed Neptunian",
       "p": 6000,
       "s": "Neptunian",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-028": {
       "a": "Strike",
@@ -292,7 +319,8 @@
       "n": "Lord of the Coast",
       "p": 5000,
       "s": "Neptunian / East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-029": {
       "a": "Wisdom",
@@ -303,7 +331,8 @@
       "n": "Charlotte Praline",
       "p": 4000,
       "s": "Merfolk / Fish-Man Island / The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-030": {
       "a": "Wisdom",
@@ -313,7 +342,8 @@
       "kw": "-",
       "n": "Shirahoshi",
       "s": "Merfolk / Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-031": {
       "a": "Strike",
@@ -324,7 +354,8 @@
       "n": "Jinbe",
       "p": 8000,
       "s": "Fish-Man / Fish-Man Island / The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP11-032": {
       "a": "Strike",
@@ -335,7 +366,8 @@
       "n": "Surume",
       "p": 6000,
       "s": "Animal / Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-033": {
       "a": "Strike",
@@ -346,7 +378,8 @@
       "n": "Bird Neptunian",
       "p": 7000,
       "s": "Neptunian",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-034": {
       "a": "Slash",
@@ -357,7 +390,8 @@
       "n": "Hatchan",
       "p": 5000,
       "s": "Fish-Man / Fish-Man Island / Former Arlong Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-035": {
       "a": "Strike",
@@ -368,7 +402,8 @@
       "n": "Fisher Tiger",
       "p": 7000,
       "s": "Fish-Man / Fish-Man Island / The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-036": {
       "a": "Strike",
@@ -379,7 +414,8 @@
       "n": "Spotted Neptunian",
       "p": 5000,
       "s": "Neptunian",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-037": {
       "c": "Green",
@@ -387,7 +423,8 @@
       "kw": "-",
       "n": "Ancient Weapon Poseidon",
       "s": "Fish-Man Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP11-038": {
       "c": "Green",
@@ -395,7 +432,8 @@
       "kw": "-",
       "n": "Gum-Gum Elephant Gatling",
       "s": "Fish-Man Island / Supernovas / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP11-039": {
       "c": "Green",
@@ -403,7 +441,8 @@
       "kw": "-",
       "n": "Vagabond Drill",
       "s": "Fish-Man / Fish-Man Island / The Sun Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP11-040": {
       "a": "Strike",
@@ -413,7 +452,8 @@
       "n": "Monkey.D.Luffy",
       "p": 6000,
       "s": "Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP11-041": {
       "a": "Special",
@@ -423,7 +463,8 @@
       "n": "Nami",
       "p": 5000,
       "s": "Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP11-042": {
       "a": "Ranged",
@@ -434,7 +475,8 @@
       "n": "Vito",
       "p": 4000,
       "s": "Firetank Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-043": {
       "a": "Strike",
@@ -445,7 +487,8 @@
       "n": "Vinsmoke Ichiji",
       "p": 7000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-044": {
       "a": "Slash",
@@ -456,7 +499,8 @@
       "n": "Vinsmoke Judge",
       "p": 8000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-045": {
       "a": "Special",
@@ -467,7 +511,8 @@
       "n": "Vinsmoke Niji",
       "p": 6000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-046": {
       "a": "Strike",
@@ -478,7 +523,8 @@
       "n": "Vinsmoke Yonji",
       "p": 5000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-047": {
       "a": "Special",
@@ -489,7 +535,8 @@
       "n": "Vinsmoke Reiju",
       "p": 5000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-048": {
       "a": "Ranged",
@@ -500,7 +547,8 @@
       "n": "Capone\"Gang\"Bege",
       "p": 2000,
       "s": "Supernovas / Firetank Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-049": {
       "a": "Special",
@@ -511,7 +559,8 @@
       "n": "Carrot",
       "p": 1000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-050": {
       "a": "Ranged",
@@ -522,7 +571,8 @@
       "n": "Gotti",
       "p": 4000,
       "s": "Firetank Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-051": {
       "a": "Strike",
@@ -533,7 +583,8 @@
       "n": "Sanji",
       "p": 7000,
       "s": "The Vinsmoke Family / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP11-052": {
       "a": "Slash",
@@ -544,7 +595,8 @@
       "n": "Charlotte Lola",
       "p": 7000,
       "s": "Firetank Pirates / Former Rolling Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-053": {
       "a": "Strike",
@@ -555,7 +607,8 @@
       "n": "Tony Tony.Chopper",
       "p": 6000,
       "s": "Animal / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-054": {
       "a": "Special",
@@ -566,7 +619,8 @@
       "n": "Nami",
       "p": 6000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP11-055": {
       "a": "Special",
@@ -577,7 +631,8 @@
       "n": "Bartolomeo",
       "p": 7000,
       "s": "Dressrosa / Supernovas",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-056": {
       "a": "Slash",
@@ -588,7 +643,8 @@
       "n": "Brook",
       "p": 4000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-057": {
       "a": "Slash",
@@ -599,7 +655,8 @@
       "n": "Pedro",
       "p": 1000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-058": {
       "a": "Strike",
@@ -610,7 +667,8 @@
       "n": "Monkey.D.Luffy",
       "p": 7000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-059": {
       "c": "Blue",
@@ -618,7 +676,8 @@
       "kw": "-",
       "n": "Gum-Gum King Cobra",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP11-060": {
       "c": "Blue",
@@ -626,7 +685,8 @@
       "kw": "-",
       "n": "Let's Crash This Wedding!!!",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP11-061": {
       "c": "Blue",
@@ -634,7 +694,8 @@
       "kw": "-",
       "n": "Gum-Gum Jet Culverin",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP11-062": {
       "a": "Strike",
@@ -644,7 +705,8 @@
       "n": "Charlotte Katakuri",
       "p": 5000,
       "s": "Big Mom Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP11-063": {
       "a": "Wisdom",
@@ -655,7 +717,8 @@
       "n": "Little Sadi",
       "p": 2000,
       "s": "Impel Down",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-064": {
       "a": "Wisdom",
@@ -666,7 +729,8 @@
       "n": "Saldeath",
       "p": 8000,
       "s": "Impel Down",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-065": {
       "a": "Wisdom",
@@ -677,7 +741,8 @@
       "n": "Charlotte Anana",
       "p": 1000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-066": {
       "a": "Special",
@@ -688,7 +753,8 @@
       "n": "Charlotte Oven",
       "p": 5000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-067": {
       "a": "Strike",
@@ -699,7 +765,8 @@
       "n": "Charlotte Katakuri",
       "p": 8000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP11-068": {
       "a": "Slash",
@@ -710,7 +777,8 @@
       "n": "Charlotte Daifuku",
       "p": 7000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-069": {
       "a": "Special",
@@ -721,7 +789,8 @@
       "n": "Charlotte Brulee",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-070": {
       "a": "Wisdom",
@@ -731,7 +800,8 @@
       "kw": "-",
       "n": "Charlotte Pudding",
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP11-071": {
       "a": "Special",
@@ -742,7 +812,8 @@
       "n": "Charlotte Perospero",
       "p": 7000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-072": {
       "a": "Special",
@@ -753,7 +824,8 @@
       "n": "Charlotte Mont-d'or",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-073": {
       "a": "Special",
@@ -764,7 +836,8 @@
       "n": "Charlotte Linlin",
       "p": 12000,
       "s": "The Four Emperors / Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-074": {
       "a": "Slash",
@@ -775,7 +848,8 @@
       "n": "Streusen",
       "p": 3000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-075": {
       "a": "Strike",
@@ -786,7 +860,8 @@
       "n": "Jaguar.D.Saul",
       "p": 6000,
       "s": "Giant / Ohara / Former Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-076": {
       "a": "Slash",
@@ -797,7 +872,8 @@
       "n": "Hannyabal",
       "p": 5000,
       "s": "Impel Down",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-077": {
       "a": "Slash",
@@ -808,7 +884,8 @@
       "n": "Randolph",
       "p": 2000,
       "s": "Homies / Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-078": {
       "a": "Wisdom",
@@ -819,7 +896,8 @@
       "n": "Decuplets",
       "p": 6000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-079": {
       "c": "Purple",
@@ -827,7 +905,8 @@
       "kw": "-",
       "n": "When Two Men Are Fighting the Last Thing I Need Is Some Half-Hearted Assistance!!!!",
       "s": "Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP11-080": {
       "c": "Purple",
@@ -835,7 +914,8 @@
       "kw": "-",
       "n": "Gear Two",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP11-081": {
       "c": "Purple",
@@ -843,7 +923,8 @@
       "kw": "-",
       "n": "Cognac Mama-Mash",
       "s": "The Four Emperors / Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP11-082": {
       "a": "Special",
@@ -854,7 +935,8 @@
       "n": "Aramaki",
       "p": 2000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-083": {
       "a": "Special",
@@ -865,7 +947,8 @@
       "n": "Caribou",
       "p": 2000,
       "s": "Caribou Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-084": {
       "a": "Special",
@@ -876,7 +959,8 @@
       "n": "Kuzan",
       "p": 5000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-085": {
       "a": "Wisdom",
@@ -887,7 +971,8 @@
       "n": "Kurozumi Orochi",
       "p": 4000,
       "s": "Land of Wano / Kurozumi Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-086": {
       "a": "Strike",
@@ -898,7 +983,8 @@
       "n": "Coribou",
       "p": 5000,
       "s": "Caribou Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-087": {
       "a": "Wisdom",
@@ -909,7 +995,8 @@
       "n": "Miss Sarahebi",
       "p": 6000,
       "s": "Animal Kingdom Pirates / SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-088": {
       "a": "Special",
@@ -920,7 +1007,8 @@
       "n": "Shu",
       "p": 5000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-089": {
       "a": "Special",
@@ -931,7 +1019,8 @@
       "n": "Black Maria",
       "p": 7000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-090": {
       "a": "Strike",
@@ -942,7 +1031,8 @@
       "n": "Briscola",
       "p": 2000,
       "s": "Animal Kingdom Pirates / SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-091": {
       "a": "Special",
@@ -953,7 +1043,8 @@
       "n": "Berry Good",
       "p": 5000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-092": {
       "a": "Slash",
@@ -964,7 +1055,8 @@
       "n": "Helmeppo",
       "p": 7000,
       "s": "Navy / SWORD",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP11-093": {
       "a": "Slash",
@@ -975,7 +1067,8 @@
       "n": "Bogard",
       "p": 7000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-094": {
       "a": "Slash",
@@ -986,7 +1079,8 @@
       "n": "Morgan",
       "p": 8000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-095": {
       "a": "Strike",
@@ -997,7 +1091,8 @@
       "n": "Monkey.D.Garp",
       "p": 8000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP11-096": {
       "a": "Wisdom",
@@ -1008,7 +1103,8 @@
       "n": "Ripper",
       "p": 1000,
       "s": "Navy / East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-097": {
       "c": "Black",
@@ -1016,7 +1112,8 @@
       "kw": "-",
       "n": "After All These Years I'm Losing My Edge!!!",
       "s": "Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP11-098": {
       "c": "Black",
@@ -1024,7 +1121,8 @@
       "kw": "-",
       "n": "Blue Hole",
       "s": "Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP11-099": {
       "c": "Black",
@@ -1032,7 +1130,8 @@
       "kw": "-",
       "n": "I'm Gonna Be a Navy Officer!!!",
       "s": "East Blue / Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP11-100": {
       "a": "Wisdom",
@@ -1042,7 +1141,8 @@
       "kw": "-",
       "n": "Otohime",
       "s": "Merfolk / Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-101": {
       "a": "Ranged",
@@ -1053,7 +1153,8 @@
       "n": "Capone\"Gang\"Bege",
       "p": 1000,
       "s": "Supernovas / Firetank Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP11-102": {
       "a": "Wisdom",
@@ -1064,7 +1165,8 @@
       "n": "Camie",
       "p": 1000,
       "s": "Merfolk / Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-103": {
       "a": "Strike",
@@ -1075,7 +1177,8 @@
       "n": "Long-Jaw Neptunian",
       "p": 7000,
       "s": "Neptunian",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-104": {
       "a": "Wisdom",
@@ -1086,7 +1189,8 @@
       "n": "Shirley",
       "p": 4000,
       "s": "Merfolk/Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-105": {
       "a": "Wisdom",
@@ -1097,7 +1201,8 @@
       "n": "Charlotte Chiffon",
       "p": 6000,
       "s": "Firetank Pirates / Former Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-106": {
       "a": "Special",
@@ -1108,7 +1213,8 @@
       "n": "Zeus",
       "p": 2000,
       "s": "Homies / Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-107": {
       "a": "Strike",
@@ -1119,7 +1225,8 @@
       "n": "Topknot Neptunian",
       "p": 6000,
       "s": "Neptunian",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-108": {
       "a": "Slash",
@@ -1130,7 +1237,8 @@
       "n": "Neptune",
       "p": 7000,
       "s": "Merfolk / Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP11-109": {
       "a": "Wisdom",
@@ -1140,7 +1248,8 @@
       "kw": "-",
       "n": "Pappag",
       "s": "Animal / Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-110": {
       "a": "Slash",
@@ -1151,7 +1260,8 @@
       "n": "Fukaboshi",
       "p": 5000,
       "s": "Merfolk / Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-111": {
       "a": "Slash",
@@ -1162,7 +1272,8 @@
       "n": "Mamboshi",
       "p": 7000,
       "s": "Merfolk / Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-112": {
       "a": "Wisdom",
@@ -1173,7 +1284,8 @@
       "n": "Megalo",
       "p": 2000,
       "s": "Animal / Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP11-113": {
       "a": "Slash",
@@ -1184,7 +1296,8 @@
       "n": "Ryuboshi",
       "p": 7000,
       "s": "Merfolk / Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP11-114": {
       "c": "Yellow",
@@ -1192,7 +1305,8 @@
       "kw": "-",
       "n": "Gum-Gum Fire-Fist Pistol Red Hawk",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP11-115": {
       "c": "Yellow",
@@ -1200,7 +1314,8 @@
       "kw": "-",
       "n": "You're Just Not My Type!",
       "s": "Merfolk / Fish-Man Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP11-116": {
       "c": "Yellow",
@@ -1208,7 +1323,8 @@
       "kw": "-",
       "n": "Merman Combat Ultramarine",
       "s": "Merfolk / Fish-Man Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP11-117": {
       "c": "Yellow",
@@ -1216,7 +1332,8 @@
       "kw": "-",
       "n": "Fish-Man Island",
       "s": "Fish-Man Island",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP11-118": {
       "a": "Strike",
@@ -1227,7 +1344,8 @@
       "n": "Monkey.D.Luffy",
       "p": 8000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     },
     "OP11-119": {
       "a": "Strike",
@@ -1238,7 +1356,8 @@
       "n": "Koby",
       "p": 9000,
       "s": "Navy / SWORD",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     }
   }
 }

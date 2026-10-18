@@ -9,7 +9,8 @@
       "n": "Koby",
       "p": 5000,
       "s": "Navy/SWORD",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "PRB02-002": {
       "a": "Slash",
@@ -20,7 +21,8 @@
       "n": "Trafalgar Law",
       "p": 7000,
       "s": "Punk Hazard/The Seven Warlords of the Sea/Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "PRB02-003": {
       "a": "Ranged",
@@ -31,7 +33,8 @@
       "n": "Lucky.Roux",
       "p": 2000,
       "s": "Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "PRB02-004": {
       "a": "Special",
@@ -42,7 +45,8 @@
       "n": "Jewelry Bonney",
       "p": 3000,
       "s": "Supernovas/Bonney Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "PRB02-005": {
       "a": "Strike",
@@ -53,7 +57,8 @@
       "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "Supernovas/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "PRB02-006": {
       "a": "Slash",
@@ -64,7 +69,8 @@
       "n": "Roronoa Zoro",
       "p": 4000,
       "s": "Supernovas/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "PRB02-007": {
       "a": "Strike",
@@ -75,7 +81,8 @@
       "n": "Jinbe",
       "p": 5000,
       "s": "Fish-Man/The Seven Warlords of the Sea/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "PRB02-008": {
       "a": "Special",
@@ -86,7 +93,8 @@
       "n": "Marco",
       "p": 6000,
       "s": "Land of Wano/Former Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "PRB02-009": {
       "a": "Special",
@@ -97,7 +105,8 @@
       "n": "Mr.3(Galdino)",
       "p": 1000,
       "s": "Cross Guild/Former Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "PRB02-010": {
       "a": "Wisdom",
@@ -108,7 +117,8 @@
       "n": "Charlotte Pudding",
       "p": 5000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "PRB02-011": {
       "a": "Special",
@@ -119,7 +129,8 @@
       "n": "Donquixote Doflamingo",
       "p": 6000,
       "s": "The Seven Warlords of the Sea/Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "PRB02-012": {
       "a": "Special",
@@ -130,7 +141,8 @@
       "n": "Nami",
       "p": 2000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "PRB02-013": {
       "a": "Special",
@@ -141,7 +153,8 @@
       "n": "Gecko Moria",
       "p": 7000,
       "s": "Thriller Bark Pirates/The Seven Warlords of the Sea",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "PRB02-014": {
       "a": "Special",
@@ -152,7 +165,8 @@
       "n": "Sabo",
       "p": 6000,
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "PRB02-015": {
       "a": "Slash",
@@ -163,7 +177,8 @@
       "n": "Shiryu",
       "p": 5000,
       "s": "Blackbeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "PRB02-016": {
       "a": "Special",
@@ -173,7 +188,8 @@
       "kw": "-",
       "n": "Otama",
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "PRB02-017": {
       "a": "Special",
@@ -184,7 +200,8 @@
       "n": "Boa Hancock",
       "p": 7000,
       "s": "FILM / The Seven Warlords of the Sea / Kuja Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "PRB02-018": {
       "a": "Special",
@@ -195,7 +212,8 @@
       "n": "Portgas.D.Ace",
       "p": 7000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     }
   }
 }

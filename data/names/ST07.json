@@ -8,7 +8,8 @@
       "n": "Charlotte Linlin",
       "p": 5000,
       "s": "The Four Emperors / Big Mom Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "ST07-002": {
       "a": "Wisdom",
@@ -19,7 +20,8 @@
       "n": "Charlotte Anana",
       "p": 3000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST07-003": {
       "a": "Strike",
@@ -30,7 +32,8 @@
       "n": "Charlotte Katakuri",
       "p": 6000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST07-004": {
       "a": "Slash",
@@ -41,7 +44,8 @@
       "n": "Charlotte Snack",
       "p": 6000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST07-005": {
       "a": "Slash",
@@ -52,7 +56,8 @@
       "n": "Charlotte Daifuku",
       "p": 5000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST07-006": {
       "a": "Ranged",
@@ -63,7 +68,8 @@
       "n": "Charlotte Flampe",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST07-007": {
       "a": "Special",
@@ -74,7 +80,8 @@
       "n": "Charlotte Brulee",
       "p": 1000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST07-008": {
       "a": "Wisdom",
@@ -85,7 +92,8 @@
       "n": "Charlotte Pudding",
       "p": 3000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST07-009": {
       "a": "Special",
@@ -96,7 +104,8 @@
       "n": "Charlotte Mont-d'or",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST07-010": {
       "a": "Special",
@@ -107,7 +116,8 @@
       "n": "Charlotte Linlin",
       "p": 8000,
       "s": "The Four Emperors / Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST07-011": {
       "a": "Special",
@@ -118,7 +128,8 @@
       "n": "Zeus",
       "p": 3000,
       "s": "Big Mom Pirates / Homies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST07-012": {
       "a": "Strike",
@@ -129,7 +140,8 @@
       "n": "Baron Tamago",
       "p": 6000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST07-013": {
       "a": "Special",
@@ -140,7 +152,8 @@
       "n": "Prometheus",
       "p": 3000,
       "s": "Big Mom Pirates / Homies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST07-014": {
       "a": "Strike",
@@ -151,7 +164,8 @@
       "n": "Pekoms",
       "p": 5000,
       "s": "Minks / Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST07-015": {
       "c": "Yellow",
@@ -159,7 +173,8 @@
       "kw": "-",
       "n": "Soul Pocus",
       "s": "The Four Emperors / Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST07-016": {
       "c": "Yellow",
@@ -167,7 +182,8 @@
       "kw": "-",
       "n": "Power Mochi",
       "s": "Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST07-017": {
       "c": "Yellow",
@@ -175,7 +191,8 @@
       "kw": "-",
       "n": "Queen Mama Chanter",
       "s": "Big Mom Pirates / Homies",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     }
   }
 }

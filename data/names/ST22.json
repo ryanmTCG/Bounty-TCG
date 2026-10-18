@@ -8,7 +8,8 @@
       "n": "Ace & Newgate",
       "p": 5000,
       "s": "The Four Emperors/Whitebeard Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "ST22-002": {
       "a": "Ranged",
@@ -18,7 +19,8 @@
       "kw": "-",
       "n": "Izo",
       "s": "Land of Wano/Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST22-003": {
       "a": "Special",
@@ -29,7 +31,8 @@
       "n": "Edward.Newgate",
       "p": 10000,
       "s": "The Four Emperors/Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST22-004": {
       "a": "Strike",
@@ -40,7 +43,8 @@
       "n": "Elmy",
       "p": 5000,
       "s": "Whitebeard Pirates Allies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST22-005": {
       "a": "Slash",
@@ -51,7 +55,8 @@
       "n": "Kouzuki Oden",
       "p": 8000,
       "s": "Land of Wano / Kouzuki Clan / Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST22-006": {
       "a": "Strike",
@@ -62,7 +67,8 @@
       "n": "Jozu",
       "p": 8000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST22-007": {
       "a": "Slash",
@@ -73,7 +79,8 @@
       "n": "Squard",
       "p": 2000,
       "s": "Whitebeard Pirates Allies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST22-008": {
       "a": "Strike",
@@ -84,7 +91,8 @@
       "n": "Decalvan Brothers",
       "p": 4000,
       "s": "Whitebeard Pirates Allies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST22-009": {
       "a": "Slash",
@@ -95,7 +103,8 @@
       "n": "Vista",
       "p": 1000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST22-010": {
       "a": "Special",
@@ -106,7 +115,8 @@
       "n": "Portgas.D.Ace",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST22-011": {
       "a": "Slash",
@@ -117,7 +127,8 @@
       "n": "Whitey Bay",
       "p": 1000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST22-012": {
       "a": "Special",
@@ -128,7 +139,8 @@
       "n": "Marco",
       "p": 5000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST22-013": {
       "a": "Strike",
@@ -139,7 +151,8 @@
       "n": "LittleOars Jr.",
       "p": 7000,
       "s": "Giant/Whitebeard Pirates Allies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST22-014": {
       "a": "Slash",
@@ -150,7 +163,8 @@
       "n": "A.O.",
       "p": 6000,
       "s": "Whitebeard Pirates Allies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST22-015": {
       "c": "Blue",
@@ -158,7 +172,8 @@
       "kw": "-",
       "n": "I Am Whitebeard!!",
       "s": "The Four Emperors / Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST22-016": {
       "c": "Blue",
@@ -166,7 +181,8 @@
       "kw": "-",
       "n": "Take That Back!! Take Back What You Said!!",
       "s": "Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST22-017": {
       "c": "Blue",
@@ -174,7 +190,8 @@
       "kw": "-",
       "n": "Fire Fist",
       "s": "Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     }
   }
 }

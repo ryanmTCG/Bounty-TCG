@@ -8,7 +8,8 @@
       "n": "Uta",
       "p": 5000,
       "s": "FILM",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP06-002": {
       "a": "Slash",
@@ -19,7 +20,8 @@
       "n": "Inazuma",
       "p": 5000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-003": {
       "a": "Special",
@@ -30,7 +32,8 @@
       "n": "Emporio.Ivankov",
       "p": 6000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-004": {
       "a": "Ranged",
@@ -41,7 +44,8 @@
       "n": "Baron Omatsuri",
       "p": 3000,
       "s": "FILM / Omatsuri Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-005": {
       "a": "Special",
@@ -52,7 +56,8 @@
       "n": "Gasparde",
       "p": 8000,
       "s": "FILM / Former Navy / Gasparde Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-006": {
       "a": "Slash",
@@ -63,7 +68,8 @@
       "n": "Saga",
       "p": 5000,
       "s": "FILM / Asuka Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-007": {
       "a": "Slash",
@@ -74,7 +80,8 @@
       "n": "Shanks",
       "p": 12000,
       "s": "FILM / The Four Emperors / Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP06-008": {
       "a": "Wisdom",
@@ -85,7 +92,8 @@
       "n": "Schneider",
       "p": 5000,
       "s": "FILM / Mugiwara Chase",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-009": {
       "a": "Strike",
@@ -96,7 +104,8 @@
       "n": "Shuraiya",
       "p": 4000,
       "s": "FILM / Shipbuilding Town",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP06-010": {
       "a": "Strike",
@@ -107,7 +116,8 @@
       "n": "Douglas Bullet",
       "p": 7000,
       "s": "FILM / The Pirates Fest",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-011": {
       "a": "Special",
@@ -118,7 +128,8 @@
       "n": "Tot Musica",
       "p": 6000,
       "s": "FILM",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-012": {
       "a": "Strike",
@@ -129,7 +140,8 @@
       "n": "Bear.King",
       "p": 6000,
       "s": "FILM / Trump Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-013": {
       "a": "Strike",
@@ -140,7 +152,8 @@
       "n": "Monkey.D.Luffy",
       "p": 3000,
       "s": "FILM / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-014": {
       "a": "Wisdom",
@@ -150,7 +163,8 @@
       "kw": "-",
       "n": "Ratchet",
       "s": "FILM/Mecha Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-015": {
       "a": "Special",
@@ -160,7 +174,8 @@
       "kw": "-",
       "n": "Lily Carnation",
       "s": "FILM / Omatsuri Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-016": {
       "a": "Wisdom",
@@ -171,7 +186,8 @@
       "n": "Raise Max",
       "p": 2000,
       "s": "FILM / Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-017": {
       "c": "Red",
@@ -179,7 +195,8 @@
       "kw": "-",
       "n": "Meteor-Strike of Love",
       "s": "FILM / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP06-018": {
       "c": "Red",
@@ -187,7 +204,8 @@
       "kw": "-",
       "n": "Gum-Gum King Kong Gatling",
       "s": "FILM / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP06-019": {
       "c": "Red",
@@ -195,7 +213,8 @@
       "kw": "-",
       "n": "Blue Dragon Seal Water Stream",
       "s": "FILM / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP06-020": {
       "a": "Strike",
@@ -205,7 +224,8 @@
       "n": "Hody Jones",
       "p": 5000,
       "s": "Fish-Man / New Fish-Man Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP06-021": {
       "a": "Special",
@@ -215,7 +235,8 @@
       "n": "Perona",
       "p": 5000,
       "s": "Thriller Bark Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP06-022": {
       "a": "Strike",
@@ -225,7 +246,8 @@
       "n": "Yamato",
       "p": 5000,
       "s": "Land of Wano",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP06-023": {
       "a": "Slash",
@@ -236,7 +258,8 @@
       "n": "Arlong",
       "p": 6000,
       "s": "Fish-Man / East Blue / Arlong Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-024": {
       "a": "Slash",
@@ -247,7 +270,8 @@
       "n": "Ikaros Much",
       "p": 6000,
       "s": "Fish-Man / New Fish-Man Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-025": {
       "a": "Wisdom",
@@ -258,7 +282,8 @@
       "n": "Camie",
       "p": 2000,
       "s": "Merfolk",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-026": {
       "a": "Slash",
@@ -268,7 +293,8 @@
       "kw": "-",
       "n": "Koushirou",
       "s": "Frost Moon Village",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-027": {
       "a": "Slash",
@@ -279,7 +305,8 @@
       "n": "Gyro",
       "p": 2000,
       "s": "Gyro Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-028": {
       "a": "Wisdom",
@@ -290,7 +317,8 @@
       "n": "Zeo",
       "p": 3000,
       "s": "Fish-Man / New Fish-Man Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-029": {
       "a": "Slash",
@@ -301,7 +329,8 @@
       "n": "Daruma",
       "p": 4000,
       "s": "Fish-Man / New Fish-Man Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-030": {
       "a": "Strike",
@@ -312,7 +341,8 @@
       "n": "Dosun",
       "p": 4000,
       "s": "Fish-Man / New Fish-Man Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-031": {
       "a": "Slash",
@@ -323,7 +353,8 @@
       "n": "Hatchan",
       "p": 5000,
       "s": "Fish-Man / Former Arlong Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-032": {
       "a": "Ranged",
@@ -334,7 +365,8 @@
       "n": "Hammond",
       "p": 2000,
       "s": "Fish-Man / New Fish-Man Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-033": {
       "a": "Ranged",
@@ -345,7 +377,8 @@
       "n": "Vander Decken IX",
       "p": 2000,
       "s": "Fish-Man / Flying Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-034": {
       "a": "Slash",
@@ -356,7 +389,8 @@
       "n": "Hyouzou",
       "p": 6000,
       "s": "Fish-Man",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-035": {
       "a": "Strike",
@@ -367,7 +401,8 @@
       "n": "Hody Jones",
       "p": 8000,
       "s": "Fish-Man / New Fish-Man Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP06-036": {
       "a": "Slash",
@@ -378,7 +413,8 @@
       "n": "Ryuma",
       "p": 6000,
       "s": "Land of Wano/Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-037": {
       "a": "Strike",
@@ -389,7 +425,8 @@
       "n": "Wadatsumi",
       "p": 8000,
       "s": "Fish-Man / Flying Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-038": {
       "c": "Green",
@@ -397,7 +434,8 @@
       "kw": "-",
       "n": "The Billion-fold World Trichiliocosm",
       "s": "Straw Hat Crew/Dressrosa",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP06-039": {
       "c": "Green",
@@ -405,7 +443,8 @@
       "kw": "-",
       "n": "You Ain't Even Worth Killing Time!!",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP06-040": {
       "c": "Green",
@@ -413,7 +452,8 @@
       "kw": "-",
       "n": "Shark Arrows",
       "s": "Fish-Man / New Fish-Man Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP06-041": {
       "c": "Green",
@@ -421,7 +461,8 @@
       "kw": "-",
       "n": "The Ark Noah",
       "s": "Fish-Man Island",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP06-042": {
       "a": "Special",
@@ -432,7 +473,8 @@
       "n": "Vinsmoke Reiju",
       "p": 5000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP06-043": {
       "a": "Special",
@@ -443,7 +485,8 @@
       "n": "Aramaki",
       "p": 8000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP06-044": {
       "a": "Slash",
@@ -454,7 +497,8 @@
       "n": "Gion",
       "p": 5000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-045": {
       "a": "Special",
@@ -465,7 +509,8 @@
       "n": "Kuzan",
       "p": 5000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-046": {
       "a": "Special",
@@ -476,7 +521,8 @@
       "n": "Sakazuki",
       "p": 6000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-047": {
       "a": "Wisdom",
@@ -487,7 +533,8 @@
       "n": "Charlotte Pudding",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-048": {
       "a": "Strike",
@@ -498,7 +545,8 @@
       "n": "Zeff",
       "p": 3000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-049": {
       "a": "Strike",
@@ -509,7 +557,8 @@
       "n": "Sengoku",
       "p": 7000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-050": {
       "a": "Slash",
@@ -520,7 +569,8 @@
       "n": "Tashigi",
       "p": 2000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-051": {
       "a": "Special",
@@ -531,7 +581,8 @@
       "n": "Tsuru",
       "p": 4000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-052": {
       "a": "Strike",
@@ -542,7 +593,8 @@
       "n": "Tokikake",
       "p": 3000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-053": {
       "a": "Strike",
@@ -553,7 +605,8 @@
       "n": "Jaguar.D.Saul",
       "p": 3000,
       "s": "Giant / Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-054": {
       "a": "Special",
@@ -564,7 +617,8 @@
       "n": "Borsalino",
       "p": 4000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-055": {
       "a": "Strike",
@@ -575,7 +629,8 @@
       "n": "Monkey.D.Garp",
       "p": 7000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-056": {
       "c": "Blue",
@@ -583,7 +638,8 @@
       "kw": "-",
       "n": "Ama no Murakumo Sword",
       "s": "Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP06-057": {
       "c": "Blue",
@@ -591,7 +647,8 @@
       "kw": "-",
       "n": "But I Will Never Doubt a Woman's Tears!!!!",
       "s": "Dressrosa / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP06-058": {
       "c": "Blue",
@@ -599,7 +656,8 @@
       "kw": "-",
       "n": "Gravity Blade Raging Tiger",
       "s": "Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP06-059": {
       "c": "Blue",
@@ -607,7 +665,8 @@
       "kw": "-",
       "n": "White Snake",
       "s": "Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP06-060": {
       "a": "Strike",
@@ -618,7 +677,8 @@
       "n": "Vinsmoke Ichiji",
       "p": 4000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-061": {
       "a": "Strike",
@@ -629,7 +689,8 @@
       "n": "Vinsmoke Ichiji",
       "p": 7000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-062": {
       "a": "Slash",
@@ -640,7 +701,8 @@
       "n": "Vinsmoke Judge",
       "p": 8000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP06-063": {
       "a": "Wisdom",
@@ -650,7 +712,8 @@
       "kw": "-",
       "n": "Vinsmoke Sora",
       "s": "The Vinsmoke Family / Kingdom of GERMA",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-064": {
       "a": "Special",
@@ -661,7 +724,8 @@
       "n": "Vinsmoke Niji",
       "p": 3000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-065": {
       "a": "Special",
@@ -672,7 +736,8 @@
       "n": "Vinsmoke Niji",
       "p": 6000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-066": {
       "a": "Strike",
@@ -683,7 +748,8 @@
       "n": "Vinsmoke Yonji",
       "p": 2000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-067": {
       "a": "Strike",
@@ -694,7 +760,8 @@
       "n": "Vinsmoke Yonji",
       "p": 5000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-068": {
       "a": "Special",
@@ -705,7 +772,8 @@
       "n": "Vinsmoke Reiju",
       "p": 2000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-069": {
       "a": "Special",
@@ -716,7 +784,8 @@
       "n": "Vinsmoke Reiju",
       "p": 5000,
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP06-070": {
       "a": "Special",
@@ -727,7 +796,8 @@
       "n": "Eldoraggo",
       "p": 7000,
       "s": "FILM / Eldoraggo Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-071": {
       "a": "Special",
@@ -738,7 +808,8 @@
       "n": "Gild Tesoro",
       "p": 6000,
       "s": "FILM / Grantesoro",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-072": {
       "a": "Wisdom",
@@ -748,7 +819,8 @@
       "kw": "Blocker",
       "n": "Cosette",
       "s": "Kingdom of GERMA",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-073": {
       "a": "Special",
@@ -759,7 +831,8 @@
       "n": "Shiki",
       "p": 1000,
       "s": "FILM/Golden Lion Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-074": {
       "a": "Strike",
@@ -770,7 +843,8 @@
       "n": "Zephyr (Navy)",
       "p": 7000,
       "s": "FILM / Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-075": {
       "a": "Special",
@@ -781,7 +855,8 @@
       "n": "Count Battler",
       "p": 3000,
       "s": "FILM / Crown Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-076": {
       "a": "Slash",
@@ -792,7 +867,8 @@
       "n": "Hitokiri Kamazo",
       "p": 5000,
       "s": "Supernovas / Kid Pirates / SMILE",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-077": {
       "c": "Purple",
@@ -800,7 +876,8 @@
       "kw": "-",
       "n": "Black Bug",
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP06-078": {
       "c": "Purple",
@@ -808,7 +885,8 @@
       "kw": "-",
       "n": "GERMA 66",
       "s": "The Vinsmoke Family / GERMA 66",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP06-079": {
       "c": "Purple",
@@ -816,7 +894,8 @@
       "kw": "-",
       "n": "Kingdom of GERMA",
       "s": "Kingdom of GERMA",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP06-080": {
       "a": "Special",
@@ -826,7 +905,8 @@
       "n": "Gecko Moria",
       "p": 5000,
       "s": "The Seven Warlords of the Sea / Thriller Bark Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP06-081": {
       "a": "Ranged",
@@ -837,7 +917,8 @@
       "n": "Absalom",
       "p": 5000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-082": {
       "a": "Strike",
@@ -848,7 +929,8 @@
       "n": "Inuppe",
       "p": 3000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-083": {
       "a": "Strike",
@@ -859,7 +941,8 @@
       "n": "Oars",
       "p": 7000,
       "s": "Giant / Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-084": {
       "a": "Slash",
@@ -870,7 +953,8 @@
       "n": "Jigoro of the Wind",
       "p": 3000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-085": {
       "a": "Strike",
@@ -881,7 +965,8 @@
       "n": "Kumacy",
       "p": 3000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-086": {
       "a": "Special",
@@ -892,7 +977,8 @@
       "n": "Gecko Moria",
       "p": 9000,
       "s": "The Seven Warlords of the Sea / Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP06-087": {
       "a": "Strike",
@@ -903,7 +989,8 @@
       "n": "Cerberus",
       "p": 2000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-088": {
       "a": "Slash",
@@ -914,7 +1001,8 @@
       "n": "Sai",
       "p": 4000,
       "s": "Dressrosa / Happosui Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-089": {
       "a": "Special",
@@ -925,7 +1013,8 @@
       "n": "Taralan",
       "p": 3000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-090": {
       "a": "Wisdom",
@@ -936,7 +1025,8 @@
       "n": "Dr. Hogback",
       "p": 5000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-091": {
       "a": "Slash",
@@ -947,7 +1037,8 @@
       "n": "Victoria Cindry",
       "p": 2000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-092": {
       "a": "Slash",
@@ -958,7 +1049,8 @@
       "n": "Brook",
       "p": 6000,
       "s": "Former Rumbar Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-093": {
       "a": "Special",
@@ -969,7 +1061,8 @@
       "n": "Perona",
       "p": 5000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP06-094": {
       "a": "Slash",
@@ -980,7 +1073,8 @@
       "n": "Lola",
       "p": 6000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-095": {
       "c": "Black",
@@ -988,7 +1082,8 @@
       "kw": "-",
       "n": "Shadows Asgard",
       "s": "The Seven Warlords of the Sea / Thriller Bark Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP06-096": {
       "c": "Black",
@@ -996,7 +1091,8 @@
       "kw": "-",
       "n": "...Nothing...at All!!!",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP06-097": {
       "c": "Black",
@@ -1004,7 +1100,8 @@
       "kw": "-",
       "n": "Negative Hollow",
       "s": "Thriller Bark Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP06-098": {
       "c": "Black",
@@ -1012,7 +1109,8 @@
       "kw": "-",
       "n": "Thriller Bark",
       "s": "Thriller Bark Pirates",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP06-099": {
       "a": "Wisdom",
@@ -1022,7 +1120,8 @@
       "kw": "-",
       "n": "Aisa",
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-100": {
       "a": "Slash",
@@ -1033,7 +1132,8 @@
       "n": "Inuarashi",
       "p": 5000,
       "s": "Minks/Land of Wano/The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-101": {
       "a": "Special",
@@ -1044,7 +1144,8 @@
       "n": "O-Nami",
       "p": 3000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-102": {
       "a": "Slash",
@@ -1055,7 +1156,8 @@
       "n": "Kamakiri",
       "p": 4000,
       "s": "Sky Island / Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-103": {
       "a": "Slash",
@@ -1066,7 +1168,8 @@
       "n": "Kawamatsu",
       "p": 5000,
       "s": "Fish-Man / Land of Wano / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-104": {
       "a": "Slash",
@@ -1077,7 +1180,8 @@
       "n": "Kikunojo",
       "p": 6000,
       "s": "Land of Wano / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP06-105": {
       "a": "Ranged",
@@ -1088,7 +1192,8 @@
       "n": "Genbo",
       "p": 5000,
       "s": "Sky Island / Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-106": {
       "a": "Wisdom",
@@ -1098,7 +1203,8 @@
       "kw": "-",
       "n": "Kouzuki Hiyori",
       "s": "Land of Wano / Kouzuki Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP06-107": {
       "a": "Wisdom",
@@ -1109,7 +1215,8 @@
       "n": "Kouzuki Momonosuke",
       "p": 6000,
       "s": "Land of Wano / Kouzuki Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP06-108": {
       "a": "Wisdom",
@@ -1120,7 +1227,8 @@
       "n": "Tenguyama Hitetsu",
       "p": 2000,
       "s": "Land of Wano/Kouzuki Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-109": {
       "a": "Slash",
@@ -1131,7 +1239,8 @@
       "n": "Denjiro",
       "p": 6000,
       "s": "Land of Wano / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-110": {
       "a": "Slash",
@@ -1142,7 +1251,8 @@
       "n": "Nekomamushi",
       "p": 5000,
       "s": "Minks/Land of Wano/The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-111": {
       "a": "Ranged",
@@ -1153,7 +1263,8 @@
       "n": "Braham",
       "p": 4000,
       "s": "Sky Island / Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-112": {
       "a": "Slash",
@@ -1164,7 +1275,8 @@
       "n": "Raizo",
       "p": 4000,
       "s": "Land of Wano/The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-113": {
       "a": "Ranged",
@@ -1175,7 +1287,8 @@
       "n": "Raki",
       "p": 1000,
       "s": "Sky Island / Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP06-114": {
       "a": "Ranged",
@@ -1186,7 +1299,8 @@
       "n": "Wyper",
       "p": 7000,
       "s": "Sky Island / Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP06-115": {
       "c": "Yellow",
@@ -1194,7 +1308,8 @@
       "kw": "-",
       "n": "You're the One Who Should Disappear.",
       "s": "Sky Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP06-116": {
       "c": "Yellow",
@@ -1202,7 +1317,8 @@
       "kw": "-",
       "n": "Reject",
       "s": "Sky Island / Shandian Warrior",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP06-117": {
       "c": "Yellow",
@@ -1210,7 +1326,8 @@
       "kw": "-",
       "n": "The Ark Maxim",
       "s": "Sky Island",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP06-118": {
       "a": "Slash",
@@ -1221,7 +1338,8 @@
       "n": "Roronoa Zoro",
       "p": 9000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     },
     "OP06-119": {
       "a": "Strike",
@@ -1232,7 +1350,8 @@
       "n": "Sanji",
       "p": 9000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     }
   }
 }

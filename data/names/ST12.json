@@ -8,7 +8,8 @@
       "n": "Roronoa Zoro & Sanji",
       "p": 5000,
       "s": "Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "ST12-002": {
       "a": "Slash",
@@ -19,7 +20,8 @@
       "n": "Kuina",
       "p": 2000,
       "s": "Frost Moon Village",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST12-003": {
       "a": "Slash",
@@ -30,7 +32,8 @@
       "n": "Dracule Mihawk",
       "p": 4000,
       "s": "The Seven Warlords of the Sea / Muggy Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST12-004": {
       "a": "Wisdom",
@@ -41,7 +44,8 @@
       "n": "Humandrill",
       "p": 5000,
       "s": "Animal / Muggy Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST12-005": {
       "a": "Special",
@@ -52,7 +56,8 @@
       "n": "Perona",
       "p": 6000,
       "s": "Muggy Kingdom / Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST12-006": {
       "a": "Slash",
@@ -63,7 +68,8 @@
       "n": "Yosaku & Johnny",
       "p": 3000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST12-007": {
       "a": "Wisdom",
@@ -73,7 +79,8 @@
       "kw": "-",
       "n": "Rika",
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST12-008": {
       "a": "Slash",
@@ -84,7 +91,8 @@
       "n": "Roronoa Zoro",
       "p": 6000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST12-009": {
       "a": "Strike",
@@ -95,7 +103,8 @@
       "n": "Elephant True Bluefin",
       "p": 3000,
       "s": "Animal",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST12-010": {
       "a": "Special",
@@ -106,7 +115,8 @@
       "n": "Emporio.Ivankov",
       "p": 4000,
       "s": "Impel Down/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST12-011": {
       "a": "Strike",
@@ -117,7 +127,8 @@
       "n": "Sanji",
       "p": 3000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST12-012": {
       "a": "Wisdom",
@@ -128,7 +139,8 @@
       "n": "Charlotte Pudding",
       "p": 2000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST12-013": {
       "a": "Strike",
@@ -139,7 +151,8 @@
       "n": "Zeff",
       "p": 5000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST12-014": {
       "a": "Strike",
@@ -150,7 +163,8 @@
       "n": "Duval",
       "p": 1000,
       "s": "The Flying Fish Riders",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST12-015": {
       "a": "Slash",
@@ -161,7 +175,8 @@
       "n": "Patty & Carne",
       "p": 4000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST12-016": {
       "c": "Green",
@@ -169,7 +184,8 @@
       "kw": "-",
       "n": "Lion Strike",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST12-017": {
       "c": "Blue",
@@ -177,7 +193,8 @@
       "kw": "-",
       "n": "Plastic Surgery Shot",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     }
   }
 }

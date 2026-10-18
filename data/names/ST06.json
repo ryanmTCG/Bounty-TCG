@@ -8,7 +8,8 @@
       "n": "Sakazuki",
       "p": 5000,
       "s": "Navy",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "ST06-002": {
       "a": "Strike",
@@ -19,7 +20,8 @@
       "n": "Koby",
       "p": 2000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST06-003": {
       "a": "Slash",
@@ -30,7 +32,8 @@
       "n": "Jango",
       "p": 3000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST06-004": {
       "a": "Special",
@@ -41,7 +44,8 @@
       "n": "Smoker",
       "p": 7000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST06-005": {
       "a": "Wisdom",
@@ -52,7 +56,8 @@
       "n": "Sengoku",
       "p": 6000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST06-006": {
       "a": "Slash",
@@ -63,7 +68,8 @@
       "n": "Tashigi",
       "p": 4000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST06-007": {
       "a": "Wisdom",
@@ -74,7 +80,8 @@
       "n": "Tsuru",
       "p": 2000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST06-008": {
       "a": "Special",
@@ -85,7 +92,8 @@
       "n": "Hina",
       "p": 5000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST06-009": {
       "a": "Strike",
@@ -96,7 +104,8 @@
       "n": "Fullbody",
       "p": 4000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST06-010": {
       "a": "Slash",
@@ -107,7 +116,8 @@
       "n": "Helmeppo",
       "p": 3000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST06-011": {
       "a": "Slash",
@@ -118,7 +128,8 @@
       "n": "Momonga",
       "p": 6000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST06-012": {
       "a": "Strike",
@@ -129,7 +140,8 @@
       "n": "Monkey.D.Garp",
       "p": 6000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST06-013": {
       "a": "Slash",
@@ -140,7 +152,8 @@
       "n": "T-Bone",
       "p": 5000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST06-014": {
       "c": "Black",
@@ -148,7 +161,8 @@
       "kw": "-",
       "n": "Shockwave",
       "s": "Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST06-015": {
       "c": "Black",
@@ -156,7 +170,8 @@
       "kw": "-",
       "n": "Great Eruption",
       "s": "Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST06-016": {
       "c": "Black",
@@ -164,7 +179,8 @@
       "kw": "-",
       "n": "White Out",
       "s": "Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST06-017": {
       "c": "Black",
@@ -172,7 +188,8 @@
       "kw": "-",
       "n": "Navy HQ",
       "s": "Navy",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     }
   }
 }

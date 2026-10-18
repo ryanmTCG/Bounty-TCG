@@ -8,7 +8,8 @@
       "n": "Krieg",
       "p": 5000,
       "s": "East Blue/Krieg Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP15-002": {
       "a": "Strike",
@@ -18,7 +19,8 @@
       "n": "Lucy",
       "p": 5000,
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP15-003": {
       "a": "Strike",
@@ -29,7 +31,8 @@
       "n": "Alvida",
       "p": 6000,
       "s": "East Blue/Alvida Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-004": {
       "a": "Wisdom",
@@ -39,7 +42,8 @@
       "kw": "-",
       "n": "Sea Cat",
       "s": "Animal/Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-005": {
       "a": "Slash",
@@ -50,7 +54,8 @@
       "n": "Cabaji",
       "p": 3000,
       "s": "East Blue/Buggy Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-006": {
       "a": "Slash",
@@ -61,7 +66,8 @@
       "n": "Cavendish",
       "p": 4000,
       "s": "Dressrosa/Beautiful Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-007": {
       "a": "Strike",
@@ -72,7 +78,8 @@
       "n": "Gin",
       "p": 7000,
       "s": "East Blue/Krieg Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP15-008": {
       "a": "Slash",
@@ -83,7 +90,8 @@
       "n": "Krieg",
       "p": 9000,
       "s": "East Blue/Krieg Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP15-009": {
       "a": "Strike",
@@ -94,7 +102,8 @@
       "n": "Koby",
       "p": 2000,
       "s": "East Blue/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-010": {
       "a": "Strike",
@@ -105,7 +114,8 @@
       "n": "Nezumi",
       "p": 2000,
       "s": "East Blue/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-011": {
       "a": "Strike",
@@ -116,7 +126,8 @@
       "n": "Pearl",
       "p": 4000,
       "s": "East Blue/Krieg Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-012": {
       "a": "Slash",
@@ -127,7 +138,8 @@
       "n": "Buggy",
       "p": 4000,
       "s": "East Blue/Buggy Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-013": {
       "a": "Strike",
@@ -138,7 +150,8 @@
       "n": "Pincers",
       "p": 2000,
       "s": "Animal/Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-014": {
       "a": "Special",
@@ -149,7 +162,8 @@
       "n": "Bartolomeo",
       "p": 6000,
       "s": "Dressrosa/Barto Club",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-015": {
       "a": "Slash",
@@ -160,7 +174,8 @@
       "n": "Higuma",
       "p": 1000,
       "s": "East Blue/Mountain Bandits",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-016": {
       "a": "Strike",
@@ -171,7 +186,8 @@
       "n": "Fullbody",
       "p": 6000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-017": {
       "a": "Slash",
@@ -182,7 +198,8 @@
       "n": "Morgan",
       "p": 6000,
       "s": "East Blue/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-018": {
       "a": "Wisdom",
@@ -193,7 +210,8 @@
       "n": "Mohji",
       "p": 3000,
       "s": "East Blue/Buggy Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-019": {
       "c": "Red",
@@ -201,7 +219,8 @@
       "kw": "-",
       "n": "Barrier Bulls",
       "s": "Dressrosa/Barto Club",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP15-020": {
       "c": "Red",
@@ -209,7 +228,8 @@
       "kw": "-",
       "n": "Fire Fist",
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP15-021": {
       "c": "Red",
@@ -217,7 +237,8 @@
       "kw": "-",
       "n": "Just Watch Me, Ace!!!",
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP15-022": {
       "a": "Slash",
@@ -227,7 +248,8 @@
       "n": "Brook",
       "p": 5000,
       "s": "Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP15-023": {
       "c": "Green",
@@ -237,7 +259,8 @@
       "n": "Arlong",
       "p": 5000,
       "s": "Fish-Man/East Blue/Arlong Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-024": {
       "a": "Ranged",
@@ -248,7 +271,8 @@
       "n": "Usopp",
       "p": 5000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-025": {
       "a": "Slash",
@@ -259,7 +283,8 @@
       "n": "Kuro",
       "p": 7000,
       "s": "East Blue/Black Cat Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-026": {
       "a": "Slash",
@@ -270,7 +295,8 @@
       "n": "Jango",
       "p": 2000,
       "s": "East Blue/Black Cat Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-027": {
       "a": "Slash",
@@ -281,7 +307,8 @@
       "n": "Dracule Mihawk",
       "p": 5000,
       "s": "East Blue/The Seven Warlords of the Sea",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-028": {
       "a": "Slash",
@@ -292,7 +319,8 @@
       "n": "Meowban Brothers",
       "p": 2000,
       "s": "East Blue/Black Cat Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-029": {
       "a": "Strike",
@@ -303,7 +331,8 @@
       "n": "Bartholomew Kuma",
       "p": 5000,
       "s": "The Seven Warlords of the Sea/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-030": {
       "a": "Slash",
@@ -314,7 +343,8 @@
       "n": "Hyouzou",
       "p": 6000,
       "s": "Merfolk/Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-031": {
       "a": "Wisdom",
@@ -325,7 +355,8 @@
       "n": "Purinpurin",
       "p": 2000,
       "s": "East Blue/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-032": {
       "a": "Slash",
@@ -336,7 +367,8 @@
       "n": "Brook",
       "p": 6000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP15-033": {
       "a": "Strike",
@@ -347,7 +379,8 @@
       "n": "Hody Jones",
       "p": 5000,
       "s": "Fish-Man/Fish-Man Island/New Fish-Man Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-034": {
       "a": "Slash",
@@ -357,7 +390,8 @@
       "kw": "-",
       "n": "Yorki",
       "s": "Rumbar Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-035": {
       "a": "Strike",
@@ -368,7 +402,8 @@
       "n": "Laboon",
       "p": 2000,
       "s": "Animal",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-036": {
       "a": "Slash",
@@ -379,7 +414,8 @@
       "n": "Ryuma",
       "p": 8000,
       "s": "Land of Wano/Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-037": {
       "c": "Green",
@@ -387,7 +423,8 @@
       "kw": "-",
       "n": "The Outcome Will Tell Us Who's Strong and Who's Weak",
       "s": "East Blue/Krieg Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP15-038": {
       "c": "Green",
@@ -395,7 +432,8 @@
       "kw": "-",
       "n": "It's an Order! Do Not Defy Me!!!",
       "s": "East Blue/Krieg Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP15-039": {
       "a": "Wisdom",
@@ -405,7 +443,8 @@
       "n": "Rebecca",
       "p": 5000,
       "s": "Dressrosa",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP15-040": {
       "a": "Special",
@@ -416,7 +455,8 @@
       "n": "Viola",
       "p": 2000,
       "s": "Dressrosa/Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-041": {
       "a": "Strike",
@@ -427,7 +467,8 @@
       "n": "Orlumbus",
       "p": 4000,
       "s": "Dressrosa/Yonta Maria Fleet",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-042": {
       "a": "Slash",
@@ -438,7 +479,8 @@
       "n": "Kyros",
       "p": 5000,
       "s": "Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-043": {
       "a": "Strike",
@@ -449,7 +491,8 @@
       "n": "Kelly Funk",
       "p": 3000,
       "s": "Dressrosa/Mogaro Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-044": {
       "a": "Strike",
@@ -460,7 +503,8 @@
       "n": "Koala",
       "p": 2000,
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-045": {
       "a": "Slash",
@@ -471,7 +515,8 @@
       "n": "Sai",
       "p": 6000,
       "s": "Dressrosa/Happosui Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-046": {
       "a": "Special",
@@ -482,7 +527,8 @@
       "n": "Sabo",
       "p": 9000,
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP15-047": {
       "a": "Strike",
@@ -493,7 +539,8 @@
       "n": "Sanji",
       "p": 4000,
       "s": "Dressrosa/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-048": {
       "a": "Strike",
@@ -504,7 +551,8 @@
       "n": "Chinjao",
       "p": 5000,
       "s": "Dressrosa/Happosui Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-049": {
       "a": "Strike",
@@ -515,7 +563,8 @@
       "n": "Hajrudin",
       "p": 6000,
       "s": "Giant/Dressrosa/New Giant Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-050": {
       "a": "Strike",
@@ -526,7 +575,8 @@
       "n": "Bobby Funk",
       "p": 3000,
       "s": "Dressrosa/Mogaro Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-051": {
       "a": "Strike",
@@ -537,7 +587,8 @@
       "n": "Monkey.D.Luffy",
       "p": 4000,
       "s": "Dressrosa/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-052": {
       "a": "Strike",
@@ -548,7 +599,8 @@
       "n": "Leo",
       "p": 2000,
       "s": "The Tontattas/Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-053": {
       "a": "Wisdom",
@@ -558,7 +610,8 @@
       "kw": "Blocker",
       "n": "Rebecca",
       "s": "Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP15-054": {
       "c": "Blue",
@@ -566,7 +619,8 @@
       "kw": "-",
       "n": "And No One Else Can Have It! It's Our Memento of Him",
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP15-055": {
       "c": "Blue",
@@ -574,7 +628,8 @@
       "kw": "Blocker",
       "n": "Go Ahead and Use 'Em, Mr. Luffy!!!",
       "s": "Dressrosa/Barto Club",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP15-056": {
       "c": "Blue",
@@ -582,7 +637,8 @@
       "kw": "Double Attack",
       "n": "Would You Let Me Eat the Flame-Flame Fruit?",
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP15-057": {
       "c": "Blue",
@@ -590,7 +646,8 @@
       "kw": "-",
       "n": "Dressrosa Kingdom",
       "s": "Dressrosa",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP15-058": {
       "a": "Special",
@@ -600,7 +657,8 @@
       "n": "Enel",
       "p": 5000,
       "s": "Sky Island",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP15-059": {
       "a": "Wisdom",
@@ -610,7 +668,8 @@
       "kw": "-",
       "n": "Amazon",
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-060": {
       "a": "Special",
@@ -621,7 +680,8 @@
       "n": "Enel",
       "p": 8000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP15-061": {
       "a": "Slash",
@@ -632,7 +692,8 @@
       "n": "Ohm",
       "p": 2000,
       "s": "Sky Island/Vassals",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-062": {
       "a": "Slash",
@@ -643,7 +704,8 @@
       "n": "Captain Seamars",
       "p": 6000,
       "s": "The Moon / Space Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-063": {
       "a": "Strike",
@@ -654,7 +716,8 @@
       "n": "Gedatsu",
       "p": 2000,
       "s": "Sky Island/Vassals",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-064": {
       "a": "Special",
@@ -665,7 +728,8 @@
       "n": "Kotori",
       "p": 2000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-065": {
       "a": "Wisdom",
@@ -675,7 +739,8 @@
       "kw": "-",
       "n": "Goro",
       "s": "Alabasta / Hot Springs Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-066": {
       "a": "Strike",
@@ -686,7 +751,8 @@
       "n": "Satori",
       "p": 2000,
       "s": "Sky Island/Vassals",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-067": {
       "a": "Slash",
@@ -697,7 +763,8 @@
       "n": "Shura",
       "p": 2000,
       "s": "Sky Island/Vassals",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-068": {
       "a": "Slash",
@@ -708,7 +775,8 @@
       "n": "Heavenly Warriors",
       "p": 1000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-069": {
       "a": "Strike",
@@ -719,7 +787,8 @@
       "n": "Nola",
       "p": 2000,
       "s": "Animal/Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-070": {
       "a": "Special",
@@ -730,7 +799,8 @@
       "n": "Fuza",
       "p": 4000,
       "s": "Animal/Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-071": {
       "a": "Strike",
@@ -741,7 +811,8 @@
       "n": "Holly",
       "p": 4000,
       "s": "Animal/Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-072": {
       "a": "Special",
@@ -752,7 +823,8 @@
       "n": "Hotori",
       "p": 2000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-073": {
       "a": "Slash",
@@ -763,7 +835,8 @@
       "n": "Yama",
       "p": 4000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-074": {
       "c": "Purple",
@@ -771,7 +844,8 @@
       "kw": "-",
       "n": "Varie",
       "s": "Sky Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP15-075": {
       "c": "Purple",
@@ -779,7 +853,8 @@
       "kw": "-",
       "n": "El Thor",
       "s": "Sky Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP15-076": {
       "c": "Purple",
@@ -787,7 +862,8 @@
       "kw": "-",
       "n": "Lightning Beast Kiten",
       "s": "Sky Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP15-077": {
       "c": "Purple",
@@ -795,7 +871,8 @@
       "kw": "-",
       "n": "Lightning Dragon",
       "s": "Sky Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP15-078": {
       "c": "Purple",
@@ -803,7 +880,8 @@
       "kw": "-",
       "n": "Mamaragan",
       "s": "Sky Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "SR"
     },
     "OP15-079": {
       "a": "Ranged",
@@ -814,7 +892,8 @@
       "n": "Absalom",
       "p": 5000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-080": {
       "a": "Strike",
@@ -824,7 +903,8 @@
       "kw": "-",
       "n": "Oars",
       "s": "Giant/Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-081": {
       "c": "Black",
@@ -834,7 +914,8 @@
       "n": "Sanji",
       "p": 2000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-082": {
       "c": "Black",
@@ -844,7 +925,8 @@
       "n": "Charlotte Lola",
       "p": 5000,
       "s": "Rolling Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-083": {
       "c": "Black",
@@ -854,7 +936,8 @@
       "n": "Spoil",
       "p": 0,
       "s": "The Victims' Club",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-084": {
       "c": "Black",
@@ -864,7 +947,8 @@
       "n": "Dr. Hogback",
       "p": 2000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-085": {
       "c": "Black",
@@ -874,7 +958,8 @@
       "n": "Tony Tony.Chopper",
       "p": 2000,
       "s": "Animal/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-086": {
       "c": "Black",
@@ -883,7 +968,8 @@
       "n": "Nami",
       "p": 6000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP15-087": {
       "c": "Black",
@@ -892,7 +978,8 @@
       "n": "Nico Robin",
       "p": 7000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-088": {
       "c": "Black",
@@ -901,7 +988,8 @@
       "n": "Pirates Docking Six",
       "p": 7000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-089": {
       "c": "Black",
@@ -911,7 +999,8 @@
       "n": "Franky",
       "p": 6000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-090": {
       "c": "Black",
@@ -921,7 +1010,8 @@
       "n": "Perona",
       "p": 2000,
       "s": "Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-091": {
       "c": "Black",
@@ -931,7 +1021,8 @@
       "n": "Margarita",
       "p": 0,
       "s": "The Owner of Cindry's Shadow",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-092": {
       "c": "Black",
@@ -941,7 +1032,8 @@
       "n": "Monkey.D.Luffy",
       "p": 7000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-093": {
       "c": "Black",
@@ -951,7 +1043,8 @@
       "n": "The Risky Brothers",
       "p": 2000,
       "s": "Rolling Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-094": {
       "c": "Black",
@@ -961,7 +1054,8 @@
       "n": "Roronoa Zoro",
       "p": 1000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-095": {
       "c": "Black",
@@ -970,7 +1064,8 @@
       "n": "Gum-Gum Storm",
       "p": 0,
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP15-096": {
       "c": "Black",
@@ -979,7 +1074,8 @@
       "n": "Swallow Bond en Avant",
       "p": 0,
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP15-097": {
       "c": "Black",
@@ -988,7 +1084,8 @@
       "n": "I Find It Embarrassing as a Human Being",
       "p": 0,
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP15-098": {
       "c": "Yellow",
@@ -997,7 +1094,8 @@
       "p": 5000,
       "s": "Sky Island/Straw Hat Crew",
       "t": "Leader",
-      "lf": 5
+      "lf": 5,
+      "r": "L"
     },
     "OP15-099": {
       "c": "Yellow",
@@ -1007,7 +1105,8 @@
       "n": "Urouge",
       "p": 7000,
       "s": "Sky Island/Supernovas/Fallen Monk Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-100": {
       "c": "Yellow",
@@ -1017,7 +1116,8 @@
       "n": "Kamakiri",
       "p": 6000,
       "s": "Sky Island/Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-101": {
       "c": "Yellow",
@@ -1026,7 +1126,8 @@
       "n": "Kalgara",
       "p": 5000,
       "s": "Jaya/Sky Island/Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-102": {
       "c": "Yellow",
@@ -1036,7 +1137,8 @@
       "n": "Gan.Fall",
       "p": 4000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-103": {
       "c": "Yellow",
@@ -1046,7 +1148,8 @@
       "n": "Genbo",
       "p": 4000,
       "s": "Sky Island/Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-104": {
       "c": "Yellow",
@@ -1056,7 +1159,8 @@
       "n": "Conis",
       "p": 0,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-105": {
       "c": "Yellow",
@@ -1066,7 +1170,8 @@
       "n": "Jewelry Bonney",
       "p": 2000,
       "s": "Supernovas/Bonney Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-106": {
       "c": "Yellow",
@@ -1076,7 +1181,8 @@
       "n": "Octoballoon",
       "p": 0,
       "s": "Animal/Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-107": {
       "c": "Yellow",
@@ -1086,7 +1192,8 @@
       "n": "Tony Tony.Chopper",
       "p": 6000,
       "s": "Animal/Sky Island/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP15-108": {
       "c": "Yellow",
@@ -1096,7 +1203,8 @@
       "n": "Nami",
       "p": 2000,
       "s": "Sky Island/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-109": {
       "c": "Yellow",
@@ -1106,7 +1214,8 @@
       "n": "Nico Robin",
       "p": 7000,
       "s": "Sky Island/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP15-110": {
       "c": "Yellow",
@@ -1116,7 +1225,8 @@
       "n": "Braham",
       "p": 4000,
       "s": "Sky Island/Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-111": {
       "c": "Yellow",
@@ -1126,7 +1236,8 @@
       "n": "Mont Blanc Noland",
       "p": 5000,
       "s": "Jaya/Botanist",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-112": {
       "c": "Yellow",
@@ -1136,7 +1247,8 @@
       "n": "Raki",
       "p": 4000,
       "s": "Sky Island/Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP15-113": {
       "c": "Yellow",
@@ -1145,7 +1257,8 @@
       "n": "Roronoa Zoro",
       "p": 6000,
       "s": "Sky Island/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP15-114": {
       "c": "Yellow",
@@ -1155,7 +1268,8 @@
       "n": "Wyper",
       "p": 6000,
       "s": "Sky Island/Shandian Warrior",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP15-115": {
       "c": "Yellow",
@@ -1164,7 +1278,8 @@
       "n": "Impact Dial",
       "p": 0,
       "s": "Sky Island/Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP15-116": {
       "c": "Yellow",
@@ -1173,7 +1288,8 @@
       "n": "Gum-Gum Golden Rifle",
       "p": 0,
       "s": "Sky Island/Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP15-117": {
       "c": "Yellow",
@@ -1182,7 +1298,8 @@
       "n": "Heso!!",
       "p": 0,
       "s": "Sky Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP15-118": {
       "c": "Purple",
@@ -1191,7 +1308,8 @@
       "n": "Enel",
       "p": 8000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     },
     "OP15-119": {
       "c": "Yellow",
@@ -1200,7 +1318,8 @@
       "n": "Monkey.D.Luffy",
       "p": 7000,
       "s": "Sky Island/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     }
   }
 }

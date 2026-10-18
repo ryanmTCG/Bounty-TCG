@@ -9,7 +9,8 @@
       "n": "Capone\"Gang\"Bege",
       "p": 1000,
       "s": "Supernovas/Firetank Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST24-002": {
       "a": "Slash / Special",
@@ -20,7 +21,8 @@
       "n": "Kid & Killer",
       "p": 2000,
       "s": "Supernovas/Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST24-003": {
       "a": "Slash",
@@ -31,7 +33,8 @@
       "n": "Basil Hawkins",
       "p": 4000,
       "s": "Supernovas/Hawkins Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST24-004": {
       "a": "Slash / Strike",
@@ -42,7 +45,8 @@
       "n": "Law & Bepo",
       "p": 11000,
       "s": "Minks/Supernovas/Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST24-005": {
       "a": "Slash",
@@ -53,7 +57,8 @@
       "n": "X.Drake",
       "p": 5000,
       "s": "Supernovas/Navy/Drake Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     }
   }
 }

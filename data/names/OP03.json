@@ -8,7 +8,8 @@
       "n": "Portgas.D.Ace",
       "p": 5000,
       "s": "Whitebeard Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP03-002": {
       "a": "Ranged",
@@ -19,7 +20,8 @@
       "n": "Adio",
       "p": 5000,
       "s": "ODYSSEY",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-003": {
       "a": "Ranged",
@@ -30,7 +32,8 @@
       "n": "Izo",
       "p": 2000,
       "s": "Land of Wano / Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-004": {
       "a": "Ranged",
@@ -41,7 +44,8 @@
       "n": "Curiel",
       "p": 4000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-005": {
       "a": "Slash",
@@ -52,7 +56,8 @@
       "n": "Thatch",
       "p": 2000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-006": {
       "a": "Slash",
@@ -63,7 +68,8 @@
       "n": "Speed Jil",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-007": {
       "a": "Strike",
@@ -74,7 +80,8 @@
       "n": "Namule",
       "p": 5000,
       "s": "Fish-Man / Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-008": {
       "a": "Slash",
@@ -85,7 +92,8 @@
       "n": "Buggy",
       "p": 3000,
       "s": "Buggy Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-009": {
       "a": "Slash",
@@ -96,7 +104,8 @@
       "n": "Haruta",
       "p": 3000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-010": {
       "a": "Slash",
@@ -107,7 +116,8 @@
       "n": "Fossa",
       "p": 2000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-011": {
       "a": "Strike",
@@ -118,7 +128,8 @@
       "n": "Blamenco",
       "p": 3000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-012": {
       "a": "Strike",
@@ -129,7 +140,8 @@
       "n": "Marshall.D.Teach",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-013": {
       "a": "Special",
@@ -140,7 +152,8 @@
       "n": "Marco",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP03-014": {
       "a": "Strike",
@@ -151,7 +164,8 @@
       "n": "Monkey.D.Garp",
       "p": 5000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-015": {
       "a": "Wisdom",
@@ -162,7 +176,8 @@
       "n": "Lim",
       "p": 2000,
       "s": "ODYSSEY",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-016": {
       "c": "Red",
@@ -170,7 +185,8 @@
       "kw": "Double Attack",
       "n": "Flame Emperor",
       "s": "Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP03-017": {
       "c": "Red",
@@ -178,7 +194,8 @@
       "kw": "-",
       "n": "Cross Fire",
       "s": "Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP03-018": {
       "c": "Red",
@@ -186,7 +203,8 @@
       "kw": "-",
       "n": "Fire Fist",
       "s": "Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP03-019": {
       "c": "Red",
@@ -194,7 +212,8 @@
       "kw": "-",
       "n": "Fiery Doll",
       "s": "Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP03-020": {
       "c": "Red",
@@ -202,7 +221,8 @@
       "kw": "-",
       "n": "Striker",
       "s": "Whitebeard Pirates",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP03-021": {
       "a": "Slash",
@@ -212,7 +232,8 @@
       "n": "Kuro",
       "p": 5000,
       "s": "East Blue / Black Cat Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP03-022": {
       "a": "Slash",
@@ -222,7 +243,8 @@
       "n": "Arlong",
       "p": 5000,
       "s": "Fish-Man / East Blue / Arlong Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP03-023": {
       "a": "Strike",
@@ -233,7 +255,8 @@
       "n": "Alvida",
       "p": 3000,
       "s": "East Blue / Alvida Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-024": {
       "a": "Strike",
@@ -244,7 +267,8 @@
       "n": "Gin",
       "p": 5000,
       "s": "East Blue / Krieg Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-025": {
       "a": "Ranged",
@@ -255,7 +279,8 @@
       "n": "Krieg",
       "p": 7000,
       "s": "East Blue / Krieg Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP03-026": {
       "a": "Strike",
@@ -266,7 +291,8 @@
       "n": "Kuroobi",
       "p": 3000,
       "s": "Fish-Man / East Blue / Arlong Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-027": {
       "a": "Slash",
@@ -277,7 +303,8 @@
       "n": "Sham",
       "p": 4000,
       "s": "East Blue / Black Cat Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-028": {
       "a": "Special",
@@ -288,7 +315,8 @@
       "n": "Jango",
       "p": 6000,
       "s": "East Blue / Black Cat Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-029": {
       "a": "Ranged",
@@ -299,7 +327,8 @@
       "n": "Chew",
       "p": 3000,
       "s": "Fish-Man / East Blue / Arlong Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-030": {
       "a": "Wisdom",
@@ -310,7 +339,8 @@
       "n": "Nami",
       "p": 2000,
       "s": "East Blue / Arlong Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-031": {
       "a": "Strike",
@@ -321,7 +351,8 @@
       "n": "Pearl",
       "p": 2000,
       "s": "East Blue / Krieg Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-032": {
       "a": "Slash",
@@ -332,7 +363,8 @@
       "n": "Buggy",
       "p": 5000,
       "s": "East Blue / Buggy Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-033": {
       "a": "Slash",
@@ -343,7 +375,8 @@
       "n": "Hatchan",
       "p": 4000,
       "s": "Fish-Man / East Blue / Arlong Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-034": {
       "a": "Slash",
@@ -354,7 +387,8 @@
       "n": "Buchi",
       "p": 5000,
       "s": "East Blue / Black Cat Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-035": {
       "a": "Strike",
@@ -365,7 +399,8 @@
       "n": "Momoo",
       "p": 4000,
       "s": "Animal / East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-036": {
       "c": "Green",
@@ -373,7 +408,8 @@
       "kw": "-",
       "n": "Out-of-the-Bag",
       "s": "East Blue / Black Cat Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP03-037": {
       "c": "Green",
@@ -381,7 +417,8 @@
       "kw": "-",
       "n": "Tooth Attack",
       "s": "Fish-Man / East Blue / Arlong Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP03-038": {
       "c": "Green",
@@ -389,7 +426,8 @@
       "kw": "-",
       "n": "Deathly Poison Gas Bomb MH5",
       "s": "East Blue / Krieg Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP03-039": {
       "c": "Green",
@@ -397,7 +435,8 @@
       "kw": "-",
       "n": "One, Two, Jango",
       "s": "East Blue / Black Cat Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP03-040": {
       "a": "Wisdom",
@@ -407,7 +446,8 @@
       "n": "Nami",
       "p": 5000,
       "s": "East Blue",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP03-041": {
       "a": "Ranged",
@@ -418,7 +458,8 @@
       "n": "Usopp",
       "p": 5000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP03-042": {
       "a": "Wisdom",
@@ -428,7 +469,8 @@
       "kw": "-",
       "n": "Usopp's Pirate Crew",
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-043": {
       "a": "Wisdom",
@@ -438,7 +480,8 @@
       "kw": "-",
       "n": "Gaimon",
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-044": {
       "a": "Wisdom",
@@ -448,7 +491,8 @@
       "kw": "-",
       "n": "Kaya",
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-045": {
       "a": "Slash",
@@ -459,7 +503,8 @@
       "n": "Carne",
       "p": 3000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-046": {
       "a": "Wisdom",
@@ -470,7 +515,8 @@
       "n": "Genzo",
       "p": 4000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-047": {
       "a": "Strike",
@@ -481,7 +527,8 @@
       "n": "Zeff",
       "p": 6000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-048": {
       "a": "Wisdom",
@@ -491,7 +538,8 @@
       "kw": "-",
       "n": "Nojiko",
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-049": {
       "a": "Slash",
@@ -502,7 +550,8 @@
       "n": "Patty",
       "p": 5000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-050": {
       "a": "Wisdom",
@@ -512,7 +561,8 @@
       "kw": "Blocker",
       "n": "Boodle",
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-051": {
       "a": "Ranged",
@@ -523,7 +573,8 @@
       "n": "Bell-mère",
       "p": 5000,
       "s": "East Blue / Former Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-052": {
       "a": "Wisdom",
@@ -534,7 +585,8 @@
       "n": "Merry",
       "p": 3000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-053": {
       "a": "Slash",
@@ -545,7 +597,8 @@
       "n": "Yosaku & Johnny",
       "p": 3000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-054": {
       "c": "Blue",
@@ -553,7 +606,8 @@
       "kw": "-",
       "n": "Usopp's Rubber Band of Doom!!!",
       "s": "East Blue / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP03-055": {
       "c": "Blue",
@@ -561,7 +615,8 @@
       "kw": "-",
       "n": "Gum-Gum Giant Gavel",
       "s": "East Blue / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP03-056": {
       "c": "Blue",
@@ -569,7 +624,8 @@
       "kw": "-",
       "n": "Sanji's Pilaf",
       "s": "East Blue",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP03-057": {
       "c": "Blue",
@@ -577,7 +633,8 @@
       "kw": "-",
       "n": "Three Thousand Worlds",
       "s": "East Blue / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP03-058": {
       "a": "Wisdom",
@@ -587,7 +644,8 @@
       "n": "Iceburg",
       "p": 5000,
       "s": "Water Seven / Galley-La Company",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP03-059": {
       "a": "Slash",
@@ -598,7 +656,8 @@
       "n": "Kaku",
       "p": 6000,
       "s": "Water Seven / Galley-La Company",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-060": {
       "a": "Wisdom",
@@ -609,7 +668,8 @@
       "n": "Kalifa",
       "p": 4000,
       "s": "Water Seven / Galley-La Company",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-061": {
       "a": "Slash",
@@ -620,7 +680,8 @@
       "n": "Kiwi & Mozu",
       "p": 4000,
       "s": "Water Seven / The Franky Family",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-062": {
       "a": "Wisdom",
@@ -631,7 +692,8 @@
       "n": "Kokoro",
       "p": 2000,
       "s": "Merfolk / Water Seven",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-063": {
       "a": "Slash",
@@ -642,7 +704,8 @@
       "n": "Zambai",
       "p": 2000,
       "s": "Water Seven / The Franky Family",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-064": {
       "a": "Strike",
@@ -653,7 +716,8 @@
       "n": "Tilestone",
       "p": 6000,
       "s": "Water Seven / Galley-La Company",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-065": {
       "a": "Wisdom",
@@ -664,7 +728,8 @@
       "n": "Chimney & Gonbe",
       "p": 2000,
       "s": "Animal / Water Seven",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-066": {
       "a": "Strike",
@@ -675,7 +740,8 @@
       "n": "Paulie",
       "p": 6000,
       "s": "Water Seven / Galley-La Company",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP03-067": {
       "a": "Ranged",
@@ -686,7 +752,8 @@
       "n": "Peepley Lulu",
       "p": 5000,
       "s": "Water Seven / Galley-La Company",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-068": {
       "a": "Strike",
@@ -697,7 +764,8 @@
       "n": "Minozebra",
       "p": 5000,
       "s": "Impel Down / Jailer Beast",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-069": {
       "a": "Strike",
@@ -708,7 +776,8 @@
       "n": "Minorhinoceros",
       "p": 5000,
       "s": "Impel Down / Jailer Beast",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-070": {
       "a": "Strike",
@@ -719,7 +788,8 @@
       "n": "Monkey.D.Luffy",
       "p": 7000,
       "s": "Water Seven / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-071": {
       "a": "Strike",
@@ -730,7 +800,8 @@
       "n": "Rob Lucci",
       "p": 6000,
       "s": "Water Seven / Galley-La Company",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-072": {
       "c": "Purple",
@@ -738,7 +809,8 @@
       "kw": "-",
       "n": "Gum-Gum Jet Gatling",
       "s": "Water Seven / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP03-073": {
       "c": "Purple",
@@ -746,7 +818,8 @@
       "kw": "-",
       "n": "Hull Dismantler Slash",
       "s": "Water Seven / The Franky Family",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP03-074": {
       "c": "Purple",
@@ -754,7 +827,8 @@
       "kw": "-",
       "n": "Top Knot",
       "s": "Water Seven / Galley-La Company",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP03-075": {
       "c": "Purple",
@@ -762,7 +836,8 @@
       "kw": "-",
       "n": "Galley-La Company",
       "s": "Water Seven / Galley-La Company",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP03-076": {
       "a": "Strike",
@@ -772,7 +847,8 @@
       "n": "Rob Lucci",
       "p": 5000,
       "s": "CP9",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP03-077": {
       "a": "Special",
@@ -782,7 +858,8 @@
       "n": "Charlotte Linlin",
       "p": 5000,
       "s": "The Four Emperors / Big Mom Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP03-078": {
       "a": "Slash",
@@ -793,7 +870,8 @@
       "n": "Issho",
       "p": 9000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP03-079": {
       "a": "Strike",
@@ -804,7 +882,8 @@
       "n": "Vergo",
       "p": 5000,
       "s": "Navy / Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-080": {
       "a": "Slash",
@@ -815,7 +894,8 @@
       "n": "Kaku",
       "p": 6000,
       "s": "CP9",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP03-081": {
       "a": "Special",
@@ -826,7 +906,8 @@
       "n": "Kalifa",
       "p": 4000,
       "s": "CP9",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-082": {
       "a": "Strike",
@@ -837,7 +918,8 @@
       "n": "Kumadori",
       "p": 6000,
       "s": "CP9",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-083": {
       "a": "Wisdom",
@@ -847,7 +929,8 @@
       "kw": "-",
       "n": "Corgy",
       "s": "World Government",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-084": {
       "a": "Strike",
@@ -858,7 +941,8 @@
       "n": "Jerry",
       "p": 4000,
       "s": "CP6",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-085": {
       "a": "Strike",
@@ -869,7 +953,8 @@
       "n": "Jabra",
       "p": 7000,
       "s": "CP9",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-086": {
       "a": "Slash",
@@ -880,7 +965,8 @@
       "n": "Spandam",
       "p": 2000,
       "s": "CP9",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-087": {
       "a": "Ranged",
@@ -891,7 +977,8 @@
       "n": "Nero",
       "p": 5000,
       "s": "CP9",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-088": {
       "a": "Strike",
@@ -902,7 +989,8 @@
       "n": "Fukurou",
       "p": 3000,
       "s": "CP9",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-089": {
       "a": "Wisdom",
@@ -913,7 +1001,8 @@
       "n": "Brannew",
       "p": 3000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-090": {
       "a": "Strike",
@@ -924,7 +1013,8 @@
       "n": "Blueno",
       "p": 6000,
       "s": "CP9",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-091": {
       "a": "Wisdom",
@@ -934,7 +1024,8 @@
       "kw": "-",
       "n": "Helmeppo",
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-092": {
       "a": "Strike",
@@ -945,7 +1036,8 @@
       "n": "Rob Lucci",
       "p": 7000,
       "s": "CP9",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP03-093": {
       "a": "Slash",
@@ -956,7 +1048,8 @@
       "n": "Wanze",
       "p": 4000,
       "s": "CP7",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-094": {
       "c": "Black",
@@ -964,7 +1057,8 @@
       "kw": "-",
       "n": "Air Door",
       "s": "CP9",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP03-095": {
       "c": "Black",
@@ -972,7 +1066,8 @@
       "kw": "-",
       "n": "Soap Sheep",
       "s": "CP9",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP03-096": {
       "c": "Black",
@@ -980,7 +1075,8 @@
       "kw": "-",
       "n": "Tempest Kick Sky Slicer",
       "s": "CP9",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP03-097": {
       "c": "Black",
@@ -988,7 +1084,8 @@
       "kw": "-",
       "n": "Six King Pistol",
       "s": "CP9",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP03-098": {
       "c": "Black",
@@ -996,7 +1093,8 @@
       "kw": "-",
       "n": "Enies Lobby",
       "s": "World Government",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP03-099": {
       "a": "Strike",
@@ -1006,7 +1104,8 @@
       "n": "Charlotte Katakuri",
       "p": 5000,
       "s": "Big Mom Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP03-100": {
       "a": "Strike",
@@ -1017,7 +1116,8 @@
       "n": "Kingbaum",
       "p": 5000,
       "s": "Big Mom Pirates / Homies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-101": {
       "a": "Wisdom",
@@ -1028,7 +1128,8 @@
       "n": "Camie",
       "p": 3000,
       "s": "Merfolk",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-102": {
       "a": "Strike",
@@ -1039,7 +1140,8 @@
       "n": "Sanji",
       "p": 3000,
       "s": "The Vinsmoke Family",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-103": {
       "a": "Slash",
@@ -1050,7 +1152,8 @@
       "n": "Bobbin the Disposer",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-104": {
       "a": "Wisdom",
@@ -1061,7 +1164,8 @@
       "n": "Shirley",
       "p": 3000,
       "s": "Merfolk",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-105": {
       "a": "Special",
@@ -1072,7 +1176,8 @@
       "n": "Charlotte Oven",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-106": {
       "a": "Special",
@@ -1083,7 +1188,8 @@
       "n": "Charlotte Opera",
       "p": 6000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-107": {
       "a": "Special",
@@ -1094,7 +1200,8 @@
       "n": "Charlotte Galette",
       "p": 2000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-108": {
       "a": "Slash",
@@ -1105,7 +1212,8 @@
       "n": "Charlotte Cracker",
       "p": 5000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP03-109": {
       "a": "Wisdom",
@@ -1116,7 +1224,8 @@
       "n": "Charlotte Chiffon",
       "p": 3000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-110": {
       "a": "Special",
@@ -1127,7 +1236,8 @@
       "n": "Charlotte Smoothie",
       "p": 5000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-111": {
       "a": "Wisdom",
@@ -1138,7 +1248,8 @@
       "n": "Charlotte Praline",
       "p": 5000,
       "s": "Merfolk / The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP03-112": {
       "a": "Wisdom",
@@ -1149,7 +1260,8 @@
       "n": "Charlotte Pudding",
       "p": 2000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-113": {
       "a": "Special",
@@ -1160,7 +1272,8 @@
       "n": "Charlotte Perospero",
       "p": 5000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP03-114": {
       "a": "Special",
@@ -1171,7 +1284,8 @@
       "n": "Charlotte Linlin",
       "p": 12000,
       "s": "The Four Emperors / Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP03-115": {
       "a": "Slash",
@@ -1182,7 +1296,8 @@
       "n": "Streusen",
       "p": 1000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP03-116": {
       "a": "Wisdom",
@@ -1192,7 +1307,8 @@
       "kw": "-",
       "n": "Shirahoshi",
       "s": "Merfolk",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-117": {
       "a": "Slash",
@@ -1203,7 +1319,8 @@
       "n": "Napoleon",
       "p": 3000,
       "s": "Big Mom Pirates / Homies",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP03-118": {
       "c": "Yellow",
@@ -1211,7 +1328,8 @@
       "kw": "-",
       "n": "Ikoku Sovereignty",
       "s": "The Four Emperors / Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP03-119": {
       "c": "Yellow",
@@ -1219,7 +1337,8 @@
       "kw": "-",
       "n": "Buzz Cut Mochi",
       "s": "Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP03-120": {
       "c": "Yellow",
@@ -1227,7 +1346,8 @@
       "kw": "-",
       "n": "Tropical Torment",
       "s": "Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP03-121": {
       "c": "Yellow",
@@ -1235,7 +1355,8 @@
       "kw": "-",
       "n": "Thunder Bolt",
       "s": "The Four Emperors / Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP03-122": {
       "a": "Ranged",
@@ -1246,7 +1367,8 @@
       "n": "Sogeking",
       "p": 6000,
       "s": "Sniper Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     },
     "OP03-123": {
       "a": "Strike",
@@ -1257,7 +1379,8 @@
       "n": "Charlotte Katakuri",
       "p": 8000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     }
   }
 }

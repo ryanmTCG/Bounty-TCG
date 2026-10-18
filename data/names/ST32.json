@@ -9,7 +9,8 @@
       "n": "Kin'emon",
       "p": 2000,
       "s": "Land of Wano / The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST32-002": {
       "a": "Slash",
@@ -20,7 +21,8 @@
       "n": "Kouzuki Oden",
       "p": 6000,
       "s": "Land of Wano/Kouzuki Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST32-003": {
       "a": "Slash",
@@ -31,7 +33,8 @@
       "n": "Dracule Mihawk",
       "p": 7000,
       "s": "Muggy Kingdom/The Seven Warlords of the Sea",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST32-004": {
       "a": "Slash",
@@ -42,7 +45,8 @@
       "n": "Silvers Rayleigh",
       "p": 5000,
       "s": "Former Roger Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST32-005": {
       "a": "Slash",
@@ -53,7 +57,8 @@
       "n": "Roronoa Zoro",
       "p": 2000,
       "s": "Supernovas/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     }
   }
 }

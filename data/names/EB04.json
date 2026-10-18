@@ -8,7 +8,8 @@
       "n": "Jewelry Bonney",
       "p": 5000,
       "s": "Egghead/Bonney Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "EB04-002": {
       "a": "Special",
@@ -19,7 +20,8 @@
       "n": "Jewelry Bonney",
       "p": 2000,
       "s": "Egghead/Bonney Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-003": {
       "a": "Slash / Special",
@@ -30,7 +32,8 @@
       "n": "Smoker & Tashigi",
       "p": 8000,
       "s": "Punk Hazard/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-004": {
       "a": "Strike",
@@ -40,7 +43,8 @@
       "n": "Zeff",
       "p": 8000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-005": {
       "a": "Slash",
@@ -51,7 +55,8 @@
       "n": "Trafalgar Law",
       "p": 5000,
       "s": "The Seven Warlords of the Sea/Supernovas/Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-006": {
       "a": "Wisdom",
@@ -61,7 +66,8 @@
       "kw": "-",
       "n": "Moda",
       "s": "Lulucia Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-007": {
       "a": "Slash",
@@ -72,7 +78,8 @@
       "n": "Roronoa Zoro",
       "p": 9000,
       "s": "Egghead/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB04-008": {
       "c": "Red",
@@ -80,7 +87,8 @@
       "kw": "-",
       "n": "Distorted Future",
       "s": "Egghead/Bonney Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "EB04-009": {
       "c": "Red",
@@ -88,7 +96,8 @@
       "kw": "-",
       "n": "It's My Student's Farewell. I Want It to Be Proper.",
       "s": "Former Roger Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "EB04-010": {
       "c": "Red",
@@ -96,7 +105,8 @@
       "kw": "-",
       "n": "Lulucia Kingdom",
       "s": "Lulucia Kingdom",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "EB04-011": {
       "a": "Strike",
@@ -107,7 +117,8 @@
       "n": "Scaled Neptunian",
       "p": 8000,
       "s": "Neptunian",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-012": {
       "a": "Slash",
@@ -118,7 +129,8 @@
       "n": "Kikunojo",
       "p": 8000,
       "s": "Land of Wano/The Akazaya Nine",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB04-013": {
       "a": "Special",
@@ -129,7 +141,8 @@
       "n": "Carrot",
       "p": 9000,
       "s": "Minks",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB04-014": {
       "a": "Wisdom",
@@ -139,7 +152,8 @@
       "kw": "Blocker",
       "n": "Kozuki Sukiyaki",
       "s": "Land of Wano/Kouzuki Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-015": {
       "a": "Strike",
@@ -150,7 +164,8 @@
       "n": "Jinbe",
       "p": 8000,
       "s": "Fish-Man/Fish-Man Island/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-016": {
       "a": "Strike",
@@ -161,7 +176,8 @@
       "n": "Bird Neptunian",
       "p": 7000,
       "s": "Neptunian",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-017": {
       "a": "Strike",
@@ -172,7 +188,8 @@
       "n": "Mystoms",
       "p": 5000,
       "s": "Minks/Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-018": {
       "a": "Wisdom",
@@ -183,7 +200,8 @@
       "n": "Megalo",
       "p": 4000,
       "s": "Animal/Fish-Man Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-019": {
       "c": "Green",
@@ -191,7 +209,8 @@
       "kw": "-",
       "n": "Eleclaw",
       "s": "Minks",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "EB04-020": {
       "c": "Green",
@@ -199,7 +218,8 @@
       "kw": "-",
       "n": "Shark Brick Fist",
       "s": "Fish-Man/Fish-Man Island/The Sun Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "EB04-021": {
       "a": "Wisdom",
@@ -210,7 +230,8 @@
       "n": "Igaram",
       "p": 4000,
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-022": {
       "a": "Slash",
@@ -221,7 +242,8 @@
       "n": "Issho",
       "p": 7000,
       "s": "Dressrosa/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-023": {
       "a": "Slash",
@@ -232,7 +254,8 @@
       "n": "Chaka & Pell",
       "p": 9000,
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-024": {
       "a": "Wisdom",
@@ -242,7 +265,8 @@
       "kw": "Unblockable",
       "n": "Terracotta",
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-025": {
       "a": "Slash",
@@ -253,7 +277,8 @@
       "n": "Nefeltari Vivi",
       "p": 4000,
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB04-026": {
       "a": "Special",
@@ -264,7 +289,8 @@
       "n": "Bluegrass",
       "p": 6000,
       "s": "Egghead/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-027": {
       "a": "Special",
@@ -275,7 +301,8 @@
       "n": "Boa Hancock",
       "p": 7000,
       "s": "The Seven Warlords of the Sea/Kuja Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-028": {
       "c": "Blue",
@@ -283,7 +310,8 @@
       "kw": "-",
       "n": "Ice Time",
       "s": "Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "EB04-029": {
       "c": "Blue",
@@ -291,7 +319,8 @@
       "kw": "-",
       "n": "I Heard the Sound...of a Lady's Teardrops Falling",
       "s": "Punk Hazard/Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "EB04-030": {
       "a": "Strike",
@@ -302,7 +331,8 @@
       "n": "Kaido",
       "p": 9000,
       "s": "The Four Emperors/Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-031": {
       "a": "Special",
@@ -313,7 +343,8 @@
       "n": "King",
       "p": 7000,
       "s": "Lunarian/Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-032": {
       "a": "Strike",
@@ -324,7 +355,8 @@
       "n": "Queen",
       "p": 1000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-033": {
       "a": "Strike",
@@ -335,7 +367,8 @@
       "n": "Groggy Monsters",
       "p": 6000,
       "s": "Giant/Fish-Man/Foxy Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-034": {
       "a": "Wisdom",
@@ -346,7 +379,8 @@
       "n": "Charlotte Pudding",
       "p": 1000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-035": {
       "a": "Slash",
@@ -357,7 +391,8 @@
       "n": "Hitokiri Kamazo",
       "p": 4000,
       "s": "SMILE/Supernovas/Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-036": {
       "a": "Special",
@@ -368,7 +403,8 @@
       "n": "Foxy",
       "p": 9000,
       "s": "Foxy Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB04-037": {
       "a": "Wisdom",
@@ -379,7 +415,8 @@
       "n": "Porche",
       "p": 2000,
       "s": "Foxy Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-038": {
       "a": "Special / Wisdom",
@@ -390,7 +427,8 @@
       "n": "Rosinante & Law",
       "p": 8000,
       "s": "Navy/Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB04-039": {
       "a": "Special",
@@ -401,7 +439,8 @@
       "n": "Eustass\"Captain\"Kid",
       "p": 8000,
       "s": "Supernovas/Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-040": {
       "c": "Purple",
@@ -409,7 +448,8 @@
       "kw": "-",
       "n": "Flame Dragon Torch",
       "s": "The Four Emperors/Animal Kingdom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "EB04-041": {
       "c": "Purple",
@@ -417,7 +457,8 @@
       "kw": "-",
       "n": "Stealth Black",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "EB04-042": {
       "a": "Strike",
@@ -428,7 +469,8 @@
       "n": "Alpha",
       "p": 2000,
       "s": "CP8",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-043": {
       "a": "Slash",
@@ -439,7 +481,8 @@
       "n": "Kaku",
       "p": 4000,
       "s": "Egghead/CP0",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-044": {
       "a": "Strike",
@@ -450,7 +493,8 @@
       "n": "Koby",
       "p": 7000,
       "s": "Navy/SWORD",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB04-045": {
       "a": "Ranged",
@@ -461,7 +505,8 @@
       "n": "Ginny",
       "p": 2000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-046": {
       "a": "Strike",
@@ -472,7 +517,8 @@
       "n": "Doll",
       "p": 1000,
       "s": "Egghead/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-047": {
       "a": "Slash",
@@ -483,7 +529,8 @@
       "n": "Helmeppo",
       "p": 3000,
       "s": "Navy/SWORD",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-048": {
       "a": "Strike",
@@ -494,7 +541,8 @@
       "n": "Rob Lucci",
       "p": 6000,
       "s": "Egghead/CP0",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB04-049": {
       "c": "Black",
@@ -502,7 +550,8 @@
       "kw": "-",
       "n": "Finger Pistol Yellow Lotus",
       "s": "CP9",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "EB04-050": {
       "c": "Black",
@@ -510,7 +559,8 @@
       "kw": "-",
       "n": "I'll Whip You Into Shape. ♡",
       "s": "Navy/SWORD",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "EB04-051": {
       "a": "Strike",
@@ -521,7 +571,8 @@
       "n": "Emet",
       "p": 7000,
       "s": "Egghead",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-052": {
       "a": "Strike",
@@ -532,7 +583,8 @@
       "n": "Sanji",
       "p": 4000,
       "s": "Egghead/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-053": {
       "a": "Slash",
@@ -543,7 +595,8 @@
       "n": "Sentomaru",
       "p": 1000,
       "s": "Egghead/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-054": {
       "a": "Strike",
@@ -554,7 +607,8 @@
       "n": "Bartholomew Kuma",
       "p": 7000,
       "s": "Egghead/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "EB04-055": {
       "a": "Strike",
@@ -565,7 +619,8 @@
       "n": "Bartholomew Kuma",
       "p": 5000,
       "s": "The Seven Warlords of the Sea/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-056": {
       "a": "Special",
@@ -576,7 +631,8 @@
       "n": "Pacifista",
       "p": 1000,
       "s": "Biological Weapon/Egghead/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-057": {
       "a": "Wisdom",
@@ -586,7 +642,8 @@
       "kw": "Blocker",
       "n": "Vegapunk",
       "s": "Ohara/Scientist",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "EB04-058": {
       "a": "Special",
@@ -597,7 +654,8 @@
       "n": "Borsalino",
       "p": 6000,
       "s": "Egghead/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "EB04-059": {
       "c": "Yellow",
@@ -605,7 +663,8 @@
       "kw": "-",
       "n": "Black Rope Dragon Twister",
       "s": "Fish-Man Island/Supernovas/Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "EB04-060": {
       "c": "Yellow",
@@ -613,7 +672,8 @@
       "kw": "-",
       "n": "Gum-Gum Hawk Gatling",
       "s": "Egghead/The Four Emperors/Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "EB04-061": {
       "a": "Strike",
@@ -624,7 +684,8 @@
       "n": "Monkey.D.Luffy",
       "p": 12000,
       "s": "Egghead/The Four Emperors/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     }
   }
 }

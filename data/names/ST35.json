@@ -9,7 +9,8 @@
       "n": "Hack",
       "p": 4000,
       "s": "Fish-Man/Dressrosa/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST35-002": {
       "a": "Special",
@@ -20,7 +21,8 @@
       "n": "Lindbergh",
       "p": 4000,
       "s": "Minks/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST35-003": {
       "a": "Special",
@@ -31,7 +33,8 @@
       "n": "Karasu",
       "p": 4000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST35-004": {
       "a": "Strike",
@@ -42,7 +45,8 @@
       "n": "Koala",
       "p": 6000,
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST35-005": {
       "a": "Strike",
@@ -53,7 +57,8 @@
       "n": "Bartholomew Kuma",
       "p": 5000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     }
   }
 }

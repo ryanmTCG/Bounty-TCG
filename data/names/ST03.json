@@ -8,7 +8,8 @@
       "n": "Crocodile",
       "p": 5000,
       "s": "The Seven Warlords of the Sea / Baroque Works",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "ST03-002": {
       "a": "Slash",
@@ -19,7 +20,8 @@
       "n": "Edward Weevil",
       "p": 5000,
       "s": "The Seven Warlords of the Sea",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST03-003": {
       "a": "Special",
@@ -30,7 +32,8 @@
       "n": "Crocodile",
       "p": 6000,
       "s": "The Seven Warlords of the Sea / Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST03-004": {
       "a": "Special",
@@ -41,7 +44,8 @@
       "n": "Gecko Moria",
       "p": 5000,
       "s": "The Seven Warlords of the Sea / Thriller Bark Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST03-005": {
       "a": "Slash",
@@ -52,7 +56,8 @@
       "n": "Dracule Mihawk",
       "p": 5000,
       "s": "The Seven Warlords of the Sea",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST03-006": {
       "a": "Strike",
@@ -63,7 +68,8 @@
       "n": "Jinbe",
       "p": 4000,
       "s": "Fish-Man / The Seven Warlords of the Sea / The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST03-007": {
       "a": "Slash",
@@ -74,7 +80,8 @@
       "n": "Sentomaru",
       "p": 4000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST03-008": {
       "a": "Slash",
@@ -85,7 +92,8 @@
       "n": "Trafalgar Law",
       "p": 1000,
       "s": "The Seven Warlords of the Sea / Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST03-009": {
       "a": "Special",
@@ -96,7 +104,8 @@
       "n": "Donquixote Doflamingo",
       "p": 7000,
       "s": "The Seven Warlords of the Sea / Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST03-010": {
       "a": "Strike",
@@ -107,7 +116,8 @@
       "n": "Bartholomew Kuma",
       "p": 3000,
       "s": "The Seven Warlords of the Sea / Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST03-011": {
       "a": "Slash",
@@ -118,7 +128,8 @@
       "n": "Buggy",
       "p": 3000,
       "s": "The Seven Warlords of the Sea / Buggy's Delivery",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST03-012": {
       "a": "Special",
@@ -129,7 +140,8 @@
       "n": "Pacifista",
       "p": 6000,
       "s": "Biological Weapon / Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST03-013": {
       "a": "Special",
@@ -140,7 +152,8 @@
       "n": "Boa Hancock",
       "p": 1000,
       "s": "The Seven Warlords of the Sea / Kuja Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST03-014": {
       "a": "Special",
@@ -151,7 +164,8 @@
       "n": "Marshall.D.Teach",
       "p": 4000,
       "s": "The Seven Warlords of the Sea / Blackbeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST03-015": {
       "c": "Blue",
@@ -159,7 +173,8 @@
       "kw": "-",
       "n": "Sables",
       "s": "The Seven Warlords of the Sea / Baroque Works",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST03-016": {
       "c": "Blue",
@@ -167,7 +182,8 @@
       "kw": "-",
       "n": "Thrust Pad Cannon",
       "s": "The Seven Warlords of the Sea / Revolutionary Army",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST03-017": {
       "c": "Blue",
@@ -175,7 +191,8 @@
       "kw": "-",
       "n": "Love-Love Mellow",
       "s": "The Seven Warlords of the Sea / Kuja Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     }
   }
 }

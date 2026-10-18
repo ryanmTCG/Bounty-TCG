@@ -9,7 +9,8 @@
       "n": "Uta",
       "p": 6000,
       "s": "FILM",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST16-002": {
       "a": "Wisdom",
@@ -19,7 +20,8 @@
       "kw": "Blocker",
       "n": "Gordon",
       "s": "FILM",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST16-003": {
       "a": "Strike",
@@ -30,7 +32,8 @@
       "n": "Charlotte Katakuri",
       "p": 4000,
       "s": "FILM / Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST16-004": {
       "a": "Slash",
@@ -41,7 +44,8 @@
       "n": "Shanks",
       "p": 11000,
       "s": "FILM / The Four Emperors / Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST16-005": {
       "a": "Strike",
@@ -52,7 +56,8 @@
       "n": "Monkey.D.Luffy",
       "p": 3000,
       "s": "FILM / Supernovas / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     }
   }
 }

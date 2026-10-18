@@ -8,7 +8,8 @@
       "n": "Edward.Newgate",
       "p": 5000,
       "s": "The Four Emperors/Whitebeard Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP17-002": {
       "a": "Slash",
@@ -19,7 +20,8 @@
       "n": "Atmos",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-003": {
       "a": "Ranged",
@@ -30,7 +32,8 @@
       "n": "Izo",
       "p": 6000,
       "s": "Land of Wano/Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-004": {
       "a": "Slash",
@@ -41,7 +44,8 @@
       "n": "Inuarashi & Nekomamushi",
       "p": 2000,
       "s": "Minks/Land of Wano/Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-005": {
       "a": "Special",
@@ -52,7 +56,8 @@
       "n": "Edward.Newgate",
       "p": 12000,
       "s": "The Four Emperors/Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP17-006": {
       "a": "Strike",
@@ -63,7 +68,8 @@
       "n": "Kingdew",
       "p": 8000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-007": {
       "a": "Slash",
@@ -74,7 +80,8 @@
       "n": "Kouzuki Oden",
       "p": 8000,
       "s": "Land of Wano/Kouzuki Clan/Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-008": {
       "a": "Strike",
@@ -85,7 +92,8 @@
       "n": "Jozu",
       "p": 8000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-009": {
       "a": "Slash",
@@ -96,7 +104,8 @@
       "n": "Haruta",
       "p": 5000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-010": {
       "a": "Slash",
@@ -107,7 +116,8 @@
       "n": "Fossa",
       "p": 3000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-011": {
       "a": "Strike",
@@ -118,7 +128,8 @@
       "n": "Blamenco",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-012": {
       "a": "Slash",
@@ -129,7 +140,8 @@
       "n": "Blenheim",
       "p": 1000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-013": {
       "a": "Special",
@@ -140,7 +152,8 @@
       "n": "Portgas.D.Ace",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-014": {
       "a": "Slash",
@@ -151,7 +164,8 @@
       "n": "Whitey Bay",
       "p": 1000,
       "s": "Whitebeard Pirates Allies",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-015": {
       "a": "Special",
@@ -162,7 +176,8 @@
       "n": "Marco",
       "p": 6000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-016": {
       "a": "Strike",
@@ -173,7 +188,8 @@
       "n": "Rakuyo",
       "p": 2000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-017": {
       "c": "Red",
@@ -181,7 +197,8 @@
       "kw": "-",
       "n": "Ga Ha Ha Ha!!",
       "s": "The Four Emperors/Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP17-018": {
       "c": "Red",
@@ -189,7 +206,8 @@
       "kw": "-",
       "n": "The Power to Destroy the World",
       "s": "The Four Emperors/Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP17-019": {
       "c": "Red",
@@ -197,7 +215,8 @@
       "kw": "-",
       "n": "I Don't Have Time to Chat with Snot-Nosed Brats",
       "s": "The Four Emperors/Whitebeard Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP17-020": {
       "a": "Slash",
@@ -207,7 +226,8 @@
       "n": "Shanks",
       "p": 5000,
       "s": "The Four Emperors/Red-Haired Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP17-021": {
       "a": "Slash",
@@ -217,7 +237,8 @@
       "kw": "-",
       "n": "Crone Oli",
       "s": "Red-Haired Pirates Allies",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-022": {
       "a": "Slash",
@@ -228,7 +249,8 @@
       "n": "Shanks",
       "p": 12000,
       "s": "The Four Emperors/Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP17-023": {
       "a": "Wisdom",
@@ -239,7 +261,8 @@
       "n": "Nami",
       "p": 1000,
       "s": "East Blue/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-024": {
       "a": "Special",
@@ -250,7 +273,8 @@
       "n": "Howling Gab",
       "p": 8000,
       "s": "Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-025": {
       "a": "Slash",
@@ -261,7 +285,8 @@
       "n": "Building Snake",
       "p": 5000,
       "s": "Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-026": {
       "a": "Slash",
@@ -272,7 +297,8 @@
       "n": "Fugar",
       "p": 2000,
       "s": "Red-Haired Pirates Allies",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-027": {
       "a": "Ranged",
@@ -283,7 +309,8 @@
       "n": "Benn.Beckman",
       "p": 9000,
       "s": "Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-028": {
       "a": "Strike",
@@ -294,7 +321,8 @@
       "n": "Bonk Punch & Monster",
       "p": 3000,
       "s": "Animal/Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-029": {
       "a": "Strike",
@@ -305,7 +333,8 @@
       "n": "Hongo",
       "p": 4000,
       "s": "Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-030": {
       "a": "Strike",
@@ -316,7 +345,8 @@
       "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "East Blue/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-031": {
       "a": "Ranged",
@@ -327,7 +357,8 @@
       "n": "Yasopp",
       "p": 6000,
       "s": "Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP17-032": {
       "a": "Special",
@@ -338,7 +369,8 @@
       "n": "Limejuice",
       "p": 2000,
       "s": "Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-033": {
       "a": "Ranged",
@@ -349,7 +381,8 @@
       "n": "Lucky.Roux",
       "p": 5000,
       "s": "Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-034": {
       "a": "Slash",
@@ -360,7 +393,8 @@
       "n": "Rockstar",
       "p": 6000,
       "s": "Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-035": {
       "a": "Slash",
@@ -371,7 +405,8 @@
       "n": "Roronoa Zoro",
       "p": 8000,
       "s": "East Blue/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-036": {
       "c": "Green",
@@ -379,7 +414,8 @@
       "kw": "-",
       "n": "Withdraw Now and Allow Me to Save Face",
       "s": "The Four Emperors/Red-Haired Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP17-037": {
       "c": "Green",
@@ -387,7 +423,8 @@
       "kw": "-",
       "n": "Are You That Afraid of the New Era?!!",
       "s": "The Four Emperors/Red-Haired Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP17-038": {
       "c": "Green",
@@ -395,7 +432,8 @@
       "kw": "-",
       "n": "I Think He's Seen an Ugly Future...",
       "s": "Red-Haired Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP17-039": {
       "a": "Slash",
@@ -405,7 +443,8 @@
       "n": "Rocks.D.Xebec",
       "p": 5000,
       "s": "Rocks Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP17-040": {
       "a": "Special",
@@ -416,7 +455,8 @@
       "n": "Edward.Newgate",
       "p": 8000,
       "s": "Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-041": {
       "a": "Strike",
@@ -427,7 +467,8 @@
       "n": "Wang Zhi",
       "p": 6000,
       "s": "Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-042": {
       "a": "Strike",
@@ -438,7 +479,8 @@
       "n": "Kaido",
       "p": 6000,
       "s": "Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-043": {
       "a": "Special",
@@ -448,7 +490,8 @@
       "n": "Ganzui",
       "p": 7000,
       "s": "Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-044": {
       "a": "Special",
@@ -459,7 +502,8 @@
       "n": "Captain John",
       "p": 6000,
       "s": "Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-045": {
       "a": "Slash",
@@ -470,7 +514,8 @@
       "n": "Kyo",
       "p": 4000,
       "s": "Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-046": {
       "a": "Wisdom",
@@ -481,7 +526,8 @@
       "n": "Gloriosa",
       "p": 1000,
       "s": "Amazon Lily / Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP17-047": {
       "a": "Slash",
@@ -492,7 +538,8 @@
       "n": "Shiki",
       "p": 10000,
       "s": "FILM/Impel Down/Golden Lion Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-048": {
       "a": "Slash",
@@ -503,7 +550,8 @@
       "n": "Shiki",
       "p": 9000,
       "s": "Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP17-049": {
       "a": "Special",
@@ -514,7 +562,8 @@
       "n": "Charlotte Linlin",
       "p": 7000,
       "s": "Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-050": {
       "a": "Slash",
@@ -525,7 +574,8 @@
       "n": "Streusen",
       "p": 2000,
       "s": "Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-051": {
       "a": "Strike",
@@ -536,7 +586,8 @@
       "n": "Jinbe",
       "p": 8000,
       "s": "Fish-Man/Impel Down/The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-052": {
       "a": "Ranged",
@@ -547,7 +598,8 @@
       "n": "Don Marlon",
       "p": 5000,
       "s": "Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-053": {
       "a": "Strike",
@@ -558,7 +610,8 @@
       "n": "Barbell",
       "p": 7000,
       "s": "Fish-Man/Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-054": {
       "a": "Wisdom",
@@ -569,7 +622,8 @@
       "n": "Miss Buckingham Stussy",
       "p": 5000,
       "s": "Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-055": {
       "c": "Blue",
@@ -577,7 +631,8 @@
       "kw": "Unblockable",
       "n": "There's No Authority in the World That Lasts Forever!!!",
       "s": "Rocks Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP17-056": {
       "c": "Blue",
@@ -585,7 +640,8 @@
       "kw": "-",
       "n": "Rocks Pirates",
       "s": "Rocks Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP17-057": {
       "c": "Blue",
@@ -593,7 +649,8 @@
       "kw": "-",
       "n": "Fullalead",
       "s": "Rocks Pirates",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP17-058": {
       "a": "Special",
@@ -603,7 +660,8 @@
       "n": "Kaido",
       "p": 5000,
       "s": "The Four Emperors/Animal Kingdom Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP17-059": {
       "a": "Special",
@@ -614,7 +672,8 @@
       "n": "Aramaki",
       "p": 8000,
       "s": "Admiral/Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-060": {
       "a": "Strike",
@@ -625,7 +684,8 @@
       "n": "Ulti & Page One",
       "p": 6000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-061": {
       "a": "Strike / Special",
@@ -636,7 +696,8 @@
       "n": "Lead Performers",
       "p": 11000,
       "s": "Fish-Man/Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-062": {
       "a": "Strike",
@@ -647,7 +708,8 @@
       "n": "Kaido",
       "p": 12000,
       "s": "The Four Emperors/Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP17-063": {
       "a": "Strike",
@@ -658,7 +720,8 @@
       "n": "Kaido",
       "p": 12000,
       "s": "The Four Emperors/Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP17-064": {
       "a": "Special",
@@ -668,7 +731,8 @@
       "n": "King",
       "p": 10000,
       "s": "Lunarian/Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-065": {
       "a": "Strike",
@@ -679,7 +743,8 @@
       "n": "Queen",
       "p": 10000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-066": {
       "a": "Wisdom",
@@ -689,7 +754,8 @@
       "kw": "-",
       "n": "Kurozumi Orochi",
       "s": "Land of Wano/Kurozumi Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-067": {
       "a": "Slash",
@@ -700,7 +766,8 @@
       "n": "Kurozumi Kanjuro",
       "p": 3000,
       "s": "Land of Wano/Kurozumi Clan",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-068": {
       "a": "Slash",
@@ -711,7 +778,8 @@
       "n": "Sasaki",
       "p": 4000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-069": {
       "a": "Strike",
@@ -722,7 +790,8 @@
       "n": "Jack",
       "p": 10000,
       "s": "Fish-Man/Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-070": {
       "a": "Special",
@@ -733,7 +802,8 @@
       "n": "Scratchmen Apoo",
       "p": 7000,
       "s": "On-Air Pirates/Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-071": {
       "a": "Slash",
@@ -744,7 +814,8 @@
       "n": "Who's.Who",
       "p": 3000,
       "s": "Animal Kingdom Pirates/Former CP9",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-072": {
       "a": "Special",
@@ -755,7 +826,8 @@
       "n": "Black Maria",
       "p": 1000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-073": {
       "a": "Slash",
@@ -766,7 +838,8 @@
       "n": "Basil Hawkins",
       "p": 1000,
       "s": "Animal Kingdom Pirates/Hawkins Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-074": {
       "a": "Strike",
@@ -777,7 +850,8 @@
       "n": "Yamato",
       "p": 1000,
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-075": {
       "a": "Slash",
@@ -788,7 +862,8 @@
       "n": "X.Drake",
       "p": 2000,
       "s": "Navy/Drake Pirates/Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-076": {
       "c": "Purple",
@@ -796,7 +871,8 @@
       "kw": "-",
       "n": "Wo Ro Ro Ro Ro... I Think I've Sobered Up",
       "s": "The Four Emperors/Animal Kingdom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP17-077": {
       "c": "Purple",
@@ -804,7 +880,8 @@
       "kw": "-",
       "n": "Kundali Dragon Swarm",
       "s": "The Four Emperors/Animal Kingdom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP17-078": {
       "c": "Purple",
@@ -812,7 +889,8 @@
       "kw": "-",
       "n": "Drunken Dragon Bagua",
       "s": "The Four Emperors / Animal Kingdom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP17-079": {
       "a": "Strike",
@@ -822,7 +900,8 @@
       "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "Elbaph/The Four Emperors/Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP17-080": {
       "a": "Ranged",
@@ -833,7 +912,8 @@
       "n": "Usopp",
       "p": 2000,
       "s": "Elbaph/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP17-081": {
       "a": "Slash",
@@ -844,7 +924,8 @@
       "n": "Gerd",
       "p": 3000,
       "s": "Giant / Elbaph / New Giant Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-082": {
       "a": "Strike",
@@ -855,7 +936,8 @@
       "n": "Sanji",
       "p": 2000,
       "s": "Elbaph/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-083": {
       "a": "Strike",
@@ -866,7 +948,8 @@
       "n": "Jinbe",
       "p": 2000,
       "s": "Fish-Man/Elbaph/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-084": {
       "a": "Strike",
@@ -877,7 +960,8 @@
       "n": "Tony Tony.Chopper",
       "p": 2000,
       "s": "Animal/Elbaph/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-085": {
       "a": "Slash",
@@ -888,7 +972,8 @@
       "n": "Dorry",
       "p": 5000,
       "s": "Giant/Elbaph/Giant Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-086": {
       "a": "Special",
@@ -899,7 +984,8 @@
       "n": "Nami",
       "p": 2000,
       "s": "Elbaph/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-087": {
       "a": "Strike",
@@ -910,7 +996,8 @@
       "n": "Nico Robin",
       "p": 2000,
       "s": "Elbaph/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-088": {
       "a": "Strike",
@@ -921,7 +1008,8 @@
       "n": "Hajrudin",
       "p": 8000,
       "s": "Giant/Elbaph/New Giant Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-089": {
       "a": "Strike",
@@ -932,7 +1020,8 @@
       "n": "Jaguar.D.Saul",
       "p": 6000,
       "s": "Giant/Elbaph/Former Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-090": {
       "a": "Strike",
@@ -943,7 +1032,8 @@
       "n": "Franky",
       "p": 2000,
       "s": "Elbaph/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-091": {
       "a": "Slash",
@@ -954,7 +1044,8 @@
       "n": "Brook",
       "p": 2000,
       "s": "Elbaph/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-092": {
       "a": "Slash",
@@ -965,7 +1056,8 @@
       "n": "Brogy",
       "p": 5000,
       "s": "Giant/Elbaph/Giant Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-093": {
       "a": "Strike",
@@ -976,7 +1068,8 @@
       "n": "Monkey.D.Luffy",
       "p": 8000,
       "s": "Elbaph/The Four Emperors/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP17-094": {
       "a": "Slash",
@@ -987,7 +1080,8 @@
       "n": "Rodo",
       "p": 2000,
       "s": "Giant/Elbaph/New Giant Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-095": {
       "a": "Slash",
@@ -998,7 +1092,8 @@
       "n": "Roronoa Zoro",
       "p": 2000,
       "s": "Elbaph / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-096": {
       "c": "Black",
@@ -1006,7 +1101,8 @@
       "kw": "-",
       "n": "I'm Luffy!! The Man Who Will Be King of the Pirates!!",
       "s": "Elbaph/The Four Emperors/Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP17-097": {
       "c": "Black",
@@ -1014,7 +1110,8 @@
       "kw": "-",
       "n": "I'll Feed on This Rage and Use It to Bring the World to Ruin!!!",
       "s": "Giant/Elbaph",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP17-098": {
       "c": "Black",
@@ -1022,7 +1119,8 @@
       "kw": "-",
       "n": "Gum-Gum Kong Gun",
       "s": "Elbaph / The Four Emperors / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP17-099": {
       "c": "Yellow",
@@ -1031,7 +1129,8 @@
       "p": 5000,
       "s": "The Four Emperors/Big Mom Pirates",
       "t": "Leader",
-      "lf": 5
+      "lf": 5,
+      "r": "L"
     },
     "OP17-100": {
       "a": "Ranged",
@@ -1042,7 +1141,8 @@
       "n": "Capone\"Gang\"Bege",
       "p": 8000,
       "s": "Supernovas/Firetank Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-101": {
       "a": "Special",
@@ -1053,7 +1153,8 @@
       "n": "Caribou",
       "p": 6000,
       "s": "Supernovas/Caribou Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-102": {
       "a": "Special",
@@ -1064,7 +1165,8 @@
       "n": "Charlotte Oven",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-103": {
       "a": "Strike",
@@ -1075,7 +1177,8 @@
       "n": "Charlotte Katakuri",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-104": {
       "a": "Slash",
@@ -1086,7 +1189,8 @@
       "n": "Charlotte Cracker",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-105": {
       "a": "Wisdom",
@@ -1096,7 +1200,8 @@
       "kw": "-",
       "n": "Charlotte Chiffon",
       "s": "Firetank Pirates/Former Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-106": {
       "a": "Special",
@@ -1107,7 +1212,8 @@
       "n": "Charlotte Smoothie",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-107": {
       "a": "Slash",
@@ -1118,7 +1224,8 @@
       "n": "Charlotte Daifuku",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP17-108": {
       "a": "Special",
@@ -1129,7 +1236,8 @@
       "n": "Charlotte Brulee",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-109": {
       "a": "Wisdom",
@@ -1140,7 +1248,8 @@
       "n": "Charlotte Pudding",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-110": {
       "a": "Special",
@@ -1151,7 +1260,8 @@
       "n": "Charlotte Perospero",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-111": {
       "a": "Special",
@@ -1162,7 +1272,8 @@
       "n": "Charlotte Mont-d'or",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP17-112": {
       "a": "Special",
@@ -1173,7 +1284,8 @@
       "n": "Charlotte Linlin",
       "p": 12000,
       "s": "The Four Emperors/Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP17-113": {
       "a": "Slash",
@@ -1184,7 +1296,8 @@
       "n": "Streusen",
       "p": 2000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-114": {
       "a": "Slash / Strike",
@@ -1195,7 +1308,8 @@
       "n": "Sweet 3 Generals",
       "p": 4000,
       "s": "Big Mom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP17-115": {
       "c": "Yellow",
@@ -1203,7 +1317,8 @@
       "kw": "Unblockable",
       "n": "Don't you know that even in the cruel world of pirates there's still a code of honor?!!",
       "s": "The Four Emperors/Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP17-116": {
       "c": "Yellow",
@@ -1211,7 +1326,8 @@
       "kw": "-",
       "n": "Fulgora",
       "s": "The Four Emperors/Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP17-117": {
       "c": "Yellow",
@@ -1219,7 +1335,8 @@
       "kw": "-",
       "n": "Maser Saber",
       "s": "The Four Emperors/Big Mom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP17-118": {
       "a": "Slash",
@@ -1230,7 +1347,8 @@
       "n": "Rocks.D.Xebec",
       "p": 12000,
       "s": "Rocks Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     },
     "OP17-119": {
       "a": "Strike",
@@ -1241,7 +1359,8 @@
       "n": "Loki",
       "p": 8000,
       "s": "Giant/Elbaph",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     }
   }
 }

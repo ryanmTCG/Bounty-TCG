@@ -9,7 +9,8 @@
       "n": "Crocodile",
       "p": 5000,
       "s": "The Seven Warlords of the Sea/Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST17-002": {
       "a": "Slash",
@@ -20,7 +21,8 @@
       "n": "Trafalgar Law",
       "p": 5000,
       "s": "The Seven Warlords of the Sea / Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST17-003": {
       "a": "Slash",
@@ -31,7 +33,8 @@
       "n": "Buggy",
       "p": 2000,
       "s": "The Seven Warlords of the Sea / Buggy's Delivery",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST17-004": {
       "a": "Special",
@@ -42,7 +45,8 @@
       "n": "Boa Hancock",
       "p": 6000,
       "s": "The Seven Warlords of the Sea / Kuja Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST17-005": {
       "a": "Special",
@@ -53,7 +57,8 @@
       "n": "Marshall.D.Teach",
       "p": 3000,
       "s": "The Seven Warlords of the Sea / Blackbeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     }
   }
 }

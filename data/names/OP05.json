@@ -8,7 +8,8 @@
       "n": "Sabo",
       "p": 5000,
       "s": "Revolutionary Army",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP05-002": {
       "a": "Special",
@@ -18,7 +19,8 @@
       "n": "Belo Betty",
       "p": 5000,
       "s": "Revolutionary Army",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP05-003": {
       "a": "Slash",
@@ -29,7 +31,8 @@
       "n": "Inazuma",
       "p": 4000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-004": {
       "a": "Special",
@@ -40,7 +43,8 @@
       "n": "Emporio.Ivankov",
       "p": 5000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-005": {
       "a": "Special",
@@ -51,7 +55,8 @@
       "n": "Karasu",
       "p": 5000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-006": {
       "a": "Strike",
@@ -62,7 +67,8 @@
       "n": "Koala",
       "p": 3000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP05-007": {
       "a": "Special",
@@ -73,7 +79,8 @@
       "n": "Sabo",
       "p": 7000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP05-008": {
       "a": "Slash",
@@ -84,7 +91,8 @@
       "n": "Chaka",
       "p": 6000,
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-009": {
       "a": "Wisdom",
@@ -94,7 +102,8 @@
       "kw": "-",
       "n": "Toh-Toh",
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-010": {
       "a": "Strike",
@@ -105,7 +114,8 @@
       "n": "Nico Robin",
       "p": 2000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-011": {
       "a": "Strike",
@@ -116,7 +126,8 @@
       "n": "Bartholomew Kuma",
       "p": 2000,
       "s": "The Seven Warlords of the Sea / Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-012": {
       "a": "Strike",
@@ -127,7 +138,8 @@
       "n": "Hack",
       "p": 5000,
       "s": "Fish-Man / Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-013": {
       "a": "Ranged",
@@ -138,7 +150,8 @@
       "n": "Bunny Joe",
       "p": 2000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-014": {
       "a": "Slash",
@@ -149,7 +162,8 @@
       "n": "Pell",
       "p": 4000,
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-015": {
       "a": "Special",
@@ -160,7 +174,8 @@
       "n": "Belo Betty",
       "p": 2000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-016": {
       "a": "Special",
@@ -171,7 +186,8 @@
       "n": "Morley",
       "p": 5000,
       "s": "Giant / Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-017": {
       "a": "Special",
@@ -182,7 +198,8 @@
       "n": "Lindbergh",
       "p": 5000,
       "s": "Minks/Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-018": {
       "c": "Red",
@@ -190,7 +207,8 @@
       "kw": "-",
       "n": "Emporio Energy Hormone",
       "s": "Revolutionary Army",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP05-019": {
       "c": "Red",
@@ -198,7 +216,8 @@
       "kw": "-",
       "n": "Fire Fist",
       "s": "Revolutionary Army",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP05-020": {
       "c": "Red",
@@ -206,7 +225,8 @@
       "kw": "-",
       "n": "Four Thousand-Brick Fist",
       "s": "Fish-Man / Revolutionary Army",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP05-021": {
       "c": "Red",
@@ -214,7 +234,8 @@
       "kw": "-",
       "n": "Revolutionary Army HQ",
       "s": "Revolutionary Army",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "UC"
     },
     "OP05-022": {
       "a": "Special",
@@ -224,7 +245,8 @@
       "n": "Donquixote Rosinante",
       "p": 5000,
       "s": "Navy/Donquixote Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP05-023": {
       "a": "Strike",
@@ -235,7 +257,8 @@
       "n": "Vergo",
       "p": 4000,
       "s": "Navy/Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-024": {
       "a": "Strike",
@@ -246,7 +269,8 @@
       "n": "Kuween",
       "p": 2000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-025": {
       "a": "Special",
@@ -257,7 +281,8 @@
       "n": "Gladius",
       "p": 6000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-026": {
       "a": "Slash",
@@ -268,7 +293,8 @@
       "n": "Sarquiss",
       "p": 4000,
       "s": "Bellamy Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-027": {
       "a": "Wisdom",
@@ -279,7 +305,8 @@
       "n": "Trafalgar Law",
       "p": 2000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-028": {
       "a": "Ranged",
@@ -290,7 +317,8 @@
       "n": "Donquixote Doflamingo",
       "p": 2000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-029": {
       "a": "Special",
@@ -301,7 +329,8 @@
       "n": "Donquixote Doflamingo",
       "p": 8000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-030": {
       "a": "Special",
@@ -312,7 +341,8 @@
       "n": "Donquixote Rosinante",
       "p": 1000,
       "s": "Navy / Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-031": {
       "a": "Strike",
@@ -323,7 +353,8 @@
       "n": "Buffalo",
       "p": 4000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-032": {
       "a": "Strike",
@@ -334,7 +365,8 @@
       "n": "Pica",
       "p": 6000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP05-033": {
       "a": "Special",
@@ -345,7 +377,8 @@
       "n": "Baby 5",
       "p": 1000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-034": {
       "a": "Special",
@@ -356,7 +389,8 @@
       "n": "Baby 5",
       "p": 1000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-035": {
       "a": "Strike",
@@ -367,7 +401,8 @@
       "n": "Bellamy",
       "p": 5000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-036": {
       "a": "Special",
@@ -378,7 +413,8 @@
       "n": "Monet",
       "p": 1000,
       "s": "Donquixote Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-037": {
       "c": "Green",
@@ -386,7 +422,8 @@
       "kw": "-",
       "n": "Because the Side of Justice Will Be Whichever Side Wins!!",
       "s": "Donquixote Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP05-038": {
       "c": "Green",
@@ -394,7 +431,8 @@
       "kw": "-",
       "n": "Charlestone",
       "s": "Donquixote Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP05-039": {
       "c": "Green",
@@ -402,7 +440,8 @@
       "kw": "-",
       "n": "Stick-Stickem Meteora",
       "s": "Donquixote Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP05-040": {
       "c": "Green",
@@ -410,7 +449,8 @@
       "kw": "-",
       "n": "Birdcage",
       "s": "Donquixote Pirates",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP05-041": {
       "a": "Special",
@@ -420,7 +460,8 @@
       "n": "Sakazuki",
       "p": 5000,
       "s": "Navy",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP05-042": {
       "a": "Special",
@@ -431,7 +472,8 @@
       "n": "Issho",
       "p": 6000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-043": {
       "a": "Strike",
@@ -442,7 +484,8 @@
       "n": "Ulti",
       "p": 5000,
       "s": "Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP05-044": {
       "a": "Slash",
@@ -453,7 +496,8 @@
       "n": "John Giant",
       "p": 10000,
       "s": "Giant / Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-045": {
       "a": "Slash",
@@ -464,7 +508,8 @@
       "n": "Stainless",
       "p": 5000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-046": {
       "a": "Strike",
@@ -475,7 +520,8 @@
       "n": "Dalmatian",
       "p": 5000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-047": {
       "a": "Slash",
@@ -486,7 +532,8 @@
       "n": "Basil Hawkins",
       "p": 5000,
       "s": "Animal Kingdom Pirates/Hawkins Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-048": {
       "a": "Slash",
@@ -497,7 +544,8 @@
       "n": "Bastille",
       "p": 6000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-049": {
       "a": "Strike",
@@ -508,7 +556,8 @@
       "n": "Haccha",
       "p": 7000,
       "s": "Giant / Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-050": {
       "a": "Special",
@@ -519,7 +568,8 @@
       "n": "Hina",
       "p": 4000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-051": {
       "a": "Special",
@@ -530,7 +580,8 @@
       "n": "Borsalino",
       "p": 8000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP05-052": {
       "a": "Wisdom",
@@ -541,7 +592,8 @@
       "n": "Maynard",
       "p": 2000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-053": {
       "a": "Slash",
@@ -552,7 +604,8 @@
       "n": "Mozambia",
       "p": 2000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-054": {
       "a": "Strike",
@@ -563,7 +616,8 @@
       "n": "Monkey.D.Garp",
       "p": 3000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-055": {
       "a": "Slash",
@@ -574,7 +628,8 @@
       "n": "X.Drake",
       "p": 6000,
       "s": "Navy/Drake Pirates/Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-056": {
       "a": "Strike",
@@ -585,7 +640,8 @@
       "n": "X.Barrels",
       "p": 2000,
       "s": "Former Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-057": {
       "c": "Blue",
@@ -593,7 +649,8 @@
       "kw": "-",
       "n": "Hound Blaze",
       "s": "Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP05-058": {
       "c": "Blue",
@@ -601,7 +658,8 @@
       "kw": "-",
       "n": "It's a Waste of Human Life!!",
       "s": "Navy",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP05-059": {
       "c": "Blue",
@@ -609,7 +667,8 @@
       "kw": "-",
       "n": "Let Us Begin the World of Violence!!!",
       "s": "The Four Emperors / Animal Kingdom Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP05-060": {
       "a": "Strike",
@@ -619,7 +678,8 @@
       "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP05-061": {
       "a": "Ranged",
@@ -630,7 +690,8 @@
       "n": "Uso-Hachi",
       "p": 4000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-062": {
       "a": "Special",
@@ -641,7 +702,8 @@
       "n": "O-Nami",
       "p": 1000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-063": {
       "a": "Strike",
@@ -652,7 +714,8 @@
       "n": "O-Robi",
       "p": 5000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-064": {
       "a": "Slash",
@@ -663,7 +726,8 @@
       "n": "Killer",
       "p": 2000,
       "s": "Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-065": {
       "a": "Strike",
@@ -674,7 +738,8 @@
       "n": "San-Gorou",
       "p": 8000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-066": {
       "a": "Strike",
@@ -685,7 +750,8 @@
       "n": "Jinbe",
       "p": 6000,
       "s": "Fish-Man / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-067": {
       "a": "Slash",
@@ -696,7 +762,8 @@
       "n": "Zoro-Juurou",
       "p": 4000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-068": {
       "a": "Wisdom",
@@ -707,7 +774,8 @@
       "n": "Chopa-Emon",
       "p": 3000,
       "s": "Animal / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-069": {
       "a": "Slash",
@@ -718,7 +786,8 @@
       "n": "Trafalgar Law",
       "p": 5000,
       "s": "Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP05-070": {
       "a": "Strike",
@@ -729,7 +798,8 @@
       "n": "Fra-Nosuke",
       "p": 4000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-071": {
       "a": "Strike",
@@ -740,7 +810,8 @@
       "n": "Bepo",
       "p": 5000,
       "s": "Minks / Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-072": {
       "a": "Slash",
@@ -751,7 +822,8 @@
       "n": "Hone-Kichi",
       "p": 6000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-073": {
       "a": "Slash",
@@ -762,7 +834,8 @@
       "n": "Miss Doublefinger(Zala)",
       "p": 4000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-074": {
       "a": "Special",
@@ -773,7 +846,8 @@
       "n": "Eustass\"Captain\"Kid",
       "p": 6000,
       "s": "Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP05-075": {
       "a": "Slash",
@@ -784,7 +858,8 @@
       "n": "Mr.1(Daz.Bonez)",
       "p": 1000,
       "s": "Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-076": {
       "c": "Purple",
@@ -792,7 +867,8 @@
       "kw": "-",
       "n": "When You're at Sea You Fight against Pirates!!",
       "s": "Land of Wano",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP05-077": {
       "c": "Purple",
@@ -800,7 +876,8 @@
       "kw": "-",
       "n": "Gamma Knife",
       "s": "Heart Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP05-078": {
       "c": "Purple",
@@ -808,7 +885,8 @@
       "kw": "-",
       "n": "Punk Rotten",
       "s": "Kid Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP05-079": {
       "a": "Special",
@@ -819,7 +897,8 @@
       "n": "Viola",
       "p": 3000,
       "s": "Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-080": {
       "a": "Strike",
@@ -830,7 +909,8 @@
       "n": "Elizabello II",
       "p": 5000,
       "s": "Kingdom of Prodence / Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-081": {
       "a": "Strike",
@@ -840,7 +920,8 @@
       "kw": "-",
       "n": "One-Legged Toy Soldier",
       "s": "Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-082": {
       "a": "Wisdom",
@@ -850,7 +931,8 @@
       "kw": "-",
       "n": "Shirahoshi",
       "s": "Merfolk",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-083": {
       "a": "Wisdom",
@@ -861,7 +943,8 @@
       "n": "Sterry",
       "p": 4000,
       "s": "Goa Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-084": {
       "a": "Ranged",
@@ -871,7 +954,8 @@
       "kw": "-",
       "n": "Saint Charlos",
       "s": "Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-085": {
       "a": "Wisdom",
@@ -882,7 +966,8 @@
       "n": "Nefeltari Cobra",
       "p": 1000,
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-086": {
       "a": "Wisdom",
@@ -893,7 +978,8 @@
       "n": "Nefeltari Vivi",
       "p": 1000,
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-087": {
       "a": "Slash",
@@ -904,7 +990,8 @@
       "n": "Hakuba",
       "p": 6000,
       "s": "Dressrosa / Beautiful Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-088": {
       "a": "Special",
@@ -914,7 +1001,8 @@
       "kw": "-",
       "n": "Mansherry",
       "s": "The Tontattas / Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-089": {
       "a": "Wisdom",
@@ -925,7 +1013,8 @@
       "n": "Saint Mjosgard",
       "p": 1000,
       "s": "Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-090": {
       "a": "Wisdom",
@@ -936,7 +1025,8 @@
       "n": "Riku Doldo III",
       "p": 5000,
       "s": "Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-091": {
       "a": "Wisdom",
@@ -946,7 +1036,8 @@
       "kw": "Blocker",
       "n": "Rebecca",
       "s": "Dressrosa",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP05-092": {
       "a": "Ranged",
@@ -956,7 +1047,8 @@
       "kw": "-",
       "n": "Saint Rosward",
       "s": "Celestial Dragons",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-093": {
       "a": "Strike",
@@ -967,7 +1059,8 @@
       "n": "Rob Lucci",
       "p": 6000,
       "s": "CP0",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP05-094": {
       "c": "Black",
@@ -975,7 +1068,8 @@
       "kw": "-",
       "n": "Haute Couture Patch★Work",
       "s": "The Tontattas / Dressrosa",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP05-095": {
       "c": "Black",
@@ -983,7 +1077,8 @@
       "kw": "-",
       "n": "Dragon Claw",
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP05-096": {
       "c": "Black",
@@ -991,7 +1086,8 @@
       "kw": "-",
       "n": "I Bid 500 Million!!",
       "s": "Celestial Dragons",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP05-097": {
       "c": "Black",
@@ -999,7 +1095,8 @@
       "kw": "-",
       "n": "Mary Geoise",
       "s": "Mary Geoise",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     },
     "OP05-098": {
       "a": "Special",
@@ -1009,7 +1106,8 @@
       "n": "Enel",
       "p": 5000,
       "s": "Sky Island",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "OP05-099": {
       "a": "Wisdom",
@@ -1019,7 +1117,8 @@
       "kw": "-",
       "n": "Amazon",
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-100": {
       "a": "Special",
@@ -1030,7 +1129,8 @@
       "n": "Enel",
       "p": 7000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "OP05-101": {
       "a": "Slash",
@@ -1041,7 +1141,8 @@
       "n": "Ohm",
       "p": 5000,
       "s": "Sky Island / Vassals",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-102": {
       "a": "Strike",
@@ -1052,7 +1153,8 @@
       "n": "Gedatsu",
       "p": 6000,
       "s": "Sky Island / Vassals",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-103": {
       "a": "Special",
@@ -1063,7 +1165,8 @@
       "n": "Kotori",
       "p": 3000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-104": {
       "a": "Wisdom",
@@ -1073,7 +1176,8 @@
       "kw": "-",
       "n": "Conis",
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-105": {
       "a": "Strike",
@@ -1084,7 +1188,8 @@
       "n": "Satori",
       "p": 5000,
       "s": "Sky Island / Vassals",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-106": {
       "a": "Slash",
@@ -1095,7 +1200,8 @@
       "n": "Shura",
       "p": 2000,
       "s": "Sky Island / Vassals",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "OP05-107": {
       "a": "Ranged",
@@ -1106,7 +1212,8 @@
       "n": "Lieutenant Spacey",
       "p": 4000,
       "s": "The Moon",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-108": {
       "a": "Strike",
@@ -1117,7 +1224,8 @@
       "n": "Nola",
       "p": 7000,
       "s": "Animal / Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-109": {
       "a": "Wisdom",
@@ -1128,7 +1236,8 @@
       "n": "Pagaya",
       "p": 1000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-110": {
       "a": "Strike",
@@ -1139,7 +1248,8 @@
       "n": "Holly",
       "p": 5000,
       "s": "Animal/Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-111": {
       "a": "Special",
@@ -1150,7 +1260,8 @@
       "n": "Hotori",
       "p": 3000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "UC"
     },
     "OP05-112": {
       "a": "Wisdom",
@@ -1161,7 +1272,8 @@
       "n": "Captain McKinley",
       "p": 3000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-113": {
       "a": "Slash",
@@ -1172,7 +1284,8 @@
       "n": "Yama",
       "p": 2000,
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "OP05-114": {
       "c": "Yellow",
@@ -1180,7 +1293,8 @@
       "kw": "-",
       "n": "El Thor",
       "s": "Sky Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "UC"
     },
     "OP05-115": {
       "c": "Yellow",
@@ -1188,7 +1302,8 @@
       "kw": "-",
       "n": "Two-Hundred Million Volts Amaru",
       "s": "Sky Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "R"
     },
     "OP05-116": {
       "c": "Yellow",
@@ -1196,7 +1311,8 @@
       "kw": "-",
       "n": "Hino Bird Zap",
       "s": "Sky Island",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "OP05-117": {
       "c": "Yellow",
@@ -1204,7 +1320,8 @@
       "kw": "-",
       "n": "Upper Yard",
       "s": "Sky Island",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "UC"
     },
     "OP05-118": {
       "a": "Special",
@@ -1215,7 +1332,8 @@
       "n": "Kaido",
       "p": 12000,
       "s": "The Four Emperors / Animal Kingdom Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     },
     "OP05-119": {
       "a": "Strike",
@@ -1226,7 +1344,8 @@
       "n": "Monkey.D.Luffy",
       "p": 12000,
       "s": "The Four Emperors / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SEC"
     }
   }
 }

@@ -8,7 +8,8 @@
       "n": "Eustass\"Captain\"Kid",
       "p": 5000,
       "s": "Supernovas / Kid Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "ST02-002": {
       "a": "Ranged",
@@ -19,7 +20,8 @@
       "n": "Vito",
       "p": 5000,
       "s": "Firetank Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST02-003": {
       "a": "Strike",
@@ -30,7 +32,8 @@
       "n": "Urouge",
       "p": 3000,
       "s": "Supernovas / Fallen Monk Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST02-004": {
       "a": "Special",
@@ -41,7 +44,8 @@
       "n": "Capone\"Gang\"Bege",
       "p": 1000,
       "s": "Supernovas / Firetank Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST02-005": {
       "a": "Slash",
@@ -52,7 +56,8 @@
       "n": "Killer",
       "p": 3000,
       "s": "Supernovas / Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST02-006": {
       "a": "Strike",
@@ -63,7 +68,8 @@
       "n": "Koby",
       "p": 6000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST02-007": {
       "a": "Special",
@@ -74,7 +80,8 @@
       "n": "Jewelry Bonney",
       "p": 1000,
       "s": "Supernovas / Bonney Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST02-008": {
       "a": "Ranged",
@@ -85,7 +92,8 @@
       "n": "Scratchmen Apoo",
       "p": 3000,
       "s": "Supernovas / On-Air Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST02-009": {
       "a": "Slash",
@@ -96,7 +104,8 @@
       "n": "Trafalgar Law",
       "p": 6000,
       "s": "Supernovas / Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST02-010": {
       "a": "Slash",
@@ -107,7 +116,8 @@
       "n": "Basil Hawkins",
       "p": 6000,
       "s": "Supernovas / Hawkins Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST02-011": {
       "a": "Special",
@@ -118,7 +128,8 @@
       "n": "Heat",
       "p": 4000,
       "s": "Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST02-012": {
       "a": "Strike",
@@ -129,7 +140,8 @@
       "n": "Bepo",
       "p": 3000,
       "s": "Minks / Heart Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST02-013": {
       "a": "Special",
@@ -140,7 +152,8 @@
       "n": "Eustass\"Captain\"Kid",
       "p": 7000,
       "s": "Supernovas / Kid Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST02-014": {
       "a": "Slash",
@@ -151,7 +164,8 @@
       "n": "X.Drake",
       "p": 5000,
       "s": "Navy / Supernovas / Drake Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST02-015": {
       "c": "Green",
@@ -159,7 +173,8 @@
       "kw": "-",
       "n": "Scalpel",
       "s": "Supernovas / Heart Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST02-016": {
       "c": "Green",
@@ -167,7 +182,8 @@
       "kw": "-",
       "n": "Repel",
       "s": "Supernovas / Kid Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST02-017": {
       "c": "Green",
@@ -175,7 +191,8 @@
       "kw": "-",
       "n": "Straw Sword",
       "s": "Supernovas / Hawkins Pirates",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     }
   }
 }

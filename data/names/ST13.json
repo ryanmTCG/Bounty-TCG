@@ -8,7 +8,8 @@
       "n": "Sabo",
       "p": 5000,
       "s": "Dressrosa/Revolutionary Army",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "ST13-002": {
       "a": "Special",
@@ -18,7 +19,8 @@
       "n": "Portgas.D.Ace",
       "p": 5000,
       "s": "Whitebeard Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "ST13-003": {
       "a": "Strike",
@@ -28,7 +30,8 @@
       "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "Supernovas / Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "ST13-004": {
       "a": "Special",
@@ -39,7 +42,8 @@
       "n": "Edward.Newgate",
       "p": 7000,
       "s": "The Four Emperors / Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST13-005": {
       "a": "Special",
@@ -50,7 +54,8 @@
       "n": "Emporio.Ivankov",
       "p": 4000,
       "s": "Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "R"
     },
     "ST13-006": {
       "a": "Slash",
@@ -61,7 +66,8 @@
       "n": "Curly.Dadan",
       "p": 4000,
       "s": "Mountain Bandits",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST13-007": {
       "a": "Strike",
@@ -72,7 +78,8 @@
       "n": "Sabo",
       "p": 2000,
       "s": "Goa Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST13-008": {
       "a": "Special",
@@ -83,7 +90,8 @@
       "n": "Sabo",
       "p": 6000,
       "s": "Dressrosa / Revolutionary Army",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST13-009": {
       "a": "Slash",
@@ -94,7 +102,8 @@
       "n": "Shanks",
       "p": 7000,
       "s": "The Four Emperors / Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST13-010": {
       "a": "Strike",
@@ -105,7 +114,8 @@
       "n": "Portgas.D.Ace",
       "p": 2000,
       "s": "Goa Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST13-011": {
       "a": "Special",
@@ -116,7 +126,8 @@
       "n": "Portgas.D.Ace",
       "p": 7000,
       "s": "Whitebeard Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST13-012": {
       "a": "Wisdom",
@@ -126,7 +137,8 @@
       "kw": "-",
       "n": "Makino",
       "s": "Windmill Village",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST13-013": {
       "a": "Strike",
@@ -137,7 +149,8 @@
       "n": "Monkey.D.Garp",
       "p": 2000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST13-014": {
       "a": "Strike",
@@ -148,7 +161,8 @@
       "n": "Monkey.D.Luffy",
       "p": 2000,
       "s": "Goa Kingdom",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST13-015": {
       "a": "Strike",
@@ -159,7 +173,8 @@
       "n": "Monkey.D.Luffy",
       "p": 6000,
       "s": "Supernovas / Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST13-016": {
       "a": "Strike",
@@ -170,7 +185,8 @@
       "n": "Yamato",
       "p": 4000,
       "s": "Land of Wano",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST13-017": {
       "c": "Yellow",
@@ -178,7 +194,8 @@
       "kw": "-",
       "n": "Flame Dragon King",
       "s": "Revolutionary Army / Dressrosa",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST13-018": {
       "c": "Yellow",
@@ -186,7 +203,8 @@
       "kw": "-",
       "n": "Gum-Gum Jet Spear",
       "s": "Punk Hazard / Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST13-019": {
       "c": "Yellow",
@@ -194,7 +212,8 @@
       "kw": "-",
       "n": "The Three Brothers' Bond",
       "s": "Goa Kingdom",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     }
   }
 }

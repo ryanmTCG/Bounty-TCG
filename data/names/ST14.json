@@ -8,7 +8,8 @@
       "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "ST14-002": {
       "a": "Ranged",
@@ -19,7 +20,8 @@
       "n": "Usopp",
       "p": 4000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST14-003": {
       "a": "Strike",
@@ -30,7 +32,8 @@
       "n": "Sanji",
       "p": 6000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST14-004": {
       "a": "Strike",
@@ -41,7 +44,8 @@
       "n": "Jinbe",
       "p": 4000,
       "s": "Fish-Man / The Sun Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST14-005": {
       "a": "Wisdom",
@@ -52,7 +56,8 @@
       "n": "Tony Tony.Chopper",
       "p": 6000,
       "s": "Animal/Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST14-006": {
       "a": "Special",
@@ -63,7 +68,8 @@
       "n": "Nami",
       "p": 2000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST14-007": {
       "a": "Strike",
@@ -74,7 +80,8 @@
       "n": "Nico Robin",
       "p": 7000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST14-008": {
       "a": "Wisdom",
@@ -84,7 +91,8 @@
       "kw": "-",
       "n": "Haredas",
       "s": "Sky Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST14-009": {
       "a": "Special",
@@ -95,7 +103,8 @@
       "n": "Franky",
       "p": 6000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST14-010": {
       "a": "Slash",
@@ -106,7 +115,8 @@
       "n": "Brook",
       "p": 7000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST14-011": {
       "a": "Wisdom",
@@ -117,7 +127,8 @@
       "n": "Heracles",
       "p": 2000,
       "s": "Bowin Island",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST14-012": {
       "a": "Strike",
@@ -127,7 +138,8 @@
       "n": "Monkey.D.Luffy",
       "p": 10000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST14-013": {
       "a": "Slash",
@@ -138,7 +150,8 @@
       "n": "Roronoa Zoro",
       "p": 8000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST14-014": {
       "c": "Black",
@@ -146,7 +159,8 @@
       "kw": "-",
       "n": "Gum-Gum Giant Rifle",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST14-015": {
       "c": "Black",
@@ -154,7 +168,8 @@
       "kw": "-",
       "n": "Gum-Gum Diable Three-Swords Style Mouten Jet Six Hundred Pound Phoenix Cannon",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST14-016": {
       "c": "Black",
@@ -162,7 +177,8 @@
       "kw": "-",
       "n": "I Have My Crew!!",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST14-017": {
       "c": "Black",
@@ -170,7 +186,8 @@
       "kw": "-",
       "n": "Thousand Sunny",
       "s": "Straw Hat Crew",
-      "t": "Stage"
+      "t": "Stage",
+      "r": "C"
     }
   }
 }

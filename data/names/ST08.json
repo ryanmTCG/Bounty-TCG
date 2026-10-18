@@ -8,7 +8,8 @@
       "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "r": "L"
     },
     "ST08-002": {
       "a": "Special",
@@ -19,7 +20,8 @@
       "n": "Uta",
       "p": 3000,
       "s": "FILM",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST08-003": {
       "a": "Wisdom",
@@ -30,7 +32,8 @@
       "n": "Gaimon",
       "p": 4000,
       "s": "East Blue",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST08-004": {
       "a": "Strike",
@@ -41,7 +44,8 @@
       "n": "Koby",
       "p": 1000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST08-005": {
       "a": "Slash",
@@ -52,7 +56,8 @@
       "n": "Shanks",
       "p": 10000,
       "s": "Red-Haired Pirates",
-      "t": "Character"
+      "t": "Character",
+      "r": "SR"
     },
     "ST08-006": {
       "a": "Wisdom",
@@ -62,7 +67,8 @@
       "kw": "Blocker",
       "n": "Shirahoshi",
       "s": "Merfolk",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST08-007": {
       "a": "Slash",
@@ -73,7 +79,8 @@
       "n": "Nefeltari Vivi",
       "p": 1000,
       "s": "Alabasta",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST08-008": {
       "a": "Slash",
@@ -84,7 +91,8 @@
       "n": "Higuma",
       "p": 2000,
       "s": "Mountain Bandits",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST08-009": {
       "a": "Wisdom",
@@ -94,7 +102,8 @@
       "kw": "-",
       "n": "Makino",
       "s": "Windmill Village",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST08-010": {
       "a": "Strike",
@@ -105,7 +114,8 @@
       "n": "Monkey.D.Garp",
       "p": 7000,
       "s": "Navy",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST08-011": {
       "a": "Strike",
@@ -116,7 +126,8 @@
       "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "Straw Hat Crew",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST08-012": {
       "a": "Strike",
@@ -127,7 +138,8 @@
       "n": "Laboon",
       "p": 6000,
       "s": "Animal",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST08-013": {
       "a": "Strike",
@@ -138,7 +150,8 @@
       "n": "Mr.2.Bon.Kurei(Bentham)",
       "p": 6000,
       "s": "Former Baroque Works",
-      "t": "Character"
+      "t": "Character",
+      "r": "C"
     },
     "ST08-014": {
       "c": "Black",
@@ -146,7 +159,8 @@
       "kw": "-",
       "n": "Gum-Gum Bell",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     },
     "ST08-015": {
       "c": "Black",
@@ -154,7 +168,8 @@
       "kw": "-",
       "n": "Gum-Gum Pistol",
       "s": "Straw Hat Crew",
-      "t": "Event"
+      "t": "Event",
+      "r": "C"
     }
   }
 }

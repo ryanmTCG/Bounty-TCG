@@ -391,6 +391,14 @@ button,input,textarea,select{font:inherit;color:inherit}
 .turnbar [data-do="endturn"],.turnbar #startfb{flex-basis:100%}
 .qcbub{position:fixed;z-index:90;transform:translate(-50%,-100%);background:#FFF6E0;color:#12262D;border:3px solid #12262D;border-radius:18px;padding:8px 16px;font-weight:700;font-size:16px;box-shadow:0 5px 0 rgba(0,0,0,.4),0 12px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;max-width:min(80vw,360px);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qcbub.opp{transform:translate(-50%,0)}
+.slbtns{flex-wrap:wrap}
+.slpool{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;max-height:44vh;overflow:auto;padding:4px}
+.slc{position:relative;cursor:pointer;border-radius:8px;opacity:.75}
+.slc.in{opacity:1;outline:3px solid #F2B84B}
+.slc .card{width:100%;height:auto;aspect-ratio:63/88}
+.slc .sln{position:absolute;left:4px;bottom:4px;background:#12262D;color:#FFF6E0;border-radius:8px;padding:1px 6px;font-size:12px;font-weight:700}
+.slc .slr{position:absolute;right:4px;top:4px;background:#F2B84B;color:#12262D;border-radius:6px;padding:0 5px;font-size:11px;font-weight:800}
+.slc .slm{position:absolute;right:4px;bottom:4px;width:22px;height:22px;border-radius:50%;border:2px solid #12262D;background:#FFF6E0;color:#12262D;font-weight:900;line-height:1;padding:0;cursor:pointer}
 #specfeed{position:fixed;right:16px;top:66px;z-index:80;max-width:min(70vw,280px);background:rgba(10,24,30,.88);color:#FFF6E0;border:2px solid rgba(242,184,75,.55);border-radius:12px;padding:6px 10px;font-size:13px;pointer-events:none}
 #specfeed .sph{font-size:11px;opacity:.75;margin-bottom:2px}
 #specfeed p{margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -3949,6 +3957,13 @@ function closeModal(){ lobbyUnwatch(); modal = null; $("#modal").classList.remov
 function renderModal(){
   if (!modal || modal.type === "setup" || modal.type === "lobbies" || modal.type === "home" || modal.type === "art" || modal.type === "cardsdata" || modal.type === "reader") return;
   const close = `<div class="row end"><button class="btn" data-do="closemodal" type="button">Close</button></div>`;
+  if (modal.type === "sealed") {
+    const top = ($("#modal .sheet") || {}).scrollTop || 0;
+    showModal(sealedHTML()); $("#modal .sheet").scrollTop = top;
+    const ld = $("#sl-ld"); if (ld) ld.addEventListener("change", () => { SL.ld = ld.value; slStore(); renderModal(); });
+    const pool = $(".slpool"); if (pool) pool.addEventListener("contextmenu", e => { const c = e.target.closest(".slc"); if (!c) return; e.preventDefault(); slAction("slrem:" + c.dataset.do.slice(6)); });
+    return;
+  }
   if (modal.type === "trig") {
     showModal(`<h2>Trigger! ${esc(lab(modal.card))}</h2><p class="hint">This Life card has a [Trigger] ability:</p><p>${esc(modal.ab.text)}</p><div class="row end"><button class="btn" data-do="trigno" type="button">Keep in hand</button><button class="btn pri" data-do="trigyes" type="button">Activate [Trigger]</button></div>`);
     return;
@@ -4036,6 +4051,7 @@ function openHome(page){
       <button class="btn" data-do="home" type="button">Back</button>` : page === "practice" ? `
       <button class="btn pri" data-do="homebot" type="button">Play the computer</button>
       <button class="btn" data-do="puzzle" type="button">Daily lethal puzzle${pzKey().d === todayISO() ? " ✓" : ""}</button>
+      <button class="btn" data-do="sealed" type="button">Sealed packs</button>
       <button class="btn" data-do="tutorial" type="button">Learn to play</button>
       <button class="btn" data-do="homeboth" type="button" title="Play both sides yourself">Test a deck</button>
       <button class="btn" data-do="homeplay" type="button">Back</button>` : `
@@ -4186,8 +4202,118 @@ function newGame(c, join){
   S.phase = join ? "wait" : "pre"; undoStack = []; lastSnap = null;
   myLog = []; LOG = LOG.filter(e => !e.mine);
   addLog(`sat down with a ${cards.length}-card deck`);
-  if (cards.length !== 50) toast(`Your deck has ${cards.length} cards (the rules call for 50).`);
+  if (cards.length !== 50 && !c.sealed) toast(`Your deck has ${cards.length} cards (the rules call for 50).`);
   commit();
+}
+// ---------- sealed: open 6 packs of a set and build a deck from what you pull ----------
+// A pack is 12 cards: 7 Common, 3 Uncommon, 1 Rare and 1 hit (Secret Rare 1 in 25, Super Rare 1 in 3, else Rare), drawn
+// from the set's own cards by rarity (r in data/names). You pick any Leader from the set, and the deck is 30 to 50 cards
+// of your pool in any colors. The pool is kept in localStorage bounty:sealed {set, seed, pool, ld, dk} so it can be rebuilt.
+// Play the computer (which opens its own 6 packs of the set and builds with sealedAuto) or save it as a deck for Casual.
+const SL_PACKS = 6, SL_MIN = 30, SL_MAX = 50;
+let SL = null;
+function slSets(){
+  const by = {};
+  for (const [c, e] of CARDDB) { const set = c.split("-")[0]; if (!/^(OP|EB)\d{2}$/.test(set) || !e.r) continue; (by[set] = by[set] || {n: 0, ld: 0}); by[set].n++; if (e.t === "Leader") by[set].ld++; }
+  return Object.keys(by).filter(k => by[k].n >= 60 && by[k].ld >= 1 && legalOf(k + "-001") !== "pre").sort((a, b) => b.localeCompare(a));   // newest booster first, then the extra boosters
+}
+function slCards(set){
+  const g = {C: [], UC: [], R: [], SR: [], SEC: [], L: []};
+  for (const [c, e] of CARDDB) if (c.startsWith(set + "-") && g[e.r]) g[e.r].push(c);
+  for (const k in g) g[k].sort();
+  return g;
+}
+function slOpen(set, seed){
+  const g = slCards(set), rnd = pzRng("sl:" + set + ":" + seed), pick = a => a[Math.floor(rnd() * a.length)], out = [];
+  const any = [...g.C, ...g.UC, ...g.R];
+  for (let p = 0; p < SL_PACKS; p++) {
+    for (let i = 0; i < 7; i++) out.push(pick(g.C.length ? g.C : any));
+    for (let i = 0; i < 3; i++) out.push(pick(g.UC.length ? g.UC : any));
+    out.push(pick(g.R.length ? g.R : any));
+    const x = rnd();
+    out.push(x < 0.04 && g.SEC.length ? pick(g.SEC) : x < 0.37 && g.SR.length ? pick(g.SR) : pick(g.R.length ? g.R : any));
+  }
+  return out;
+}
+const slLeaders = set => slCards(set).L;
+// the computer's (and the Auto-build button's) deck: the Leader whose colors cover most of the pool, then its colors'
+// cards first (Characters before Events, a spread of costs), up to 40, topped up from the rest to 30
+function sealedAuto(set, pool){
+  const lds = slLeaders(set); if (!lds.length) return null;
+  const fits = (ld, c) => colorsOf(c).some(x => colorsOf(ld).includes(x));
+  const ld = lds.slice().sort((a, b) => pool.filter(c => fits(b, c)).length - pool.filter(c => fits(a, c)).length || a.localeCompare(b))[0];
+  const val = c => { const e = CARDDB.get(c) || {}; return (e.t === "Character" ? 3 : e.t === "Event" ? 1 : 0) + ((e.ctr || 0) > 0 ? 1 : 0) + (e.r === "SR" || e.r === "SEC" ? 2 : e.r === "R" ? 1 : 0); };
+  const on = pool.filter(c => fits(ld, c)).sort((a, b) => val(b) - val(a) || a.localeCompare(b)), off = pool.filter(c => !fits(ld, c)).sort((a, b) => val(b) - val(a) || a.localeCompare(b));
+  const deck = on.slice(0, 40); for (const c of off) { if (deck.length >= SL_MIN) break; deck.push(c); }
+  const dk = {}; for (const c of deck) dk[c] = (dk[c] || 0) + 1;
+  return {ld, dk};
+}
+const slCount = dk => Object.values(dk || {}).reduce((a, b) => a + b, 0);
+const slList = dk => Object.entries(dk || {}).filter(([, n]) => n > 0).map(([c, n]) => `${n}x${c}`).join("\n");
+function slLoad(){
+  try { const x = JSON.parse(localStorage.getItem("bounty:sealed") || "null"); if (!x || !/^(OP|EB)\d{2}$/.test(x.set) || !Array.isArray(x.pool)) return null;
+    const pool = x.pool.filter(c => typeof c === "string" && CARDDB.has(c)).slice(0, SL_PACKS * 12), have = {};
+    for (const c of pool) have[c] = (have[c] || 0) + 1;
+    const dk = {}; for (const [c, n] of Object.entries(x.dk || {})) if (have[c]) dk[c] = Math.max(0, Math.min(have[c], n | 0));
+    return {set: x.set, seed: x.seed | 0, pool, ld: slLeaders(x.set).includes(x.ld) ? x.ld : "", dk};
+  } catch (e) { return null; } }
+function slStore(){ try { localStorage.setItem("bounty:sealed", JSON.stringify(SL)); } catch (e) {} }
+function openSealed(){ if (!SL) SL = slLoad(); modal = {type: "sealed"}; renderModal(); }
+function sealedHTML(){
+  const back = '<button class="btn" data-do="homepractice" type="button">Back</button>';
+  const sets = slSets();
+  const pickSet = `<label for="sl-set">Set</label><select id="sl-set">${sets.map(k => `<option value="${k}"${SL && SL.set === k ? " selected" : ""}>${k}</option>`).join("")}</select>`;
+  if (!SL || !SL.pool.length) return `<h2>Sealed</h2><p>Open ${SL_PACKS} packs of a set and build a deck from what you pull. Pick any Leader from the set; the deck is ${SL_MIN} to ${SL_MAX} cards from your packs, in any colors.</p>
+    ${sets.length ? `<div class="row">${pickSet}<button class="btn pri" data-do="slopen" type="button">Open ${SL_PACKS} packs</button></div>` : '<p class="hint">The card list is still loading.</p>'}
+    <div class="row end">${back}</div>`;
+  const have = {}; for (const c of SL.pool) have[c] = (have[c] || 0) + 1;
+  const codes = Object.keys(have).sort((a, b) => { const x = CARDDB.get(a) || {}, y = CARDDB.get(b) || {}; return (x.c || "").localeCompare(y.c || "") || (x.k || 0) - (y.k || 0) || a.localeCompare(b); });
+  const n = slCount(SL.dk), ok = SL.ld && n >= SL_MIN && n <= SL_MAX;
+  const rar = c => (CARDDB.get(c) || {}).r || "";
+  return `<h2>Sealed: ${esc(SL.set)}</h2>
+    <div class="row"><label for="sl-ld">Leader</label><select id="sl-ld"><option value="">Pick a Leader from ${esc(SL.set)}</option>${slLeaders(SL.set).map(c => `<option value="${c}"${SL.ld === c ? " selected" : ""}>${esc(c + " " + nameOf(c))} (${esc((CARDDB.get(c) || {}).c || "")})</option>`).join("")}</select>
+      <span class="chip ${ok ? "good" : n > SL_MAX ? "bad" : ""}" id="sl-n">${n} cards (${SL_MIN} to ${SL_MAX})</span></div>
+    <p class="hint">Your ${SL.pool.length} cards. Click a card to put a copy in the deck, right-click (or the − ) to take one out.</p>
+    <div class="slpool">${codes.map(c => `<div class="slc${SL.dk[c] ? " in" : ""}" data-do="sladd:${c}" title="${esc(c + " " + nameOf(c))}">${tile({u: 0, c, n: nameOf(c)}, "", false, 0)}<span class="sln">${SL.dk[c] || 0}/${have[c]}</span>${rar(c) && rar(c) !== "C" && rar(c) !== "UC" ? `<span class="slr">${rar(c)}</span>` : ""}${SL.dk[c] ? `<button class="slm" data-do="slrem:${c}" type="button" aria-label="Take one out">−</button>` : ""}</div>`).join("")}</div>
+    <div class="row end slbtns">
+      <button class="btn" data-do="slauto" type="button">Auto-build</button>
+      <button class="btn" data-do="slclear" type="button">Clear deck</button>
+      <button class="btn" data-do="slnew" type="button">New packs</button>
+      <button class="btn" data-do="slsave" type="button"${ok ? "" : " disabled"}>Save as a deck</button>
+      <button class="btn pri" data-do="slplay" type="button"${ok ? "" : " disabled"}>Play the computer</button>
+      ${back}</div>`;
+}
+function slAction(a){
+  if (a === "slopen" || a === "slnew") {
+    if (a === "slnew") { SL = null; slStore(); renderModal(); return true; }
+    const set = ($("#sl-set") || {}).value; if (!set) return true;
+    const seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
+    SL = {set, seed, pool: slOpen(set, seed), ld: "", dk: {}};
+    const hits = SL.pool.filter(c => ["SR", "SEC"].includes((CARDDB.get(c) || {}).r));
+    slStore(); renderModal(); snd && snd("chat");
+    toast(`You opened ${SL_PACKS} packs of ${set}${hits.length ? `: ${hits.map(c => nameOf(c) + " (" + CARDDB.get(c).r + ")").join(", ")}` : ""}.`);
+    return true;
+  }
+  if (!SL) return false;
+  if (a.startsWith("sladd:") || a.startsWith("slrem:")) {
+    const c = a.slice(6), have = SL.pool.filter(x => x === c).length, cur = SL.dk[c] || 0;
+    if (a.startsWith("sladd:")) { if (cur >= have) { toast(`You only pulled ${have} of that card.`); return true; } if (slCount(SL.dk) >= SL_MAX) { toast(`A sealed deck has at most ${SL_MAX} cards.`); return true; } SL.dk[c] = cur + 1; }
+    else if (cur > 0) { SL.dk[c] = cur - 1; if (!SL.dk[c]) delete SL.dk[c]; }
+    slStore(); renderModal(); return true;
+  }
+  if (a === "slauto") { const b = sealedAuto(SL.set, SL.pool); if (b) { SL.ld = b.ld; SL.dk = b.dk; slStore(); renderModal(); } return true; }
+  if (a === "slclear") { SL.dk = {}; slStore(); renderModal(); return true; }
+  const n = slCount(SL.dk);
+  if (!SL.ld || n < SL_MIN || n > SL_MAX) { toast(`Pick a Leader and ${SL_MIN} to ${SL_MAX} cards first.`); return true; }
+  const leader = SL.ld + " " + nameOf(SL.ld), deck = slList(SL.dk);
+  if (a === "slsave") { persistDeck({name: `Sealed ${SL.set} ${nameOf(SL.ld)}`.slice(0, 40), leader, deck, life: (CARDDB.get(SL.ld) || {}).lf || 5, sleeve: 0, folder: "Sealed", notes: `Sealed pool of ${SL_PACKS} ${SL.set} packs. Play it in Casual.`}); return true; }
+  if (a === "slplay") {
+    const v = loadSaved(), opp = sealedAuto(SL.set, slOpen(SL.set, (SL.seed + 7919) >>> 0));
+    startPractice(true, {nick: clean(v.nick, 20) || myNick() || "Player", leader, deck, life: (CARDDB.get(SL.ld) || {}).lf || 5, first: true, sleeve: v.sleeve | 0, diff: v.diff, sealed: true,
+      leader2: opp ? opp.ld + " " + nameOf(opp.ld) : leader, deck2: opp ? slList(opp.dk) : deck});
+    return true;
+  }
+  return false;
 }
 // ---------- practice: play both sides of the table yourself ----------
 function practiceR(){ return {presence(p){ if (PR) { PR.pres[PR.cur] = JSON.parse(JSON.stringify(p)); practiceDeliver(); } return Promise.resolve(); }, leave: async () => {}}; }
@@ -4253,7 +4379,7 @@ async function startPractice(bot, cfg){
   const c = cfg || readForm();
   if (bot && !cfg && clean($("#f-nick").value, 20)) setNick(c.nick, true);
   if (!parseLines(c.deck).length) { toast("Paste a decklist or load the sample deck first."); return; }
-  const d2 = cfg ? "" : ($("#f-deck2") || {value: ""}).value.trim(), l2 = cfg ? "" : ($("#f-leader2") || {value: ""}).value.trim();
+  const d2 = cfg ? cfg.deck2 || "" : ($("#f-deck2") || {value: ""}).value.trim(), l2 = cfg ? cfg.leader2 || "" : ($("#f-leader2") || {value: ""}).value.trim();
   if (d2 && !parseLines(d2).length) { toast("The other deck has no card numbers I can read."); return; }
   if (!cfg) save(c);
   TUT = null;
@@ -7256,6 +7382,7 @@ document.addEventListener("keydown", e => {
 });
 $("#modal").addEventListener("click", e => { if (e.target.id === "modal" && modal && modal.type !== "setup" && modal.type !== "lobbies" && modal.type !== "home" && !artBusy && !rdBusy) closeModal(); });
 function doAction(a){
+  if (modal && modal.type === "sealed" && /^sl(open|new|add:|rem:|auto|clear|save|play)/.test(a) && slAction(a)) return;
   if (RPV && /^(resetboard|refresh|undo|endturn|concede|keep|mull|draw|dfresolve)/.test(a)) { toast("Exit the replay first."); return; }
   if (a === "bddeckwide") {
     const m = $("#bdmain"), on = m.classList.toggle("deckwide"), t = $("#bd-tab");
@@ -7438,6 +7565,7 @@ function doAction(a){
     case "homejoin": openSetup({friends: true}); break;
     case "homeplay": openHome("play"); break;
     case "homepractice": openHome("practice"); break;
+    case "sealed": openSealed(); break;
     case "homelobby": closeModal(); if (builderOpen) closeBuilder(); openLobbies(); break;
     case "homeranked": closeModal(); if (builderOpen) closeBuilder(); openRanked(); break;
     case "hometours": closeModal(); if (builderOpen) closeBuilder(); openTours(); break;
@@ -7961,7 +8089,7 @@ async function initNames(){
           const v = cards[k];
           if (!/^[A-Z0-9]{1,8}-\d{2,4}$/.test(k) || !v || typeof v !== "object") continue;
           const n = nameClean(v.n); if (!n && !nameClean(v.c)) continue;
-          m.set(k, {n, kw: nameClean(v.kw).slice(0, 80), s: nameClean(v.s).slice(0, 80), c: nameClean(v.c).slice(0, 30), t: nameClean(v.t).slice(0, 30), k: (v.k != null && Number.isFinite(+v.k)) ? (+v.k > 10 && +v.k < 20 ? 10 : (+v.k >= 0 && +v.k <= 10 ? +v.k : null)) : null, p: v.p != null && v.p !== "" && Number.isFinite(+v.p) && +v.p >= 0 ? +v.p : null, a: nameClean(v.a).slice(0, 30), ctr: Number.isFinite(+v.ctr) && +v.ctr > 0 ? +v.ctr : null, lf: Number.isFinite(+v.lf) && +v.lf > 0 ? +v.lf : null});
+          m.set(k, {n, kw: nameClean(v.kw).slice(0, 80), s: nameClean(v.s).slice(0, 80), c: nameClean(v.c).slice(0, 30), t: nameClean(v.t).slice(0, 30), k: (v.k != null && Number.isFinite(+v.k)) ? (+v.k > 10 && +v.k < 20 ? 10 : (+v.k >= 0 && +v.k <= 10 ? +v.k : null)) : null, p: v.p != null && v.p !== "" && Number.isFinite(+v.p) && +v.p >= 0 ? +v.p : null, a: nameClean(v.a).slice(0, 30), ctr: Number.isFinite(+v.ctr) && +v.ctr > 0 ? +v.ctr : null, lf: Number.isFinite(+v.lf) && +v.lf > 0 ? +v.lf : null, r: ["C", "UC", "R", "SR", "SEC", "L", "P"].includes(v.r) ? v.r : ""});
         }
       });
       CARDDB = m; render(); if (builderOpen) renderLib(); cdSummary();
