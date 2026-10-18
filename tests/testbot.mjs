@@ -18,7 +18,9 @@ const deck = ["OP01-013","OP01-016","OP01-024","OP01-014","OP01-015","OP01-017",
 
 // Home > Play > Practice against the computer
 { const b = await page.$('[data-do="homeplay"]'); if (b && await b.isVisible()) { await b.click(); await page.waitForTimeout(300); } }
-check(!!await page.$('[data-do="homebot"]'), "the Play page offers practice against the computer");
+check(!!await page.$('[data-do="homepractice"]'), "the Play page has a Practice button");
+await page.click('[data-do="homepractice"]'); await page.waitForTimeout(300);
+check(await page.evaluate(() => ["homebot", "puzzle", "tutorial", "homeboth", "homeplay"].every(k => $(`#modal [data-do="${k}"]`)) && !$('#modal [data-do="homelobby"]')), "Practice opens its own page with the computer, the puzzle, the tutorial and both sides");
 await page.click('[data-do="homebot"]');
 await page.waitForTimeout(300);
 check(await page.evaluate(() => document.querySelector('[data-do="vsbot"]').classList.contains("pri")), "setup highlights Play the computer");

@@ -19,7 +19,7 @@ const hint = async () => { await page.click('[data-do="hint"]'); await wait(300)
 
 check(await page.evaluate(() => typeof hintOk === "function" && !hintOk()), "no hints outside a practice game");
 { const b = await page.$('[data-do="homeplay"]'); if (b && await b.isVisible()) { await b.click(); await wait(300); } }
-await page.click('[data-do="homebot"]'); await wait(1000);
+await page.click('[data-do="homepractice"]'); await page.waitForTimeout(300); await page.click('[data-do="homebot"]'); await wait(1000);
 await page.fill("#f-nick", "Ryan"); await page.fill("#f-leader", "OP01-001"); await page.fill("#f-deck", deck);
 await page.click('[data-do="vsbot"]'); await wait(800);
 await page.evaluate(() => { TUT = null; PR.roll = [6, 1]; practiceFirst(0); }); await wait(2000);

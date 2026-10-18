@@ -3873,7 +3873,7 @@ function renderAcct(){
     : acctState === "out" ? "<b>Not connected.</b> Decks save in this browser only. To play live, sign in to claude.ai and ask the owner to invite your email from Share. Press Sign in below to see what's blocked."
     : "Checking your account…";
 }
-// the first screen has three buttons; Play opens a second page with the game modes
+// the first screen has three buttons; Play opens a second page with the game modes, and its Practice a third
 function openHome(page){
   modal = {type: "home", page: page || "main"};
   const back = S.phase !== "none" ? '<button class="btn" data-do="closemodal" type="button">Back to table</button>' : "";
@@ -3883,11 +3883,13 @@ function openHome(page){
       <button class="btn" data-do="homequick" type="button">Find a match</button>
       <button class="btn" data-do="homeranked" type="button">Ranked</button>
       <button class="btn" data-do="hometours" type="button">Tournaments${(n => n ? ` <i class="frn">${n} open</i>` : "")(tourList().filter(t => t.st !== "done").length)}</button>
-      <button class="btn" data-do="homebot" type="button">Practice against the computer</button>
+      <button class="btn" data-do="homepractice" type="button">Practice</button>
+      <button class="btn" data-do="home" type="button">Back</button>` : page === "practice" ? `
+      <button class="btn pri" data-do="homebot" type="button">Play the computer</button>
       <button class="btn" data-do="puzzle" type="button">Daily lethal puzzle${pzKey().d === todayISO() ? " ✓" : ""}</button>
-      <button class="btn" data-do="tutorial" type="button">Learn to play (tutorial)</button>
-      <button class="btn" data-do="homeboth" type="button">Test a deck (play both sides)</button>
-      <button class="btn" data-do="home" type="button">Back</button>` : `
+      <button class="btn" data-do="tutorial" type="button">Learn to play</button>
+      <button class="btn" data-do="homeboth" type="button" title="Play both sides yourself">Test a deck</button>
+      <button class="btn" data-do="homeplay" type="button">Back</button>` : `
       ${rejoinBtn()}<button class="btn pri homeplay" data-do="homeplay" type="button">Play</button>
       ${tutSeen() || STATS.g ? "" : '<button class="btn" data-do="tutorial" type="button">New here? Learn to play</button>'}
       <button class="btn" data-do="homebuilder" type="button">Deck editor</button>
@@ -3958,7 +3960,7 @@ function openSetup(opts){
     ${(d0 => `<div class="row diffrow"${opts.bot ? "" : " hidden"}><label for="f-diff">Computer difficulty</label><select id="f-diff">${DIFFS.map((n, i) => `<option value="${i}"${i === d0 ? " selected" : ""}>${n}</option>`).join("")}</select><span class="hint" id="f-diffh">${DIFF_HINT[d0]}</span></div>`)(diffOf(+v.diff))}
     <div class="row end">
       <button class="btn" data-do="sample" type="button">Load sample deck</button>
-      ${S.phase !== "none" ? '<button class="btn" data-do="closemodal" type="button">Cancel</button>' : `<button class="btn" data-do="${jl || opts.pub ? "homelobby" : opts.friends ? "homefriends" : "homeplay"}" type="button">Back</button>`}
+      ${S.phase !== "none" ? '<button class="btn" data-do="closemodal" type="button">Cancel</button>' : `<button class="btn" data-do="${jl || opts.pub ? "homelobby" : opts.friends ? "homefriends" : opts.bot || opts.prac ? "homepractice" : "homeplay"}" type="button">Back</button>`}
       <button class="btn" data-do="solo" type="button">Practice alone</button>
       <button class="btn" data-do="both" type="button" title="Play both sides of the table yourself to test a deck">Play both sides</button>
       <button class="btn${opts.bot ? " pri" : ""}" data-do="vsbot" type="button" title="Play a match against a simple computer opponent">Play the computer</button>
@@ -7284,6 +7286,7 @@ function doAction(a){
     case "home": closeModal(); if (builderOpen) closeBuilder(); openHome(); break;
     case "homejoin": openSetup({friends: true}); break;
     case "homeplay": openHome("play"); break;
+    case "homepractice": openHome("practice"); break;
     case "homelobby": closeModal(); if (builderOpen) closeBuilder(); openLobbies(); break;
     case "homeranked": closeModal(); if (builderOpen) closeBuilder(); openRanked(); break;
     case "hometours": closeModal(); if (builderOpen) closeBuilder(); openTours(); break;
@@ -7416,7 +7419,7 @@ function doAction(a){
     case "join": startGame(true); break;
     case "solo": startGame(false); break;
     case "both": startPractice(); break;
-    case "homeboth": openSetup(); break;
+    case "homeboth": openSetup({prac: true}); break;
     case "homebot": openSetup({bot: true}); break;
     case "tutorial": closeModal(); if (builderOpen) closeBuilder(); startTutorial(); break;
     case "puzzle": startPuzzle(); break;

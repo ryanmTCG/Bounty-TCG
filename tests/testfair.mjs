@@ -20,7 +20,7 @@ const check = (ok, msg) => { console.log(ok ? "ok  " : "FAIL", msg); if (!ok) fa
 const deck = ["OP01-013","OP01-016","OP01-024","OP01-014","OP01-015","OP01-017","OP01-018","OP01-019","OP01-020","OP01-021","OP01-022","OP01-025","OP01-026"].map(c => "4x" + c).join("\n");
 
 { const b = await page.$('[data-do="homeplay"]'); if (b && await b.isVisible()) { await b.click(); await page.waitForTimeout(300); } }
-await page.click('[data-do="homebot"]');
+await page.click('[data-do="homepractice"]'); await page.waitForTimeout(300); await page.click('[data-do="homebot"]');
 await page.waitForTimeout(300);
 await page.fill("#f-nick", "Ryan");
 await page.fill("#f-leader", "OP01-001");

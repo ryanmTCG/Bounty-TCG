@@ -34,7 +34,7 @@ check(kinds.dup === 0, "[Your Turn] [On Play] is one On Play ability, not two");
 
 // a game against the computer, on your turn
 { const b = await page.$('[data-do="homeplay"]'); if (b && await b.isVisible()) { await b.click(); await page.waitForTimeout(300); } }
-await page.click('[data-do="homebot"]');
+await page.click('[data-do="homepractice"]'); await page.waitForTimeout(300); await page.click('[data-do="homebot"]');
 await page.waitForTimeout(300);
 await page.fill("#f-nick", "Ryan");
 await page.fill("#f-leader", "OP01-001");

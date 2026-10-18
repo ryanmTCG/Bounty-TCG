@@ -24,7 +24,7 @@ for (const [i, r] of [[1, "w"], [2, "l"]]) fire.put(`games/m${i}-a`, {v: 1, t: D
 
 // ---- setting up a match against the computer ----
 { const b = await page.$('[data-do="homeplay"]'); if (b && await b.isVisible()) { await b.click(); await wait(300); } }
-await page.click('[data-do="homebot"]'); await wait(1200);
+await page.click('[data-do="homepractice"]'); await page.waitForTimeout(300); await page.click('[data-do="homebot"]'); await wait(1200);
 const s0 = await page.evaluate(() => ({diffs: [...document.querySelectorAll("#f-diff option")].map(o => o.textContent), open: document.querySelector("#f-other").open, sum: document.querySelector("#f-other summary").textContent,
   t: [...document.querySelectorAll('#f-odeck optgroup[label^="Tournament"] option')].map(o => o.textContent), m: [...document.querySelectorAll('#f-odeck optgroup[label^="Most played"] option')].map(o => o.textContent), v: document.querySelector("#f-odeck").value}));
 console.log("setup", JSON.stringify(s0));

@@ -22,7 +22,7 @@ const deck = ["OP01-013","OP01-016","OP01-024","OP01-014","OP01-015","OP01-017",
 
 // ---- choosing a difficulty ----
 { const b = await page.$('[data-do="homeplay"]'); if (b && await b.isVisible()) { await b.click(); await page.waitForTimeout(300); } }
-await page.click('[data-do="homebot"]');
+await page.click('[data-do="homepractice"]'); await page.waitForTimeout(300); await page.click('[data-do="homebot"]');
 await page.waitForTimeout(300);
 const d0 = await page.evaluate(() => ({vis: !!document.querySelector(".diffrow") && !document.querySelector(".diffrow").hidden, v: document.querySelector("#f-diff").value, h: document.querySelector("#f-diffh").textContent}));
 check(d0.vis && d0.v === "1" && /strategy guides/.test(d0.h), "practice setup offers Computer difficulty, Normal to start");
