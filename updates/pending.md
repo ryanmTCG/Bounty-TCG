@@ -8,3 +8,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - Abilities that add DON!! from the DON!! deck add them rested or active as the card says, with no choice.
 - Every card's name, cost, power and types match the official English card list (525 cards' types and 70 names corrected), so abilities that name a type or card find them.
 - Weekly challenges: three goals a week in Profile (the same for everyone), each finished one a badge.
+- Spectator chat: people watching a live match can cheer with emotes and short phrases, shown to everyone at the table (players can hide it).

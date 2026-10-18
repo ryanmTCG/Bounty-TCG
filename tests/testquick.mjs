@@ -55,6 +55,21 @@ check(await until(() => C.page.evaluate(() => !!WATCH && !!WATCH.a && !!WATCH.b 
 check(await C.page.evaluate(() => !(WATCH.a.hd || WATCH.b.hd)), "a watcher never gets a hand");
 await C.page.screenshot({ path: OUT + "/watching.png" });
 check(await A.page.evaluate(() => !!oppM && oppM.nick === "Bea"), "the watcher doesn't take a seat");
+// spectator chat: the watcher cheers, both players and the watcher see it apart from quick chat
+check(await C.page.evaluate(() => !!document.querySelector('#mid [data-do="specchat"]')), "a watcher has a Cheer button");
+await C.page.click('#mid [data-do="specchat"]'); await wait(200);
+await C.page.evaluate(() => { const it = [...document.querySelectorAll("#menu button")].find(b => b.textContent.includes("What a turn!")); it.click(); });
+const seen = p => p.evaluate(() => { const f = document.querySelector("#specfeed"); return f && !f.hidden ? f.innerText.replace(/\s+/g, " ") : ""; });
+check(await until(async () => /What a turn!/.test(await seen(A.page)) && /What a turn!/.test(await seen(B.page))), "both players see the cheer in the spectator feed");
+console.log("feed", await seen(A.page), "|", await seen(C.page));
+check(/1 watching/.test(await seen(A.page)) && /What a turn!/.test(await seen(C.page)), "the feed counts the watchers, and the watcher sees their own cheer");
+check(await A.page.evaluate(() => !document.querySelector("#qcopp.show")), "it isn't shown as the opponent's quick chat");
+await C.page.evaluate(() => specChat(0)); 
+check(/moment/.test(await C.page.evaluate(() => $("#toast").textContent)), "cheers are spaced out");
+await A.page.evaluate(() => { scMute = true; renderSpec(); });
+await C.page.waitForTimeout(2600); await C.page.evaluate(() => specChat(1)); await wait(1500);
+check(!(await seen(A.page)) && /\uD83D\uDD25|🔥/.test(await seen(B.page)), "a player can hide spectator chat, the other still sees it");
+await B.page.screenshot({ path: OUT + "/specfeed.png" });
 await C.page.evaluate(() => stopWatch()); await wait(800);
 await C.page.evaluate(() => findMatch(1));
 await wait(500);

@@ -391,6 +391,10 @@ button,input,textarea,select{font:inherit;color:inherit}
 .turnbar [data-do="endturn"],.turnbar #startfb{flex-basis:100%}
 .qcbub{position:fixed;z-index:90;transform:translate(-50%,-100%);background:#FFF6E0;color:#12262D;border:3px solid #12262D;border-radius:18px;padding:8px 16px;font-weight:700;font-size:16px;box-shadow:0 5px 0 rgba(0,0,0,.4),0 12px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;max-width:min(80vw,360px);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qcbub.opp{transform:translate(-50%,0)}
+#specfeed{position:fixed;right:16px;top:66px;z-index:80;max-width:min(70vw,280px);background:rgba(10,24,30,.88);color:#FFF6E0;border:2px solid rgba(242,184,75,.55);border-radius:12px;padding:6px 10px;font-size:13px;pointer-events:none}
+#specfeed .sph{font-size:11px;opacity:.75;margin-bottom:2px}
+#specfeed p{margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#specfeed p.mine b{color:#F2B84B}
 .qcbub.show{opacity:1}
 @media (prefers-reduced-motion:no-preference){.qcbub{transition:opacity .25s}.qcbub.show{animation:qcpop .3s ease-out}}
 @keyframes qcpop{0%{scale:.6}70%{scale:1.08}100%{scale:1}}
@@ -1435,7 +1439,7 @@ async function leaveRoom(){
   if (WATCH) { rpStop(); RPV = null; WATCH = null; document.body.classList.remove("watching", "replaying"); $("#mid").classList.remove("rpmid"); }
   rankForfeit(); matchForget();
   if (R) { try { await R.leave(); } catch (e) {} }
-  R = null; oppPeer = null; oppM = null; PR = null; TUT = null; HINT = null; PZ = null; myQc = null; qcSeen = null; qcMute = false; SER = null;
+  R = null; oppPeer = null; oppM = null; PR = null; TUT = null; HINT = null; PZ = null; myQc = null; qcSeen = null; qcMute = false; SER = null; scSeen = null; scMute = false; scFeed = []; scWatchers = 0; renderSpec();
   if (myChal) { myChal = null; clearTimeout(chalT); }
   if (myLobby) { myLobby = null; lobbyUpdate(); }
 }
@@ -1452,7 +1456,7 @@ function onPeers(change){
   // keeps the finished board on screen, and one who hasn't started this game yet isn't at the table
   if (SER && om && om.gn !== (S.gn || 1)) { if (om.gn > (S.gn || 1)) { SER.ahead = true; render(); return; } oppM = null; }
   else oppM = om;
-  if (!PR) qcCheck();
+  if (!PR) { qcCheck(); scCheck(change.peers); }
   if (!oppM || oppM.tl == null) oppTl = null; else if (!oppTl || oppTl.s !== oppM.tl || oppTl.p !== oppM.tp) oppTl = {s: oppM.tl, p: oppM.tp, at: Date.now()};
   if (myLobby) lobbyUpdate();
   mergeLogs(change.peers);
@@ -1460,6 +1464,48 @@ function onPeers(change){
   if (advance()) publish();
   recTick();
   render();
+}
+// ---------- spectator chat: people watching a live match cheer from a fixed list ----------
+// A watcher's presence carries sc: [id, k] (k into SC); everyone at the table (players and watchers) sees the newest few in
+// #specfeed, kept apart from the players' quick chat. A player can hide it for the match (scMute). SC only grows at the end.
+const SC = ["👏", "🔥", "😮", "😂", "🏴‍☠️", "💀", "😱", "❤️", "Nice play!", "What a turn!", "Close one!", "Good luck both!", "Big swing!", "Unlucky…", "What a comeback!", "GG!"];
+let myScId = 0, scLast = 0, scMute = false, scSeen = null, scFeed = [], scFeedT = null;
+async function specChat(k){
+  if (!WATCH || WATCH.replay || !R || !SC[k]) return;
+  const now = Date.now(); if (now - scLast < 2500) { toast("Give it a moment before the next one."); return; }
+  scLast = now; myScId = now % 1e9;
+  try { await R.presence({w: 1, nick: myNick(), sc: [myScId, k]}); } catch (e) {}
+  scAdd(myNick() || "You", SC[k], true);
+}
+function scMenu(){
+  const btn = $("#scbtn"); if (!btn) return; const r = btn.getBoundingClientRect();
+  showMenu("Cheer", SC.map((t, k) => [t, () => specChat(k)]), r.left, r.top);
+  const m = $("#menu"); if (m) m.style.top = Math.max(8, r.top - m.getBoundingClientRect().height - 6) + "px";
+}
+// the watchers in a room's peer list, and their newest message each; one already there when we arrive is old news
+function scCheck(peers){
+  const w = (peers || []).filter(p => !p.isMe && p.presence && p.presence.w === 1);
+  scWatchers = w.length + (WATCH ? 1 : 0);   // a watcher counts themselves too
+  const now = {};
+  for (const p of w) { const x = p.presence.sc; if (Array.isArray(x) && Number.isInteger(x[0]) && Number.isInteger(x[1]) && SC[x[1]]) now[p.peer] = x; }
+  if (scSeen) for (const [peer, x] of Object.entries(now)) if (!scSeen[peer] || scSeen[peer][0] !== x[0]) { const p = w.find(q => q.peer === peer); scAdd(clean(p.presence.nick, 20) || "A watcher", SC[x[1]], false); }
+  scSeen = now;
+  renderSpec();
+}
+let scWatchers = 0;
+function scAdd(who, text, mine){
+  if (scMute && !WATCH) return;
+  scFeed = scFeed.concat([{who, text, mine, t: Date.now()}]).slice(-5);
+  clearTimeout(scFeedT); scFeedT = setTimeout(() => { scFeed = []; renderSpec(); }, 12000);
+  renderSpec();
+}
+function renderSpec(){
+  let el = $("#specfeed");
+  const live = (WATCH && !WATCH.replay) || (R && !PR && S.phase !== "none");
+  if (!live || (scMute && !WATCH) || (!scFeed.length && !scWatchers)) { if (el) el.hidden = true; return; }
+  if (!el) { el = document.createElement("div"); el.id = "specfeed"; el.setAttribute("role", "log"); el.setAttribute("aria-label", "Spectator chat"); document.body.appendChild(el); }
+  el.hidden = false;
+  el.innerHTML = `<div class="sph">👁 ${scWatchers} watching</div>` + scFeed.map(e => `<p class="${e.mine ? "mine" : ""}"><b>${esc(e.who)}</b> ${esc(e.text)}</p>`).join("");
 }
 // ---------- ranked turn timer: 3 minutes a turn, 45 seconds to answer an attack ----------
 // It pauses while you wait for your opponent to answer your attack. Running out ends your turn; the third time loses the match.
@@ -1591,7 +1637,8 @@ function quickChat(k){
 }
 function qcMenu(){
   const btn = $("#qcbtn"); if (!btn) return; const r = btn.getBoundingClientRect();
-  showMenu("Quick chat", QC.map((t, k) => [t, () => quickChat(k)]).concat([[qcMute ? "\uD83D\uDD0A Show their messages again" : "\uD83D\uDD07 Mute their messages", () => { qcMute = !qcMute; toast(qcMute ? `You won't see ${oppM ? oppM.nick + "'s" : "their"} messages this match.` : "Their messages show again."); }]]), r.left, r.top);
+  showMenu("Quick chat", QC.map((t, k) => [t, () => quickChat(k)]).concat([[qcMute ? "\uD83D\uDD0A Show their messages again" : "\uD83D\uDD07 Mute their messages", () => { qcMute = !qcMute; toast(qcMute ? `You won't see ${oppM ? oppM.nick + "'s" : "their"} messages this match.` : "Their messages show again."); }],
+    [scMute ? "👁 Show spectator chat again" : "👁 Hide spectator chat", () => { scMute = !scMute; renderSpec(); toast(scMute ? "Spectator chat is hidden this match." : "Spectator chat shows again."); }]]), r.left, r.top);
   const m = $("#menu"); if (m) m.style.top = Math.max(8, r.top - m.getBoundingClientRect().height - 6) + "px";
 }
 function qcBubble(opp, text){
@@ -2513,7 +2560,7 @@ async function watchTable(room, who){
     const rm = await window.claude.use("room"); if (!rm) throw new Error("no room");
     const r = await rm.join(room);
     R = r; roomCode = room; status = "online"; WATCH = {room, who, a: null, b: null};
-    r.onPeers(ch => { if (R !== r || !WATCH) return; const ps = ch.peers.filter(p => !p.isMe && p.presence && p.presence.p !== undefined).sort((x, y) => x.peer < y.peer ? -1 : 1); const mm = q => { if (!q) return null; const m = oppModel(q.presence); m.lg = Array.isArray(q.presence.lg) ? q.presence.lg.slice(0, 10) : []; return m; }; WATCH.a = mm(ps[0]); WATCH.b = mm(ps[1]); render(); });
+    r.onPeers(ch => { if (R !== r || !WATCH) return; const ps = ch.peers.filter(p => !p.isMe && p.presence && p.presence.p !== undefined).sort((x, y) => x.peer < y.peer ? -1 : 1); const mm = q => { if (!q) return null; const m = oppModel(q.presence); m.lg = Array.isArray(q.presence.lg) ? q.presence.lg.slice(0, 10) : []; return m; }; WATCH.a = mm(ps[0]); WATCH.b = mm(ps[1]); scCheck(ch.peers); render(); });
     try { await r.presence({w: 1, nick: myNick()}); } catch (e) {}
     document.body.classList.add("watching");
     toast(`Watching ${who || "your friend"}'s match.`);
@@ -2521,7 +2568,7 @@ async function watchTable(room, who){
   render(); renderStatus();
 }
 async function stopWatch(){
-  WATCH = null; document.body.classList.remove("watching");
+  WATCH = null; document.body.classList.remove("watching"); scSeen = null; scFeed = []; scWatchers = 0; renderSpec();
   if (R) { try { await R.leave(); } catch (e) {} }
   R = null; status = "offline"; openHome();
 }
@@ -2545,7 +2592,7 @@ function renderWatch(){
     return;
   }
   mid.classList.toggle("combat", !!(atk && !res));
-  mid.innerHTML = `<span>\u{1F441} Watching ${esc(a ? a.nick : "")}${b ? " vs " + esc(b.nick) : ""}</span>${res ? `<span>⚑ ${esc(res)}</span>` : atk ? `<span>⚔ ${esc(atk[0].nick)}'s <b>${esc(at(atk[2].s) ? lab(at(atk[2].s)) : "card")}</b> attacks <b>${esc(tg(atk[2].t) ? lab(tg(atk[2].t)) : "a target")}</b></span>` : ""}<button class="btn" data-do="stopwatch" type="button">Stop watching</button>`;
+  mid.innerHTML = `<span>\u{1F441} Watching ${esc(a ? a.nick : "")}${b ? " vs " + esc(b.nick) : ""}</span>${res ? `<span>⚑ ${esc(res)}</span>` : atk ? `<span>⚔ ${esc(atk[0].nick)}'s <b>${esc(at(atk[2].s) ? lab(at(atk[2].s)) : "card")}</b> attacks <b>${esc(tg(atk[2].t) ? lab(tg(atk[2].t)) : "a target")}</b></span>` : ""}<button class="btn" data-do="specchat" id="scbtn" type="button" title="Cheer with the other watchers">📣 Cheer</button><button class="btn" data-do="stopwatch" type="button">Stop watching</button>`;
   const lg = [];
   for (const [m, mine] of [[a, true], [b, false]]) if (m && Array.isArray(m.lg)) for (const e of m.lg) if (Array.isArray(e) && pubLog(e[1])) lg.push({who: m.nick, mine, m: String(e[1])});
   $("#log").innerHTML = lg.length ? lg.slice(-30).reverse().map(e => `<p class="${e.mine ? "mine" : "theirs"}"><b>${esc(e.who)}</b> ${esc(e.m)}</p>`).join("") : '<p class="tips">Nothing yet.</p>';
@@ -7334,6 +7381,7 @@ function doAction(a){
   if (a.startsWith("livewatch:")) { const r = liveMatches().find(x => x.room === a.slice(10)); if (r) watchTable(r.room, r.pl.map(p => p.nk).join(" and ")); else toast("That match just ended."); return; }
   if (a.startsWith("frwatch:")) { const o = onlineMap().get(a.slice(8)); if (o && o.w) watchTable(o.w, o.nk); else toast("That match just ended."); return; }
   if (a === "stopwatch") { stopWatch(); return; }
+  if (a === "specchat") { scMenu(); return; }
   if (a.startsWith("rpopen:")) { rpOpen(a.slice(7), "list"); return; }
   if (a.startsWith("rpfile:")) { rpDownload(a.slice(7)); return; }
   if (a.startsWith("rpshare:")) { rpShare(a.slice(8)); return; }
