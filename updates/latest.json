@@ -1,8 +1,8 @@
 {
-  "version": "1.8.0",
+  "version": "1.9.0",
   "shell": 2,
-  "bundle": "web-1.8.0.json.gz",
-  "sha256": "8ec400176d4d90ad8a3f92e7be3fca96345a30a98478402456180e5fdcebd81f",
-  "size": 932319,
-  "notes": "Pick your deck from a drop-down on the Lobbies, Find a match and Ranked pages instead of going to the Deck editor. Deck folders and notes: put saved decks in folders and keep notes on each one. Import a deck from a link in the Deck editor (deck sites' links, and with the new full download, the..."
+  "bundle": "web-1.9.0.json.gz",
+  "sha256": "4ab61583d1c0ce18a172285a45dd24a4cfa25225d8c3dc4b632f8a933e1d3ef4",
+  "size": 945335,
+  "notes": "A Practice button on the Play page: the computer, the daily puzzle, the tutorial and testing a deck now have their own page. DON!! can't be added, returned, rested or readied by hand in any match against someone (Friends only and the computer too), unless a card's ability calls for it. Abilities..."
 }
