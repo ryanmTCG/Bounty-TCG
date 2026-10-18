@@ -1,8 +1,8 @@
 {
-  "version": "1.7.0",
+  "version": "1.8.0",
   "shell": 2,
-  "bundle": "web-1.7.0.json.gz",
-  "sha256": "8783454782cbf9bb3971c561ab3a17fdcc74ea55b948e805cfc0ef1c001435db",
-  "size": 914715,
-  "notes": "Find a match (Play > Find a match): press Find a quick match or Find a ranked match and you're paired with the next player who's looking. The page shows how many players are in each queue and how many are in a match right now; the Ranked page shows its own. New Master level for the computer: it..."
+  "bundle": "web-1.8.0.json.gz",
+  "sha256": "8ec400176d4d90ad8a3f92e7be3fca96345a30a98478402456180e5fdcebd81f",
+  "size": 932319,
+  "notes": "Pick your deck from a drop-down on the Lobbies, Find a match and Ranked pages instead of going to the Deck editor. Deck folders and notes: put saved decks in folders and keep notes on each one. Import a deck from a link in the Deck editor (deck sites' links, and with the new full download, the..."
 }
