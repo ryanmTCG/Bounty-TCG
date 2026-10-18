@@ -576,6 +576,19 @@ button.mtrow:hover{border-color:rgba(242,184,75,.7)}
 .mtbar i{display:block;height:100%;background:#F2B84B}
 .mtwr{font-family:var(--slab);font-size:20px;color:#FFE9B8;min-width:52px;text-align:right}
 .mtwr.up{color:#7FE0A0}
+.mxwrap{overflow-x:auto;max-width:100%}
+.mx{border-collapse:separate;border-spacing:3px;font-size:13px}
+.mx th{font-weight:400;vertical-align:bottom}
+.mx .mxld .card{--cw:40px;--ch:56px;font-size:8px;margin:0 auto}
+.mxrow{display:flex;align-items:center;gap:8px;background:none;border:0;color:inherit;cursor:pointer;text-align:left;font:inherit;padding:0}
+.mxrow span{max-width:110px;color:#FFE9B8}
+.mx td{min-width:56px;height:46px;text-align:center;border-radius:8px;background:rgba(0,0,0,.25)}
+.mx td b{display:block;font-family:var(--slab);font-weight:400;font-size:16px;color:#FFE9B8}
+.mx td small{opacity:.7;font-size:11px}
+.mx td.up{background:rgba(93,187,99,.35)}
+.mx td.dn{background:rgba(214,90,70,.35)}
+.mx td.few{opacity:.55}
+.mx td.mxme{font-size:11px;opacity:.5}
 .mtwr.dn{color:#FFA091}
 .mthead{display:flex;gap:12px;align-items:center;margin:4px 0 6px}
 .mthead .card{--cw:64px;--ch:90px;font-size:10px;margin:0}
@@ -783,6 +796,20 @@ select.sbtn{font-family:var(--slab)}
 .card.doncard b{display:none}
 .card.ghost.dongh{background:url("/_blob/621dd934e12d43b3703a3254ac86e6f1") center/100% 100% no-repeat;border:0;border-radius:0;box-shadow:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
 .card.ghost.dongh b{display:none}
+/* ranked season reward sleeves: Supernova, Warlord, Yonko */
+.card.back.sl7{--s1:#145A78;--s2:#0B3A50;--emb:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23E9F7FF' stroke='%230F3F56' stroke-width='.8' d='M16 2l3.6 9.4L30 12l-8 6.6L24.6 29 16 23.2 7.4 29 10 18.6 2 12l10.4-.6z'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%237FD6FF'/%3E%3C/svg%3E")}
+.card.back.sl8{--s1:#5E1520;--s2:#3A0B12;--emb:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg stroke='%23F4E7E7' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M6 6l18 18M26 6L8 24'/%3E%3C/g%3E%3Cg stroke='%23E2B23C' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M20 26l6-6M6 20l6 6'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23E2B23C'/%3E%3C/svg%3E")}
+.card.back.sl9{--s1:#16120A;--s2:#000;--emb:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23F6D46B' stroke='%235A3A00' stroke-width='.9' d='M4 24l2-14 6 6 4-10 4 10 6-6 2 14z'/%3E%3Crect x='4' y='24' width='24' height='4' rx='1' fill='%23F6D46B' stroke='%235A3A00' stroke-width='.9'/%3E%3Ccircle cx='16' cy='18' r='2' fill='%23C0392B'/%3E%3C/svg%3E");outline:1px solid #C9972C;outline-offset:-3px}
+.card.back.sl7,.card.back.sl8,.card.back.sl9{background:var(--emb) center 46%/54% no-repeat,var(--s1);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.card.back.sl7::before,.card.back.sl8::before,.card.back.sl9::before{display:none}
+.card.back.stack.sl7,.card.back.stack.sl8,.card.back.stack.sl9{box-shadow:1px 1px 0 var(--s1),2px 2px 0 rgba(0,0,0,.35),3px 3px 0 var(--s1),0 3px 5px rgba(0,0,0,.45)}
+.card.back.sl7.swatch,.card.back.sl8.swatch,.card.back.sl9.swatch{background-size:62%,auto;background-position:center,0 0}
+.card.swatch.locked{opacity:.35;filter:grayscale(.7)}
+.pfrew{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pfrew .rw{display:flex;gap:8px;align-items:center;padding:6px 10px;border:2px solid rgba(255,240,205,.25);border-radius:12px;background:rgba(0,0,0,.22)}
+.pfrew .rw.got{border-color:rgba(242,184,75,.7)}
+.pfrew .card{--cw:34px;--ch:48px;margin:0}
+.pfrew small{display:block;opacity:.8;font-size:12px}
 /* default sleeve = standard card back; Sea Serpent moved to slot 6; DON!! deck back */
 .card.back.sl6{--emb:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%23F1DDB0' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='16' cy='7' r='3'/%3E%3Cpath d='M16 10v17M11 14h10M6 20c1 5 5 7 10 7s9-2 10-7M6 20l-2 3M26 20l2 3'/%3E%3C/g%3E%3C/svg%3E");--s1:#17586A;--s2:#0F4250;background:var(--emb) center 46%/54% no-repeat,var(--s1);box-shadow:0 1px 3px rgba(0,0,0,.4)}
 .card.back.sl6::before{display:none}
@@ -1400,7 +1427,7 @@ async function leaveRoom(){
   if (WATCH) { rpStop(); RPV = null; WATCH = null; document.body.classList.remove("watching", "replaying"); $("#mid").classList.remove("rpmid"); }
   rankForfeit(); matchForget();
   if (R) { try { await R.leave(); } catch (e) {} }
-  R = null; oppPeer = null; oppM = null; PR = null; TUT = null; HINT = null; myQc = null; qcSeen = null; qcMute = false; SER = null;
+  R = null; oppPeer = null; oppM = null; PR = null; TUT = null; HINT = null; PZ = null; myQc = null; qcSeen = null; qcMute = false; SER = null;
   if (myChal) { myChal = null; clearTimeout(chalT); }
   if (myLobby) { myLobby = null; lobbyUpdate(); }
 }
@@ -1581,7 +1608,7 @@ function qcCheck(){
 function oppModel(x){
   const f = o => o && typeof o === "object" ? {c: clean(o.c, 16), n: clean(o.n, 24), r: o.r ? 1 : 0, d: num(o.d, 20), pm: Math.max(-60000, Math.min(60000, Math.round(+o.pm || 0))), cm: Math.max(-20, Math.min(20, Math.round(+o.cm || 0))), mk: Array.isArray(o.mk) ? o.mk.filter(k => MK[k]).slice(0, 5) : [], g: typeof o.g === "string" ? o.g.replace(/[^dbu]/g, "").slice(0, 3) : null} : null;
   return {
-    nick: clean(x.nick, 20) || "Opponent", gn: Number.isInteger(x.gn) && x.gn > 0 && x.gn < 10 ? x.gn : 0, bo: x.bo === 1 ? 1 : 0, sl: num(x.sl, 6), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
+    nick: clean(x.nick, 20) || "Opponent", gn: Number.isInteger(x.gn) && x.gn > 0 && x.gn < 10 ? x.gn : 0, bo: x.bo === 1 ? 1 : 0, sl: num(x.sl, 9), tn: num(x.tn, 999), pw: Math.max(-60000, Math.min(60000, Math.round(+x.pw || 0))), cc: Math.max(-20, Math.min(20, Math.round(+x.cc || 0))), ready: x.p === 1,
     uid: typeof x.uid === "string" && /^[A-Za-z0-9_-]{4,64}$/.test(x.uid) ? x.uid : "", mk: typeof x.mk === "string" && /^[a-z0-9]{4,16}$/.test(x.mk) ? x.mk : "",
     ld: f(x.ld), ch: (Array.isArray(x.ch) ? x.ch : []).slice(0, 12).map(f).filter(Boolean), st: f(x.st), ev: f(x.ev),
     ak: (x.ak && /^(ld|ch:\d{1,2})$/.test(x.ak.s) && /^(ld|ch:\d{1,2})$/.test(x.ak.t)) ? {s: x.ak.s, t: x.ak.t, n: Number.isInteger(x.ak.n) ? x.ak.n : 0, u: x.ak.u ? 1 : 0, ub: Number.isFinite(+x.ak.ub) && x.ak.ub !== null ? Math.max(0, Math.min(60000, Math.round(+x.ak.ub))) : null} : null, rs: Number.isInteger(x.rs) ? x.rs : 0, bk: Number.isInteger(x.bk) && x.bk >= 0 && x.bk < 13 ? x.bk : null, rl: num(x.rl, 6), fs: x.fs === "f" || x.fs === "s" ? x.fs : null, kp: x.kp === 0 || x.kp === 1 ? x.kp : null, et: Number.isInteger(x.et) && x.et >= 0 ? x.et : null, cd: x.cd === 1 || x.cd === 2, cdw: x.cd === 2, rk: x.rk ? 1 : 0, fc: FC_RE.test(x.fc) ? x.fc : "", tl: Number.isInteger(x.tl) && x.tl >= 0 && x.tl <= 3600 ? x.tl : null, tp: x.tp ? 1 : 0, to: num(x.to, 9), qc: Array.isArray(x.qc) && Number.isInteger(x.qc[0]) && Number.isInteger(x.qc[1]) && QC[x.qc[1]] ? {id: x.qc[0], k: x.qc[1]} : null,
@@ -2065,6 +2092,26 @@ function serHTML(){
   const o = esc((oppM && oppM.nick) || "Opponent");
   return `<span class="serscore">Best of 3: you ${SER.w}, ${o} ${SER.l}</span>${S.serDone && !SER.done ? `<button class="btn pri" data-do="sernext" type="button">Next game</button>${SER.ahead ? `<span class="serscore">${o} is ready for game ${SER.g + 1}.</span>` : ""}` : ""}`;
 }
+// ---------- ranked season rewards: a sleeve for each rank you've reached in any season ----------
+const SLEEVES = ["Standard", "Crimson Bounty", "Treasure Hoard", "Jolly Roger", "Kelp Reef", "Davy Jones", "Sea Serpent", "Supernova", "Warlord", "Yonko"];
+const SLEEVE_RANK = {7: 300000, 8: 600000, 9: 900000};   // the bounty a reward sleeve needs
+function rankBest(){ return Math.max(RANK.b || 0, ...Object.values(RANK.ps || {}).map(v => +v || 0)); }
+const sleeveOk = i => !SLEEVE_RANK[i] || rankBest() >= SLEEVE_RANK[i];
+const sleeveOf = x => { x = Math.floor(+x) || 0; return x >= 0 && x < SLEEVES.length && sleeveOk(x) ? x : 0; };
+function sleeveSwatches(sel){
+  return SLEEVES.map((n, i) => { const ok = sleeveOk(i), why = ok ? n : `${n}: reach ${rankName(SLEEVE_RANK[i])} in Ranked to unlock`;
+    return `<button type="button" class="card back sl${i} swatch ${i === sel ? "sel" : ""}${ok ? "" : " locked"}" data-sl="${i}" title="${esc(why)}" aria-label="${esc(why)} sleeves"${ok ? "" : " aria-disabled=\"true\""}></button>`; }).join("");
+}
+// newly reached ranks: say which sleeve it unlocked (STATS.sv is the best reward sleeve already announced)
+function rewardCheck(){
+  let got = 0; for (const i of [7, 8, 9]) if (sleeveOk(i)) got = i;
+  if (got > (STATS.sv || 6)) { const was = STATS.sv || 6, names = SLEEVES.slice(was + 1, got + 1); STATS.sv = got; toast(`Season reward unlocked: the ${names.join(" and ")} sleeve${names.length > 1 ? "s" : ""}. Pick ${names.length > 1 ? "them" : "it"} in Deck & room.`); return true; }
+  return false;
+}
+function seasonRewardsHTML(){
+  return `<h3 class="rkh">Season rewards</h3><div class="pfrew">${[7, 8, 9].map(i => `<div class="rw${sleeveOk(i) ? " got" : ""}"><div class="card back sl${i}${sleeveOk(i) ? "" : " swatch locked"}"></div><div><b>${SLEEVES[i]} sleeve</b><small>${sleeveOk(i) ? "Unlocked" : `Reach ${esc(rankName(SLEEVE_RANK[i]))} (${berry(SLEEVE_RANK[i])})`}</small></div></div>`).join("")}</div>
+    <p class="hint">Reaching a rank in Ranked unlocks its sleeve for good, even after the season ends. Each finished season's rank is kept under Past ranked seasons.</p>`;
+}
 const ACH = [
   ["win1", "First win", "Win an online match."],
   ["win10", "Ten wins", "Win 10 online matches."],
@@ -2080,7 +2127,9 @@ const ACH = [
   ["tut", "Set sail", "Finish the tutorial."],
   ["decks5", "Shipwright", "Save 5 decks."],
   ["coll500", "Collector", "Have 500 cards in My collection."],
-  ["share", "Storyteller", "Share a replay code."]
+  ["share", "Storyteller", "Share a replay code."],
+  ["pz1", "Sharp eye", "Solve a daily lethal puzzle."],
+  ["pz7", "Puzzle week", "Solve the daily lethal puzzle 7 days in a row."]
 ];
 function statsBlank(){ return {g: 0, w: 0, l: 0, ld: {}, cd: {}, h: [], fc: "", fr: [], nk: "", ns: 0, rw: 0, ach: {}}; }
 const FC_RE = /^[A-HJ-NP-Z2-9]{6}$/;
@@ -2096,6 +2145,7 @@ function statsFrom(x){
   o.nk = clean(x.nk, 20);
   o.ns = x.ns ? 1 : 0;
   o.rw = Math.max(0, x.rw | 0);
+  o.sv = Math.max(0, Math.min(9, x.sv | 0));
   if (x.ach && typeof x.ach === "object") for (const a of ACH) if (+x.ach[a[0]] > 0) o.ach[a[0]] = +x.ach[a[0]];
   if (Array.isArray(x.fr)) o.fr = x.fr.slice(0, FR_MAX).filter(f => f && FC_RE.test(f.c)).map(f => ({c: f.c, n: clean(f.n, 20)}));
   return o;
@@ -2252,7 +2302,7 @@ function statPlayed(code){
   STATS.cd[code] = (STATS.cd[code] | 0) + 1; statsSave();
 }
 // ---------- achievements: earned once, kept with your stats, their count shown next to your name in the lobby ----------
-const ACH_ICON = {win1: "\u2694\ufe0f", win10: "\u2694\ufe0f", win50: "\u2694\ufe0f", rk10: "\ud83c\udfc6", nova: "\u2b50", warl: "\ud83d\udc51", yonko: "\ud83c\udff4\u200d\u2620\ufe0f", bot2: "\ud83e\udd16", bot3: "\ud83e\udd16", bot4: "\ud83e\udd16", tour: "\ud83e\udd47", tut: "\u26f5", decks5: "\ud83d\udee0\ufe0f", coll500: "\ud83d\udcda", share: "\ud83c\udfac"};
+const ACH_ICON = {win1: "\u2694\ufe0f", win10: "\u2694\ufe0f", win50: "\u2694\ufe0f", rk10: "\ud83c\udfc6", nova: "\u2b50", warl: "\ud83d\udc51", yonko: "\ud83c\udff4\u200d\u2620\ufe0f", bot2: "\ud83e\udd16", bot3: "\ud83e\udd16", bot4: "\ud83e\udd16", tour: "\ud83e\udd47", tut: "\u26f5", decks5: "\ud83d\udee0\ufe0f", coll500: "\ud83d\udcda", share: "\ud83c\udfac", pz1: "\ud83e\udde9", pz7: "\ud83e\udde9"};
 const achN = () => ACH.filter(a => STATS.ach[a[0]]).length;
 const acOf = x => Math.max(0, Math.min(ACH.length, x | 0));
 const achBadge = n => n > 0 ? `<span class="achb" title="${n} achievement${n === 1 ? "" : "s"}">\ud83c\udfc5${n}</span>` : "";
@@ -2269,7 +2319,7 @@ function achCheck(){
   const got = [];
   for (const [id] of ACH) if (have[id] && !STATS.ach[id]) { STATS.ach[id] = Date.now(); got.push(id); }
   if (got.length) achToast(got);
-  return got.length > 0;
+  return rewardCheck() || got.length > 0;
 }
 function achGive(id){ if (!ACH.some(a => a[0] === id) || STATS.ach[id]) return; STATS.ach[id] = Date.now(); achToast([id]); statsSave(); }
 function achRun(){ if (achCheck()) statsSave(); }
@@ -2319,6 +2369,7 @@ function openProfile(focusNick){
     </div>
     ${Object.keys(RANK.ps || {}).length ? `<h3 class="rkh">Past ranked seasons</h3><div class="pfseasons">${Object.keys(RANK.ps).sort().reverse().map(k => `<div><b>${esc(rankName(RANK.ps[k]))}</b><small>${esc(seasonName(k))}</small><span>${berry(RANK.ps[k])}</span></div>`).join("")}</div>` : ""}
     ${achHTML()}
+    ${seasonRewardsHTML()}
     <h3 class="rkh">Match history</h3>
     ${(STATS.h || []).length ? `<div class="pfhist">${STATS.h.map(histRow).join("")}</div>`
       : `<div class="lbempty"><b>No matches yet</b>Your last ${HIST_MAX} online matches show up here, with who you played and how it went.</div>`}
@@ -3350,11 +3401,30 @@ function metaLeader(recs, ld){
     core: Array.from(cards.values()).filter(y => y.in * 2 >= nd).sort((a, b) => b.in - a.in || b.n - a.n).slice(0, 30)};
 }
 const wr = (w, g) => g ? Math.round(100 * w / g) + "%" : "–";
+// the matchup chart: the most played Leaders against each other, each row's games against each column
+function metaMatrix(recs, n){
+  const lds = metaAgg(recs).slice(0, n || 8).map(x => x.l), cell = new Map();
+  for (const g of recs) {
+    if (!g.o || !lds.includes(g.l) || !lds.includes(g.o)) continue;
+    const k = g.l + ">" + g.o, x = cell.get(k) || {g: 0, w: 0}; x.g++; if (g.r === "w") x.w++; cell.set(k, x);
+  }
+  return {lds, at: (a, b) => cell.get(a + ">" + b) || {g: 0, w: 0}};
+}
+function metaMatrixHTML(recs){
+  const m = metaMatrix(recs, 8);
+  if (m.lds.length < 2) return `<div class="lbempty"><b>Not enough matches yet</b>The chart needs games between at least two Leaders.</div>`;
+  const head = l => `<span class="mxld" title="${esc(l + " " + (nameOf(l) || ""))}">${tile({c: l, n: nameOf(l)}, "", false, 0)}</span>`;
+  return `<div class="mxwrap"><table class="mx"><thead><tr><th></th>${m.lds.map(l => `<th>${head(l)}</th>`).join("")}</tr></thead><tbody>${m.lds.map(a => `<tr><th><button class="mxrow" data-do="mt:ld:${esc(a)}" type="button">${head(a)}<span>${esc(nameOf(a) || a)}</span></button></th>${m.lds.map(b => {
+    if (a === b) return `<td class="mxme">Mirror</td>`;
+    const x = m.at(a, b), cls = x.g >= 3 ? (x.w * 2 > x.g ? " up" : x.w * 2 < x.g ? " dn" : "") : " few";
+    return `<td class="mxc${cls}" title="${esc((nameOf(a) || a) + " vs " + (nameOf(b) || b))}: ${x.w} win${x.w === 1 ? "" : "s"} in ${x.g} game${x.g === 1 ? "" : "s"}">${x.g ? `<b>${wr(x.w, x.g)}</b><small>${x.g}</small>` : "–"}</td>`;
+  }).join("")}</tr>`).join("")}</tbody></table></div><p class="hint">Each row's win rate against each column, from the ${m.lds.length} most played Leaders. The small number is how many games; under 3 games is greyed out.</p>`;
+}
 function openMeta(){
   modal = {type: "meta", f: "std", days: 30, rk: false, ld: null, view: "ld"};
   showModal(`<h2>Meta</h2>
     <p class="hint">How each Leader is doing in real online matches, from players who share theirs. Every finished match is shared by each player who's signed in to an account, with their own Leader, the result, their own decklist and a replay of the boards (no hands). You can turn this off in Profile.</p>
-    <div class="row mttabs" role="tablist"><button class="btn pri" data-do="mt:view:ld" id="mt-tab-ld" type="button" role="tab" aria-selected="true">Leaders</button><button class="btn" data-do="mt:view:recent" id="mt-tab-recent" type="button" role="tab" aria-selected="false">Recent games</button></div>
+    <div class="row mttabs" role="tablist"><button class="btn pri" data-do="mt:view:ld" id="mt-tab-ld" type="button" role="tab" aria-selected="true">Leaders</button><button class="btn" data-do="mt:view:mx" id="mt-tab-mx" type="button" role="tab" aria-selected="false">Matchups</button><button class="btn" data-do="mt:view:recent" id="mt-tab-recent" type="button" role="tab" aria-selected="false">Recent games</button></div>
     <div class="row mtfil">
       <div><label for="mt-f">Format</label><select id="mt-f">${Object.keys(META_F).map(k => `<option value="${k}">${META_F[k]}</option>`).join("")}</select></div>
       <div><label for="mt-d">Played in</label><select id="mt-d"><option value="7">The last 7 days</option><option value="30" selected>The last 30 days</option><option value="0">Any time</option></select></div>
@@ -3379,8 +3449,9 @@ function renderMeta(){
     return;
   }
   const recs = metaPick(COMM.recs, modal), tot = recs.length, foot = `<p class="hint">From ${tot} shared result${tot === 1 ? "" : "s"} (each player's side of a match counts once)${acctUid() ? (shareOn() ? ". Yours are shared." : ". Yours aren't shared: turn it on in Profile.") : ". Sign in to share yours."}</p>`;
-  for (const k of ["ld", "recent"]) { const b = $("#mt-tab-" + k); if (b) { b.classList.toggle("pri", modal.view === k); b.setAttribute("aria-selected", String(modal.view === k)); } }
+  for (const k of ["ld", "mx", "recent"]) { const b = $("#mt-tab-" + k); if (b) { b.classList.toggle("pri", modal.view === k); b.setAttribute("aria-selected", String(modal.view === k)); } }
   if (!tot) { el.innerHTML = `<div class="lbempty"><b>No shared matches yet</b>Finished online matches from players signed in to an account show up here.</div>` + foot; return; }
+  if (modal.view === "mx") { el.innerHTML = metaMatrixHTML(recs) + foot; return; }
   if (modal.view === "recent") {
     // one row per match: both players' records share its id, and the one with a replay wins
     const seen = new Map();
@@ -3649,6 +3720,7 @@ function render(){
   if (WATCH) { renderWatch(); return; }
   if (S.phase === "play" && S.chars.length > 5 && !modal) setTimeout(() => { if (S.chars.length > 5 && !modal) { modal = {type: "limit"}; renderModal(); } }, 0);
   rankCheck(); statCheck(); tourCheck(); gameCheck(); serCheck();
+  if (PZ && PR && oppM && oppM.cd && !PZ.done) setTimeout(pzWin, 600);
   { const ok = boardTools(); for (const k of ["resetboard", "refresh", "undo"]) { const b = $(`[data-do="${k}"]`); if (b) b.hidden = !ok; } }
   { const fb = $("#startfb");
     if (fb) fb.hidden = !(R && !PR && S.phase === "play" && oppM && oppM.et == null);
@@ -3705,7 +3777,7 @@ window.addEventListener("resize", fitHand);
 function renderStatus(){
   const el = $("#status");
   if (PR) {
-    el.innerHTML = PR.bot ? `<span class="dot on"></span><span>Practice against the computer${TUT ? "" : ` (${DIFFS[botLv()]})`}</span>` : `<span class="dot on"></span><span>Practice: playing as <b>${esc(S.nick)}</b></span>`;
+    el.innerHTML = PR.bot ? `<span class="dot on"></span><span>${PZ ? "Daily lethal puzzle" : `Practice against the computer${TUT ? "" : ` (${DIFFS[botLv()]})`}`}</span>` : `<span class="dot on"></span><span>Practice: playing as <b>${esc(S.nick)}</b></span>`;
   } else if (status === "online") {
     el.innerHTML = `<span class="dot on"></span><span>Room</span><button class="chip link" data-do="copyroom" type="button" title="Copy room code">${esc(roomCode)}</button>`;
   } else if (status === "connecting" || status === "reconnecting") {
@@ -3810,6 +3882,7 @@ function openHome(page){
       <button class="btn" data-do="homeranked" type="button">Ranked</button>
       <button class="btn" data-do="hometours" type="button">Tournaments${(n => n ? ` <i class="frn">${n} open</i>` : "")(tourList().filter(t => t.st !== "done").length)}</button>
       <button class="btn" data-do="homebot" type="button">Practice against the computer</button>
+      <button class="btn" data-do="puzzle" type="button">Daily lethal puzzle${pzKey().d === todayISO() ? " ✓" : ""}</button>
       <button class="btn" data-do="tutorial" type="button">Learn to play (tutorial)</button>
       <button class="btn" data-do="homeboth" type="button">Test a deck (play both sides)</button>
       <button class="btn" data-do="home" type="button">Back</button>` : `
@@ -3839,7 +3912,7 @@ function openHome(page){
 function openSetup(opts){
   opts = opts || {};
   const v = loadSaved(), jl = opts.join || null, fmt0 = LB_FMT[v.fmt] ? v.fmt : "std";
-  formSleeve = Math.min(6, Math.max(0, Math.floor(+v.sleeve) || 0));
+  formSleeve = sleeveOf(v.sleeve);
   modal = {type: "setup", lobby: jl};
   showModal(`
     <h2>${jl ? "Join a lobby" : opts.pub ? "Make a lobby" : opts.friends ? "Friends only table" : "Deck &amp; room"}</h2>
@@ -3865,8 +3938,8 @@ function openSetup(opts){
       <label style="display:flex;gap:8px;align-items:center;margin-top:28px"><input type="checkbox" id="f-first" ${v.first ? "checked" : ""}> I'm going first (solo practice only; in a room you roll a die)</label>
     </div>
     <label>Card sleeves</label>
-    <div class="sleeves">${[0,1,2,3,4,5,6].map(i => `<button type="button" class="card back sl${i} swatch ${i === formSleeve ? "sel" : ""}" data-sl="${i}" title="${["Standard","Crimson Bounty","Treasure Hoard","Jolly Roger","Kelp Reef","Davy Jones","Sea Serpent"][i]}" aria-label="${["Standard","Crimson Bounty","Treasure Hoard","Jolly Roger","Kelp Reef","Davy Jones","Sea Serpent"][i]} sleeves"></button>`).join("")}</div>
-    <p class="slname" id="slname">${["Standard","Crimson Bounty","Treasure Hoard","Jolly Roger","Kelp Reef","Davy Jones","Sea Serpent"][formSleeve] || ""}</p>
+    <div class="sleeves">${sleeveSwatches(formSleeve)}</div>
+    <p class="slname" id="slname">${SLEEVES[formSleeve] || ""}</p>
     <label for="f-deck">Decklist</label>
     <textarea id="f-deck" spellcheck="false" placeholder="4xOP01-013 Nami&#10;OP01-016 x4&#10;3 OP01-021">${esc(v.deck || "")}</textarea>
     <div class="row" style="margin-top:8px">
@@ -3954,7 +4027,7 @@ function newGame(c, join){
   shuffle(cards);
   const ld = parseLines(c.leader)[0] || {code: "LEADER", name: ""};
   S = blank();
-  S.nick = c.nick; S.sleeve = Math.min(6, Math.max(0, c.sleeve | 0)); S.deck = cards; S.lifeN = c.life; S.first = c.first;
+  S.nick = c.nick; S.sleeve = sleeveOf(c.sleeve); S.deck = cards; S.lifeN = c.life; S.first = c.first;
   S.leader = {card: {u: 0, c: ld.code, n: ld.name}, r: false, d: 0};
   for (let i = 0; i < 5 && S.deck.length; i++) S.hand.push(S.deck.shift());
   S.phase = join ? "wait" : "pre"; undoStack = []; lastSnap = null;
@@ -4149,6 +4222,98 @@ async function startTutorial(){
   TUT = {i: 0};
   commit();
 }
+// ---------- daily lethal puzzle: a board where you have to win this turn ----------
+// Made from the date, the same for everyone that day, with cards that have no abilities (only Blocker or Rush) so the
+// arithmetic is all there is: give DON!! (+1000 each) so enough attackers reach the computer's Leader's power, through
+// its Life and every active Blocker (each stops one hit). The computer has no hand, and its Life cards have no Counter
+// and no [Trigger]. pzMake() only keeps a board pzSolve() can win, and where the obvious line doesn't.
+const PZ_LD = "OP09-042", PZ_OLD = "OP05-060", PZ_RUSH = "OP01-025";
+let PZ = null;
+function pzPool(){
+  const v = (c, e) => e && e.t === "Character" && BFX.has(c) && !fxAb(c).length && basePow(c) != null && !preDate(c) && !/^P-/.test(c);
+  const out = {van: [], blk: [], life: []};
+  for (const [c, e] of CARDDB) {
+    if (!v(c, e)) continue;
+    const kw = String(e.kw || "");
+    if (kw === "-" && e.p >= 2000 && e.p <= 7000) out.van.push(c);
+    if (kw === "Blocker") out.blk.push(c);
+    if (!(e.ctr > 0)) out.life.push(c);   // no Counter, so taking it as damage gives the computer nothing to defend with
+  }
+  for (const k in out) out[k].sort();
+  return out;
+}
+function pzRng(seed){ let h = 2166136261; for (const ch of seed) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h += 0x6D2B79F5; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+// the most hits you can land: each attacker needs DON!! to reach 5000; with the Rush card played (its cost from the same DON!!) or not
+function pzHits(atk, don){ let hits = 0; for (const n of atk.map(p => Math.max(0, Math.ceil((5000 - p) / 1000))).sort((a, b) => a - b)) if (n <= don) { don -= n; hits++; } return hits; }
+function pzSolve(z){
+  const atk = [5000, ...z.mine.filter(m => !m.r).map(m => basePow(m.c))], need = z.life + 1 + z.blk.filter(b => !b.r).length;
+  const no = pzHits(atk, z.don) >= need, rush = z.hand.includes(PZ_RUSH) && z.don >= 3 && pzHits(atk.concat(basePow(PZ_RUSH)), z.don - 3) >= need;
+  return {need, no, rush, ok: no || rush};
+}
+function pzMake(date){
+  const r = pzRng("bounty-pz-" + date), pool = pzPool(), pick = a => a[Math.floor(r() * a.length)];
+  if (!pool.van.length || !pool.blk.length || pool.life.length < 3) return null;
+  const kind = ["rush", "trap", "tight"][Math.floor(r() * 3)];   // what the catch is today
+  for (let tries = 0; tries < 2000; tries++) {
+    const z = {date, life: 1 + Math.floor(r() * 3), don: 3 + Math.floor(r() * 8), mine: [], blk: [], hand: []};
+    for (let i = 0, n = 1 + Math.floor(r() * 4); i < n; i++) z.mine.push({c: pick(pool.van), r: r() < 0.15});
+    for (let i = 0, n = Math.floor(r() * 3); i < n; i++) z.blk.push({c: pick(pool.blk), r: r() < 0.25});
+    if (kind !== "tight") z.hand.push(PZ_RUSH);
+    if (r() < 0.5) z.hand.push(pick(pool.van));
+    const s = pzSolve(z);
+    // winnable, at least 3 hits, and a catch: the Rush play is needed, or playing it loses, or every DON!! counts
+    const atk = [5000, ...z.mine.filter(m => !m.r).map(m => basePow(m.c))];
+    const tight = pzHits(atk, z.don - 1) < s.need;
+    if (s.ok && s.need >= 3 && (kind === "rush" ? s.rush && !s.no : kind === "trap" ? s.no && !s.rush && z.don >= 3 : tight)) { z.sol = s; z.kind = kind; return z; }
+  }
+  return null;
+}
+function pzKey(){ try { return JSON.parse(localStorage.getItem("bounty:pz") || "null") || {}; } catch (e) { return {}; } }
+function pzStore(o){ try { localStorage.setItem("bounty:pz", JSON.stringify(o)); } catch (e) {} }
+const pzCard = c => ({u: 0, c, n: nameOf(c) || ""});
+async function startPuzzle(date){
+  const z = pzMake(date || todayISO()); if (!z) { toast("Couldn't make today's puzzle."); return; }
+  const v = loadSaved(), pool = pzPool();
+  const deck = pool.life.map((c, i, l) => Math.floor(50 / l.length) + (i < 50 % l.length ? 1 : 0) + "x" + c).join("\n");
+  closeModal(); if (builderOpen) closeBuilder();
+  await startPractice(true, {nick: clean(v.nick, 20) || "Player", leader: PZ_LD, deck, life: 2, first: true, sleeve: v.sleeve | 0, diff: 1});
+  if (!PR) return;
+  PR.roll = [6, 1]; practiceFirst(0);
+  let u = 900;
+  const card = c => Object.assign(pzCard(c), {u: u++});
+  // the computer: its Life, Blockers, no hand and no DON!!
+  practiceStash(); practiceLoad(1);
+  S.leader = {card: card(PZ_OLD), r: false, d: 0};
+  S.deck.push(...S.hand); S.hand = [];
+  S.life = S.deck.splice(0, z.life);
+  S.chars = z.blk.map(b => ({card: card(b.c), r: b.r, d: 0, pt: 1}));
+  S.phase = "play"; S.turn = 2; S.myTurn = false; S.donActive = 0; S.donRested = 0; S.donDeck = 6; S.tdr = 2; S.tdn = 2;
+  PR.pres[1] = JSON.parse(JSON.stringify(pubFull())); practiceStash(); practiceLoad(0);
+  // you: your Leader, Characters that can attack, a hand and DON!!
+  S.leader = {card: card(PZ_LD), r: false, d: 0};
+  S.deck.push(...S.hand); S.hand = z.hand.map(card);
+  S.life = S.deck.splice(0, 2);
+  S.chars = z.mine.map(m => ({card: card(m.c), r: m.r, d: 0, pt: 1}));
+  S.phase = "play"; S.turn = 3; S.myTurn = true; S.donActive = z.don; S.donRested = 0; S.donDeck = 10 - z.don; S.tdr = 3; S.tdn = 3; S.pubt = true;
+  PZ = {date: z.date, z, done: false};
+  addLog("started the lethal puzzle for " + z.date);
+  PR.pres[0] = JSON.parse(JSON.stringify(pubFull()));
+  oppM = oppModel(PR.pres[1]);
+  commit(); render();
+  toast(`Lethal puzzle: win this turn. The computer has ${z.life} Life${z.blk.some(b => !b.r) ? " and " + z.blk.filter(b => !b.r).length + " active Blocker" + (z.blk.filter(b => !b.r).length > 1 ? "s" : "") : ""} and no cards in hand.`);
+}
+function pzWin(){
+  if (!PZ || PZ.done) return;
+  PZ.done = true;
+  const k = pzKey(), y = new Date(new Date(PZ.date + "T12:00:00").getTime() - 864e5).toLocaleDateString("en-CA");
+  if (k.d !== PZ.date) { k.s = k.d === y ? (k.s || 0) + 1 : 1; k.d = PZ.date; k.n = (k.n || 0) + 1; pzStore(k); }
+  achGive("pz1"); if ((k.s || 0) >= 7) achGive("pz7");
+  showModal(`<h2>Solved!</h2><p>You found the win for ${esc(PZ.date)}. ${k.s > 1 ? `That's ${k.s} days in a row.` : "Come back tomorrow for a new one."}</p><div class="row end"><button class="btn" data-do="home" type="button">Home</button><button class="btn pri" data-do="closemodal" type="button">Look at the board</button></div>`);
+}
+function pzFail(){
+  const z = PZ.z;
+  showModal(`<h2>Not this time</h2><p>The computer is still standing. It has ${z.life} Life and ${z.blk.filter(b => !b.r).length} active Blocker${z.blk.filter(b => !b.r).length === 1 ? "" : "s"}, so you need ${z.sol.need} hits on its Leader this turn, each with at least 5000 power.</p><details class="pzans"><summary>Show a hint</summary><p>${z.kind === "rush" ? "You can't do it with what's on the field: play the [Rush] Character and spread the rest of your DON!!." : z.kind === "trap" ? "Playing the [Rush] Character costs DON!! you need for power. Keep your DON!! for the attackers already on the field." : "Every DON!! counts: give each attacker only what it needs to reach 5000, starting with the strongest."}</p></details><div class="row end"><button class="btn" data-do="home" type="button">Home</button><button class="btn pri" data-do="pzretry" type="button">Try again</button></div>`);
+}
 const tutHand = code => S.hand.map((c, i) => c.c === code ? `#hand [data-src="hand:${i}"]` : "").filter(Boolean).join(",");
 const TUT_STEPS = [
   {t: "Welcome aboard", x: () => "This short game against the computer walks you through a turn: DON!!, playing Characters, attacking, blocking and counters. The computer's side is at the top of the table, yours is at the bottom.", btn: "Start"},
@@ -4172,6 +4337,11 @@ function renderCoach(){
   const el = $("#coach"); if (!el) return;
   document.querySelectorAll(".coachhl").forEach(e => e.classList.remove("coachhl"));
   if (!TUT && HINT) { renderHint(el); return; }
+  if (!TUT && PZ && PR && !PZ.done) {
+    const z = PZ.z, b = z.blk.filter(x => !x.r).length, key = "pz|" + z.date;
+    if (el.dataset.k !== key) { el.dataset.k = key; el.innerHTML = `<p class="cstep">Daily lethal puzzle · ${esc(z.date)}</p><h3>Win this turn</h3><p>The computer has ${z.life} Life${b ? `, ${b} active Blocker${b > 1 ? "s" : ""} (each can stop one hit)` : ""} and no cards in hand. Every attack on its Leader needs 5000 power: give DON!! for +1000 each. A [Rush] Character can attack the turn it's played.</p><div class="row"><button class="btn" data-do="pzretry" type="button">Start over</button></div>`; }
+    el.hidden = false; return;
+  }
   if (!TUT || !PR || !PR.bot) { if (!el.hidden) { el.hidden = true; el.innerHTML = ""; } return; }
   while (TUT.i < TUT_STEPS.length && TUT_STEPS[TUT.i].done && TUT_STEPS[TUT.i].done()) TUT.i++;
   const st = TUT_STEPS[TUT.i]; if (!st) { TUT = null; tutMark(); el.hidden = true; return; }
@@ -4191,7 +4361,7 @@ function tutSkip(){ TUT = null; tutMark(); render(); toast("Tutorial closed. The
 // where the DON!! goes, what to attack and how to defend, each with the reason. It never acts for you, and it isn't
 // offered online. HINT holds the advice until the board changes (hintKey).
 let HINT = null;
-const hintOk = () => !!(PR && PR.bot && !TUT && !WATCH && !RPV && PR.cur === 0 && (S.phase === "pre" || S.phase === "play") && !S.conceded && !(oppM && oppM.cd));
+const hintOk = () => !!(PR && PR.bot && !TUT && !PZ && !WATCH && !RPV && PR.cur === 0 && (S.phase === "pre" || S.phase === "play") && !S.conceded && !(oppM && oppM.cd));
 const hintKey = () => [S.phase, S.turn, S.myTurn, S.hand.length, S.chars.length, S.donActive, S.leader && S.leader.d, S.chars.map(f => (f.d || 0) + (f.r ? "r" : "")).join(), S.atk ? 1 : 0, defending() ? oppM.ak.n : 0, S.blk, S.mull ? 1 : 0, oppM ? oppM.lf + "/" + (oppM.ch || []).length : ""].join("|");
 const hName = c => esc(nameOf(c.c) || lab(c)), hHand = i => `#hand [data-src="hand:${i}"]`, hSrc = f => f === S.leader ? '#me [data-src="ld"]' : `#me [data-src="ch:${S.chars.indexOf(f)}"]`;
 function hintAttackers(){
@@ -5742,6 +5912,7 @@ function refreshAll(){
 function endTurn(){
   if (S.phase !== "play") { toast("Set up your deck and Life first."); return; }
   if (!S.myTurn) { toast("It isn't your turn."); return; }
+  if (PZ && PR && !PZ.done) { pzFail(); return; }   // a lethal puzzle is only this turn
   // [End of Your Turn] abilities resolve first, then the turn ends by itself
   if (fxOn() && S.eot !== S.turn) {
     S.eot = S.turn;
@@ -6867,6 +7038,7 @@ document.addEventListener("click", e => {
   const ld = t.closest("[data-ld]"); if (ld) { loadDeck(ld.dataset.ld); return; }
   const dd = t.closest("[data-dd]"); if (dd) { deleteDeck(dd.dataset.dd); return; }
   const sw = t.closest("[data-sl]");
+  if (sw && !sleeveOk(+sw.dataset.sl)) { toast(sw.title + "."); return; }
   if (sw) { formSleeve = +sw.dataset.sl; document.querySelectorAll("[data-sl]").forEach(b => b.classList.toggle("sel", b === sw)); const sn = document.getElementById("slname"); if (sn) sn.textContent = sw.title; return; }
   const don = t.closest("[data-don]");
   if (don) {
@@ -7026,12 +7198,12 @@ function doAction(a){
   if (a.startsWith("mt:")) {
     const [, k, x] = a.split(":");
     if (!modal || modal.type !== "meta") return;
-    if (k === "ld") { modal.ld = /^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(x) ? x : null; renderMeta(); $("#modal .sheet").scrollTop = 0; }
+    if (k === "ld") { modal.ld = /^[A-Z]{1,4}\d{0,3}-\d{2,4}$/.test(x) ? x : null; modal.view = "ld"; renderMeta(); $("#modal .sheet").scrollTop = 0; }
     else if (k === "all") { modal.ld = null; renderMeta(); }
     else if (k === "open") metaOpen(+x);
     else if (k === "copy") metaCopy(+x);
     else if (k === "bot") metaBot(+x);
-    else if (k === "view") { modal.view = x === "recent" ? "recent" : "ld"; renderMeta(); }
+    else if (k === "view") { modal.view = x === "recent" || x === "mx" ? x : "ld"; renderMeta(); }
     else if (k === "rp") { const id = (modal.recent || [])[+x]; if (id) rpFeed(id); }
     return;
   }
@@ -7245,6 +7417,8 @@ function doAction(a){
     case "homeboth": openSetup(); break;
     case "homebot": openSetup({bot: true}); break;
     case "tutorial": closeModal(); if (builderOpen) closeBuilder(); startTutorial(); break;
+    case "puzzle": startPuzzle(); break;
+    case "pzretry": closeModal(); startPuzzle(PZ ? PZ.date : null); break;
     case "tutnext": tutNext(); break;
     case "tutskip": tutSkip(); break;
     case "vsbot": startPractice(true); break;
@@ -7515,7 +7689,7 @@ function cleanDeck(id, d){
   return {
     id, name: clean(d.name, 40) || "Untitled deck", leader: String(d.leader || "").slice(0, 80),
     deck: String(d.deck || "").slice(0, 6000), life: Math.min(10, Math.max(1, Math.floor(+d.life) || 5)),
-    sleeve: Math.min(6, Math.max(0, Math.floor(+d.sleeve) || 0)), first: !!d.first, t: Math.floor(+d.t) || 0,
+    sleeve: Math.max(0, Math.min(SLEEVES.length - 1, Math.floor(+d.sleeve) || 0)), first: !!d.first, t: Math.floor(+d.t) || 0,
     folder: clean(d.folder, 24), notes: String(d.notes || "").replace(/\r/g, "").slice(0, 2000)
   };
 }

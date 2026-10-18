@@ -69,6 +69,14 @@ await A.page.check("#mt-rk"); await wait(300);
 const rk = await A.page.evaluate(() => [...document.querySelectorAll("#mt-body .mtrow")].map(r => r.innerText.replace(/\s+/g, " ")));
 check(rk.length === 1 && /OP09-001 · 8 games/.test(rk[0]), "ranked and tournaments only filters out lobby games");
 await A.page.uncheck("#mt-rk"); await A.page.selectOption("#mt-f", "std"); await A.page.selectOption("#mt-d", "30"); await wait(300);
+// the matchup chart: each row's win rate against each column
+await A.page.click('[data-do="mt:view:mx"]'); await wait(400);
+const mx = await A.page.evaluate(() => ({cols: document.querySelectorAll("#mt-body .mx thead th").length, rows: [...document.querySelectorAll("#mt-body .mx tbody tr")].map(r => [r.querySelector(".mxrow span").textContent, ...[...r.querySelectorAll("td")].map(t => t.innerText.replace(/\s+/g, " "))])}));
+console.log("matchups", JSON.stringify(mx));
+const r09 = await A.page.evaluate(() => { const m = metaMatrix(metaPick(COMM.recs, modal), 8); return [m.at("OP09-001", "OP11-040"), m.at("OP11-040", "OP09-001"), m.lds.length]; });
+check(r09[0].g === 8 && r09[0].w === 6 && r09[1].g === 0 && r09[2] === 5 && mx.rows.length === 5 && mx.cols === 6, "the matchup chart counts each Leader's games against each other Leader");
+check(mx.rows.some(r => r.includes("75% 8")) && mx.rows.every(r => r.filter(c => c === "Mirror").length === 1), "it shows the win rate and games in each cell, with the mirror on the diagonal");
+await A.page.screenshot({ path: OUT + "/matchups.png" });
 await A.page.click('[data-do="mt:ld:OP11-040"]'); await wait(400);
 const det = await A.page.evaluate(() => ({mu: [...document.querySelectorAll("#mt-body .mtgrid .mtrow")].map(r => r.innerText.replace(/\s+/g, " ")), lists: [...document.querySelectorAll("#mt-body .mtlist summary")].map(s => s.innerText), core: document.querySelectorAll("#mt-body .mtcore span").length}));
 console.log("OP11-040", JSON.stringify(det));

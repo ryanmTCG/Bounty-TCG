@@ -42,10 +42,10 @@ check(await page.evaluate(() => Object.keys(statsFrom({ach: {win1: 5, bogus: 7, 
 await page.evaluate(() => openProfile()); await wait(500);
 const pf = await page.evaluate(() => ({n: document.querySelectorAll("#pf-ach .ach").length, got: document.querySelectorAll("#pf-ach .ach.got").length, head: $("#pf-ach h3").textContent}));
 console.log("profile", JSON.stringify(pf));
-check(pf.n === 15 && pf.got === (await page.evaluate(() => achN())) && /of 15/.test(pf.head), "Profile lists every achievement, earned ones lit up");
+check(pf.n === 17 && pf.got === (await page.evaluate(() => achN())) && /of 17/.test(pf.head), "Profile lists every achievement, earned ones lit up");
 await page.screenshot({ path: OUT + "/profile.png" });
 // the lobby presence carries the count, and a peer's count is capped
-check(await page.evaluate(() => acOf(99) === 15 && acOf("x") === 0 && /🏅3/.test(achBadge(3)) && achBadge(0) === ""), "a count read from someone else is kept in range");
+check(await page.evaluate(() => acOf(99) === 17 && acOf("x") === 0 && /🏅3/.test(achBadge(3)) && achBadge(0) === ""), "a count read from someone else is kept in range");
 console.log("errors", JSON.stringify(errs));
 check(!errs.length, "no page errors");
 await app.close();
