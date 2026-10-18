@@ -2325,7 +2325,9 @@ function achGive(id){ if (!ACH.some(a => a[0] === id) || STATS.ach[id]) return; 
 function achRun(){ if (achCheck()) statsSave(); }
 function achToast(ids){
   const nm = ids.map(id => ACH.find(a => a[0] === id)[1]);
-  toast(ids.length === 1 ? `Achievement earned: ${nm[0]}. ${ACH.find(a => a[0] === ids[0])[2]}` : `${ids.length} achievements earned: ${nm.join(", ")}. See them in Profile.`);
+  // keep a message that is still showing (a shared replay's code) in front of the achievement
+  const tt = $("#toast"), keep = tt && !tt.hidden && !/^Achievement|achievements earned/.test(tt.textContent) ? tt.textContent + " " : "";
+  toast(keep + (ids.length === 1 ? `Achievement earned: ${nm[0]}. ${ACH.find(a => a[0] === ids[0])[2]}` : `${ids.length} achievements earned: ${nm.join(", ")}. See them in Profile.`));
   if (modal && modal.type === "profile" && $("#pf-ach")) $("#pf-ach").outerHTML = achHTML();
   lobbyUpdate();
 }

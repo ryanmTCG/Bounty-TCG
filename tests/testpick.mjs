@@ -22,7 +22,7 @@ await page.evaluate(([a, b]) => {
 }, [sabo, zoro]);
 await page.reload(); await wait(1500);
 await page.evaluate(() => openLobbies()); await wait(500);
-const b0 = await page.evaluate(() => ({opts: [...document.querySelectorAll("#deckpick option")].map(o => o.textContent), sel: $("#deckpick").value}));
+const b0 = await page.evaluate(() => ({opts: [...document.querySelectorAll("#deckpick option")].filter(o => !/^top:/.test(o.value)).map(o => o.textContent), sel: $("#deckpick").value}));
 console.log("lobbies", JSON.stringify(b0));
 check(b0.opts.length === 2 && b0.opts[0] === "Old Zoro (50 cards)" && b0.sel === "d1", "Lobbies has a drop-down of your saved decks, on the one you play");
 await page.selectOption("#deckpick", "d2"); await wait(300);
@@ -39,7 +39,7 @@ await page.selectOption("#deckpick", "d1"); await wait(300);
 check(await page.evaluate(() => !$(".rkbad") && loadSaved().did === "d1"), "switching back there clears the warning");
 // a deck that isn't saved shows as it is
 await page.evaluate(() => { const v = loadSaved(); v.deck = v.deck.replace("4xOP05-003", "3xOP05-003"); save(v); closeModal(); openRanked(); }); await wait(400);
-const r = await page.evaluate(() => ({first: $("#deckpick option").textContent, sel: $("#deckpick").value, n: document.querySelectorAll("#deckpick option").length}));
+const r = await page.evaluate(() => ({first: $("#deckpick option").textContent, sel: $("#deckpick").value, n: [...document.querySelectorAll("#deckpick option")].filter(o => !/^top:/.test(o.value)).length}));
 console.log("ranked", JSON.stringify(r));
 check(r.sel === "" && /^OP05-001 Sabo, 49 cards$/.test(r.first) && r.n === 3, "an unsaved deck shows as the current one in Ranked");
 console.log("errors", JSON.stringify(errs));

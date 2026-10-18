@@ -23,7 +23,7 @@ await page.evaluate(([a, b]) => {
 await page.reload(); await wait(1500);
 // the saved decks list in Deck & room groups by folder and shows the first line of the notes
 await page.evaluate(() => openSetup()); await wait(500);
-const sv = await page.evaluate(() => ({heads: [...document.querySelectorAll("#saved-list .dfolder")].map(e => e.firstChild.textContent), notes: [...document.querySelectorAll("#saved-list .dnote")].map(e => e.textContent)}));
+const sv = await page.evaluate(() => ({heads: [...document.querySelectorAll("#saved-list .dfolder")].map(e => e.firstChild.textContent).filter(h => !h.startsWith(TOP_FOLDER)), notes: [...document.querySelectorAll("#saved-list .deckrow")].filter(r => !/^top:/.test(r.querySelector("[data-ld]").dataset.ld)).map(r => r.querySelector(".dnote")).filter(Boolean).map(e => e.textContent)}));
 console.log("saved", JSON.stringify(sv));
 check(sv.heads.join("|") === "Fun|Tournament|No folder", "saved decks are grouped by folder, A to Z, with the ones in no folder last");
 check(sv.notes.length === 1 && sv.notes[0] === "Mulligan for OP05-006.", "a deck's row shows the first line of its notes");
