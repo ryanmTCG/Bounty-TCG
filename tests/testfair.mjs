@@ -145,6 +145,19 @@ await pick(() => openActMenu("dondeck", 300, 300), "Add 1 DON!! (active)");
 check((await snap()).dd === s0.dd - 1, "Test a deck (both sides) keeps the DON!! deck menu");
 await page.evaluate(() => { PR.bot = true; });
 
+// an ability that adds DON!! gives them only the way the card says
+for (const [c, rested] of [["EB01-021", false], ["OP01-093", true]]) {
+  await clear();
+  const d0 = await page.evaluate(([c]) => { const st = fxAb(c).flatMap(a => a.steps).find(s => s.a === "don"); const ab = normFx({abilities: [{t: "onPlay", text: st.text, steps: [st]}]}).ab[0]; fxEnqueue(fxJob({c: "OP01-016", n: "Nami"}, ab)); render(); return {a: S.donActive, r: S.donRested, dd: S.donDeck}; }, [c]);
+  await page.waitForTimeout(300);
+  const btns = await page.evaluate(() => [...document.querySelectorAll('[data-do^="fxdon:"]')].map(b => b.dataset.do));
+  await page.evaluate(w => doAction(w), rested ? "fxdon:a" : "fxdon:r");
+  const d1 = await page.evaluate(() => ({a: S.donActive, r: S.donRested, dd: S.donDeck}));
+  console.log(c, JSON.stringify(btns), JSON.stringify(d0), JSON.stringify(d1));
+  check(btns.length === 1 && btns[0] === (rested ? "fxdon:r" : "fxdon:a") && d1.dd === d0.dd - 1 && (rested ? d1.r === d0.r + 1 && d1.a === d0.a : d1.a === d0.a + 1 && d1.r === d0.r),
+    `${c} adds its DON!! ${rested ? "rested" : "active"} only, whatever is asked`);
+}
+await clear();
 await page.screenshot({ path: `${OUT}/fair.png` });
 check(!errs.length, "no page errors");
 if (errs.length) console.log(errs);

@@ -1678,6 +1678,8 @@ const NO_FREE = "In public and ranked matches, that only works while a card's ab
 // Only Test a deck and Practice alone keep it free. A card's ability that names DON!! still opens it through fair().
 const donTools = () => boardTools() && !(R && !PR) && !(PR && PR.bot);
 const NO_DON = "DON!! only comes, rests and readies through the turn's own steps, or while a card's ability calls for it.";
+// an ability's "add DON!! from your DON!! deck": rested when its wording says "rest it" (or the step's rested flag)
+const donRestedStep = st => !!st && (st.rested === true || /\brest(?:ed)?\b/i.test(st.text || "") && !/\bactive\b/i.test(st.text || ""));
 const fairDon = () => fair(["don"], null, false, donTools());
 const fairText = () => fxCur && fxCur.manual ? `${fxCur.text || ""} ${(fxCur.steps[fxCur.i] || {}).text || ""}` : "";
 function fair(kinds, text, quiet, free = boardTools()){
@@ -4623,7 +4625,7 @@ function botFxStep(m, st){
     m.dsel = sel; doAction("fxrdok"); return;
   }
   if (st.a === "draw") { doAction("fxdraw"); return; }
-  if (st.a === "don") { doAction(/\brest/i.test(st.text || "") && !/\bactive\b/i.test(st.text || "") ? "fxdon:r" : "fxdon:a"); return; }
+  if (st.a === "don") { doAction(donRestedStep(st) ? "fxdon:r" : "fxdon:a"); return; }
   if (st.a === "look") { botLook(m, st); return; }
   if (HAND_PICK[st.a]) {
     const pr = fxHandPred(st), need = Math.min(Math.abs(st.n), S.hand.filter(c => !pr || pr(c.c)).length); if (!need || (st.a === "revealHand" && st.pay && need < Math.abs(st.n))) return;
@@ -5552,7 +5554,7 @@ function fxStepHTML(m){
   }
   if (st.a === "draw") { const n = drawN(st); return say(st.to ? `Draw until you have ${st.to} cards in hand: ${pl(n, "card")}.` : `Draw ${pl(n, "card")}.`, `${cancel}${skip}<button class="btn pri" data-do="fxdraw" type="button">${n ? "Draw " + n : "OK"}</button>`); }
   if (st.a === "look") return say(`Look at the top ${st.n} cards of your deck.`, `${cancel}${skip}<button class="btn pri" data-do="fxlook" type="button">Look</button>`);
-  if (st.a === "don") return say(`Add ${st.n} DON!! from your DON!! deck.`, `${cancel}${skip}<button class="btn" data-do="fxdon:r" type="button">Add rested</button><button class="btn pri" data-do="fxdon:a" type="button">Add active</button>`);
+  if (st.a === "don") { const rs = donRestedStep(st); return say(`Add ${st.n} DON!! from your DON!! deck${rs ? " and rest it" : " as active"}.`, `${cancel}${skip}<button class="btn pri" data-do="fxdon:${rs ? "r" : "a"}" type="button">Add ${st.n} ${rs ? "rested" : "active"} DON!!</button>`); }
   if (HAND_PICK[st.a]) {
     const pr = fxHandPred(st), have = S.hand.filter(c => !pr || pr(c.c)).length, need = Math.min(Math.abs(st.n), have);
     if (!need) return say("No card in your hand fits this.", st.pay ? cancel : next);
@@ -7200,7 +7202,8 @@ function doAction(a){
   }
   if (a === "fxdraw" && fxCur) { const n = drawN(fxCur.steps[fxCur.i]); if (n) draw(n); fxCur.res = true; fxNext(); return; }
   if (a === "fxlook" && fxCur) { const n = fxCur.steps[fxCur.i].n, sp = lookSpec(fxCur.text), fx = fxCur.text || ""; fxCur.res = true; fxNext(); modal = {type: "peek", n, take: sp ? sp.n : 0, pred: sp && sp.pred, bottom: !!(sp && sp.bottom), fx, lim: !!sp}; renderModal(); addLog(`looked at the top ${Math.min(n, S.deck.length)} cards of their deck`); return; }
-  if (a.startsWith("fxdon:") && fxCur) { addDon(fxCur.steps[fxCur.i].n, a === "fxdon:a"); fxCur.res = true; fxNext(); return; }
+  // the card says whether the DON!! comes in rested or active, so the button can't choose
+  if (a.startsWith("fxdon:") && fxCur) { const st = fxCur.steps[fxCur.i]; addDon(st.n, !donRestedStep(st)); fxCur.res = true; fxNext(); return; }
   if (a === "sndon") { sndOn = !sndOn; try { localStorage.setItem("bounty:snd", sndOn ? "1" : "0"); } catch (e) {} if (sndOn) snd("turn"); toast(sndOn ? "Sounds on." : "Sounds off."); return; }
   if (a === "autofx" && !boardTools()) { toast("Card effects always run in public and ranked matches."); render(); return; }
   if (a === "autofx") { autoFx = !autoFx; try { localStorage.setItem("nakama:autofx", autoFx ? "1" : "0"); } catch (e) {} toast(autoFx ? "Auto card effects on." : "Auto card effects off."); return; }
