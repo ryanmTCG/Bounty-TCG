@@ -9,3 +9,4 @@ Add one line per change. `tools/publish_update.py` publishes them and empties th
 - Achievements in Profile, with your count shown next to your name in the lobby and on friends' lists.
 - Best of 3 at a table or in a friend challenge: the loser of each game chooses who goes first in the next.
 - Fixed the die roll at online tables: the player who lost the roll now gets the winner's choice instead of always going second.
+- Top meta decks: the 10 top Leaders' best recent lists, refreshed daily, ready to load from your saved decks, the deck drop-downs and the computer's decks.

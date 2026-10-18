@@ -1,0 +1,43 @@
+import { _electron as electron } from "playwright-core";
+import fs from "fs";
+// Top meta decks: meta/topdecks.json (written daily by tools/topdecks.py) shows as a read-only folder of saved decks,
+// in the deck drop-downs and among the computer's decks. What's read is untrusted and cleaned.
+const OUT = process.argv[2] || "shots-top";
+fs.mkdirSync(OUT, { recursive: true });
+const prof = "/tmp/bounty-prof-top"; fs.rmSync(prof, { recursive: true, force: true });
+const app = await electron.launch({ executablePath: "node_modules/electron/dist/electron", args: ["--no-sandbox", "dist/kit/app"], env: { ...process.env, BOUNTY_PROFILE: prof } });
+const page = await app.firstWindow(); const errs = [];
+page.on("pageerror", e => errs.push(String(e)));
+page.on("console", m => { if (m.type() === "error" && !/peerjs\.com|ERR_CONNECTION|40[034]|raw\.githubusercontent|Failed to fetch|ERR_/.test(m.text())) errs.push(m.text()); });
+await page.setViewportSize({ width: 1280, height: 900 }).catch(() => {});
+await page.waitForLoadState("load"); await page.waitForTimeout(1500);
+let fail = 0;
+const check = (ok, msg) => { console.log(ok ? "ok  " : "FAIL", msg); if (!ok) fail++; };
+const wait = ms => page.waitForTimeout(ms);
+const top = JSON.parse(fs.readFileSync("meta/topdecks.json", "utf8"));
+const bad = {v: 1, t: "2026-10-18", decks: [{n: "<b>x</b>", d: "OP15-058|OP15-061*9"}, {n: "short", d: "OP15-058|OP15-061*4"}, {n: "junk", d: "nope"}]};
+check(await page.evaluate(b => !topApply(b) && !topApply({v: 2, decks: []}) && !topApply(null), bad), "a file with no usable deck is ignored");
+check(await page.evaluate(t => topApply(t) && TOP.decks.length === t.decks.length && TOP.t === t.t, top), "the repository's file is read");
+await page.evaluate(() => openSetup()); await wait(500);
+const sv = await page.evaluate(() => ({head: ($("#saved-list .dfolder") || {}).textContent || "", rows: document.querySelectorAll("#saved-list .deckrow").length, del: document.querySelectorAll("#saved-list [data-dd]").length}));
+console.log("saved", JSON.stringify(sv));
+check(/^Top meta decks \(/.test(sv.head) && sv.rows === top.decks.length && sv.del === 0, "they show as a Top meta decks folder you can load but not delete");
+await page.click('#saved-list [data-ld="top:2"]'); await wait(300);
+const f = await page.evaluate(() => ({l: $("#f-leader").value, n: deckCount($("#f-deck").value)}));
+check(f.l.startsWith(top.decks[2].d.split("|")[0]) && f.n === 50, "Load puts one in the table setup");
+await page.screenshot({ path: OUT + "/saved.png" });
+await page.evaluate(() => { closeModal(); openLobbies(); }); await wait(400);
+const grp = await page.evaluate(() => ($("#deckpick optgroup") || {}).label || "");
+check(/^Top meta decks/.test(grp), "the deck drop-down lists them first");
+await page.selectOption("#deckpick", "top:0"); await wait(300);
+check(await page.evaluate(id => loadSaved().leader.startsWith(id), top.decks[0].d.split("|")[0]), "picking one makes it your deck");
+const od = await page.evaluate(() => { const h = odeckOpts(""); const x = odeckPick("p:1"); return [/Top meta decks/.test(h), x && x.n]; });
+check(od[0] && od[1] === 50, "the computer can play them too");
+// saving one makes your own copy, outside the top folder
+await page.evaluate(() => { closeModal(); openBuilder(); bdLoadSaved("top:0"); }); await wait(300);
+check(await page.evaluate(() => $("#bd-folder").value === "" && DECKS.length === 0), "the Deck editor loads one without putting your copy in the top folder");
+console.log("errors", JSON.stringify(errs));
+check(!errs.length, "no page errors");
+await app.close();
+console.log(fail ? `${fail} FAILED` : "all passed");
+process.exit(fail ? 1 : 0);

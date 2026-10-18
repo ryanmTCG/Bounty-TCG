@@ -1929,7 +1929,7 @@ async function rankBoard(){
 // it in the saved setup (nakama:setup, did = the deck's id) that sitting down and every table setup start from.
 function deckBox(fmt){
   const v = loadSaved(), ld = parseLines(v.leader || "")[0], n = deckCount(v.deck || ""), bad = fmt ? illegalNote(deckIllegal(v, fmt), fmt) : "";
-  const cur = DECKS.find(d => d.id === v.did && d.leader === v.leader && d.deck === v.deck) || DECKS.find(d => d.leader === v.leader && d.deck === v.deck);
+  const cur = allDecks().find(d => d.id === v.did && d.leader === v.leader && d.deck === v.deck) || allDecks().find(d => d.leader === v.leader && d.deck === v.deck);
   const now = ld ? `${esc(ld.code)} ${esc(ld.name || nameOf(ld.code) || "")}, ${n} cards` : "No deck picked yet";
   const opts = (cur ? "" : `<option value="" selected>${now}</option>`) + deckOptions(cur && cur.id, d => `${d.name} (${deckCount(d.deck)} cards)`);
   return `<div class="rkdeck" id="deckbox" data-fmt="${esc(fmt)}"><label for="deckpick">Your deck</label> <select id="deckpick" aria-label="Pick the deck you play">${opts}</select> <button class="linkbtn" data-do="homebuilder" type="button">Edit in the Deck editor</button>`
@@ -1937,7 +1937,7 @@ function deckBox(fmt){
 }
 function deckBoxRefresh(){ const b = $("#deckbox"); if (b) b.outerHTML = deckBox(b.dataset.fmt || ""); }
 function pickDeck(id){
-  const d = DECKS.find(x => x.id === id); if (!d) return;
+  const d = allDecks().find(x => x.id === id); if (!d) return;
   const v = loadSaved();
   Object.assign(v, {leader: d.leader, deck: d.deck, life: d.life, sleeve: d.sleeve, did: d.id});
   save(v); deckBoxRefresh();
@@ -4060,14 +4060,48 @@ const BOT_DECKS = [
   {n: "Blue-Yellow Hancock", e: "1st (5-0), Japanese store event, Oct 6 2026", d: "OP14-041|OP06-106*2 OP17-109*4 OP14-114*4 OP15-113*4 EB04-058*4 OP16-113*4 OP14-105*4 OP14-107*4 OP14-108*2 OP14-104*4 OP14-112*4 OP08-050*3 OP14-118*4 OP07-057*1 OP06-058*2"}
 ];
 let BOT_META = [];   // the most played list of each popular Leader on the Meta page, once it has loaded
+// ---------- top meta decks: a list refreshed every day in the repository (meta/topdecks.json) ----------
+// A daily job finds the top Leaders and the best-performing list for each; every copy reads it at launch and keeps the
+// last one it got. It shows as a read-only "Top meta decks" folder with your saved decks and in the computer's decks.
+const TOP_URL = "https://raw.githubusercontent.com/ryanmTCG/Bounty-TCG/main/meta/topdecks.json", TOP_FOLDER = "Top meta decks";
+let TOP = {t: "", decks: []};
+function topClean(x){
+  if (!x || typeof x !== "object" || x.v !== 1 || !Array.isArray(x.decks)) return null;
+  const t = /^\d{4}-\d{2}-\d{2}$/.test(x.t) ? x.t : "";
+  const decks = [];
+  for (const d of x.decks.slice(0, 12)) {
+    const dk = d && deckUnpack(d.d);
+    if (!dk || dk.n < 40 || dk.n > 50 || dk.rows.some(r => r[1] > 4)) continue;
+    decks.push({n: clean(d.n, 40) || nameOf(dk.l) || dk.l, w: clean(d.w, 90), e: clean(d.e, 140), d: d.d, dk});
+  }
+  return decks.length ? {t, decks: decks.slice(0, 10)} : null;
+}
+function topApply(x){ const c = topClean(x); if (!c) return false; TOP = c; renderSaved(); return true; }
+async function topLoad(){
+  try { const c = JSON.parse(localStorage.getItem("bounty:top") || "null"); if (c) topApply(c); } catch (e) {}
+  try {
+    const r = await fetch(TOP_URL, {cache: "no-store"}); if (!r.ok) return;
+    const x = await r.json();
+    if (topApply(x)) try { localStorage.setItem("bounty:top", JSON.stringify(x)); } catch (e) {}
+  } catch (e) {}
+}
+function topDate(){ return TOP.t ? new Date(TOP.t + "T12:00:00Z").toLocaleDateString(undefined, {month: "short", day: "numeric"}) : ""; }
+// the top decks as read-only saved decks
+function topDecks(){
+  return TOP.decks.map((x, i) => ({id: "top:" + i, name: x.n, leader: x.dk.l + " " + (nameOf(x.dk.l) || ""), deck: x.dk.deck, life: 5, sleeve: 0, first: false,
+    folder: TOP_FOLDER, notes: [x.w, x.e].filter(Boolean).join("\n"), top: true}));
+}
+const allDecks = () => DECKS.concat(topDecks());
 function odeckOpts(sel){
   const o = (v, t) => `<option value="${esc(v)}"${v === sel ? " selected" : ""}>${esc(t)}</option>`;
   return o("", "Same as yours") + o("own", "The list typed in below")
     + `<optgroup label="Tournament decks, October 2026">${BOT_DECKS.map(x => o("t:" + x.d.split("|")[0], `${x.n} (${x.d.split("|")[0]})`)).join("")}</optgroup>`
+    + (TOP.decks.length ? `<optgroup label="Top meta decks${TOP.t ? ", " + esc(topDate()) : ""}">${TOP.decks.map((x, i) => o("p:" + i, `${x.n} (${x.dk.l})`)).join("")}</optgroup>` : "")
     + (BOT_META.length ? `<optgroup label="Most played on the Meta page">${BOT_META.map((x, i) => o("m:" + i, `${nameOf(x.l) || x.l} (${x.l}), ${x.g} game${x.g === 1 ? "" : "s"}`)).join("")}</optgroup>` : "");
 }
 function odeckPick(v){
   if (/^t:/.test(v)) { const x = BOT_DECKS.find(x => x.d.split("|")[0] === v.slice(2)); return x ? Object.assign(deckUnpack(x.d), {why: `${x.n}: ${x.e}.`}) : null; }
+  if (/^p:/.test(v)) { const x = TOP.decks[+v.slice(2)]; return x ? Object.assign({}, x.dk, {why: `${x.n}: ${[x.w, x.e].filter(Boolean).join(". ")}.`}) : null; }
   if (/^m:/.test(v)) { const x = BOT_META[+v.slice(2)]; return x ? Object.assign(deckUnpack(x.d), {why: `Played ${x.g} time${x.g === 1 ? "" : "s"} on the Meta page, ${wr(x.w, x.g)} wins.`}) : null; }
   return null;
 }
@@ -7488,8 +7522,8 @@ function cleanDeck(id, d){
 // saved decks by folder: named folders A to Z, then the decks in no folder
 function deckGroups(){
   const g = new Map();
-  for (const d of DECKS) { const k = d.folder || ""; if (!g.has(k)) g.set(k, []); g.get(k).push(d); }
-  return Array.from(g.entries()).sort((a, b) => (!a[0]) - (!b[0]) || a[0].toLowerCase().localeCompare(b[0].toLowerCase()));
+  for (const d of allDecks()) { const k = d.top ? "\u0000" : d.folder || ""; if (!g.has(k)) g.set(k, []); g.get(k).push(d); }
+  return Array.from(g.entries()).sort((a, b) => (b[0] === "\u0000") - (a[0] === "\u0000") || (!a[0]) - (!b[0]) || a[0].toLowerCase().localeCompare(b[0].toLowerCase())).map(([k, ds]) => [k === "\u0000" ? TOP_FOLDER + (TOP.t ? " (" + topDate() + ")" : "") : k, ds]);
 }
 // <option>s for saved decks, in an <optgroup> per folder once any deck has one
 function deckOptions(sel, label){
@@ -7536,13 +7570,13 @@ function renderSaved(){
   const list = $("#saved-list"), note = $("#saved-note");
   if (!list) return;
   if (note) note.textContent = deckMode === "cloud" ? "Saved to your account. Only you can see these, on any device you sign in from." : deckMode === "local" ? "Saved in this browser only, because account storage isn't available here." : "Loading your saved decks…";
-  if (!DECKS.length) { list.innerHTML = `<p class="hint">No saved decks yet. Fill in a deck below and press Save deck.</p>`; return; }
-  const row = d => `<div class="deckrow"><span class="dname"${d.notes ? ` title="${esc(d.notes)}"` : ""}>${esc(d.name)}<small>${deckCount(d.deck)} cards</small>${d.notes ? `<em class="dnote">${esc(d.notes.split("\n")[0].slice(0, 80))}</em>` : ""}</span><button class="btn" type="button" data-ld="${esc(d.id)}">Load</button><button class="btn ${pendingDel === d.id ? "warn" : ""}" type="button" data-dd="${esc(d.id)}">${pendingDel === d.id ? "Delete?" : "Delete"}</button></div>`;
+  if (!allDecks().length) { list.innerHTML = `<p class="hint">No saved decks yet. Fill in a deck below and press Save deck.</p>`; return; }
+  const row = d => `<div class="deckrow"><span class="dname"${d.notes ? ` title="${esc(d.notes)}"` : ""}>${esc(d.name)}<small>${deckCount(d.deck)} cards</small>${d.notes ? `<em class="dnote">${esc(d.notes.split("\n")[0].slice(0, 80))}</em>` : ""}</span><button class="btn" type="button" data-ld="${esc(d.id)}">Load</button>${d.top ? "" : `<button class="btn ${pendingDel === d.id ? "warn" : ""}" type="button" data-dd="${esc(d.id)}">${pendingDel === d.id ? "Delete?" : "Delete"}</button>`}</div>`;
   const gs = deckGroups();
   list.innerHTML = gs.length === 1 && !gs[0][0] ? gs[0][1].map(row).join("") : gs.map(([f, ds]) => `<div class="dfolder">${esc(f || "No folder")}<small>${ds.length}</small></div>` + ds.map(row).join("")).join("");
 }
 function loadDeck(id){
-  const d = DECKS.find(x => x.id === id); if (!d || !$("#f-deck")) return;
+  const d = allDecks().find(x => x.id === id); if (!d || !$("#f-deck")) return;
   $("#f-leader").value = d.leader; $("#f-life").value = d.life; $("#f-first").checked = d.first; $("#f-deck").value = d.deck;
   formSleeve = d.sleeve; document.querySelectorAll("[data-sl]").forEach(b => b.classList.toggle("sel", +b.dataset.sl === formSleeve));
   $("#sd-name").value = d.name;
@@ -8343,15 +8377,15 @@ document.addEventListener("toggle", e => { if (e.target && e.target.id === "bd-a
 function refreshBdLoad(){
   const s = $("#bd-load"); if (!s) return;
   s.innerHTML = '<option value="">Load saved deck…</option>' + deckOptions(null, d => d.name);
-  const fl = $("#bd-folders"); if (fl) fl.innerHTML = deckGroups().filter(g => g[0]).map(g => `<option value="${esc(g[0])}">`).join("");
+  const fl = $("#bd-folders"); if (fl) fl.innerHTML = deckGroups().filter(g => g[0] && !g[1][0].top).map(g => `<option value="${esc(g[0])}">`).join("");
 }
 function bdLoadSaved(id){
-  const d = DECKS.find(x => x.id === id); if (!d) return;
+  const d = allDecks().find(x => x.id === id); if (!d) return;
   learnNames(d.deck); learnNames(d.leader);
   bdImport(d.deck);
   const l = parseLines(d.leader)[0];
   BD.leader = l ? {c: l.code, n: l.name || nameOf(l.code) || ""} : null;
-  $("#bd-name").value = d.name; $("#bd-life").value = d.life; $("#bd-folder").value = d.folder || ""; $("#bd-notes").value = d.notes || "";
+  $("#bd-name").value = d.name; $("#bd-life").value = d.life; $("#bd-folder").value = d.top ? "" : d.folder || ""; $("#bd-notes").value = d.notes || "";
   { const nb = $("#bd-notesbox"); if (nb && d.notes) nb.open = true; }
   renderBdDeck(); renderLib();
   toast(`Loaded "${d.name}" into the builder.`);
@@ -9108,6 +9142,7 @@ initDecks();
 try { const n = sessionStorage.getItem("bounty:acctnote"); if (n) { sessionStorage.removeItem("bounty:acctnote"); setTimeout(() => toast(n), 1200); } } catch (e) {}
 statsLoad().then(rankLoad);
 collLoad();
+topLoad();
 linkInit();
 setTimeout(friendsWatch, 1500);   // stats first, so a ranked match left unfinished last time is added to them
 initNames();
