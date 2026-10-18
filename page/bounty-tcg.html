@@ -805,6 +805,14 @@ select.sbtn{font-family:var(--slab)}
 .card.back.stack.sl7,.card.back.stack.sl8,.card.back.stack.sl9{box-shadow:1px 1px 0 var(--s1),2px 2px 0 rgba(0,0,0,.35),3px 3px 0 var(--s1),0 3px 5px rgba(0,0,0,.45)}
 .card.back.sl7.swatch,.card.back.sl8.swatch,.card.back.sl9.swatch{background-size:62%,auto;background-position:center,0 0}
 .card.swatch.locked{opacity:.35;filter:grayscale(.7)}
+.wkbox{display:grid;gap:8px}
+.wkc{display:flex;gap:10px;align-items:center;padding:8px 12px;border:2px solid rgba(255,240,205,.25);border-radius:12px;background:rgba(0,0,0,.22)}
+.wkc.done{border-color:rgba(242,184,75,.7)}
+.wkc>div{flex:1;min-width:0}
+.wkc b{display:block}
+.wki{font-size:22px}
+.wkbar{height:6px;border-radius:3px;background:rgba(255,255,255,.12);margin:5px 0 3px;overflow:hidden}
+.wkbar i{display:block;height:100%;background:var(--gold, #f2b84b)}
 .pfrew{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .pfrew .rw{display:flex;gap:8px;align-items:center;padding:6px 10px;border:2px solid rgba(255,240,205,.25);border-radius:12px;background:rgba(0,0,0,.22)}
 .pfrew .rw.got{border-color:rgba(242,184,75,.7)}
@@ -2120,6 +2128,81 @@ function seasonRewardsHTML(){
   return `<h3 class="rkh">Season rewards</h3><div class="pfrew">${[7, 8, 9].map(i => `<div class="rw${sleeveOk(i) ? " got" : ""}"><div class="card back sl${i}${sleeveOk(i) ? "" : " swatch locked"}"></div><div><b>${SLEEVES[i]} sleeve</b><small>${sleeveOk(i) ? "Unlocked" : `Reach ${esc(rankName(SLEEVE_RANK[i]))} (${berry(SLEEVE_RANK[i])})`}</small></div></div>`).join("")}</div>
     <p class="hint">Reaching a rank in Ranked unlocks its sleeve for good, even after the season ends. Each finished season's rank is kept under Past ranked seasons.</p>`;
 }
+// ---------- weekly challenges: three goals a week, the same for everyone, each finished one a badge ----------
+// The week is the ISO week in UTC (wkKey). Its three come from WK_POOL by a seeded pick (wkPick), at most one color.
+// Progress is STATS.wk {k, p: {id: count}, l: {id: [Leaders]}}; finished ones go in STATS.wb ("2026w42:win3", newest first).
+// Finished games report through wkGame() (statCheck for online, wkBotEnd for the computer); a solved puzzle through wkEvent("pz").
+const WK_COLORS = ["Red", "Green", "Blue", "Purple", "Black", "Yellow"];
+const WK_POOL = [
+  ["win3", "Win 3 online matches", 3, g => g.won && g.mode !== "bot"],
+  ["play5", "Play 5 matches, online or against the computer", 5, g => true],
+  ["rk2", "Win 2 ranked matches", 2, g => g.won && g.mode === "ranked"],
+  ["hard2", "Beat the computer on Hard or higher twice", 2, g => g.won && g.mode === "bot" && g.lv >= 2],
+  ["exp1", "Beat the computer on Expert or higher", 1, g => g.won && g.mode === "bot" && g.lv >= 3],
+  ["fr1", "Win a Friends only match", 1, g => g.won && g.mode === "friends"],
+  ["lowc", "Win with a deck that has 10 or fewer cards with a Counter", 1, g => g.won && g.ctr != null && g.ctr <= 10],
+  ["lds3", "Win with 3 different Leaders", 3, g => g.won && !!g.ld, "ld"],
+  ["pz3", "Solve the daily lethal puzzle on 3 days", 3, null, "pz"],
+  ...WK_COLORS.map(c => ["c" + c.toLowerCase(), `Win 2 games with a ${c} Leader`, 2, g => g.won && g.cols.includes(c.toLowerCase())])
+];
+const WK_MAX_BADGES = 300;
+function wkKey(t){
+  const d = new Date(t || Date.now()), day = (d.getUTCDay() + 6) % 7;
+  const th = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - day + 3));
+  const y = th.getUTCFullYear(), w1 = new Date(Date.UTC(y, 0, 4)), wk = 1 + Math.round(((th - w1) / 864e5 - 3 + (w1.getUTCDay() + 6) % 7) / 7);
+  return y + "w" + String(wk).padStart(2, "0");
+}
+// when this week's challenges end: next Monday 00:00 UTC
+function wkEnds(){ const d = new Date(), day = (d.getUTCDay() + 6) % 7; return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - day + 7); }
+function wkPick(k){
+  let h = 2166136261; for (const ch of "wk:" + k) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
+  const rnd = () => { h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; };
+  const out = [];
+  while (out.length < 3) {
+    const c = WK_POOL[Math.floor(rnd() * WK_POOL.length)];
+    if (out.includes(c) || (c[0][0] === "c" && c[0].length > 3 && out.some(o => o[0][0] === "c" && o[0].length > 3))) continue;
+    out.push(c);
+  }
+  return out;
+}
+function wkCur(){
+  const k = wkKey();
+  if (!STATS.wk || STATS.wk.k !== k) STATS.wk = {k, p: {}, l: {}};
+  return STATS.wk;
+}
+const wkDone = (k, id) => (STATS.wb || []).includes(k + ":" + id);
+function wkBump(c, n, extra){
+  const w = wkCur(), id = c[0];
+  if (wkDone(w.k, id)) return false;
+  if (c[4] === "ld") { const l = w.l[id] || (w.l[id] = []); if (!l.includes(extra)) l.push(extra); w.p[id] = l.length; }
+  else w.p[id] = (w.p[id] || 0) + n;
+  if (w.p[id] >= c[2]) { STATS.wb = [w.k + ":" + id, ...(STATS.wb || [])].slice(0, WK_MAX_BADGES); toast(`Weekly challenge done: ${c[1]}. That's ${STATS.wb.length} challenge badge${STATS.wb.length === 1 ? "" : "s"}.`); }
+  return true;
+}
+// a finished game: {won, mode: "online" | "friends" | "ranked" | "bot", lv (the computer's level), ld (my Leader), deck (list text)}
+function wkGame(g){
+  const L = g.ld || "", rows = parseLines(g.deck || "");
+  const info = Object.assign({}, g, {cols: colorsOf(L), ctr: rows.length ? rows.reduce((n, e) => n + (((CARDDB.get(e.code) || {}).ctr | 0) > 0 ? e.count : 0), 0) : null});
+  let ch = false;
+  for (const c of wkPick(wkCur().k)) if (c[3] && c[3](info)) ch = wkBump(c, 1, L) || ch;
+  if (ch) statsSave();
+}
+function wkEvent(kind){ let ch = false; for (const c of wkPick(wkCur().k)) if (c[4] === kind) ch = wkBump(c, 1) || ch; if (ch) statsSave(); }
+// the computer's game ends once: you conceded or lost, or it did
+function wkBotEnd(){
+  if (!PR || !PR.bot || TUT || PZ || S.wkSeen || S.phase === "none") return;
+  const won = !!(oppM && oppM.cd) && !S.conceded;
+  if (!won && !S.conceded) return;
+  S.wkSeen = true;
+  wkGame({won, mode: "bot", lv: botLv(), ld: (S.leader && S.leader.card && S.leader.card.c) || "", deck: (lastCfg && lastCfg.deck) || ""});
+}
+function wkHTML(){
+  const w = wkCur(), left = Math.max(0, wkEnds() - Date.now()), dd = Math.floor(left / 864e5), hh = Math.floor(left % 864e5 / 36e5);
+  const n = (STATS.wb || []).length;
+  return `<h3 class="rkh">Weekly challenges</h3><div class="wkbox">${wkPick(w.k).map(c => { const v = Math.min(c[2], w.p[c[0]] || 0), done = wkDone(w.k, c[0]);
+    return `<div class="wkc${done ? " done" : ""}"><span class="wki">${done ? "🎖️" : "⚓"}</span><div><b>${esc(c[1])}</b><div class="wkbar"><i style="width:${Math.round(100 * (done ? c[2] : v) / c[2])}%"></i></div><small>${done ? "Done" : `${v} of ${c[2]}`}</small></div></div>`; }).join("")}</div>
+    <p class="hint">New challenges in ${dd ? `${dd} day${dd === 1 ? "" : "s"} ` : ""}${hh} hour${hh === 1 ? "" : "s"}. Each one you finish is a badge: <b>🎖️ ${n}</b> so far.</p>`;
+}
 const ACH = [
   ["win1", "First win", "Win an online match."],
   ["win10", "Ten wins", "Win 10 online matches."],
@@ -2154,6 +2237,13 @@ function statsFrom(x){
   o.ns = x.ns ? 1 : 0;
   o.rw = Math.max(0, x.rw | 0);
   o.sv = Math.max(0, Math.min(9, x.sv | 0));
+  if (x.wk && typeof x.wk === "object" && /^\d{4}w\d{2}$/.test(x.wk.k)) {
+    const ids = new Set(WK_POOL.map(c => c[0])), p = {}, l = {};
+    for (const id of Object.keys(x.wk.p || {})) if (ids.has(id)) p[id] = Math.max(0, Math.min(99, x.wk.p[id] | 0));
+    for (const id of Object.keys(x.wk.l || {})) if (ids.has(id) && Array.isArray(x.wk.l[id])) l[id] = x.wk.l[id].filter(code).slice(0, 10);
+    o.wk = {k: x.wk.k, p, l};
+  }
+  if (Array.isArray(x.wb)) o.wb = [...new Set(x.wb.filter(b => typeof b === "string" && /^\d{4}w\d{2}:[a-z0-9]{2,8}$/.test(b)))].slice(0, WK_MAX_BADGES);
   if (x.ach && typeof x.ach === "object") for (const a of ACH) if (+x.ach[a[0]] > 0) o.ach[a[0]] = +x.ach[a[0]];
   if (Array.isArray(x.fr)) o.fr = x.fr.slice(0, FR_MAX).filter(f => f && FC_RE.test(f.c)).map(f => ({c: f.c, n: clean(f.n, 20)}));
   return o;
@@ -2301,6 +2391,7 @@ function statCheck(){
   if (won) { STATS.w++; if (e) e.w++; if (S.ranked && S.rankOpp) STATS.rw++; } else { STATS.l++; if (e) e.l++; }
   const y = lost ? (S.lostDeck ? "deck" : S.lostDmg ? "dmg" : S.tmo >= TIMEOUTS_MAX ? "time" : S.rankLeft ? "left" : "cd") : (oppM && oppM.cd ? (oppM.cdw ? (oppM.dk === 0 ? "deck" : "dmg") : (oppM.to || 0) >= TIMEOUTS_MAX ? "time" : "cd") : "left");
   S.statWon = won; S.statY = y;
+  wkGame({won, mode: S.ranked && S.rankOpp ? "ranked" : S.pubt ? "online" : "friends", ld: (S.leader && S.leader.card && S.leader.card.c) || "", deck: (lastCfg && lastCfg.deck) || ""});
   statHist({me: (S.leader && S.leader.card && S.leader.card.c) || "", op: S.statOpLd || "", on: S.statOpNick || "", fc: S.statOpFc || "", r: won ? "w" : "l", rk: S.ranked && S.rankOpp ? 1 : 0, b: S.rankD || 0, y});
   statsSave();
 }
@@ -2380,6 +2471,7 @@ function openProfile(focusNick){
     ${Object.keys(RANK.ps || {}).length ? `<h3 class="rkh">Past ranked seasons</h3><div class="pfseasons">${Object.keys(RANK.ps).sort().reverse().map(k => `<div><b>${esc(rankName(RANK.ps[k]))}</b><small>${esc(seasonName(k))}</small><span>${berry(RANK.ps[k])}</span></div>`).join("")}</div>` : ""}
     ${achHTML()}
     ${seasonRewardsHTML()}
+    ${wkHTML()}
     <h3 class="rkh">Match history</h3>
     ${(STATS.h || []).length ? `<div class="pfhist">${STATS.h.map(histRow).join("")}</div>`
       : `<div class="lbempty"><b>No matches yet</b>Your last ${HIST_MAX} online matches show up here, with who you played and how it went.</div>`}
@@ -3732,6 +3824,7 @@ function render(){
   if (S.phase === "play" && S.chars.length > 5 && !modal) setTimeout(() => { if (S.chars.length > 5 && !modal) { modal = {type: "limit"}; renderModal(); } }, 0);
   rankCheck(); statCheck(); tourCheck(); gameCheck(); serCheck();
   if (PZ && PR && oppM && oppM.cd && !PZ.done) setTimeout(pzWin, 600);
+  wkBotEnd();
   { const ok = boardTools(); for (const k of ["resetboard", "refresh", "undo"]) { const b = $(`[data-do="${k}"]`); if (b) b.hidden = !ok; } }
   { const fb = $("#startfb");
     if (fb) fb.hidden = !(R && !PR && S.phase === "play" && oppM && oppM.et == null);
@@ -4319,7 +4412,7 @@ function pzWin(){
   if (!PZ || PZ.done) return;
   PZ.done = true;
   const k = pzKey(), y = new Date(new Date(PZ.date + "T12:00:00").getTime() - 864e5).toLocaleDateString("en-CA");
-  if (k.d !== PZ.date) { k.s = k.d === y ? (k.s || 0) + 1 : 1; k.d = PZ.date; k.n = (k.n || 0) + 1; pzStore(k); }
+  if (k.d !== PZ.date) { k.s = k.d === y ? (k.s || 0) + 1 : 1; k.d = PZ.date; k.n = (k.n || 0) + 1; pzStore(k); if (PZ.date === todayISO()) wkEvent("pz"); }
   achGive("pz1"); if ((k.s || 0) >= 7) achGive("pz7");
   showModal(`<h2>Solved!</h2><p>You found the win for ${esc(PZ.date)}. ${k.s > 1 ? `That's ${k.s} days in a row.` : "Come back tomorrow for a new one."}</p><div class="row end"><button class="btn" data-do="home" type="button">Home</button><button class="btn pri" data-do="closemodal" type="button">Look at the board</button></div>`);
 }
