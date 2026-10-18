@@ -52,7 +52,7 @@
       "kw": "-",
       "n": "Fake Straw Hat Crew",
       "p": 3000,
-      "s": "Impostor Straw Hat Crew",
+      "s": "Fake Straw Hat Crew",
       "t": "Character"
     },
     "EB02-006": {
@@ -71,7 +71,7 @@
       "k": 3,
       "kw": "-",
       "n": "Cloven Rose Blizzard",
-      "s": "Animal / W7 / Straw Hat Pirates",
+      "s": "Animal / Water Seven / Straw Hat Crew",
       "t": "Event"
     },
     "EB02-008": {
@@ -150,7 +150,7 @@
       "kw": "-",
       "n": "Jewelry Bonney",
       "p": 7000,
-      "s": "Supernova / Bonnie Pirates",
+      "s": "Supernovas / Bonney Pirates",
       "t": "Character"
     },
     "EB02-016": {
@@ -210,7 +210,7 @@
       "k": 3,
       "kw": "-",
       "n": "Gum-Gum Giant Pistol",
-      "s": "Straw Hat Crew / W7",
+      "s": "Water Seven / Straw Hat Crew",
       "t": "Event"
     },
     "EB02-022": {
@@ -298,7 +298,7 @@
       "kw": "-",
       "n": "Grandpa Ryu",
       "p": 5000,
-      "s": "Animals / East Blue",
+      "s": "Animal / East Blue",
       "t": "Character"
     },
     "EB02-030": {
@@ -324,7 +324,7 @@
       "k": 1,
       "kw": "-",
       "n": "Iceburg",
-      "s": "Water 7 / Galley-La Company",
+      "s": "Water Seven / Galley-La Company",
       "t": "Character"
     },
     "EB02-033": {
@@ -334,7 +334,7 @@
       "k": 1,
       "kw": "Blocker",
       "n": "Klabautermann",
-      "s": "Fairy",
+      "s": "Sprite",
       "t": "Character"
     },
     "EB02-034": {
@@ -356,7 +356,7 @@
       "kw": "-",
       "n": "Sanji & Pudding",
       "p": 7000,
-      "s": "Strawhat Crew / Big Mom Pirates",
+      "s": "Big Mom Pirates / Straw Hat Crew",
       "t": "Character"
     },
     "EB02-036": {
@@ -397,7 +397,7 @@
       "k": 4,
       "kw": "-",
       "n": "GERMA 66",
-      "s": "Vinsmoke Family / Germa 66",
+      "s": "The Vinsmoke Family / GERMA 66",
       "t": "Event"
     },
     "EB02-040": {
@@ -457,7 +457,7 @@
       "kw": "Blocker",
       "n": "Trafalgar Law",
       "p": 6000,
-      "s": "Dressrosa / Supernova / Heart Pirates",
+      "s": "Dressrosa / Supernovas / Heart Pirates",
       "t": "Character"
     },
     "EB02-046": {
@@ -617,7 +617,7 @@
       "kw": "Rush",
       "n": "Monkey.D.Luffy",
       "p": 7000,
-      "s": "Water 7/Straw Hat Crew",
+      "s": "Water Seven / Straw Hat Crew",
       "t": "Character"
     }
   }

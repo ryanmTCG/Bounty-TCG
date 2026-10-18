@@ -27,7 +27,7 @@
       "lf": 5,
       "n": "Gol.D.Roger",
       "p": 7000,
-      "s": "Pirate King/Roger Pirates",
+      "s": "King of the Pirates / Roger Pirates",
       "t": "Leader"
     },
     "OP13-004": {
@@ -780,7 +780,7 @@
       "k": 1,
       "kw": "-",
       "n": "Guess We'll Have Another Scrap. You Can Only Risk Death While You're Still Alive!!",
-      "s": "Pirate King/Roger Pirates",
+      "s": "King of the Pirates / Roger Pirates",
       "t": "Event"
     },
     "OP13-076": {
@@ -788,7 +788,7 @@
       "k": 0,
       "kw": "-",
       "n": "Divine Departure",
-      "s": "Pirate King/Roger Pirates",
+      "s": "King of the Pirates / Roger Pirates",
       "t": "Event"
     },
     "OP13-077": {
@@ -1235,7 +1235,7 @@
       "ctr": 0,
       "k": 6,
       "kw": "Blocker",
-      "n": "Sabo (120) (SP)",
+      "n": "Sabo",
       "p": 7000,
       "s": "Dressrosa/Revolutionary Army",
       "t": "Character"

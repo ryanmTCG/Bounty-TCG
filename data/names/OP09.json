@@ -7,7 +7,7 @@
       "lf": 5,
       "n": "Shanks",
       "p": 5000,
-      "s": "The Four Emperors/Red Hair Pirates",
+      "s": "The Four Emperors / Red-Haired Pirates",
       "t": "Leader"
     },
     "OP09-002": {
@@ -40,7 +40,7 @@
       "kw": "Rush",
       "n": "Shanks",
       "p": 12000,
-      "s": "The Four Emperors / Red Hair Pirates",
+      "s": "The Four Emperors / Red-Haired Pirates",
       "t": "Character"
     },
     "OP09-005": {
@@ -62,7 +62,7 @@
       "kw": "-",
       "n": "Howling Gab",
       "p": 7000,
-      "s": "Red Hair Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Character"
     },
     "OP09-007": {
@@ -84,7 +84,7 @@
       "kw": "-",
       "n": "Building Snake",
       "p": 2000,
-      "s": "Red Hair Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Character"
     },
     "OP09-009": {
@@ -95,7 +95,7 @@
       "kw": "-",
       "n": "Benn.Beckman",
       "p": 7000,
-      "s": "Red Hair Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Character"
     },
     "OP09-010": {
@@ -106,7 +106,7 @@
       "kw": "-",
       "n": "Bonk Punch",
       "p": 5000,
-      "s": "Red Hair Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Character"
     },
     "OP09-011": {
@@ -117,7 +117,7 @@
       "kw": "-",
       "n": "Hongo",
       "p": 3000,
-      "s": "Red Hair Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Character"
     },
     "OP09-012": {
@@ -128,7 +128,7 @@
       "kw": "-",
       "n": "Monster",
       "p": 4000,
-      "s": "Animal / Red Hair Pirates",
+      "s": "Animal / Red-Haired Pirates",
       "t": "Character"
     },
     "OP09-013": {
@@ -139,7 +139,7 @@
       "kw": "-",
       "n": "Yasopp",
       "p": 6000,
-      "s": "Red Hair Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Character"
     },
     "OP09-014": {
@@ -150,7 +150,7 @@
       "kw": "Blocker",
       "n": "Limejuice",
       "p": 3000,
-      "s": "Red Hair Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Character"
     },
     "OP09-015": {
@@ -161,7 +161,7 @@
       "kw": "Blocker",
       "n": "Lucky.Roux",
       "p": 5000,
-      "s": "Red Hair Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Character"
     },
     "OP09-016": {
@@ -172,7 +172,7 @@
       "kw": "-",
       "n": "Rockstar",
       "p": 6000,
-      "s": "Red Hair Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Character"
     },
     "OP09-017": {
@@ -191,7 +191,7 @@
       "k": 3,
       "kw": "-",
       "n": "Get Out of Here!",
-      "s": "Red Hair Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Event"
     },
     "OP09-019": {
@@ -199,7 +199,7 @@
       "k": 2,
       "kw": "-",
       "n": "Nobody Hurts a Friend of Mine!!!!",
-      "s": "Red Hair Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Event"
     },
     "OP09-020": {
@@ -207,7 +207,7 @@
       "k": 1,
       "kw": "-",
       "n": "Come On!! We'll Fight You!!",
-      "s": "The Four Emperors / Red Hair Pirates",
+      "s": "The Four Emperors / Red-Haired Pirates",
       "t": "Event"
     },
     "OP09-021": {
@@ -215,7 +215,7 @@
       "k": 2,
       "kw": "-",
       "n": "Red Force",
-      "s": "Red Hair Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Stage"
     },
     "OP09-022": {
@@ -313,7 +313,7 @@
       "kw": "-",
       "n": "Trafalgar Law",
       "p": 4000,
-      "s": "ODYSSEY / Supernova / Heart Pirates",
+      "s": "ODYSSEY / Supernovas / Heart Pirates",
       "t": "Character"
     },
     "OP09-031": {
@@ -357,7 +357,7 @@
       "kw": "-",
       "n": "Perona",
       "p": 2000,
-      "s": "Shikkearu Kingdom/Thriller Bark Pirates",
+      "s": "Muggy Kingdom / Thriller Bark Pirates",
       "t": "Character"
     },
     "OP09-035": {
@@ -379,7 +379,7 @@
       "kw": "-",
       "n": "Monkey.D.Luffy",
       "p": 6000,
-      "s": "ODYSSEY / Supernova / Straw Hat Crew",
+      "s": "ODYSSEY / Supernovas / Straw Hat Crew",
       "t": "Character"
     },
     "OP09-037": {
@@ -409,7 +409,7 @@
       "k": 1,
       "kw": "-",
       "n": "Gum-Gum Cuatro Jet Cross Shock Bazooka",
-      "s": "ODYSSEY / Straw Hat Crew",
+      "s": "ODYSSEY / Supernovas / Straw Hat Crew",
       "t": "Event"
     },
     "OP09-040": {
@@ -417,7 +417,7 @@
       "k": 3,
       "kw": "-",
       "n": "Thunder Lance Flip Caliber Phoenix Shot",
-      "s": "ODYSSEY / Straw Hat Crew",
+      "s": "ODYSSEY / Supernovas / Straw Hat Crew",
       "t": "Event"
     },
     "OP09-041": {
@@ -457,7 +457,7 @@
       "kw": "-",
       "n": "Izo",
       "p": 4000,
-      "s": "Wano Kingdom / Whitebeard Pirates",
+      "s": "Land of Wano / Whitebeard Pirates",
       "t": "Character"
     },
     "OP09-045": {
@@ -534,7 +534,7 @@
       "kw": "-",
       "n": "Buggy",
       "p": 12000,
-      "s": "Cross Guild / Four Emperors",
+      "s": "The Four Emperors / Cross Guild",
       "t": "Character"
     },
     "OP09-052": {
@@ -631,7 +631,7 @@
       "lf": 4,
       "n": "Monkey.D.Luffy",
       "p": 5000,
-      "s": "Four Emperors/ Straw hat Pirates",
+      "s": "The Four Emperors / Straw Hat Crew",
       "t": "Leader"
     },
     "OP09-062": {
@@ -641,7 +641,7 @@
       "lf": 4,
       "n": "Nico Robin",
       "p": 5000,
-      "s": "Straw hat Crew",
+      "s": "Straw Hat Crew",
       "t": "Leader"
     },
     "OP09-063": {
@@ -696,7 +696,7 @@
       "kw": "-",
       "n": "Jinbe",
       "p": 9000,
-      "s": "Fishman/Straw Hat Crew",
+      "s": "Fish-Man / Straw Hat Crew",
       "t": "Character"
     },
     "OP09-068": {
@@ -707,7 +707,7 @@
       "kw": "Blocker",
       "n": "Tony Tony.Chopper",
       "p": 6000,
-      "s": "Straw Hat Crew",
+      "s": "Animal / Straw Hat Crew",
       "t": "Character"
     },
     "OP09-069": {
@@ -803,7 +803,7 @@
       "k": 2,
       "kw": "-",
       "n": "Gum-Gum Lightning",
-      "s": "Four Emperors / Straw Hat Crew",
+      "s": "The Four Emperors / Straw Hat Crew",
       "t": "Event"
     },
     "OP09-078": {
@@ -811,7 +811,7 @@
       "k": 1,
       "kw": "-",
       "n": "Gum-Gum Giant",
-      "s": "Four Emperors / Straw Hat Crew",
+      "s": "The Four Emperors / Straw Hat Crew",
       "t": "Event"
     },
     "OP09-079": {
@@ -819,7 +819,7 @@
       "k": 2,
       "kw": "-",
       "n": "Gum-Gum Jump Rope",
-      "s": "Four Emperors / Straw Hat Crew",
+      "s": "The Four Emperors / Straw Hat Crew",
       "t": "Event"
     },
     "OP09-080": {
@@ -837,7 +837,7 @@
       "lf": 5,
       "n": "Marshall.D.Teach",
       "p": 5000,
-      "s": "Four Emperors / Blackbeard Pirates",
+      "s": "The Four Emperors / Blackbeard Pirates",
       "t": "Leader"
     },
     "OP09-082": {
@@ -966,7 +966,7 @@
       "kw": "Blocker",
       "n": "Marshall.D.Teach",
       "p": 12000,
-      "s": "Four Emperors / Blackbeard Pirates",
+      "s": "The Four Emperors / Blackbeard Pirates",
       "t": "Character"
     },
     "OP09-094": {
@@ -977,7 +977,7 @@
       "kw": "-",
       "n": "Peachbeard",
       "p": 5000,
-      "s": "Blackbeard Pirates",
+      "s": "Peachbeard Pirates / Blackbeard Pirates Allies",
       "t": "Character"
     },
     "OP09-095": {
@@ -1128,7 +1128,7 @@
       "kw": "Blocker",
       "n": "Jaguar.D.Saul",
       "p": 5000,
-      "s": "Ohara/Giants/Navy",
+      "s": "Ohara / Giant / Navy",
       "t": "Character"
     },
     "OP09-110": {
@@ -1139,7 +1139,7 @@
       "kw": "-",
       "n": "Pierre",
       "p": 2000,
-      "s": "Animal / Sky island",
+      "s": "Animal / Sky Island",
       "t": "Character"
     },
     "OP09-111": {
@@ -1172,7 +1172,7 @@
       "kw": "-",
       "n": "Morley",
       "p": 6000,
-      "s": "Revolutionary Army",
+      "s": "Giant / Revolutionary Army",
       "t": "Character"
     },
     "OP09-114": {
@@ -1218,7 +1218,7 @@
       "kw": "Rush,Blocker",
       "n": "Gol.D.Roger",
       "p": 13000,
-      "s": "Pirate King / Roger Pirates",
+      "s": "King of the Pirates / Roger Pirates",
       "t": "Character"
     },
     "OP09-119": {

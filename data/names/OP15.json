@@ -642,7 +642,7 @@
       "kw": "-",
       "n": "Captain Seamars",
       "p": 6000,
-      "s": "Moon/Space Pirates",
+      "s": "The Moon / Space Pirates",
       "t": "Character"
     },
     "OP15-063": {
@@ -674,7 +674,7 @@
       "k": 3,
       "kw": "-",
       "n": "Goro",
-      "s": "Alabasta/Hot-Spring Island",
+      "s": "Alabasta / Hot Springs Island",
       "t": "Character"
     },
     "OP15-066": {
@@ -851,9 +851,9 @@
       "ctr": 2000,
       "k": 1,
       "kw": "-",
-      "n": "Spoils",
+      "n": "Spoil",
       "p": 0,
-      "s": "Victim's Association",
+      "s": "The Victims' Club",
       "t": "Character"
     },
     "OP15-084": {
@@ -898,7 +898,7 @@
       "c": "Black",
       "k": 5,
       "kw": "-",
-      "n": "Pirate Docking 6",
+      "n": "Pirates Docking Six",
       "p": 7000,
       "s": "Straw Hat Crew",
       "t": "Character"
@@ -948,7 +948,7 @@
       "ctr": 1000,
       "k": 1,
       "kw": "Rush: Character",
-      "n": "Risky Brothers",
+      "n": "The Risky Brothers",
       "p": 2000,
       "s": "Rolling Pirates",
       "t": "Character"
@@ -985,7 +985,7 @@
       "c": "Black",
       "k": 1,
       "kw": "-",
-      "n": "I Find It Embarrassing...as a Human Being",
+      "n": "I Find It Embarrassing as a Human Being",
       "p": 0,
       "s": "Straw Hat Crew",
       "t": "Event"
@@ -996,7 +996,8 @@
       "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "Sky Island/Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "lf": 5
     },
     "OP15-099": {
       "c": "Yellow",
@@ -1072,7 +1073,7 @@
       "ctr": 1000,
       "k": 2,
       "kw": "-",
-      "n": "Octopus Balloon",
+      "n": "Octoballoon",
       "p": 0,
       "s": "Animal/Sky Island",
       "t": "Character"
@@ -1160,7 +1161,7 @@
       "c": "Yellow",
       "k": 2,
       "kw": "-",
-      "n": "Impact",
+      "n": "Impact Dial",
       "p": 0,
       "s": "Sky Island/Straw Hat Crew",
       "t": "Event"

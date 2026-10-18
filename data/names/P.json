@@ -6,7 +6,7 @@
       "ctr": 0,
       "k": 6,
       "kw": "Rush",
-      "n": "Monkey.D.Luffy (001) (Offline Regional 2024 Vol. 2) [Winner]",
+      "n": "Monkey.D.Luffy",
       "p": 7000,
       "s": "Supernovas / Straw Hat Crew",
       "t": "Character"
@@ -15,7 +15,7 @@
       "c": "Red",
       "k": 1,
       "kw": "-",
-      "n": "I Smell Adventure Ahead!",
+      "n": "I Smell Adventure!!!",
       "s": "Straw Hat Crew",
       "t": "Event"
     },
@@ -25,7 +25,7 @@
       "ctr": 1000,
       "k": 3,
       "kw": "Double Attack",
-      "n": "Eustass\"Captain\"Kid (Offline Regional 2024 Vol. 2) [Winner]",
+      "n": "Eustass\"Captain\"Kid",
       "p": 4000,
       "s": "Supernovas/Kid Pirates",
       "t": "Character"
@@ -58,7 +58,7 @@
       "ctr": 2000,
       "k": 3,
       "kw": "-",
-      "n": "Monkey.D.Luffy (006)",
+      "n": "Monkey.D.Luffy",
       "p": 3000,
       "s": "Supernovas / Straw Hat Crew",
       "t": "Character"
@@ -69,7 +69,7 @@
       "ctr": 1000,
       "k": 4,
       "kw": "-",
-      "n": "Monkey.D.Luffy (007)",
+      "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "Supernovas / Straw Hat Crew",
       "t": "Character"
@@ -80,9 +80,9 @@
       "ctr": 0,
       "k": 3,
       "kw": "-",
-      "n": "Yamato - P-008",
+      "n": "Yamato",
       "p": 5000,
-      "s": "Wano Country",
+      "s": "Land of Wano",
       "t": "Character"
     },
     "P-009": {
@@ -112,7 +112,7 @@
       "c": "Red",
       "kw": "-",
       "lf": 5,
-      "n": "Uta (One Piece Film Red)",
+      "n": "Uta",
       "p": 5000,
       "s": "FILM",
       "t": "Leader"
@@ -123,7 +123,7 @@
       "ctr": 1000,
       "k": 3,
       "kw": "-",
-      "n": "Jellyfish Pirates (One Piece Film Red)",
+      "n": "Jellyfish Pirates",
       "p": 5000,
       "s": "FILM / Jellyfish Pirates",
       "t": "Character"
@@ -134,7 +134,7 @@
       "ctr": 0,
       "k": 1,
       "kw": "-",
-      "n": "Gordon (One Piece Film Red)",
+      "n": "Gordon",
       "p": 2000,
       "s": "FILM",
       "t": "Character"
@@ -145,7 +145,7 @@
       "ctr": 0,
       "k": 3,
       "kw": "Blocker",
-      "n": "Koby (One Piece Film Red)",
+      "n": "Koby",
       "p": 3000,
       "s": "FILM / Navy",
       "t": "Character"
@@ -156,7 +156,7 @@
       "ctr": 1000,
       "k": 1,
       "kw": "-",
-      "n": "Sunny-Kun (One Piece Film Red)",
+      "n": "Sunny-Kun",
       "p": 3000,
       "s": "FILM / Straw Hat Crew",
       "t": "Character"
@@ -167,9 +167,9 @@
       "ctr": 1000,
       "k": 8,
       "kw": "-",
-      "n": "Shanks (One Piece Film Red)",
+      "n": "Shanks",
       "p": 10000,
-      "s": "FILM / The Four Emperors / Red Hair Pirates",
+      "s": "FILM / The Four Emperors / Red-Haired Pirates",
       "t": "Character"
     },
     "P-017": {
@@ -178,7 +178,7 @@
       "ctr": 1000,
       "k": 4,
       "kw": "-",
-      "n": "Trafalgar Law (One Piece Film Red)",
+      "n": "Trafalgar Law",
       "p": 5000,
       "s": "FILM / Supernovas / Heart Pirates",
       "t": "Character"
@@ -189,7 +189,7 @@
       "ctr": 0,
       "k": 2,
       "kw": "Blocker",
-      "n": "Bartolomeo (One Piece Film Red)",
+      "n": "Bartolomeo",
       "p": 3000,
       "s": "FILM / Supernovas / Barto Club",
       "t": "Character"
@@ -200,9 +200,9 @@
       "ctr": 2000,
       "k": 3,
       "kw": "-",
-      "n": "Bepo (One Piece Film Red)",
+      "n": "Bepo",
       "p": 2000,
-      "s": "FILM / Mink tribe / Heart Pirates",
+      "s": "FILM / Minks / Heart Pirates",
       "t": "Character"
     },
     "P-020": {
@@ -211,7 +211,7 @@
       "ctr": 1000,
       "k": 1,
       "kw": "-",
-      "n": "Helmeppo (One Piece Film Red)",
+      "n": "Helmeppo",
       "p": 2000,
       "s": "FILM / Navy",
       "t": "Character"
@@ -222,9 +222,9 @@
       "ctr": 1000,
       "k": 7,
       "kw": "-",
-      "n": "Benn.Beckman (One Piece Film Red)",
+      "n": "Benn.Beckman",
       "p": 9000,
-      "s": "FILM / Red Hair Pirates",
+      "s": "FILM / Red-Haired Pirates",
       "t": "Character"
     },
     "P-022": {
@@ -244,9 +244,9 @@
       "ctr": 1000,
       "k": 6,
       "kw": "-",
-      "n": "Yasopp (One Piece Film Red)",
+      "n": "Yasopp",
       "p": 8000,
-      "s": "FILM / Red Hair Pirates",
+      "s": "FILM / Red-Haired Pirates",
       "t": "Character"
     },
     "P-024": {
@@ -263,7 +263,7 @@
       "ctr": 0,
       "k": 3,
       "kw": "-",
-      "n": "Smoker (Pre-Release)",
+      "n": "Smoker",
       "p": 5000,
       "s": "Navy",
       "t": "Character"
@@ -320,7 +320,7 @@
       "kw": "-",
       "n": "Jinbe",
       "p": 5000,
-      "s": "Fish-man / The 7 Warlords of the Sea / Sun Pirates",
+      "s": "Fish-Man / The Seven Warlords of the Sea / The Sun Pirates",
       "t": "Character"
     },
     "P-031": {
@@ -364,7 +364,7 @@
       "kw": "-",
       "n": "Sanji",
       "p": 4000,
-      "s": "Vinsmoke Family",
+      "s": "The Vinsmoke Family",
       "t": "Character"
     },
     "P-035": {
@@ -384,9 +384,9 @@
       "ctr": 1000,
       "k": 3,
       "kw": "-",
-      "n": "Monkey.D.Luffy (Pre-Release Tournament)",
+      "n": "Monkey.D.Luffy",
       "p": 4000,
-      "s": "Land of Wano / Straw Hat Pirates",
+      "s": "Land of Wano / Straw Hat Crew",
       "t": "Character"
     },
     "P-037": {
@@ -395,7 +395,7 @@
       "ctr": 0,
       "k": 2,
       "kw": "-",
-      "n": "Monkey.D.Luffy (Anime Expo 2023)",
+      "n": "Monkey.D.Luffy",
       "p": 4000,
       "s": "Straw Hat Crew",
       "t": "Character"
@@ -450,7 +450,7 @@
       "kw": "-",
       "n": "Roronoa Zoro",
       "p": 5000,
-      "s": "Wano / Straw Hat Crew",
+      "s": "Land of Wano / Straw Hat Crew",
       "t": "Character"
     },
     "P-043": {
@@ -459,9 +459,9 @@
       "ctr": 1000,
       "k": 7,
       "kw": "-",
-      "n": "Monkey.D.Luffy (Convention Promo 2024)",
+      "n": "Monkey.D.Luffy",
       "p": 7000,
-      "s": "Straw Hat Pirates",
+      "s": "Straw Hat Crew",
       "t": "Character"
     },
     "P-044": {
@@ -481,7 +481,7 @@
       "ctr": 1000,
       "k": 6,
       "kw": "Banish",
-      "n": "Roronoa Zoro (OP-06 Pre-Release Tournament) [Winner]",
+      "n": "Roronoa Zoro",
       "p": 7000,
       "s": "Straw Hat Crew",
       "t": "Character"
@@ -502,7 +502,7 @@
       "c": "Blue",
       "kw": "-",
       "lf": 5,
-      "n": "Monkey.D.Luffy (047)",
+      "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "Straw Hat Crew",
       "t": "Leader"
@@ -548,7 +548,7 @@
       "kw": "-",
       "n": "Shanks",
       "p": 9000,
-      "s": "Red Hair Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Character"
     },
     "P-052": {
@@ -559,7 +559,7 @@
       "kw": "-",
       "n": "Dracule Mihawk",
       "p": 7000,
-      "s": "Seven Warlords of the Sea",
+      "s": "The Seven Warlords of the Sea",
       "t": "Character"
     },
     "P-053": {
@@ -590,7 +590,7 @@
       "ctr": 1000,
       "k": 4,
       "kw": "-",
-      "n": "Monkey.D.Luffy (055) (College Basketball US Voyage)",
+      "n": "Monkey.D.Luffy",
       "p": 5000,
       "s": "Straw Hat Crew",
       "t": "Character"
@@ -611,7 +611,7 @@
       "k": 3,
       "kw": "-",
       "n": "Fleeting Lullaby",
-      "s": "Song/FILM",
+      "s": "Music / FILM",
       "t": "Event"
     },
     "P-058": {
@@ -619,7 +619,7 @@
       "k": 2,
       "kw": "-",
       "n": "Where the Wind Blows",
-      "s": "Song/FILM",
+      "s": "Music / FILM",
       "t": "Event"
     },
     "P-059": {
@@ -627,7 +627,7 @@
       "k": 2,
       "kw": "-",
       "n": "The World's Continuation",
-      "s": "Song/FILM",
+      "s": "Music / FILM",
       "t": "Event"
     },
     "P-060": {
@@ -635,7 +635,7 @@
       "k": 2,
       "kw": "-",
       "n": "Tot Musica",
-      "s": "Song/FILM",
+      "s": "Music / FILM",
       "t": "Event"
     },
     "P-061": {
@@ -657,7 +657,7 @@
       "kw": "-",
       "n": "Hody & Hyouzou",
       "p": 6000,
-      "s": "Fishman/Merfolk/New Fishman Pirates",
+      "s": "Fish-Man / Merfolk / New Fish-Man Pirates",
       "t": "Character"
     },
     "P-063": {
@@ -668,7 +668,7 @@
       "kw": "-",
       "n": "Jinbe",
       "p": 5000,
-      "s": "Fishman",
+      "s": "Fish-Man",
       "t": "Character"
     },
     "P-064": {
@@ -701,7 +701,7 @@
       "kw": "-",
       "n": "Boa Hancock",
       "p": 5000,
-      "s": "Seven Warlords of the Sea / Kuja Pirates",
+      "s": "The Seven Warlords of the Sea / Kuja Pirates",
       "t": "Character"
     },
     "P-067": {
@@ -712,7 +712,7 @@
       "kw": "-",
       "n": "Eustass\"Captain\"Kid",
       "p": 6000,
-      "s": "Supernova/Kid Pirates",
+      "s": "Supernovas / Kid Pirates",
       "t": "Character"
     },
     "P-068": {
@@ -723,7 +723,7 @@
       "kw": "-",
       "n": "Sanji",
       "p": 4000,
-      "s": "Vinsmoke Family / Germa Kingdom",
+      "s": "Kingdom of GERMA / The Vinsmoke Family",
       "t": "Character"
     },
     "P-069": {
@@ -781,7 +781,7 @@
       "ctr": 1000,
       "k": 3,
       "kw": "-",
-      "n": "Portgas .D. Ace",
+      "n": "Portgas.D.Ace",
       "p": 4000,
       "s": "Whitebeard Pirates",
       "t": "Character"
@@ -794,7 +794,7 @@
       "kw": "-",
       "n": "Monkey.D.Luffy",
       "p": 7000,
-      "s": "Supernova / Straw Hat Crew",
+      "s": "Supernovas / Straw Hat Crew",
       "t": "Character"
     },
     "P-076": {
@@ -872,7 +872,7 @@
       "kw": "-",
       "n": "Shanks",
       "p": 7000,
-      "s": "Four Emperors / Red hair pirates",
+      "s": "The Four Emperors / Red-Haired Pirates",
       "t": "Character"
     },
     "P-084": {
@@ -881,7 +881,7 @@
       "kw": "-",
       "n": "Buggy",
       "p": 8000,
-      "s": "Cross Guild / Four Emperors",
+      "s": "The Four Emperors / Cross Guild",
       "t": "Character"
     },
     "P-085": {
@@ -891,7 +891,7 @@
       "kw": "-",
       "n": "Jewelry Bonney",
       "p": 6000,
-      "s": "Supernova / Bonney Pirates",
+      "s": "Supernovas / Bonney Pirates",
       "t": "Character"
     },
     "P-086": {
@@ -910,7 +910,7 @@
       "kw": "-",
       "n": "Nico Robin",
       "p": 7000,
-      "s": "Straw Hat Pirates",
+      "s": "Straw Hat Crew",
       "t": "Character"
     },
     "P-088": {
@@ -950,7 +950,7 @@
       "kw": "-",
       "n": "Shirahoshi",
       "p": 0,
-      "s": "Fishman Island / Merfolk",
+      "s": "Merfolk / Fish-Man Island",
       "t": "Character"
     },
     "P-092": {
@@ -958,7 +958,7 @@
       "ctr": 1000,
       "k": 7,
       "kw": "-",
-      "n": "Coby",
+      "n": "Koby",
       "p": 7000,
       "s": "Navy / SWORD",
       "t": "Character"
@@ -995,7 +995,7 @@
       "ctr": 1000,
       "k": 2,
       "kw": "-",
-      "n": "Young Girl",
+      "n": "Girl",
       "p": 0,
       "s": "Sabaody Archipelago",
       "t": "Character"
@@ -1099,7 +1099,7 @@
       "kw": "-",
       "n": "Gol.D.Roger",
       "p": 10000,
-      "s": "Pirate King/Roger Pirates",
+      "s": "King of the Pirates / Roger Pirates",
       "t": "Character"
     },
     "P-108": {
@@ -1125,9 +1125,9 @@
       "ctr": 1000,
       "k": 7,
       "kw": "-",
-      "n": "モンキー・D・ルフィ (Monkey.D.Luffy)",
+      "n": "Monkey.D.Luffy",
       "p": 9000,
-      "s": "エルバフ/四皇/麦わらの一味",
+      "s": "Elbaph / The Four Emperors / Straw Hat Crew",
       "t": "Character"
     },
     "P-111": {
@@ -1176,7 +1176,7 @@
       "kw": "-",
       "n": "Boa Hancock",
       "p": 7000,
-      "s": "The Seven Warlors of the Sea/Kuja Pirates",
+      "s": "The Seven Warlords of the Sea / Kuja Pirates",
       "t": "Character"
     },
     "P-116": {
@@ -1194,7 +1194,8 @@
       "n": "Nami",
       "p": 5000,
       "s": "East Blue",
-      "t": "Leader"
+      "t": "Leader",
+      "lf": 5
     },
     "P-118": {
       "c": "Yellow",
@@ -1496,9 +1497,9 @@
       "c": "Purple",
       "k": 5,
       "kw": "-",
-      "n": "スモーカー (Smoker)",
+      "n": "Smoker",
       "p": 10000,
-      "s": "海軍",
+      "s": "Navy",
       "t": "Character"
     },
     "P-152": {
@@ -1559,9 +1560,9 @@
     "P-161": {
       "c": "Yellow",
       "kw": "-",
-      "n": "モンキー・D・ルフィ (Monkey.D.Luffy)",
+      "n": "Monkey.D.Luffy",
       "p": 0,
-      "s": "麦わらの一味",
+      "s": "Straw Hat Crew",
       "t": "Character"
     },
     "P-998": {

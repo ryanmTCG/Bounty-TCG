@@ -18,7 +18,7 @@
       "kw": "Blocker",
       "n": "Uta",
       "p": 4000,
-      "s": "FILM",
+      "s": "Music / FILM",
       "t": "Character"
     },
     "ST11-003": {
@@ -26,7 +26,7 @@
       "k": 2,
       "kw": "-",
       "n": "Backlight",
-      "s": "Song/FILM",
+      "s": "Music / FILM",
       "t": "Event"
     },
     "ST11-004": {
@@ -34,7 +34,7 @@
       "k": 1,
       "kw": "-",
       "n": "New Genesis",
-      "s": "Song/FILM",
+      "s": "Music / FILM",
       "t": "Event"
     },
     "ST11-005": {
@@ -42,7 +42,7 @@
       "k": 3,
       "kw": "-",
       "n": "I'm invincible",
-      "s": "Song/FILM",
+      "s": "音楽 / FILM",
       "t": "Event"
     }
   }

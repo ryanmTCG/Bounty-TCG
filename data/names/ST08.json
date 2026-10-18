@@ -51,7 +51,7 @@
       "kw": "-",
       "n": "Shanks",
       "p": 10000,
-      "s": "Red Haired Pirates",
+      "s": "Red-Haired Pirates",
       "t": "Character"
     },
     "ST08-006": {
@@ -61,7 +61,7 @@
       "k": 4,
       "kw": "Blocker",
       "n": "Shirahoshi",
-      "s": "Mermaid",
+      "s": "Merfolk",
       "t": "Character"
     },
     "ST08-007": {
@@ -72,7 +72,7 @@
       "kw": "Blocker",
       "n": "Nefeltari Vivi",
       "p": 1000,
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Character"
     },
     "ST08-008": {
@@ -83,7 +83,7 @@
       "kw": "-",
       "n": "Higuma",
       "p": 2000,
-      "s": "Mountain Bandit",
+      "s": "Mountain Bandits",
       "t": "Character"
     },
     "ST08-009": {
@@ -93,7 +93,7 @@
       "k": 2,
       "kw": "-",
       "n": "Makino",
-      "s": "East Blue",
+      "s": "Windmill Village",
       "t": "Character"
     },
     "ST08-010": {
@@ -135,7 +135,7 @@
       "ctr": 0,
       "k": 5,
       "kw": "-",
-      "n": "Mr.2.Bon.Kurei (Bentham)",
+      "n": "Mr.2.Bon.Kurei(Bentham)",
       "p": 6000,
       "s": "Former Baroque Works",
       "t": "Character"

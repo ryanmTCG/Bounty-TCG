@@ -6,7 +6,8 @@
       "n": "Tony Tony.Chopper",
       "p": 5000,
       "s": "Animal / Drum Kingdom / Straw Hat Crew",
-      "t": "Leader"
+      "t": "Leader",
+      "lf": 4
     },
     "OP08-002": {
       "a": "Special",
@@ -70,7 +71,7 @@
       "kw": "-",
       "n": "Tony Tony.Chopper",
       "p": 5000,
-      "s": "Animals / Drum Kingdom / Straw Hat Crew",
+      "s": "Animal / Drum Kingdom / Straw Hat Crew",
       "t": "Character"
     },
     "OP08-008": {
@@ -221,7 +222,7 @@
       "kw": "-",
       "n": "Inuarashi",
       "p": 6000,
-      "s": "Minks/Akazaya Nine",
+      "s": "Minks / The Akazaya Nine",
       "t": "Character"
     },
     "OP08-023": {
@@ -287,7 +288,7 @@
       "kw": "Rush",
       "n": "Nekomamushi",
       "p": 6000,
-      "s": "Minks/Akazaya Nine",
+      "s": "Minks / The Akazaya Nine",
       "t": "Character"
     },
     "OP08-029": {
@@ -495,7 +496,7 @@
       "kw": "-",
       "n": "Sweetpea",
       "p": 6000,
-      "s": "amazon lily",
+      "s": "Amazon Lily",
       "t": "Character"
     },
     "OP08-049": {
@@ -517,7 +518,7 @@
       "kw": "Blocker",
       "n": "Namule",
       "p": 2000,
-      "s": "Fish-man / Whitebeard Pirates",
+      "s": "Fish-Man / Whitebeard Pirates",
       "t": "Character"
     },
     "OP08-051": {
@@ -791,7 +792,7 @@
       "k": 6,
       "kw": "-",
       "n": "Conquest of the Sea",
-      "s": "Four Emperors / Animal Kingdom Pirates / Big Mom Pirates",
+      "s": "The Four Emperors / Animal Kingdom Pirates / Big Mom Pirates",
       "t": "Event"
     },
     "OP08-078": {
@@ -879,7 +880,7 @@
       "kw": "-",
       "n": "Jinbe",
       "p": 6000,
-      "s": "Fishman / Straw Hat Pirates",
+      "s": "Fish-Man / Straw Hat Crew",
       "t": "Character"
     },
     "OP08-086": {
@@ -901,7 +902,7 @@
       "kw": "Blocker",
       "n": "Scratchmen Apoo",
       "p": 5000,
-      "s": "Animal Kingdom Pirates/ On Air Pirates",
+      "s": "Animal Kingdom Pirates / On-Air Pirates",
       "t": "Character"
     },
     "OP08-088": {
@@ -912,7 +913,7 @@
       "kw": "-",
       "n": "Duval",
       "p": 2000,
-      "s": "Rosy Life Riders",
+      "s": "The Flying Fish Riders",
       "t": "Character"
     },
     "OP08-089": {
@@ -943,7 +944,7 @@
       "ctr": 2000,
       "k": 5,
       "kw": "-",
-      "n": "Whos.Who",
+      "n": "Who's.Who",
       "p": 5000,
       "s": "Animal Kingdom Pirates / Former CP9",
       "t": "Character"
@@ -1009,7 +1010,7 @@
       "lf": 5,
       "n": "Kalgara",
       "p": 5000,
-      "s": "Jaya / Sky Island / Shandorian Warriors",
+      "s": "Jaya / Sky Island / Shandian Warrior",
       "t": "Leader"
     },
     "OP08-099": {
@@ -1020,7 +1021,7 @@
       "kw": "-",
       "n": "Kalgara",
       "p": 8000,
-      "s": "Jaya / Sky Island / Shandoran Warriors",
+      "s": "Jaya / Sky Island / Shandian Warrior",
       "t": "Character"
     },
     "OP08-100": {
@@ -1031,7 +1032,7 @@
       "kw": "-",
       "n": "South Bird",
       "p": 2000,
-      "s": "Animals / Jaya / Sky Island",
+      "s": "Animal / Jaya / Sky Island",
       "t": "Character"
     },
     "OP08-101": {
@@ -1119,7 +1120,7 @@
       "kw": "-",
       "n": "Mont Blanc Cricket",
       "p": 6000,
-      "s": "Jaya / Monkey Mountain Allied Force",
+      "s": "Jaya / Monkey Mountain Alliance",
       "t": "Character"
     },
     "OP08-109": {
@@ -1193,7 +1194,7 @@
       "k": 1,
       "kw": "-",
       "n": "The Earth Will Not Lose!",
-      "s": "Sky Island / Shandoran Warrior",
+      "s": "Sky Island / Shandian Warrior",
       "t": "Event"
     },
     "OP08-116": {
@@ -1231,7 +1232,7 @@
       "kw": "-",
       "n": "Kaido & Linlin",
       "p": 12000,
-      "s": "Four Emperors / Animal Kingdom Pirates / Big Mom Pirates",
+      "s": "The Four Emperors / Animal Kingdom Pirates / Big Mom Pirates",
       "t": "Character"
     }
   }

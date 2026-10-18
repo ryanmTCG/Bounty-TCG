@@ -7,7 +7,7 @@
       "lf": 5,
       "n": "Nefeltari Vivi",
       "p": 5000,
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Leader"
     },
     "OP04-002": {
@@ -18,7 +18,7 @@
       "kw": "-",
       "n": "Igaram",
       "p": 3000,
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Character"
     },
     "OP04-003": {
@@ -29,7 +29,7 @@
       "kw": "-",
       "n": "Usopp",
       "p": 5000,
-      "s": "Alabasta Kingdom / Straw Hat Crew",
+      "s": "Alabasta / Straw Hat Crew",
       "t": "Character"
     },
     "OP04-004": {
@@ -40,7 +40,7 @@
       "kw": "-",
       "n": "Karoo",
       "p": 2000,
-      "s": "Animal / Alabasta Kingdom",
+      "s": "Animal / Alabasta",
       "t": "Character"
     },
     "OP04-005": {
@@ -51,7 +51,7 @@
       "kw": "Blocker",
       "n": "Kung Fu Jugon",
       "p": 1000,
-      "s": "Animal / Alabasta Kingdom",
+      "s": "Animal / Alabasta",
       "t": "Character"
     },
     "OP04-006": {
@@ -62,7 +62,7 @@
       "kw": "-",
       "n": "Koza",
       "p": 3000,
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Character"
     },
     "OP04-007": {
@@ -73,7 +73,7 @@
       "kw": "-",
       "n": "Sanji",
       "p": 3000,
-      "s": "Alabasta Kingdom / Straw Hat Crew",
+      "s": "Alabasta / Straw Hat Crew",
       "t": "Character"
     },
     "OP04-008": {
@@ -84,7 +84,7 @@
       "kw": "-",
       "n": "Chaka",
       "p": 5000,
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Character"
     },
     "OP04-009": {
@@ -95,7 +95,7 @@
       "kw": "-",
       "n": "Super Spot-Billed Duck Troops",
       "p": 3000,
-      "s": "Animal / Alabasta Kingdom",
+      "s": "Animal / Alabasta",
       "t": "Character"
     },
     "OP04-010": {
@@ -117,7 +117,7 @@
       "kw": "-",
       "n": "Nami",
       "p": 3000,
-      "s": "Alabasta Kingdom / Straw Hat Pirates",
+      "s": "Alabasta / Straw Hat Crew",
       "t": "Character"
     },
     "OP04-012": {
@@ -127,7 +127,7 @@
       "k": 2,
       "kw": "-",
       "n": "Nefeltari Cobra",
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Character"
     },
     "OP04-013": {
@@ -138,7 +138,7 @@
       "kw": "-",
       "n": "Pell",
       "p": 6000,
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Character"
     },
     "OP04-014": {
@@ -149,7 +149,7 @@
       "kw": "Banish",
       "n": "Monkey.D.Luffy",
       "p": 9000,
-      "s": "Alabasta Kingdom / Straw Hat Pirates",
+      "s": "Alabasta / Straw Hat Crew",
       "t": "Character"
     },
     "OP04-015": {
@@ -160,7 +160,7 @@
       "kw": "-",
       "n": "Roronoa Zoro",
       "p": 6000,
-      "s": "Alabasta Kingdom / Straw Hat Crew",
+      "s": "Alabasta / Straw Hat Crew",
       "t": "Character"
     },
     "OP04-016": {
@@ -168,7 +168,7 @@
       "k": 0,
       "kw": "-",
       "n": "Bad Manners Kick Course",
-      "s": "Alabasta Kingdom / Straw Hat Crew",
+      "s": "Alabasta / Straw Hat Crew",
       "t": "Event"
     },
     "OP04-017": {
@@ -176,7 +176,7 @@
       "k": 1,
       "kw": "-",
       "n": "Happiness Punch",
-      "s": "Alabasta Kingdom / Straw Hat Crew",
+      "s": "Alabasta / Straw Hat Crew",
       "t": "Event"
     },
     "OP04-018": {
@@ -184,7 +184,7 @@
       "k": 3,
       "kw": "-",
       "n": "Enchanting Vertigo Dance",
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Event"
     },
     "OP04-019": {
@@ -324,7 +324,7 @@
       "kw": "-",
       "n": "Donquixote Doflamingo",
       "p": 10000,
-      "s": "Seven Warlords of the Sea / Donquixote Pirates",
+      "s": "The Seven Warlords of the Sea / Donquixote Pirates",
       "t": "Character"
     },
     "OP04-032": {
@@ -452,7 +452,7 @@
       "kw": "-",
       "n": "Kaido",
       "p": 12000,
-      "s": "Animal Kingdom Pirates / Four Emperors",
+      "s": "The Four Emperors / Animal Kingdom Pirates",
       "t": "Character"
     },
     "OP04-045": {
@@ -584,7 +584,7 @@
       "k": 2,
       "kw": "-",
       "n": "Dragon Twister Demolition Breath",
-      "s": "Four Emperors / Animal Kingdom Pirates",
+      "s": "The Four Emperors / Animal Kingdom Pirates",
       "t": "Event"
     },
     "OP04-058": {
@@ -594,7 +594,7 @@
       "lf": 4,
       "n": "Crocodile",
       "p": 5000,
-      "s": "Seven Warlords Of the Sea/ Baroque Works",
+      "s": "The Seven Warlords of the Sea / Baroque Works",
       "t": "Leader"
     },
     "OP04-059": {
@@ -626,7 +626,7 @@
       "kw": "-",
       "n": "Tom",
       "p": 4000,
-      "s": "Fish-Man / Water 7",
+      "s": "Fish-Man / Water Seven",
       "t": "Character"
     },
     "OP04-062": {
@@ -648,7 +648,7 @@
       "kw": "-",
       "n": "Franky",
       "p": 1000,
-      "s": "Water 7 / Franky Family",
+      "s": "Water Seven / The Franky Family",
       "t": "Character"
     },
     "OP04-064": {
@@ -703,7 +703,7 @@
       "kw": "Blocker",
       "n": "Yokozuna",
       "p": 3000,
-      "s": "Animal / Water 7",
+      "s": "Animal / Water Seven",
       "t": "Character"
     },
     "OP04-069": {
@@ -712,7 +712,7 @@
       "ctr": 1000,
       "k": 3,
       "kw": "-",
-      "n": "Mr.2.Bon.Kurei (Bentham)",
+      "n": "Mr.2.Bon.Kurei(Bentham)",
       "p": 4000,
       "s": "Baroque Works",
       "t": "Character"
@@ -723,7 +723,7 @@
       "ctr": 1000,
       "k": 3,
       "kw": "-",
-      "n": "Mr.3 (Galdino)",
+      "n": "Mr.3(Galdino)",
       "p": 4000,
       "s": "Baroque Works",
       "t": "Character"
@@ -734,7 +734,7 @@
       "ctr": 1000,
       "k": 5,
       "kw": "Blocker",
-      "n": "Mr.4 (Babe)",
+      "n": "Mr.4(Babe)",
       "p": 6000,
       "s": "Baroque Works",
       "t": "Character"
@@ -745,7 +745,7 @@
       "ctr": 0,
       "k": 7,
       "kw": "-",
-      "n": "Mr.5 (Gem)",
+      "n": "Mr.5(Gem)",
       "p": 8000,
       "s": "Baroque Works",
       "t": "Character"
@@ -815,7 +815,7 @@
       "kw": "-",
       "n": "Orlumbus",
       "p": 5000,
-      "s": "Dressrosa",
+      "s": "Dressrosa / Yonta Maria Fleet",
       "t": "Character"
     },
     "OP04-080": {
@@ -892,7 +892,7 @@
       "kw": "-",
       "n": "Chinjao",
       "p": 6000,
-      "s": "Dressrosa / Happo Navy",
+      "s": "Dressrosa / Happosui Army",
       "t": "Character"
     },
     "OP04-087": {
@@ -947,7 +947,7 @@
       "kw": "-",
       "n": "Leo",
       "p": 2000,
-      "s": "Tontatta / Dressrosa",
+      "s": "The Tontattas / Dressrosa",
       "t": "Character"
     },
     "OP04-092": {
@@ -982,7 +982,7 @@
       "k": 1,
       "kw": "-",
       "n": "Barrier!!",
-      "s": "Dressrosa / Bart Club",
+      "s": "Dressrosa / Barto Club",
       "t": "Event"
     },
     "OP04-096": {
@@ -1010,7 +1010,7 @@
       "k": 2,
       "kw": "-",
       "n": "Toko",
-      "s": "Wano Country",
+      "s": "Land of Wano",
       "t": "Character"
     },
     "OP04-099": {
@@ -1021,7 +1021,7 @@
       "kw": "-",
       "n": "Olin",
       "p": 7000,
-      "s": "Land of Wano/Four Emperors/Big Mom Pirates",
+      "s": "Land of Wano / The Four Emperors / Big Mom Pirates",
       "t": "Character"
     },
     "OP04-100": {
@@ -1032,7 +1032,7 @@
       "kw": "-",
       "n": "Capone\"Gang\"Bege",
       "p": 3000,
-      "s": "Fire Tank Pirates",
+      "s": "Firetank Pirates",
       "t": "Character"
     },
     "OP04-101": {
@@ -1043,7 +1043,7 @@
       "kw": "-",
       "n": "Carmel",
       "p": 1000,
-      "s": "Sheep's House",
+      "s": "The House of Lambs",
       "t": "Character"
     },
     "OP04-102": {
@@ -1054,7 +1054,7 @@
       "kw": "-",
       "n": "Kin'emon",
       "p": 6000,
-      "s": "Wano Country",
+      "s": "Land of Wano",
       "t": "Character"
     },
     "OP04-103": {
@@ -1064,7 +1064,7 @@
       "k": 2,
       "kw": "-",
       "n": "Kouzuki Hiyori",
-      "s": "Wano Country / Kozuki Family",
+      "s": "Land of Wano / Kouzuki Clan",
       "t": "Character"
     },
     "OP04-104": {
@@ -1075,7 +1075,7 @@
       "kw": "Blocker",
       "n": "Sanji",
       "p": 5000,
-      "s": "Vinsmoke Family",
+      "s": "The Vinsmoke Family",
       "t": "Character"
     },
     "OP04-105": {
@@ -1130,7 +1130,7 @@
       "kw": "-",
       "n": "Tonoyasu",
       "p": 2000,
-      "s": "Wano Country",
+      "s": "Land of Wano",
       "t": "Character"
     },
     "OP04-110": {
@@ -1193,7 +1193,7 @@
       "k": 1,
       "kw": "Double Attack",
       "n": "Gun Modoki",
-      "s": "Wano Country / Kozuki Family",
+      "s": "Land of Wano / Kouzuki Clan",
       "t": "Event"
     },
     "OP04-116": {
@@ -1201,7 +1201,7 @@
       "k": 3,
       "kw": "-",
       "n": "Diable Jambe Joue Shot",
-      "s": "Vinsmoke Family",
+      "s": "The Vinsmoke Family",
       "t": "Event"
     },
     "OP04-117": {
@@ -1209,7 +1209,7 @@
       "k": 1,
       "kw": "-",
       "n": "Heavenly Fire",
-      "s": "Four Emperors / Big Mom Pirates",
+      "s": "The Four Emperors / Big Mom Pirates",
       "t": "Event"
     },
     "OP04-118": {
@@ -1220,7 +1220,7 @@
       "kw": "Rush",
       "n": "Nefeltari Vivi",
       "p": 4000,
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Character"
     },
     "OP04-119": {

@@ -50,7 +50,7 @@
       "kw": "-",
       "n": "Curly.Dadan",
       "p": 3000,
-      "s": "Mountain Bandit",
+      "s": "Mountain Bandits",
       "t": "Character"
     },
     "OP02-006": {
@@ -94,7 +94,7 @@
       "kw": "-",
       "n": "Squard",
       "p": 5000,
-      "s": "Whitebeard Pirates Subordinates",
+      "s": "Whitebeard Pirates Allies",
       "t": "Character"
     },
     "OP02-010": {
@@ -149,7 +149,7 @@
       "kw": "-",
       "n": "Whitey Bay",
       "p": 2000,
-      "s": "White Beard Pirates Subordinates",
+      "s": "Whitebeard Pirates Allies",
       "t": "Character"
     },
     "OP02-015": {
@@ -170,7 +170,7 @@
       "kw": "-",
       "n": "Magura",
       "p": 2000,
-      "s": "Mountain Bandit",
+      "s": "Mountain Bandits",
       "t": "Character"
     },
     "OP02-017": {
@@ -214,7 +214,7 @@
       "kw": "-",
       "n": "LittleOars Jr.",
       "p": 9000,
-      "s": "Giant / Whitebeard Pirates Subordinates",
+      "s": "Giant / Whitebeard Pirates Allies",
       "t": "Character"
     },
     "OP02-021": {
@@ -256,7 +256,7 @@
       "lf": 5,
       "n": "Kin'emon",
       "p": 5000,
-      "s": "Wano Country / Nine Red Scabbards",
+      "s": "Land of Wano / The Akazaya Nine",
       "t": "Leader"
     },
     "OP02-026": {
@@ -277,7 +277,7 @@
       "kw": "-",
       "n": "Inuarashi",
       "p": 4000,
-      "s": "Mink Tribe / Wano Country / Nine Red Scabbards",
+      "s": "Minks / Land of Wano / The Akazaya Nine",
       "t": "Character"
     },
     "OP02-028": {
@@ -299,7 +299,7 @@
       "kw": "-",
       "n": "Carrot",
       "p": 5000,
-      "s": "Mink Tribe",
+      "s": "Minks",
       "t": "Character"
     },
     "OP02-030": {
@@ -310,7 +310,7 @@
       "kw": "-",
       "n": "Kouzuki Oden",
       "p": 8000,
-      "s": "Wano Country / Kozuki Family",
+      "s": "Land of Wano / Kouzuki Clan",
       "t": "Character"
     },
     "OP02-031": {
@@ -320,7 +320,7 @@
       "k": 1,
       "kw": "Blocker",
       "n": "Kouzuki Toki",
-      "s": "Wano Country / Kozuki Family",
+      "s": "Land of Wano / Kouzuki Clan",
       "t": "Character"
     },
     "OP02-032": {
@@ -331,7 +331,7 @@
       "kw": "-",
       "n": "Shishilian",
       "p": 3000,
-      "s": "Mink Tribe",
+      "s": "Minks",
       "t": "Character"
     },
     "OP02-033": {
@@ -397,7 +397,7 @@
       "kw": "Blocker",
       "n": "Nekomamushi",
       "p": 4000,
-      "s": "Mink Tribe / Wano Country / Nine Red Scabbards",
+      "s": "Minks / Land of Wano / The Akazaya Nine",
       "t": "Character"
     },
     "OP02-039": {
@@ -441,7 +441,7 @@
       "kw": "-",
       "n": "Yamato",
       "p": 6000,
-      "s": "Wano Country",
+      "s": "Land of Wano",
       "t": "Character"
     },
     "OP02-043": {
@@ -463,7 +463,7 @@
       "kw": "-",
       "n": "Wanda",
       "p": 3000,
-      "s": "Mink Tribe",
+      "s": "Minks",
       "t": "Character"
     },
     "OP02-045": {
@@ -487,7 +487,7 @@
       "k": 1,
       "kw": "-",
       "n": "Paradise Totsuka",
-      "s": "Wano Country / Kouzuki Family",
+      "s": "Land of Wano / Kouzuki Clan",
       "t": "Event"
     },
     "OP02-048": {
@@ -495,7 +495,7 @@
       "k": 1,
       "kw": "-",
       "n": "Land of Wano",
-      "s": "Wano Country",
+      "s": "Land of Wano",
       "t": "Stage"
     },
     "OP02-049": {
@@ -637,7 +637,7 @@
       "kw": "Blocker",
       "n": "Morley",
       "p": 5000,
-      "s": "Giants / Revolutionary Army",
+      "s": "Giant / Revolutionary Army",
       "t": "Character"
     },
     "OP02-062": {
@@ -657,7 +657,7 @@
       "ctr": 1000,
       "k": 1,
       "kw": "-",
-      "n": "Mr.1 (Daz.Bonez)",
+      "n": "Mr.1(Daz.Bonez)",
       "p": 1000,
       "s": "Impel Down / Former Baroque Works",
       "t": "Character"
@@ -668,7 +668,7 @@
       "ctr": 2000,
       "k": 5,
       "kw": "-",
-      "n": "Mr.2.Bon.Kurei (Bentham)",
+      "n": "Mr.2.Bon.Kurei(Bentham)",
       "p": 5000,
       "s": "Impel Down / Former Baroque Works",
       "t": "Character"
@@ -679,7 +679,7 @@
       "ctr": 1000,
       "k": 4,
       "kw": "Blocker",
-      "n": "Mr.3 (Galdino)",
+      "n": "Mr.3(Galdino)",
       "p": 5000,
       "s": "Impel Down / Former Baroque Works",
       "t": "Character"
@@ -697,7 +697,7 @@
       "k": 2,
       "kw": "-",
       "n": "Arabesque Brick Fist",
-      "s": "Fish-man / Impel Down",
+      "s": "Fish-Man / Impel Down",
       "t": "Event"
     },
     "OP02-068": {
@@ -705,7 +705,7 @@
       "k": 0,
       "kw": "-",
       "n": "Gum-Gum Rain",
-      "s": "Impel Down / Straw Hat Pirates",
+      "s": "Impel Down / Straw Hat Crew",
       "t": "Event"
     },
     "OP02-069": {
@@ -1165,7 +1165,7 @@
       "ctr": 1000,
       "k": 1,
       "kw": "-",
-      "n": "Bell-mere",
+      "n": "Bell-mère",
       "p": 1000,
       "s": "Navy",
       "t": "Character"

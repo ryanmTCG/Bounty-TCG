@@ -95,7 +95,7 @@
       "kw": "Rush",
       "n": "Trafalgar Law",
       "p": 10000,
-      "s": "Supernovas/Heart Pirates",
+      "s": "The Seven Warlords of the Sea / Supernovas / Heart Pirates",
       "t": "Character"
     },
     "OP14-010": {
@@ -117,7 +117,7 @@
       "kw": "Blocker",
       "n": "Bartolomeo",
       "p": 2000,
-      "s": "Supernovas/Barto Club",
+      "s": "Dressrosa / Supernovas / Barto Club",
       "t": "Character"
     },
     "OP14-012": {
@@ -947,7 +947,7 @@
       "ctr": 1000,
       "k": 4,
       "kw": "-",
-      "n": "Mr.2.Bon.Kurei (Bentham)",
+      "n": "Mr.2.Bon.Kurei(Bentham)",
       "p": 5000,
       "s": "Baroque Works",
       "t": "Character"
@@ -1101,7 +1101,7 @@
       "kw": "Blocker",
       "n": "Salome",
       "p": 1000,
-      "s": "Animal/Kuja Pirates",
+      "s": "Animal / Amazon Lily",
       "t": "Character"
     },
     "OP14-107": {
@@ -1223,7 +1223,7 @@
       "c": "Yellow",
       "k": 1,
       "kw": "-",
-      "n": "You'll Frighten Me...",
+      "n": "You'll Frighten Me... ♡",
       "s": "The Seven Warlords of the Sea/Kuja Pirates",
       "t": "Event"
     },

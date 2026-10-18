@@ -215,7 +215,7 @@
       "ctr": 2000,
       "k": 1,
       "kw": "-",
-      "n": "Crone Oil",
+      "n": "Crone Oli",
       "s": "Red-Haired Pirates Allies",
       "t": "Character"
     },
@@ -843,7 +843,7 @@
       "kw": "-",
       "n": "Gerd",
       "p": 3000,
-      "s": "Giant/Elbaph/New Giant Warrior Pirates",
+      "s": "Giant / Elbaph / New Giant Pirates",
       "t": "Character"
     },
     "OP17-082": {
@@ -1030,7 +1030,8 @@
       "n": "Charlotte Linlin",
       "p": 5000,
       "s": "The Four Emperors/Big Mom Pirates",
-      "t": "Leader"
+      "t": "Leader",
+      "lf": 5
     },
     "OP17-100": {
       "a": "Ranged",

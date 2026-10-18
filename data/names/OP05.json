@@ -83,7 +83,7 @@
       "kw": "-",
       "n": "Chaka",
       "p": 6000,
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Character"
     },
     "OP05-009": {
@@ -93,7 +93,7 @@
       "k": 1,
       "kw": "-",
       "n": "Toh-Toh",
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Character"
     },
     "OP05-010": {
@@ -104,7 +104,7 @@
       "kw": "-",
       "n": "Nico Robin",
       "p": 2000,
-      "s": "Straw Hat Pirates",
+      "s": "Straw Hat Crew",
       "t": "Character"
     },
     "OP05-011": {
@@ -115,7 +115,7 @@
       "kw": "-",
       "n": "Bartholomew Kuma",
       "p": 2000,
-      "s": "The Seven Warlords/Revolutionary Army",
+      "s": "The Seven Warlords of the Sea / Revolutionary Army",
       "t": "Character"
     },
     "OP05-012": {
@@ -148,7 +148,7 @@
       "kw": "-",
       "n": "Pell",
       "p": 4000,
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Character"
     },
     "OP05-015": {
@@ -441,7 +441,7 @@
       "kw": "-",
       "n": "Ulti",
       "p": 5000,
-      "s": "Animal Kigdom Pirates",
+      "s": "Animal Kingdom Pirates",
       "t": "Character"
     },
     "OP05-044": {
@@ -507,7 +507,7 @@
       "kw": "-",
       "n": "Haccha",
       "p": 7000,
-      "s": "Giants / Animal Kingdom Pirates",
+      "s": "Giant / Animal Kingdom Pirates",
       "t": "Character"
     },
     "OP05-050": {
@@ -608,7 +608,7 @@
       "k": 5,
       "kw": "-",
       "n": "Let Us Begin the World of Violence!!!",
-      "s": "Four Emperors/Animal Kingdom Pirates",
+      "s": "The Four Emperors / Animal Kingdom Pirates",
       "t": "Event"
     },
     "OP05-060": {
@@ -684,7 +684,7 @@
       "kw": "Blocker",
       "n": "Jinbe",
       "p": 6000,
-      "s": "Straw Hat Crew",
+      "s": "Fish-Man / Straw Hat Crew",
       "t": "Character"
     },
     "OP05-067": {
@@ -739,7 +739,7 @@
       "kw": "-",
       "n": "Bepo",
       "p": 5000,
-      "s": "mink tribe / Heart pirates",
+      "s": "Minks / Heart Pirates",
       "t": "Character"
     },
     "OP05-072": {
@@ -781,7 +781,7 @@
       "ctr": 1000,
       "k": 1,
       "kw": "-",
-      "n": "Mr.1 (Daz.Bonez)",
+      "n": "Mr.1(Daz.Bonez)",
       "p": 1000,
       "s": "Baroque Works",
       "t": "Character"
@@ -791,7 +791,7 @@
       "k": 1,
       "kw": "-",
       "n": "When You're at Sea You Fight against Pirates!!",
-      "s": "Wano Country",
+      "s": "Land of Wano",
       "t": "Event"
     },
     "OP05-077": {
@@ -829,7 +829,7 @@
       "kw": "Double Attack",
       "n": "Elizabello II",
       "p": 5000,
-      "s": "Prodence Kingdom / Dressrosa",
+      "s": "Kingdom of Prodence / Dressrosa",
       "t": "Character"
     },
     "OP05-081": {
@@ -849,7 +849,7 @@
       "k": 1,
       "kw": "-",
       "n": "Shirahoshi",
-      "s": "Mermaid",
+      "s": "Merfolk",
       "t": "Character"
     },
     "OP05-083": {
@@ -870,7 +870,7 @@
       "k": 3,
       "kw": "-",
       "n": "Saint Charlos",
-      "s": "Celestial Dragon",
+      "s": "Celestial Dragons",
       "t": "Character"
     },
     "OP05-085": {
@@ -881,7 +881,7 @@
       "kw": "Blocker",
       "n": "Nefeltari Cobra",
       "p": 1000,
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Character"
     },
     "OP05-086": {
@@ -892,7 +892,7 @@
       "kw": "Blocker",
       "n": "Nefeltari Vivi",
       "p": 1000,
-      "s": "Alabasta Kingdom",
+      "s": "Alabasta",
       "t": "Character"
     },
     "OP05-087": {
@@ -913,7 +913,7 @@
       "k": 1,
       "kw": "-",
       "n": "Mansherry",
-      "s": "Tontatta Tribe / Dressrosa",
+      "s": "The Tontattas / Dressrosa",
       "t": "Character"
     },
     "OP05-089": {
@@ -924,7 +924,7 @@
       "kw": "-",
       "n": "Saint Mjosgard",
       "p": 1000,
-      "s": "Celestial Dragon",
+      "s": "Celestial Dragons",
       "t": "Character"
     },
     "OP05-090": {
@@ -955,7 +955,7 @@
       "k": 5,
       "kw": "-",
       "n": "Saint Rosward",
-      "s": "Celestial Dragon",
+      "s": "Celestial Dragons",
       "t": "Character"
     },
     "OP05-093": {
@@ -973,8 +973,8 @@
       "c": "Black",
       "k": 1,
       "kw": "-",
-      "n": "Haute Couture Patch Work",
-      "s": "Tontatta Tribe / Dressrosa",
+      "n": "Haute Couture Patch★Work",
+      "s": "The Tontattas / Dressrosa",
       "t": "Event"
     },
     "OP05-095": {
@@ -990,7 +990,7 @@
       "k": 3,
       "kw": "-",
       "n": "I Bid 500 Million!!",
-      "s": "Celestial Dragon",
+      "s": "Celestial Dragons",
       "t": "Event"
     },
     "OP05-097": {
@@ -998,7 +998,7 @@
       "k": 1,
       "kw": "-",
       "n": "Mary Geoise",
-      "s": "The Holy Land Mary Geoise",
+      "s": "Mary Geoise",
       "t": "Stage"
     },
     "OP05-098": {
@@ -1040,7 +1040,7 @@
       "kw": "-",
       "n": "Ohm",
       "p": 5000,
-      "s": "Sky Island / God's Priest",
+      "s": "Sky Island / Vassals",
       "t": "Character"
     },
     "OP05-102": {
@@ -1051,7 +1051,7 @@
       "kw": "-",
       "n": "Gedatsu",
       "p": 6000,
-      "s": "Sky Island / God's Priest",
+      "s": "Sky Island / Vassals",
       "t": "Character"
     },
     "OP05-103": {
@@ -1083,7 +1083,7 @@
       "kw": "-",
       "n": "Satori",
       "p": 5000,
-      "s": "Sky Island / God's Priest",
+      "s": "Sky Island / Vassals",
       "t": "Character"
     },
     "OP05-106": {
@@ -1094,7 +1094,7 @@
       "kw": "-",
       "n": "Shura",
       "p": 2000,
-      "s": "Sky Island / God's Priests",
+      "s": "Sky Island / Vassals",
       "t": "Character"
     },
     "OP05-107": {
@@ -1105,7 +1105,7 @@
       "kw": "-",
       "n": "Lieutenant Spacey",
       "p": 4000,
-      "s": "Moon",
+      "s": "The Moon",
       "t": "Character"
     },
     "OP05-108": {
@@ -1116,7 +1116,7 @@
       "kw": "-",
       "n": "Nola",
       "p": 7000,
-      "s": "Sky Island",
+      "s": "Animal / Sky Island",
       "t": "Character"
     },
     "OP05-109": {
@@ -1214,7 +1214,7 @@
       "kw": "-",
       "n": "Kaido",
       "p": 12000,
-      "s": "Four Emperors / Animal Kingdom Pirates",
+      "s": "The Four Emperors / Animal Kingdom Pirates",
       "t": "Character"
     },
     "OP05-119": {
@@ -1225,7 +1225,7 @@
       "kw": "-",
       "n": "Monkey.D.Luffy",
       "p": 12000,
-      "s": "Four Emperors / Straw Hat Crew",
+      "s": "The Four Emperors / Straw Hat Crew",
       "t": "Character"
     }
   }

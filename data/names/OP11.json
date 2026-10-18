@@ -216,7 +216,7 @@
       "lf": 5,
       "n": "Jinbe",
       "p": 5000,
-      "s": "Fishman / Straw Hat Crew",
+      "s": "Fish-Man / Straw Hat Crew",
       "t": "Leader"
     },
     "OP11-022": {
@@ -226,7 +226,7 @@
       "lf": 5,
       "n": "Shirahoshi",
       "p": 5000,
-      "s": "Fishman Island / Merfolk",
+      "s": "Merfolk / Fish-Man Island",
       "t": "Leader"
     },
     "OP11-023": {
@@ -237,7 +237,7 @@
       "kw": "-",
       "n": "Arlong",
       "p": 7000,
-      "s": "Fishman / Fishman Island / Sun Pirates",
+      "s": "Fish-Man / Fish-Man Island / The Sun Pirates",
       "t": "Character"
     },
     "OP11-024": {
@@ -248,7 +248,7 @@
       "kw": "-",
       "n": "Aladine",
       "p": 5000,
-      "s": "Merfolk / Fish-Man Island / Sun Pirates",
+      "s": "Merfolk / Fish-Man Island / The Sun Pirates",
       "t": "Character"
     },
     "OP11-025": {
@@ -269,7 +269,7 @@
       "kw": "-",
       "n": "Scaled Neptunian",
       "p": 8000,
-      "s": "Sea Kings",
+      "s": "Neptunian",
       "t": "Character"
     },
     "OP11-027": {
@@ -280,7 +280,7 @@
       "kw": "-",
       "n": "Bulge-Eyed Neptunian",
       "p": 6000,
-      "s": "Sea Kings",
+      "s": "Neptunian",
       "t": "Character"
     },
     "OP11-028": {
@@ -291,7 +291,7 @@
       "kw": "-",
       "n": "Lord of the Coast",
       "p": 5000,
-      "s": "Sea Kings / East Blue",
+      "s": "Neptunian / East Blue",
       "t": "Character"
     },
     "OP11-029": {
@@ -302,7 +302,7 @@
       "kw": "Blocker",
       "n": "Charlotte Praline",
       "p": 4000,
-      "s": "Merfolk / Fish-Man Island / Sun Pirates",
+      "s": "Merfolk / Fish-Man Island / The Sun Pirates",
       "t": "Character"
     },
     "OP11-030": {
@@ -312,7 +312,7 @@
       "k": 1,
       "kw": "-",
       "n": "Shirahoshi",
-      "s": "Merfolk / Fishman Island",
+      "s": "Merfolk / Fish-Man Island",
       "t": "Character"
     },
     "OP11-031": {
@@ -323,7 +323,7 @@
       "kw": "-",
       "n": "Jinbe",
       "p": 8000,
-      "s": "Fishman / Fishman Island / Sun Pirates",
+      "s": "Fish-Man / Fish-Man Island / The Sun Pirates",
       "t": "Character"
     },
     "OP11-032": {
@@ -345,7 +345,7 @@
       "kw": "-",
       "n": "Bird Neptunian",
       "p": 7000,
-      "s": "Sea Kings",
+      "s": "Neptunian",
       "t": "Character"
     },
     "OP11-034": {
@@ -367,7 +367,7 @@
       "kw": "-",
       "n": "Fisher Tiger",
       "p": 7000,
-      "s": "Fish-Man / Fish-Man Island / Sun Pirates",
+      "s": "Fish-Man / Fish-Man Island / The Sun Pirates",
       "t": "Character"
     },
     "OP11-036": {
@@ -378,7 +378,7 @@
       "kw": "-",
       "n": "Spotted Neptunian",
       "p": 5000,
-      "s": "Sea Kings",
+      "s": "Neptunian",
       "t": "Character"
     },
     "OP11-037": {
@@ -386,7 +386,7 @@
       "k": 1,
       "kw": "-",
       "n": "Ancient Weapon Poseidon",
-      "s": "Fishman Island",
+      "s": "Fish-Man Island",
       "t": "Event"
     },
     "OP11-038": {
@@ -402,7 +402,7 @@
       "k": 1,
       "kw": "-",
       "n": "Vagabond Drill",
-      "s": "Fish-Man / Fish-Man Island / Sun Pirates",
+      "s": "Fish-Man / Fish-Man Island / The Sun Pirates",
       "t": "Event"
     },
     "OP11-040": {
@@ -433,7 +433,7 @@
       "kw": "Rush",
       "n": "Vito",
       "p": 4000,
-      "s": "Fire Tank Pirates",
+      "s": "Firetank Pirates",
       "t": "Character"
     },
     "OP11-043": {
@@ -444,7 +444,7 @@
       "kw": "Blocker",
       "n": "Vinsmoke Ichiji",
       "p": 7000,
-      "s": "Vinsmoke Family / GERMA 66",
+      "s": "The Vinsmoke Family / GERMA 66",
       "t": "Character"
     },
     "OP11-044": {
@@ -455,7 +455,7 @@
       "kw": "-",
       "n": "Vinsmoke Judge",
       "p": 8000,
-      "s": "Vinsmoke Family / GERMA 66",
+      "s": "The Vinsmoke Family / GERMA 66",
       "t": "Character"
     },
     "OP11-045": {
@@ -477,7 +477,7 @@
       "kw": "Blocker",
       "n": "Vinsmoke Yonji",
       "p": 5000,
-      "s": "Vinsmoke Family / GERMA 66",
+      "s": "The Vinsmoke Family / GERMA 66",
       "t": "Character"
     },
     "OP11-047": {
@@ -488,7 +488,7 @@
       "kw": "-",
       "n": "Vinsmoke Reiju",
       "p": 5000,
-      "s": "Vinsmoke Family / GERMA 66",
+      "s": "The Vinsmoke Family / GERMA 66",
       "t": "Character"
     },
     "OP11-048": {
@@ -521,7 +521,7 @@
       "kw": "-",
       "n": "Gotti",
       "p": 4000,
-      "s": "Fire Tank Pirates",
+      "s": "Firetank Pirates",
       "t": "Character"
     },
     "OP11-051": {
@@ -532,7 +532,7 @@
       "kw": "-",
       "n": "Sanji",
       "p": 7000,
-      "s": "Vinsmoke Family / Straw Hat Crew",
+      "s": "The Vinsmoke Family / Straw Hat Crew",
       "t": "Character"
     },
     "OP11-052": {
@@ -543,7 +543,7 @@
       "kw": "-",
       "n": "Charlotte Lola",
       "p": 7000,
-      "s": "Fire Tank Pirates/Former Rolling Pirates",
+      "s": "Firetank Pirates / Former Rolling Pirates",
       "t": "Character"
     },
     "OP11-053": {
@@ -763,7 +763,7 @@
       "kw": "Rush",
       "n": "Charlotte Linlin",
       "p": 12000,
-      "s": "Big Mom Pirates",
+      "s": "The Four Emperors / Big Mom Pirates",
       "t": "Character"
     },
     "OP11-074": {
@@ -785,7 +785,7 @@
       "kw": "-",
       "n": "Jaguar.D.Saul",
       "p": 6000,
-      "s": "Giants / Ohara / Former Navy",
+      "s": "Giant / Ohara / Former Navy",
       "t": "Character"
     },
     "OP11-076": {
@@ -886,7 +886,7 @@
       "kw": "-",
       "n": "Kurozumi Orochi",
       "p": 4000,
-      "s": "Wano Country / Kurozumi Family",
+      "s": "Land of Wano / Kurozumi Clan",
       "t": "Character"
     },
     "OP11-086": {
@@ -1063,7 +1063,7 @@
       "kw": "-",
       "n": "Camie",
       "p": 1000,
-      "s": "Mefolk / Fish-Man Island",
+      "s": "Merfolk / Fish-Man Island",
       "t": "Character"
     },
     "OP11-103": {
@@ -1074,7 +1074,7 @@
       "kw": "-",
       "n": "Long-Jaw Neptunian",
       "p": 7000,
-      "s": "Sea Kings",
+      "s": "Neptunian",
       "t": "Character"
     },
     "OP11-104": {
@@ -1096,7 +1096,7 @@
       "kw": "-",
       "n": "Charlotte Chiffon",
       "p": 6000,
-      "s": "Fire Tank Pirates / Former Big Mom Pirates",
+      "s": "Firetank Pirates / Former Big Mom Pirates",
       "t": "Character"
     },
     "OP11-106": {
@@ -1118,7 +1118,7 @@
       "kw": "Blocker",
       "n": "Topknot Neptunian",
       "p": 6000,
-      "s": "Sea Kings",
+      "s": "Neptunian",
       "t": "Character"
     },
     "OP11-108": {
@@ -1129,7 +1129,7 @@
       "kw": "-",
       "n": "Neptune",
       "p": 7000,
-      "s": "Merfolk / Fishman Island",
+      "s": "Merfolk / Fish-Man Island",
       "t": "Character"
     },
     "OP11-109": {
@@ -1207,7 +1207,7 @@
       "k": 6,
       "kw": "-",
       "n": "Merman Combat Ultramarine",
-      "s": "Merfolk / Fishmen Island",
+      "s": "Merfolk / Fish-Man Island",
       "t": "Event"
     },
     "OP11-117": {

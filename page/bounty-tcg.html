@@ -2622,14 +2622,15 @@ async function rpShare(id){
       await db.doc("replays/" + c).set({v: 1, t: Date.now(), by: uid, e: txt});
       const list = rpList(), x = list.find(x => x.id === id); if (x) { x.code = c; rpStore(list); }
       if (modal && modal.type === "replays") openReplays();
-      rpCopyCode(c); achGive("share"); return;
+      rpCopyCode(c).then(() => achGive("share")); return;
     } catch (er) {}
   }
   toast("Couldn't share that replay right now. Try again in a moment.");
 }
 function rpCopyCode(c){
   const t = rpCodeShow(c), msg = `Replay code ${t}. The link opens it in Bounty TCG, or anyone can type the code in Replays > Open a code.`;
-  try { navigator.clipboard.writeText(linkOf("r", t)).then(() => toast(msg + " The link is copied."), () => toast(msg)); } catch (e) { toast(msg); }
+  // returns once the message is up, so an achievement that comes with it shows after the code, not under it
+  try { return navigator.clipboard.writeText(linkOf("r", t)).then(() => toast(msg + " The link is copied."), () => toast(msg)); } catch (e) { toast(msg); return Promise.resolve(); }
 }
 // ---------- links: bounty://replay/<code> and bounty://deck/<deck code> ----------
 // Chat apps only make https links clickable, so the share buttons copy a link to docs/open.html on this repository's

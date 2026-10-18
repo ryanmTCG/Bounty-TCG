@@ -7,7 +7,7 @@
       "lf": 5,
       "n": "Monkey.D.Luffy",
       "p": 5000,
-      "s": "Four Emperors / Straw Hat Crew",
+      "s": "The Four Emperors / Straw Hat Crew",
       "t": "Leader"
     },
     "ST21-002": {
@@ -51,7 +51,7 @@
       "kw": "-",
       "n": "Jinbe",
       "p": 4000,
-      "s": "Fishmen/Straw Hat Pirates",
+      "s": "Fish-Man / Straw Hat Crew",
       "t": "Character"
     },
     "ST21-006": {
@@ -150,7 +150,7 @@
       "kw": "Rush",
       "n": "Monkey.D.Luffy",
       "p": 6000,
-      "s": "Four Emperors / Straw Hat Pirates",
+      "s": "The Four Emperors / Straw Hat Crew",
       "t": "Character"
     },
     "ST21-015": {
@@ -161,7 +161,7 @@
       "kw": "Rush",
       "n": "Roronoa Zoro",
       "p": 5000,
-      "s": "Straw Hat Pirates",
+      "s": "Straw Hat Crew",
       "t": "Character"
     },
     "ST21-016": {
@@ -169,7 +169,7 @@
       "k": 2,
       "kw": "Blocker",
       "n": "Gum-Gum Dawn Whip",
-      "s": "Four Emperors / Straw Hat Crew",
+      "s": "The Four Emperors / Straw Hat Crew",
       "t": "Event"
     },
     "ST21-017": {
@@ -177,7 +177,7 @@
       "k": 4,
       "kw": "-",
       "n": "Gum-Gum Mole Pistol",
-      "s": "Four Emperors/ Straw Hat Crew",
+      "s": "The Four Emperors / Straw Hat Crew",
       "t": "Event"
     }
   }

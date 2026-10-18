@@ -221,7 +221,7 @@
       "lf": 4,
       "n": "Arlong",
       "p": 5000,
-      "s": "Fish-Man / East Blue / Arlong Crew",
+      "s": "Fish-Man / East Blue / Arlong Pirates",
       "t": "Leader"
     },
     "OP03-023": {
@@ -265,7 +265,7 @@
       "kw": "-",
       "n": "Kuroobi",
       "p": 3000,
-      "s": "Fish-Man / East Blue / Arlong Crew",
+      "s": "Fish-Man / East Blue / Arlong Pirates",
       "t": "Character"
     },
     "OP03-027": {
@@ -298,7 +298,7 @@
       "kw": "-",
       "n": "Chew",
       "p": 3000,
-      "s": "Fish-Man / East Blue / Arlong Crew",
+      "s": "Fish-Man / East Blue / Arlong Pirates",
       "t": "Character"
     },
     "OP03-030": {
@@ -309,7 +309,7 @@
       "kw": "-",
       "n": "Nami",
       "p": 2000,
-      "s": "East Blue / Arlong Crew",
+      "s": "East Blue / Arlong Pirates",
       "t": "Character"
     },
     "OP03-031": {
@@ -342,7 +342,7 @@
       "kw": "-",
       "n": "Hatchan",
       "p": 4000,
-      "s": "Fish-Man / East Blue / Arlong Crew",
+      "s": "Fish-Man / East Blue / Arlong Pirates",
       "t": "Character"
     },
     "OP03-034": {
@@ -380,7 +380,7 @@
       "k": 1,
       "kw": "-",
       "n": "Tooth Attack",
-      "s": "Fish-Man / East Blue / Arlong Crew",
+      "s": "Fish-Man / East Blue / Arlong Pirates",
       "t": "Event"
     },
     "OP03-038": {
@@ -520,9 +520,9 @@
       "ctr": 1000,
       "k": 4,
       "kw": "-",
-      "n": "Bell-mere",
+      "n": "Bell-mère",
       "p": 5000,
-      "s": "East Blue",
+      "s": "East Blue / Former Navy",
       "t": "Character"
     },
     "OP03-052": {
@@ -597,7 +597,7 @@
       "kw": "Banish",
       "n": "Kaku",
       "p": 6000,
-      "s": "Water 7 / Galley-La Company",
+      "s": "Water Seven / Galley-La Company",
       "t": "Character"
     },
     "OP03-060": {
@@ -608,7 +608,7 @@
       "kw": "-",
       "n": "Kalifa",
       "p": 4000,
-      "s": "Water 7 / Galley-La Company",
+      "s": "Water Seven / Galley-La Company",
       "t": "Character"
     },
     "OP03-061": {
@@ -619,7 +619,7 @@
       "kw": "-",
       "n": "Kiwi & Mozu",
       "p": 4000,
-      "s": "Water 7 / Franky Family",
+      "s": "Water Seven / The Franky Family",
       "t": "Character"
     },
     "OP03-062": {
@@ -630,7 +630,7 @@
       "kw": "-",
       "n": "Kokoro",
       "p": 2000,
-      "s": "Mermaid / Water 7",
+      "s": "Merfolk / Water Seven",
       "t": "Character"
     },
     "OP03-063": {
@@ -641,7 +641,7 @@
       "kw": "Blocker",
       "n": "Zambai",
       "p": 2000,
-      "s": "Water 7 / Franky Family",
+      "s": "Water Seven / The Franky Family",
       "t": "Character"
     },
     "OP03-064": {
@@ -652,7 +652,7 @@
       "kw": "-",
       "n": "Tilestone",
       "p": 6000,
-      "s": "Water 7 / Galley-La Company",
+      "s": "Water Seven / Galley-La Company",
       "t": "Character"
     },
     "OP03-065": {
@@ -663,7 +663,7 @@
       "kw": "Blocker",
       "n": "Chimney & Gonbe",
       "p": 2000,
-      "s": "Animal / Water 7",
+      "s": "Animal / Water Seven",
       "t": "Character"
     },
     "OP03-066": {
@@ -674,7 +674,7 @@
       "kw": "-",
       "n": "Paulie",
       "p": 6000,
-      "s": "Water 7 / Galley-La Company",
+      "s": "Water Seven / Galley-La Company",
       "t": "Character"
     },
     "OP03-067": {
@@ -685,7 +685,7 @@
       "kw": "-",
       "n": "Peepley Lulu",
       "p": 5000,
-      "s": "Water 7 / Galley-La Company",
+      "s": "Water Seven / Galley-La Company",
       "t": "Character"
     },
     "OP03-068": {
@@ -696,7 +696,7 @@
       "kw": "Banish",
       "n": "Minozebra",
       "p": 5000,
-      "s": "Impel Down / Jailer Beasts",
+      "s": "Impel Down / Jailer Beast",
       "t": "Character"
     },
     "OP03-069": {
@@ -707,7 +707,7 @@
       "kw": "-",
       "n": "Minorhinoceros",
       "p": 5000,
-      "s": "Impel Down / Jailer Beasts",
+      "s": "Impel Down / Jailer Beast",
       "t": "Character"
     },
     "OP03-070": {
@@ -718,7 +718,7 @@
       "kw": "Rush",
       "n": "Monkey.D.Luffy",
       "p": 7000,
-      "s": "Water 7 / Straw Hat Crew",
+      "s": "Water Seven / Straw Hat Crew",
       "t": "Character"
     },
     "OP03-071": {
@@ -729,7 +729,7 @@
       "kw": "-",
       "n": "Rob Lucci",
       "p": 6000,
-      "s": "Water 7 / Galleyla Company",
+      "s": "Water Seven / Galley-La Company",
       "t": "Character"
     },
     "OP03-072": {
@@ -737,7 +737,7 @@
       "k": 0,
       "kw": "-",
       "n": "Gum-Gum Jet Gatling",
-      "s": "Water 7 / Straw Hat Crew",
+      "s": "Water Seven / Straw Hat Crew",
       "t": "Event"
     },
     "OP03-073": {
@@ -745,7 +745,7 @@
       "k": 1,
       "kw": "-",
       "n": "Hull Dismantler Slash",
-      "s": "Water 7 / Franky Family",
+      "s": "Water Seven / The Franky Family",
       "t": "Event"
     },
     "OP03-074": {
@@ -753,7 +753,7 @@
       "k": 2,
       "kw": "-",
       "n": "Top Knot",
-      "s": "Water 7 / Galley-La Company",
+      "s": "Water Seven / Galley-La Company",
       "t": "Event"
     },
     "OP03-075": {
@@ -761,7 +761,7 @@
       "k": 3,
       "kw": "-",
       "n": "Galley-La Company",
-      "s": "Water 7 / Galley-La Company",
+      "s": "Water Seven / Galley-La Company",
       "t": "Stage"
     },
     "OP03-076": {
@@ -781,7 +781,7 @@
       "lf": 4,
       "n": "Charlotte Linlin",
       "p": 5000,
-      "s": "Four Emperors / Big Mom Pirates",
+      "s": "The Four Emperors / Big Mom Pirates",
       "t": "Leader"
     },
     "OP03-078": {
@@ -857,7 +857,7 @@
       "kw": "-",
       "n": "Jerry",
       "p": 4000,
-      "s": "CP9",
+      "s": "CP6",
       "t": "Character"
     },
     "OP03-085": {
@@ -1027,7 +1027,7 @@
       "kw": "-",
       "n": "Camie",
       "p": 3000,
-      "s": "Mermaid",
+      "s": "Merfolk",
       "t": "Character"
     },
     "OP03-102": {
@@ -1038,7 +1038,7 @@
       "kw": "-",
       "n": "Sanji",
       "p": 3000,
-      "s": "Vinsmoke Family",
+      "s": "The Vinsmoke Family",
       "t": "Character"
     },
     "OP03-103": {
@@ -1060,7 +1060,7 @@
       "kw": "Blocker",
       "n": "Shirley",
       "p": 3000,
-      "s": "Mermaid",
+      "s": "Merfolk",
       "t": "Character"
     },
     "OP03-105": {
@@ -1137,7 +1137,7 @@
       "kw": "-",
       "n": "Charlotte Praline",
       "p": 5000,
-      "s": "Mermaid / Sun Pirates",
+      "s": "Merfolk / The Sun Pirates",
       "t": "Character"
     },
     "OP03-112": {
@@ -1170,7 +1170,7 @@
       "kw": "-",
       "n": "Charlotte Linlin",
       "p": 12000,
-      "s": "Four Emperors / Big Mom Pirates",
+      "s": "The Four Emperors / Big Mom Pirates",
       "t": "Character"
     },
     "OP03-115": {
@@ -1191,7 +1191,7 @@
       "k": 5,
       "kw": "-",
       "n": "Shirahoshi",
-      "s": "Mermaid",
+      "s": "Merfolk",
       "t": "Character"
     },
     "OP03-117": {
