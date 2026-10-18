@@ -1673,12 +1673,18 @@ const FAIR = {don: /DON!!/i, rest: /\brest|\bactive\b|\bstand/i, draw: /\bdraws?
   search: /\bfrom your deck\b|\bshuffle your deck\b/i, life: /\bLife\b/i, hand: /\bhand\b/i, trash: /\btrash|\bK\.O\./i, play: /\bplay/i,
   power: /\bpower\b/i, cost: /\bcost\b/i, shuffle: /\bshuffle/i};
 const NO_FREE = "In public and ranked matches, that only works while a card's ability calls for it.";
+// DON!! by hand (adding from the DON!! deck, returning, resting, activating, giving on the opponent's turn) is locked
+// in every match against someone, Friends only and the computer too: the turn's own DON!! and Refresh Phases do it.
+// Only Test a deck and Practice alone keep it free. A card's ability that names DON!! still opens it through fair().
+const donTools = () => boardTools() && !(R && !PR) && !(PR && PR.bot);
+const NO_DON = "DON!! only comes, rests and readies through the turn's own steps, or while a card's ability calls for it.";
+const fairDon = () => fair(["don"], null, false, donTools());
 const fairText = () => fxCur && fxCur.manual ? `${fxCur.text || ""} ${(fxCur.steps[fxCur.i] || {}).text || ""}` : "";
-function fair(kinds, text, quiet){
-  if (boardTools()) return true;
+function fair(kinds, text, quiet, free = boardTools()){
+  if (free) return true;
   const t = text != null ? text : fairText();
   if (t && kinds.every(k => FAIR[k].test(t))) return true;
-  if (!quiet) toast(t ? "This card's ability doesn't let you do that." : NO_FREE);
+  if (!quiet) toast(t ? "This card's ability doesn't let you do that." : kinds.includes("don") && boardTools() ? NO_DON : NO_FREE);
   return false;
 }
 // moving a card by hand (menu, drag, double-click) at a public or ranked table
@@ -6377,10 +6383,10 @@ function openCardMenu(src, x, y){
     if (k !== "st" && !f.r && S.myTurn && S.turn > 1 && S.phase === "play" && oppM) items.push(["Attack", () => { atkPick = src; markTargets(); toast("Tap the Leader or Character to attack. Tap anywhere else to cancel."); }]);
     items.push([f.r ? "Activate (stand)" : "Rest", () => { if (!fair(["rest"])) return; f.r = !f.r; addLog(`${f.r ? "rested" : "activated"} ${lab(f.card)}`); if (f.r) whenFire("rest", {f}); commit(); }]);
     if (k !== "st") {
-      items.push(["Give DON!! (+1)", () => { if (!S.myTurn && !fair(["don"])) return; if (!S.donActive) { toast("No active DON!! in your cost area."); return; } S.donActive--; f.d++; addLog(`gave DON!! to ${lab(f.card)} (+${f.d})`); commit(); }]);
+      items.push(["Give DON!! (+1)", () => { if (!S.myTurn && !fairDon()) return; if (!S.donActive) { toast("No active DON!! in your cost area."); return; } S.donActive--; f.d++; addLog(`gave DON!! to ${lab(f.card)} (+${f.d})`); commit(); }]);
       if (f.pm) items.push([`Clear power bonus (${f.pm > 0 ? "+" : "\u2212"}${Math.abs(f.pm)})`, () => { if (!fair(["power"])) return; f.pm = 0; f.bc = 0; f.nx = 0; f.nt = 0; addLog(`cleared the power bonus on ${lab(f.card)}`); commit(); }]);
       if (f.cm) items.push([`Clear cost bonus (${f.cm > 0 ? "+" : "\u2212"}${Math.abs(f.cm)})`, () => { if (!fair(["cost"])) return; f.cm = 0; addLog(`cleared the cost bonus on ${lab(f.card)}`); commit(); }]);
-      if (f.d && fxCur) items.push(["Take DON!! back (an effect says so)", () => { if (!fair(["don"])) return; f.d--; S.donRested++; addLog(`took a DON!! back from ${lab(f.card)}`); commit(); }]);
+      if (f.d && fxCur) items.push(["Take DON!! back (an effect says so)", () => { if (!fairDon()) return; f.d--; S.donRested++; addLog(`took a DON!! back from ${lab(f.card)}`); commit(); }]);
     }
     if (k !== "ld") items.push(M("Return to hand", "hand"), M("Put on top of deck", "deck"), M("Put on bottom of deck", "deckbot"), M("Trash", "trash"));
   } else if (k === "ev") {
@@ -6424,9 +6430,9 @@ function openActMenu(a, x, y){
     ["Shuffle Life", () => { if (!fair(["life", "shuffle"])) return; shuffle(S.life); addLog("shuffled their Life"); commit(); }]], x, y);
   else if (a === "trash") { modal = {type: "trash"}; renderModal(); }
   else if (a === "dondeck") showMenu(`DON!! deck (${S.donDeck})`, [
-    ["Add 1 DON!! (active)", () => { if (fair(["don"])) addDon(1, true); }], ["Add 2 DON!! (active)", () => { if (fair(["don"])) addDon(2, true); }],
-    ["Add 1 DON!! (rested)", () => { if (fair(["don"])) addDon(1, false); }], ["Return 1 DON!! to deck", () => { if (fair(["don"])) returnDon(); }],
-    ["Activate all DON!!", () => { if (!fair(["don"])) return; S.donActive += S.donRested; S.donRested = 0; commit(); }]], x, y);
+    ["Add 1 DON!! (active)", () => { if (fairDon()) addDon(1, true); }], ["Add 2 DON!! (active)", () => { if (fairDon()) addDon(2, true); }],
+    ["Add 1 DON!! (rested)", () => { if (fairDon()) addDon(1, false); }], ["Return 1 DON!! to deck", () => { if (fairDon()) returnDon(); }],
+    ["Activate all DON!!", () => { if (!fairDon()) return; S.donActive += S.donRested; S.donRested = 0; commit(); }]], x, y);
 }
 function inspectOpp(k){
   if (!oppM) return;
@@ -6518,7 +6524,7 @@ function moveDon(d, to){
   // attached DON!! only moves when an effect says so; rested DON!! in the cost area can't be given
   if (d.att && !fxCur) { toast("DON!! given to a card stays there until your next Refresh Phase, unless an effect moves it."); return; }
   if (!d.att && d.pool === "r" && to !== "dondeck") { toast("Rested DON!! can't be given. Only active DON!! can."); return; }
-  if ((d.att || to === "dondeck" || !S.myTurn) && !fair(["don"])) return;
+  if ((d.att || to === "dondeck" || !S.myTurn) && !fairDon()) return;
   const target = donHolder(to);
   if (d.att && to === d.att) return;
   if (d.kind === "don" && to === "cost") return;
@@ -7046,7 +7052,7 @@ document.addEventListener("click", e => {
   if (sw) { formSleeve = +sw.dataset.sl; document.querySelectorAll("[data-sl]").forEach(b => b.classList.toggle("sel", b === sw)); const sn = document.getElementById("slname"); if (sn) sn.textContent = sw.title; return; }
   const don = t.closest("[data-don]");
   if (don) {
-    if (!fair(["don"])) return;
+    if (!fairDon()) return;
     if (don.dataset.don === "a" && S.donActive > 0) { S.donActive--; S.donRested++; }
     else if (don.dataset.don === "r" && S.donRested > 0) { S.donRested--; S.donActive++; }
     commit(); return;

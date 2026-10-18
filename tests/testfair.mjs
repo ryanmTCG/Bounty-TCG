@@ -135,7 +135,15 @@ await clear();
 await page.evaluate(() => { S.pubt = false; commit(); });
 s0 = await snap();
 await pick(() => openActMenu("dondeck", 300, 300), "Add 1 DON!! (active)");
-check((await snap()).dd === s0.dd - 1, "at a Friends only table the DON!! deck menu works as before");
+check(same(await snap(), s0) && /turn's own steps/.test(await toastText()), "against the computer, DON!! by hand stays locked even off a public table");
+await page.evaluate(() => { const d = document.querySelector('#me [data-don="a"]'); if (d) d.click(); });
+await pick(() => openActMenu("dondeck", 300, 300), "Activate all DON!!");
+check(same(await snap(), s0), "and so do resting a DON!! and activating them all");
+check(await page.evaluate(() => { const r0 = R, p0 = PR; R = {}; PR = null; const on = donTools(); R = r0; PR = p0; return !on && boardTools(); }), "a Friends only match online keeps its other tools, but not DON!! by hand");
+await page.evaluate(() => { PR.bot = false; });
+await pick(() => openActMenu("dondeck", 300, 300), "Add 1 DON!! (active)");
+check((await snap()).dd === s0.dd - 1, "Test a deck (both sides) keeps the DON!! deck menu");
+await page.evaluate(() => { PR.bot = true; });
 
 await page.screenshot({ path: `${OUT}/fair.png` });
 check(!errs.length, "no page errors");

@@ -4,3 +4,4 @@ The desktop app gets an update once 10 changes have piled up here, unless Ryan a
 Add one line per change. `tools/publish_update.py` publishes them and empties this list.
 
 - A Practice button on the Play page: the computer, the daily puzzle, the tutorial and testing a deck now have their own page.
+- DON!! can't be added, returned, rested or readied by hand in any match against someone (Friends only and the computer too), unless a card's ability calls for it.
