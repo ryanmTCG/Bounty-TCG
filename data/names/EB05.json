@@ -41,7 +41,7 @@
       "ctr": 2000,
       "k": 2,
       "kw": "-",
-      "n": "Miss Buckinham Stussy",
+      "n": "Miss Buckingham Stussy",
       "p": 2000,
       "t": "Character"
     },
@@ -354,11 +354,14 @@
     },
     "EB05-047": {
       "c": "Black",
-      "kw": "-"
+      "kw": "-",
+      "n": "Ripley",
+      "t": "Character"
     },
     "EB05-048": {
       "c": "Black",
-      "kw": "-"
+      "kw": "-",
+      "t": "Event"
     },
     "EB05-049": {
       "c": "Yellow",
@@ -366,15 +369,21 @@
     },
     "EB05-050": {
       "c": "Yellow",
-      "kw": "-"
+      "kw": "-",
+      "n": "Atlas",
+      "t": "Character"
     },
     "EB05-051": {
       "c": "Yellow",
-      "kw": "-"
+      "kw": "-",
+      "n": "Ahiru",
+      "t": "Character"
     },
     "EB05-052": {
       "c": "Yellow",
-      "kw": "-"
+      "kw": "-",
+      "n": "Gloriosa",
+      "t": "Character"
     },
     "EB05-053": {
       "c": "Yellow",
@@ -391,7 +400,9 @@
     },
     "EB05-055": {
       "c": "Yellow",
-      "kw": "-"
+      "kw": "-",
+      "n": "Nami",
+      "t": "Character"
     },
     "EB05-056": {
       "c": "Yellow",
@@ -404,7 +415,9 @@
     },
     "EB05-057": {
       "c": "Yellow",
-      "kw": "-"
+      "kw": "-",
+      "n": "Nojiko",
+      "t": "Character"
     },
     "EB05-060": {
       "c": "Yellow",

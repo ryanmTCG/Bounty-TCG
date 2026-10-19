@@ -125,6 +125,46 @@ await page.click('[data-do="slnew"]'); await wait(300);
 check(await page.evaluate(() => !SL && !!$("#sl-set")), "New packs starts over");
 // a bad saved pool is cleaned
 check(await page.evaluate(() => { localStorage.setItem("bounty:sealed", JSON.stringify({set: "OP05", seed: 1, pool: ["OP05-010", "OP05-010", "<x>", "OP99-999"], ld: "OP01-001", dk: {"OP05-010": 9, "OP05-011": 2}})); const x = slLoad(); return x.pool.length === 2 && x.ld === "" && x.dk["OP05-010"] === 2 && !x.dk["OP05-011"]; }), "a saved pool is checked when it's read back");
+// Play a friend: the sealed deck becomes the deck you sit down with, without the 50-card warning
+await page.evaluate(() => { closeModal(); SL = {set: "OP05", seed: 5, pool: slOpen("OP05", 5), ld: "", dk: {}}; openSealed(); const b = sealedAuto(SL.set, SL.pool); SL.ld = b.ld; SL.dk = b.dk; slStore(); renderModal(); });
+await page.click('[data-do="slfriend"]'); await wait(300);
+const fr = await page.evaluate(() => { const v = loadSaved(); return {modal: modal && modal.type, ld: v.leader.split(" ")[0], n: deckCount(v.deck), sealed: v.sealed === v.deck, toast: $("#toast").textContent}; });
+console.log("friend", JSON.stringify(fr));
+check(fr.modal === "friends" && fr.ld === (await page.evaluate(() => SL.ld)) && fr.n >= 30 && fr.n < 50 && fr.sealed && /Challenge a friend/.test(fr.toast), "Play a friend makes the sealed deck the one you play and opens Friends");
+check(await page.evaluate(async () => { closeModal(); await sitAt("friend-test" + Date.now(), loadSaved(), false); return !/rules call for 50/.test($("#toast").textContent) && S.deck.length + S.hand.length === deckCount(loadSaved().deck); }), "sitting down with it online doesn't warn about 50 cards");
+await page.evaluate(() => leaveRoom()); await wait(300);
+check(await page.evaluate(() => { const v = loadSaved(); return !(v.sealed === true || v.sealed === v.deck + "x"); }), "the sealed mark only covers that exact list");
+
+// Draft: 4 players, 4 packs each, take one and pass
+await page.evaluate(() => { SL = null; slStore(); openSealed(); }); await wait(300);
+await page.selectOption("#sl-set", "OP09"); await page.click('[data-do="drstart"]'); await wait(300);
+const d0 = await page.evaluate(() => ({type: modal.type, n: document.querySelectorAll(".drpack .slc").length, chips: [...document.querySelectorAll("#modal .chip")].map(c => c.textContent).join("|")}));
+console.log("draft", JSON.stringify(d0));
+check(d0.type === "draft" && d0.n === 12 && /Pack 1 of 4/.test(d0.chips) && /Pick 1 of 12/.test(d0.chips), "Draft opens a pack of 12 to pick from");
+await page.screenshot({ path: OUT + "/draft.png" });
+const seen = await page.evaluate(() => DR.packs[DR_SEATS - 1].slice());   // passing left, the pack of the player on your right comes to you
+await page.click('.drpack .slc[data-do="drpick:0"]'); await wait(200);
+const d1 = await page.evaluate(() => ({n: document.querySelectorAll(".drpack .slc").length, mine: DR.picks[0].length, bots: DR.picks.slice(1).map(p => p.length), pack: DR.packs[0].slice()}));
+console.log("after pick", JSON.stringify(d1));
+check(d1.n === 11 && d1.mine === 1 && d1.bots.every(x => x === 1) && d1.pack.every(c => seen.includes(c)), "picking one passes the rest on, every computer player picks too, and a neighbour's pack comes to you");
+// it survives closing and comes back where it was
+await page.evaluate(() => { closeModal(); DR = null; openSealed(); });
+check(await page.evaluate(() => modal.type === "draft" && DR.picks[0].length === 1 && DR.packs[0].length === 11), "closing and coming back picks up the draft where it was");
+// draft the rest
+for (let i = 0; i < 47; i++) await page.evaluate(() => drPick(0));
+await wait(300);
+const d2 = await page.evaluate(() => ({type: modal.type, pool: SL && SL.pool.length, opp: SL && SL.opp && SL.opp.length, draft: SL && SL.draft, set: SL && SL.set, left: localStorage.getItem("bounty:draft"), h: $("#modal h2").textContent, toast: $("#toast").textContent}));
+console.log("drafted", JSON.stringify(d2));
+check(d2.type === "sealed" && d2.pool === 48 && d2.opp === 48 && d2.draft && d2.set === "OP09" && !d2.left && /Draft: OP09/.test(d2.h) && /Draft done: 48 picks/.test(d2.toast), "after 4 packs your 48 picks are the pool to build from, and the computer keeps its own picks");
+const bots = await page.evaluate(() => { const col = {}; for (const c of SL.opp) for (const x of colorsOf(c)) col[x] = (col[x] || 0) + 1; return Object.values(col).sort((a, b) => b - a); });
+check(bots[0] + (bots[1] || 0) >= 24, "a computer player drafts mostly two colors");
+await page.click('[data-do="slauto"]'); await wait(200);
+await page.click('[data-do="slplay"]'); await wait(800);
+const dp = await page.evaluate(() => ({bot: PR && PR.bot, opp: botSide(() => ({n: S.deck.length + S.hand.length, cards: [...S.deck, ...S.hand].map(c => c.c)})), opool: SL.opp}));
+check(dp.bot && dp.opp.n >= 30 && dp.opp.cards.every(c => dp.opool.includes(c)), "Play the computer gives it a deck from its own draft picks");
+await page.evaluate(() => { leaveRoom(); }); await wait(300);
+check(await page.evaluate(() => { const x = slLoad(); return x && x.draft && x.opp.length === 48; }), "a drafted pool and the computer's picks come back after closing");
+
 // card data saved on this computer before rarities came (the card reader) still gets the bundled rarities and corrections
 await page.evaluate(() => localStorage.setItem("bounty:db:v1", JSON.stringify({"names/OP05": {cards: {"OP05-001": {n: "Old name", c: "Red", t: "Leader"}, "OP05-999": {n: "My own card", c: "Red", t: "Character"}}}})));
 await page.reload(); await page.waitForLoadState("load"); await wait(3500);

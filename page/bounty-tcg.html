@@ -434,6 +434,11 @@ button,input,textarea,select{font:inherit;color:inherit}
 @keyframes riphit{from{box-shadow:0 0 0 3px #FFE9A8,0 0 18px 4px rgba(255,214,110,.6)}to{box-shadow:0 0 0 3px #FFE9A8,0 0 36px 12px rgba(255,214,110,.9)}}
 @keyframes ripfoil{from{background-position:150% 0}to{background-position:-100% 0}}
 @media (prefers-reduced-motion:reduce){.ripbody::before,.ripc,.ripc.hit .ripf,.ripc.hit .ripf::after{animation:none}.ripin{transition:none}.rippack.torn .riptop,.rippack.torn .ripbody{animation:none;opacity:0}}
+.drpack .slc{opacity:1;outline:none}
+.drpack .slc:hover{outline:3px solid #F2B84B}
+.drpack .slc.hit{box-shadow:0 0 0 3px #FFE9A8,0 0 18px 4px rgba(255,214,110,.7)}
+.drpicks{display:flex;flex-wrap:wrap;gap:4px;max-height:14vh;overflow:auto}
+.drp{font-size:11px;padding:1px 6px;border-radius:6px;background:hsl(var(--h) 45% 30%);color:#FFF6E0}
 .slc{position:relative;cursor:pointer;border-radius:8px;opacity:.75}
 .slc.in{opacity:1;outline:3px solid #F2B84B}
 .slc .card{width:100%;height:auto;aspect-ratio:63/88}
@@ -4002,6 +4007,12 @@ function closeModal(){ lobbyUnwatch(); modal = null; $("#modal").classList.remov
 function renderModal(){
   if (!modal || modal.type === "setup" || modal.type === "lobbies" || modal.type === "home" || modal.type === "art" || modal.type === "cardsdata" || modal.type === "reader") return;
   const close = `<div class="row end"><button class="btn" data-do="closemodal" type="button">Close</button></div>`;
+  if (modal.type === "draft") {
+    if (!DR) { modal.type = "sealed"; return renderModal(); }
+    const ptop = ($(".drpicks") || {}).scrollTop || 0;
+    showModal(draftHTML()); if ($(".drpicks")) $(".drpicks").scrollTop = ptop;
+    return;
+  }
   if (modal.type === "sealed") {
     const top = ($("#modal .sheet") || {}).scrollTop || 0, ptop = ($(".slpool") || {}).scrollTop || 0;
     showModal(sealedHTML()); $("#modal .sheet").scrollTop = top; if ($(".slpool")) $(".slpool").scrollTop = ptop;
@@ -4247,7 +4258,7 @@ function newGame(c, join){
   S.phase = join ? "wait" : "pre"; undoStack = []; lastSnap = null;
   myLog = []; LOG = LOG.filter(e => !e.mine);
   addLog(`sat down with a ${cards.length}-card deck`);
-  if (cards.length !== 50 && !c.sealed) toast(`Your deck has ${cards.length} cards (the rules call for 50).`);
+  if (cards.length !== 50 && !(c.sealed === true || (c.sealed && c.sealed === c.deck))) toast(`Your deck has ${cards.length} cards (the rules call for 50).`);
   commit();
 }
 // ---------- sealed: open 24 packs of a set and build a deck from what you pull ----------
@@ -4268,10 +4279,10 @@ function slCards(set){
   for (const k in g) g[k].sort();
   return g;
 }
-function slOpen(set, seed){
+function slOpen(set, seed, packs = SL_PACKS){
   const g = slCards(set), rnd = pzRng("sl:" + set + ":" + seed), pick = a => a[Math.floor(rnd() * a.length)], out = [];
   const any = [...g.C, ...g.UC, ...g.R];
-  for (let p = 0; p < SL_PACKS; p++) {
+  for (let p = 0; p < packs; p++) {
     for (let i = 0; i < 7; i++) out.push(pick(g.C.length ? g.C : any));
     for (let i = 0; i < 3; i++) out.push(pick(g.UC.length ? g.UC : any));
     out.push(pick(g.R.length ? g.R : any));
@@ -4300,37 +4311,40 @@ function slLoad(){
     const pool = x.pool.filter(c => typeof c === "string" && CARDDB.has(c)).slice(0, SL_PACKS * 12), have = {};
     for (const c of pool) have[c] = (have[c] || 0) + 1;
     const dk = {}; for (const [c, n] of Object.entries(x.dk || {})) if (have[c]) dk[c] = Math.max(0, Math.min(have[c], n | 0));
-    return {set: x.set, seed: x.seed | 0, pool, ld: slLeaders(x.set).includes(x.ld) ? x.ld : "", dk};
+    const opp = Array.isArray(x.opp) ? x.opp.filter(c => typeof c === "string" && CARDDB.has(c)).slice(0, DR_ROUNDS * 12) : null;
+    return Object.assign({set: x.set, seed: x.seed | 0, pool, ld: slLeaders(x.set).includes(x.ld) ? x.ld : "", dk}, opp && opp.length >= SL_MIN ? {opp, draft: 1} : {});
   } catch (e) { return null; } }
 function slStore(){ try { localStorage.setItem("bounty:sealed", JSON.stringify(SL)); } catch (e) {} }
-function openSealed(){ if (!SL) SL = slLoad(); modal = {type: "sealed"}; renderModal(); }
+function openSealed(){ if (!SL) SL = slLoad(); if (!SL && !DR) DR = drLoad(); modal = {type: DR ? "draft" : "sealed"}; renderModal(); }
 function sealedHTML(){
   const back = '<button class="btn" data-do="homepractice" type="button">Back</button>';
   const sets = slSets();
   const pickSet = `<label for="sl-set">Set</label><select id="sl-set">${sets.map(k => `<option value="${k}"${SL && SL.set === k ? " selected" : ""}>${k}</option>`).join("")}</select>`;
   if (!SL || !SL.pool.length) return `<h2>Sealed</h2><p>Open ${SL_PACKS} packs of a set and build a deck from what you pull. Pick any Leader from the set; the deck is ${SL_MIN} to ${SL_MAX} cards from your packs, in any colors.</p>
-    ${sets.length ? `<div class="row">${pickSet}<button class="btn pri" data-do="slopen" type="button">Open ${SL_PACKS} packs</button></div>` : '<p class="hint">The card list is still loading.</p>'}
+    ${sets.length ? `<div class="row">${pickSet}<button class="btn pri" data-do="slopen" type="button">Open ${SL_PACKS} packs</button><button class="btn" data-do="drstart" type="button">Draft</button></div>
+    <p class="hint">Draft: you and ${DR_SEATS - 1} computer players each open a pack, take one card and pass the rest on, ${DR_ROUNDS} packs each. You build from your ${DR_ROUNDS * 12} picks and play the deck one of them drafted.</p>` : '<p class="hint">The card list is still loading.</p>'}
     <div class="row end">${back}</div>`;
   const have = {}; for (const c of SL.pool) have[c] = (have[c] || 0) + 1;
   const codes = Object.keys(have).sort((a, b) => { const x = CARDDB.get(a) || {}, y = CARDDB.get(b) || {}; return (x.c || "").localeCompare(y.c || "") || (x.k || 0) - (y.k || 0) || a.localeCompare(b); });
   const n = slCount(SL.dk), ok = SL.ld && n >= SL_MIN && n <= SL_MAX;
   const rar = c => (CARDDB.get(c) || {}).r || "";
-  return `<h2>Sealed: ${esc(SL.set)}</h2>
+  return `<h2>${SL.draft ? "Draft" : "Sealed"}: ${esc(SL.set)}</h2>
     <div class="row"><label for="sl-ld">Leader</label><select id="sl-ld"><option value="">Pick a Leader from ${esc(SL.set)}</option>${slLeaders(SL.set).map(c => `<option value="${c}"${SL.ld === c ? " selected" : ""}>${esc(c + " " + nameOf(c))} (${esc((CARDDB.get(c) || {}).c || "")})</option>`).join("")}</select>
       <span class="chip ${ok ? "good" : n > SL_MAX ? "bad" : ""}" id="sl-n">${n} cards (${SL_MIN} to ${SL_MAX})</span></div>
-    <p class="hint">Your ${SL.pool.length} cards. Click a card to put a copy in the deck, right-click (or the − ) to take one out.</p>
+    <p class="hint">Your ${SL.pool.length} ${SL.draft ? "picks" : "cards"}. Click a card to put a copy in the deck, right-click (or the − ) to take one out.</p>
     <div class="slpool">${codes.map(c => `<div class="slc${SL.dk[c] ? " in" : ""}" data-do="sladd:${c}" title="${esc(c + " " + nameOf(c))}">${tile({u: 0, c, n: nameOf(c)}, "", false, 0)}<span class="sln">${SL.dk[c] || 0}/${have[c]}</span>${rar(c) && rar(c) !== "C" && rar(c) !== "UC" ? `<span class="slr">${rar(c)}</span>` : ""}${SL.dk[c] ? `<button class="slm" data-do="slrem:${c}" type="button" aria-label="Take one out">−</button>` : ""}</div>`).join("")}</div>
     <div class="row end slbtns">
       <button class="btn" data-do="slauto" type="button">Auto-build</button>
       <button class="btn" data-do="slclear" type="button">Clear deck</button>
       <button class="btn" data-do="slnew" type="button">New packs</button>
       <button class="btn" data-do="slsave" type="button"${ok ? "" : " disabled"}>Save as a deck</button>
+      <button class="btn" data-do="slfriend" type="button"${ok ? "" : " disabled"} title="Play this deck against a friend online">Play a friend</button>
       <button class="btn pri" data-do="slplay" type="button"${ok ? "" : " disabled"}>Play the computer</button>
       ${back}</div>`;
 }
 function slAction(a){
   if (a === "slopen" || a === "slnew") {
-    if (a === "slnew") { SL = null; slStore(); renderModal(); return true; }
+    if (a === "slnew") { SL = null; slStore(); DR = null; try { localStorage.removeItem("bounty:draft"); } catch (e) {} renderModal(); return true; }
     const set = ($("#sl-set") || {}).value; if (!set) return true;
     const seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
     SL = {set, seed, pool: slOpen(set, seed), ld: "", dk: {}};
@@ -4349,9 +4363,15 @@ function slAction(a){
   const n = slCount(SL.dk);
   if (!SL.ld || n < SL_MIN || n > SL_MAX) { toast(`Pick a Leader and ${SL_MIN} to ${SL_MAX} cards first.`); return true; }
   const leader = SL.ld + " " + nameOf(SL.ld), deck = slList(SL.dk);
-  if (a === "slsave") { persistDeck({name: `Sealed ${SL.set} ${nameOf(SL.ld)}`.slice(0, 40), leader, deck, life: (CARDDB.get(SL.ld) || {}).lf || 5, sleeve: 0, folder: "Sealed", notes: `Sealed pool of ${SL_PACKS} ${SL.set} packs. Play it in Casual.`}); return true; }
+  if (a === "slfriend") {
+    // the deck becomes the one you sit down with; sealed holds the list itself, so picking another deck ends it
+    const v = loadSaved(); Object.assign(v, {leader, deck, life: (CARDDB.get(SL.ld) || {}).lf || 5, sealed: deck}); delete v.did; save(v);
+    openFriends(); toast(`You'll play your ${SL.draft ? "draft" : "sealed"} deck. Challenge a friend, or make a table with a room code. They can open their own packs in Practice > Sealed packs and press Play a friend too.`);
+    return true;
+  }
+  if (a === "slsave") { persistDeck({name: `${SL.draft ? "Draft" : "Sealed"} ${SL.set} ${nameOf(SL.ld)}`.slice(0, 40), leader, deck, life: (CARDDB.get(SL.ld) || {}).lf || 5, sleeve: 0, folder: "Sealed", notes: SL.draft ? `Drafted from ${DR_ROUNDS} ${SL.set} packs. Play it in Casual.` : `Sealed pool of ${SL_PACKS} ${SL.set} packs. Play it in Casual.`}); return true; }
   if (a === "slplay") {
-    const v = loadSaved(), opp = sealedAuto(SL.set, slOpen(SL.set, (SL.seed + 7919) >>> 0));
+    const v = loadSaved(), opp = sealedAuto(SL.set, SL.opp || slOpen(SL.set, (SL.seed + 7919) >>> 0));
     startPractice(true, {nick: clean(v.nick, 20) || myNick() || "Player", leader, deck, life: (CARDDB.get(SL.ld) || {}).lf || 5, first: true, sleeve: v.sleeve | 0, diff: v.diff, sealed: true,
       leader2: opp ? opp.ld + " " + nameOf(opp.ld) : leader, deck2: opp ? slList(opp.dk) : deck});
     return true;
@@ -4436,6 +4456,69 @@ function ripRender(onlyButtons){
   o.innerHTML = `${head}<div class="ripcards">${pack.map((c, k) => `<div class="ripc${RIP.up.has(k) ? " up" + (ripHit(c) ? " hit" : "") : ""}" data-k="${k}" data-do="rip:flip:${k}" style="--d:${k * 45}ms">
       <div class="ripin"><div class="ripf">${tile({u: 0, c, n: nameOf(c)}, "", false, 0)}${(r => r && r !== "C" && r !== "UC" ? `<span class="slr">${r}</span>` : "")((CARDDB.get(c) || {}).r)}</div><div class="ripb"><div class="card back sl${sl}"></div></div></div></div>`).join("")}</div>
     <p class="riphint">Click a card to flip it. The Rare and the hit are at the end.</p>${btns}`;
+}
+// ---------- draft: you and the computer players open a pack each, take one card and pass the rest ----------
+// DR_SEATS players, DR_ROUNDS packs each; packs go left in rounds 1 and 3 and right in 2 and 4. The computer players
+// take the rarest card that fits the colors they've picked most. When it's done your picks become the sealed pool
+// (SL, with draft: 1) and the next seat's picks (SL.opp) are the computer's pool for Play the computer.
+const DR_SEATS = 4, DR_ROUNDS = 4;
+let DR = null;
+const drOpenRound = (set, seed, r) => Array.from({length: DR_SEATS}, (_, i) => slOpen(set, (seed + r * 101 + i * 7) >>> 0, 1));
+function drStart(set){
+  const seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
+  DR = {set, seed, r: 0, packs: drOpenRound(set, seed, 0), picks: Array.from({length: DR_SEATS}, () => [])};
+  drStore(); modal = {type: "draft"}; renderModal();
+}
+function drStore(){ try { localStorage.setItem("bounty:draft", JSON.stringify(DR)); } catch (e) {} }
+function drLoad(){
+  try { const x = JSON.parse(localStorage.getItem("bounty:draft") || "null"); if (!x || !/^(OP|EB)\d{2}$/.test(x.set) || !Array.isArray(x.packs) || !Array.isArray(x.picks)) return null;
+    const ok = a => Array.isArray(a) && a.every(c => typeof c === "string" && CARDDB.has(c));
+    if (x.packs.length !== DR_SEATS || x.picks.length !== DR_SEATS || !x.packs.every(p => ok(p) && p.length <= 12) || !x.picks.every(p => ok(p) && p.length <= DR_ROUNDS * 12)) return null;
+    return {set: x.set, seed: x.seed >>> 0, r: Math.max(0, Math.min(DR_ROUNDS - 1, x.r | 0)), packs: x.packs, picks: x.picks};
+  } catch (e) { return null; } }
+// a computer player's pick: rarity first, then its own colors, then Characters and cards with a Counter
+function drBotPick(pack, mine){
+  const col = {}; for (const c of mine) for (const x of colorsOf(c)) col[x] = (col[x] || 0) + 1;
+  const top = Object.entries(col).sort((a, b) => b[1] - a[1]).slice(0, 2).map(e => e[0]);
+  const val = c => { const e = CARDDB.get(c) || {}; return ({SEC: 6, SR: 5, R: 3, UC: 1.5}[e.r] || 1) + (mine.length >= 4 && colorsOf(c).some(x => top.includes(x)) ? 2.5 : 0) + (e.t === "Character" ? .6 : 0) + ((e.ctr || 0) > 0 ? .4 : 0); };
+  let best = 0; pack.forEach((c, i) => { if (val(c) > val(pack[best])) best = i; });
+  return best;
+}
+function drPick(i){
+  if (!DR || !DR.packs[0][i]) return;
+  DR.picks[0].push(DR.packs[0].splice(i, 1)[0]);
+  for (let s = 1; s < DR_SEATS; s++) if (DR.packs[s].length) DR.picks[s].push(DR.packs[s].splice(drBotPick(DR.packs[s], DR.picks[s]), 1)[0]);
+  const left = DR.r % 2 === 0;
+  DR.packs = left ? [DR.packs[DR_SEATS - 1], ...DR.packs.slice(0, -1)] : [...DR.packs.slice(1), DR.packs[0]];
+  snd("flip");
+  if (!DR.packs[0].length) {
+    if (DR.r + 1 >= DR_ROUNDS) { drFinish(); return; }
+    DR.r++; DR.packs = drOpenRound(DR.set, DR.seed, DR.r); snd("tear");
+  }
+  drStore(); renderModal();
+}
+function drFinish(){
+  SL = {set: DR.set, seed: DR.seed, pool: DR.picks[0].slice(), ld: "", dk: {}, opp: DR.picks[1].slice(), draft: 1};
+  slStore(); DR = null; try { localStorage.removeItem("bounty:draft"); } catch (e) {}
+  modal = {type: "sealed"}; renderModal();
+  const hits = SL.pool.filter(ripHit);
+  toast(`Draft done: ${SL.pool.length} picks${hits.length ? `, with ${hits.map(c => nameOf(c) + " (" + CARDDB.get(c).r + ")").join(", ")}` : ""}. Pick a Leader and build ${SL_MIN} to ${SL_MAX} cards.`);
+}
+function draftHTML(){
+  const pack = DR.packs[0], n = DR.picks[0].length, rar = c => (CARDDB.get(c) || {}).r || "";
+  const by = {}; for (const c of DR.picks[0]) { const k = colorsOf(c)[0] || "Other"; by[k] = (by[k] || 0) + 1; }
+  return `<h2>Draft: ${esc(DR.set)}</h2>
+    <div class="row"><span class="chip">Pack ${DR.r + 1} of ${DR_ROUNDS}</span><span class="chip">Pick ${12 - pack.length + 1} of 12</span><span class="chip">Passing ${DR.r % 2 === 0 ? "left" : "right"}</span><span class="chip good">${n} picked</span></div>
+    <p class="hint">Take one card. The rest go to the next player, and you get theirs.</p>
+    <div class="slpool drpack">${pack.map((c, i) => `<div class="slc in${ripHit(c) ? " hit" : ""}" data-do="drpick:${i}" title="${esc(c + " " + nameOf(c))}">${tile({u: 0, c, n: nameOf(c)}, "", false, 0)}${rar(c) && rar(c) !== "C" && rar(c) !== "UC" ? `<span class="slr">${rar(c)}</span>` : ""}</div>`).join("")}</div>
+    ${n ? `<p class="hint">Your picks: ${Object.entries(by).map(([k, v]) => `${esc(k)} ${v}`).join(", ")}</p><div class="drpicks">${DR.picks[0].map(c => `<span class="drp" title="${esc(c + " " + nameOf(c))}" style="--h:${hue(c)}">${esc(nameOf(c) || c)}</span>`).join("")}</div>` : ""}
+    <div class="row end"><button class="btn" data-do="drquit" type="button">Stop drafting</button><button class="btn" data-do="homepractice" type="button">Back</button></div>`;
+}
+function drAction(a){
+  if (a === "drstart") { const set = ($("#sl-set") || {}).value; if (set) drStart(set); return true; }
+  if (a.startsWith("drpick:")) { drPick(+a.slice(7)); return true; }
+  if (a === "drquit") { DR = null; try { localStorage.removeItem("bounty:draft"); } catch (e) {} openSealed(); return true; }
+  return false;
 }
 // ---------- practice: play both sides of the table yourself ----------
 function practiceR(){ return {presence(p){ if (PR) { PR.pres[PR.cur] = JSON.parse(JSON.stringify(p)); practiceDeliver(); } return Promise.resolve(); }, leave: async () => {}}; }
@@ -6839,7 +6922,7 @@ function inspectOpp(k){
 // ---------- hover magnifier ----------
 let prevEl = null, prevT = null, mx = -1, my = -1;
 const ZOOM_EMPTY = '<div class="zoomempty">Hover over a card to read it here</div>';
-const isDocked = () => !builderOpen && !RIP && !(modal && modal.type === "sealed") && window.matchMedia("(min-width:1100px)").matches && document.getElementById("zoom");
+const isDocked = () => !builderOpen && !RIP && !(modal && (modal.type === "sealed" || modal.type === "draft")) && window.matchMedia("(min-width:1100px)").matches && document.getElementById("zoom");
 function clearZoom(){ const z = document.getElementById("zoom"); if (z && !z.querySelector(".zoomempty")) z.innerHTML = ZOOM_EMPTY; }
 function hoverable(el){
   const cl = el.classList;
@@ -7506,7 +7589,8 @@ document.addEventListener("keydown", e => {
 $("#modal").addEventListener("click", e => { if (e.target.id === "modal" && modal && modal.type !== "setup" && modal.type !== "lobbies" && modal.type !== "home" && !artBusy && !rdBusy) closeModal(); });
 function doAction(a){
   if (a.startsWith("rip:")) { ripAction(a); return; }
-  if (modal && modal.type === "sealed" && /^sl(open|new|add:|rem:|auto|clear|save|play)/.test(a) && slAction(a)) return;
+  if (modal && modal.type === "sealed" && /^sl(open|new|add:|rem:|auto|clear|save|play|friend)/.test(a) && slAction(a)) return;
+  if (modal && (modal.type === "sealed" || modal.type === "draft") && /^dr(start|pick:|quit)/.test(a) && drAction(a)) return;
   if (RPV && /^(resetboard|refresh|undo|endturn|concede|keep|mull|draw|dfresolve)/.test(a)) { toast("Exit the replay first."); return; }
   if (a === "bddeckwide") {
     const m = $("#bdmain"), on = m.classList.toggle("deckwide"), t = $("#bd-tab");
