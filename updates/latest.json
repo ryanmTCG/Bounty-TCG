@@ -1,8 +1,8 @@
 {
-  "version": "1.9.0",
+  "version": "1.9.1",
   "shell": 2,
-  "bundle": "web-1.9.0.json.gz",
-  "sha256": "4ab61583d1c0ce18a172285a45dd24a4cfa25225d8c3dc4b632f8a933e1d3ef4",
-  "size": 945335,
-  "notes": "A Practice button on the Play page: the computer, the daily puzzle, the tutorial and testing a deck now have their own page. DON!! can't be added, returned, rested or readied by hand in any match against someone (Friends only and the computer too), unless a card's ability calls for it. Abilities..."
+  "bundle": "web-1.9.1.json.gz",
+  "sha256": "1695d71cf525dc8208435d956edd80b9d0428d55a3d4ad45d0e5cbe5acf3cf2b",
+  "size": 945613,
+  "notes": "Sealed packs and the corrected card data now show up on computers that had card data saved from the card reader (it used to hide the bundled card list's rarities and fixes)."
 }
