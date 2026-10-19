@@ -4003,8 +4003,8 @@ function renderModal(){
   if (!modal || modal.type === "setup" || modal.type === "lobbies" || modal.type === "home" || modal.type === "art" || modal.type === "cardsdata" || modal.type === "reader") return;
   const close = `<div class="row end"><button class="btn" data-do="closemodal" type="button">Close</button></div>`;
   if (modal.type === "sealed") {
-    const top = ($("#modal .sheet") || {}).scrollTop || 0;
-    showModal(sealedHTML()); $("#modal .sheet").scrollTop = top;
+    const top = ($("#modal .sheet") || {}).scrollTop || 0, ptop = ($(".slpool") || {}).scrollTop || 0;
+    showModal(sealedHTML()); $("#modal .sheet").scrollTop = top; if ($(".slpool")) $(".slpool").scrollTop = ptop;
     const ld = $("#sl-ld"); if (ld) ld.addEventListener("change", () => { SL.ld = ld.value; slStore(); renderModal(); });
     const pool = $(".slpool"); if (pool) pool.addEventListener("contextmenu", e => { const c = e.target.closest(".slc"); if (!c) return; e.preventDefault(); slAction("slrem:" + c.dataset.do.slice(6)); });
     return;
@@ -4250,12 +4250,12 @@ function newGame(c, join){
   if (cards.length !== 50 && !c.sealed) toast(`Your deck has ${cards.length} cards (the rules call for 50).`);
   commit();
 }
-// ---------- sealed: open 6 packs of a set and build a deck from what you pull ----------
+// ---------- sealed: open 24 packs of a set and build a deck from what you pull ----------
 // A pack is 12 cards: 7 Common, 3 Uncommon, 1 Rare and 1 hit (Secret Rare 1 in 25, Super Rare 1 in 3, else Rare), drawn
 // from the set's own cards by rarity (r in data/names). You pick any Leader from the set, and the deck is 30 to 50 cards
 // of your pool in any colors. The pool is kept in localStorage bounty:sealed {set, seed, pool, ld, dk} so it can be rebuilt.
-// Play the computer (which opens its own 6 packs of the set and builds with sealedAuto) or save it as a deck for Casual.
-const SL_PACKS = 6, SL_MIN = 30, SL_MAX = 50;
+// Play the computer (which opens its own 24 packs of the set and builds with sealedAuto) or save it as a deck for Casual.
+const SL_PACKS = 24, SL_MIN = 30, SL_MAX = 50;
 let SL = null;
 function slSets(){
   const by = {};
@@ -4365,7 +4365,8 @@ let RIP = null;
 const ripHit = c => ["SR", "SEC"].includes((CARDDB.get(c) || {}).r);
 function slHitsToast(){
   const hits = SL ? SL.pool.filter(ripHit) : [];
-  toast(`You opened ${SL_PACKS} packs of ${SL ? SL.set : ""}${hits.length ? `: ${hits.map(c => nameOf(c) + " (" + CARDDB.get(c).r + ")").join(", ")}` : ""}.`);
+  const sec = hits.filter(c => CARDDB.get(c).r === "SEC"), sr = hits.length - sec.length;
+  toast(`You opened ${SL_PACKS} packs of ${SL ? SL.set : ""}${hits.length <= 4 ? (hits.length ? `: ${hits.map(c => nameOf(c) + " (" + CARDDB.get(c).r + ")").join(", ")}` : "") : `: ${sr} Super Rare${sr === 1 ? "" : "s"}${sec.length ? ` and ${sec.map(c => nameOf(c) + " (SEC)").join(", ")}` : ""}`}.`);
 }
 function ripStart(){
   if (!SL) return;

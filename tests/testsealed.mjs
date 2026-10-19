@@ -1,6 +1,6 @@
 import { _electron as electron } from "playwright-core";
 import fs from "fs";
-// Sealed: open 6 packs of a set, pick a Leader, build 30 to 50 cards from the pool, play the computer or save it.
+// Sealed: open 24 packs of a set, pick a Leader, build 30 to 50 cards from the pool, play the computer or save it.
 const OUT = process.argv[2] || "shots-sealed";
 fs.mkdirSync(OUT, { recursive: true });
 const prof = "/tmp/bounty-prof-sealed"; fs.rmSync(prof, { recursive: true, force: true });
@@ -19,14 +19,14 @@ console.log("sets", sets.join(" "));
 check(sets.includes("OP01") && sets.includes("OP16") && sets.includes("EB01") && !sets.includes("ST01") && sets[0].startsWith("OP"), "booster sets with rarity data can be opened, newest first");
 // packs: 12 cards each, by rarity, all from the set, and the same seed opens the same packs
 const pk = await page.evaluate(() => { const a = slOpen("OP05", 1234), b = slOpen("OP05", 1234), c = slOpen("OP05", 99); const r = x => (CARDDB.get(x) || {}).r;
-  const packs = []; for (let i = 0; i < 6; i++) packs.push(a.slice(i * 12, i * 12 + 12));
+  const packs = []; for (let i = 0; i < 24; i++) packs.push(a.slice(i * 12, i * 12 + 12));
   return {n: a.length, same: a.join() === b.join(), diff: a.join() !== c.join(), set: a.every(x => x.startsWith("OP05-")), noLd: a.every(x => r(x) !== "L"),
     shape: packs.every(p => p.slice(0, 7).every(x => r(x) === "C") && p.slice(7, 10).every(x => r(x) === "UC") && r(p[10]) === "R" && ["R", "SR", "SEC"].includes(r(p[11])))}; });
 console.log("packs", JSON.stringify(pk));
-check(pk.n === 72 && pk.same && pk.diff && pk.set && pk.noLd && pk.shape, "6 packs of 12: 7 Common, 3 Uncommon, a Rare and a hit, all from the set, no Leaders");
-const hits = await page.evaluate(() => { let sr = 0, sec = 0; for (let s = 1; s <= 200; s++) { const p = slOpen("OP09", s); for (let i = 11; i < 72; i += 12) { const r = CARDDB.get(p[i]).r; if (r === "SR") sr++; if (r === "SEC") sec++; } } return {sr, sec, packs: 1200}; });
+check(pk.n === 288 && pk.same && pk.diff && pk.set && pk.noLd && pk.shape, "24 packs of 12: 7 Common, 3 Uncommon, a Rare and a hit, all from the set, no Leaders");
+const hits = await page.evaluate(() => { let sr = 0, sec = 0; for (let s = 1; s <= 200; s++) { const p = slOpen("OP09", s); for (let i = 11; i < 288; i += 12) { const r = CARDDB.get(p[i]).r; if (r === "SR") sr++; if (r === "SEC") sec++; } } return {sr, sec, packs: 4800}; });
 console.log("hits", JSON.stringify(hits));
-check(hits.sr > 300 && hits.sr < 500 && hits.sec > 20 && hits.sec < 80, "about 1 pack in 3 has a Super Rare, and 1 in 25 a Secret Rare");
+check(hits.sr > 1300 && hits.sr < 1900 && hits.sec > 120 && hits.sec < 280, "about 1 pack in 3 has a Super Rare, and 1 in 25 a Secret Rare");
 
 // from the Practice page
 await page.evaluate(() => openHome("practice")); await wait(300);
@@ -36,7 +36,7 @@ await page.selectOption("#sl-set", "OP05"); await page.click('[data-do="slopen"]
 // ripping the packs: a sealed pack first, torn by a swipe across its top
 const r0 = await page.evaluate(() => ({rip: !!$("#rip") && !$("#rip").hidden, pack: !!$("#rip .rippack"), head: $("#rip .riphead").textContent, cards: document.querySelectorAll("#rip .ripc").length, pool: !!SL && SL.pool.length, toast: $("#toast").hidden ? "" : $("#toast").textContent}));
 console.log("rip", JSON.stringify(r0));
-check(r0.rip && r0.pack && /OP05/.test(r0.head) && /Pack 1 of 6/.test(r0.head) && r0.cards === 0 && r0.pool === 72 && !/opened 6 packs/.test(r0.toast), "opening shows a sealed pack to tear, with the pool already kept and nothing spoiled");
+check(r0.rip && r0.pack && /OP05/.test(r0.head) && /Pack 1 of 24/.test(r0.head) && r0.cards === 0 && r0.pool === 288 && !/opened 24 packs/.test(r0.toast), "opening shows a sealed pack to tear, with the pool already kept and nothing spoiled");
 await page.screenshot({ path: OUT + "/pack.png" });
 const pb = await page.locator("#rip .rippack").boundingBox();
 await page.mouse.move(pb.x + 10, pb.y + 12); await page.mouse.down();
@@ -56,18 +56,18 @@ check(await page.evaluate(() => !!$("#preview") && $("#preview").querySelector("
 await page.click('[data-do="rip:all"]'); await wait(2600);
 const r3 = await page.evaluate(() => ({up: document.querySelectorAll("#rip .ripc.up").length, hits: document.querySelectorAll("#rip .ripc.hit").length, want: SL.pool.slice(0, 12).filter(ripHit).length, next: ($('#rip [data-do="rip:next"]') || {}).textContent}));
 console.log("flipped", JSON.stringify(r3));
-check(r3.up === 12 && r3.hits === r3.want && /Next pack \(2 of 6\)/.test(r3.next), "Flip them all turns the rest over, the hits shine, and Next pack comes up");
+check(r3.up === 12 && r3.hits === r3.want && /Next pack \(2 of 24\)/.test(r3.next), "Flip them all turns the rest over, the hits shine, and Next pack comes up");
 await page.screenshot({ path: OUT + "/flipped.png" });
 await page.click('[data-do="rip:next"]'); await wait(300);
 const r4 = await page.evaluate(() => ({pack: !!$("#rip .rippack"), head: $("#rip .riphead").textContent}));
-check(r4.pack && /Pack 2 of 6/.test(r4.head), "the next pack comes sealed");
+check(r4.pack && /Pack 2 of 24/.test(r4.head), "the next pack comes sealed");
 await page.click('#rip .rippack'); await wait(900);
 check(await page.evaluate(() => document.querySelectorAll("#rip .ripc").length === 12 && $("#rip .ripc .ripf .card b").textContent === SL.pool[12]), "clicking a pack tears it too, and it holds the next 12 cards");
 await page.click('[data-do="rip:skip"]'); await wait(400);
 check(await page.evaluate(() => !RIP && $("#rip").hidden), "Skip to your cards closes the packs");
 const st = await page.evaluate(() => ({n: SL.pool.length, set: SL.set, tiles: document.querySelectorAll(".slpool .slc").length, lds: [...document.querySelectorAll("#sl-ld option")].length - 1, toast: $("#toast").textContent, stored: !!localStorage.getItem("bounty:sealed")}));
 console.log("opened", JSON.stringify(st));
-check(st.n === 72 && st.set === "OP05" && st.tiles > 20 && st.lds >= 4 && /opened 6 packs of OP05/.test(st.toast) && st.stored, "opening shows the pool, the set's Leaders, and says what you pulled");
+check(st.n === 288 && st.set === "OP05" && st.tiles > 20 && st.lds >= 4 && /opened 24 packs of OP05/.test(st.toast) && st.stored, "opening shows the pool, the set's Leaders, and says what you pulled");
 await page.screenshot({ path: OUT + "/pool.png" });
 // hovering a card in the pool zooms it over the sealed screen (the docked zoom is behind it)
 const sb = await page.locator(".slpool .slc").first().boundingBox();
@@ -81,6 +81,14 @@ check(await page.evaluate(() => document.querySelectorAll("#rip .ripc.hit").leng
 await page.screenshot({ path: OUT + "/hit.png" });
 await page.click('[data-do="rip:next"]'); await wait(300);
 check(await page.evaluate(() => !RIP && modal.type === "sealed" && !!$(".slpool")), "after the last pack, the pool is there to build from");
+// adding a card further down keeps the list where it was
+const sc = await page.evaluate(() => { const p = $(".slpool"); p.scrollTop = 600; return p.scrollTop; });
+const low = await page.evaluate(() => { const p = $(".slpool"), r = p.getBoundingClientRect(); const c = [...p.querySelectorAll(".slc")].find(x => { const b = x.getBoundingClientRect(); return b.top > r.top + 10 && b.bottom < r.bottom; }); return c.dataset.do; });
+await page.click(`.slc[data-do="${low}"]`); await wait(200);
+const after = await page.evaluate(() => $(".slpool").scrollTop);
+console.log("scroll", sc, after);
+check(sc > 100 && after === sc, "adding a card keeps the card list scrolled where it was");
+await page.evaluate(() => { SL.dk = {}; slStore(); renderModal(); });
 // adding and taking out copies, limited by what you pulled
 const one = await page.evaluate(() => SL.pool.find(c => SL.pool.filter(x => x === c).length === 1));
 await page.click(`.slc[data-do="sladd:${one}"]`); await wait(150);
@@ -101,7 +109,7 @@ await wait(200);
 check(await page.evaluate(() => SL.ld !== "" && JSON.parse(localStorage.getItem("bounty:sealed")).ld === SL.ld), "the Leader can be changed and is kept");
 // reload keeps the pool
 await page.evaluate(() => { SL = null; openSealed(); }); await wait(300);
-check(await page.evaluate(() => SL && SL.pool.length === 72 && slCount(SL.dk) >= 30), "the pool and deck come back after closing");
+check(await page.evaluate(() => SL && SL.pool.length === 288 && slCount(SL.dk) >= 30), "the pool and deck come back after closing");
 // save as a deck in the Sealed folder
 await page.click('[data-do="slsave"]'); await wait(500);
 check(await page.evaluate(() => DECKS.some(d => d.folder === "Sealed" && /^Sealed OP05/.test(d.name) && deckCount(d.deck) === slCount(SL.dk))), "Save as a deck puts it in a Sealed folder");
