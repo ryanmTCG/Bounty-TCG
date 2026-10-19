@@ -73,6 +73,12 @@ await page.click('[data-do="slnew"]'); await wait(300);
 check(await page.evaluate(() => !SL && !!$("#sl-set")), "New packs starts over");
 // a bad saved pool is cleaned
 check(await page.evaluate(() => { localStorage.setItem("bounty:sealed", JSON.stringify({set: "OP05", seed: 1, pool: ["OP05-010", "OP05-010", "<x>", "OP99-999"], ld: "OP01-001", dk: {"OP05-010": 9, "OP05-011": 2}})); const x = slLoad(); return x.pool.length === 2 && x.ld === "" && x.dk["OP05-010"] === 2 && !x.dk["OP05-011"]; }), "a saved pool is checked when it's read back");
+// card data saved on this computer before rarities came (the card reader) still gets the bundled rarities and corrections
+await page.evaluate(() => localStorage.setItem("bounty:db:v1", JSON.stringify({"names/OP05": {cards: {"OP05-001": {n: "Old name", c: "Red", t: "Leader"}, "OP05-999": {n: "My own card", c: "Red", t: "Character"}}}})));
+await page.reload(); await page.waitForLoadState("load"); await wait(3500);
+const old = await page.evaluate(() => ({sets: slSets(), n: CARDDB.get("OP05-001").n, r: CARDDB.get("OP05-001").r, mine: (CARDDB.get("OP05-999") || {}).n}));
+console.log("saved card data", JSON.stringify(old));
+check(old.sets.includes("OP05") && old.n !== "Old name" && old.r === "L" && old.mine === "My own card", "older card data saved on the computer doesn't hide the bundled rarities, and keeps its own extra cards");
 console.log("errors", JSON.stringify(errs));
 check(!errs.length, "no page errors");
 await app.close();

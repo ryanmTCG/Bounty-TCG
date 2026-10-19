@@ -295,7 +295,14 @@
         seed[set].cards[code] = "card_" + code;
       }
     }).catch(() => {});
-  const getDoc = path => (path in local) ? local[path] : (seed[path] === undefined ? null : seed[path]);
+  // card data saved on this computer (the card reader, an import) keeps cards the bundle doesn't have, but the bundled
+  // official data wins for the cards it has, so a copy with older saved card data still gets corrections and rarities
+  const mergeNames = (l, s) => {
+    const lc = (l && l.cards) || {}, sc = (s && s.cards) || {}, cards = Object.assign({}, lc);
+    for (const k of Object.keys(sc)) cards[k] = Object.assign({}, lc[k] && typeof lc[k] === "object" ? lc[k] : {}, sc[k]);
+    return Object.assign({}, l, {cards});
+  };
+  const getDoc = path => (path in local) ? (local[path] && seed[path] && path.startsWith("names/") ? mergeNames(local[path], seed[path]) : local[path]) : (seed[path] === undefined ? null : seed[path]);
   function persist() {
     try { localStorage.setItem(LS_DB, JSON.stringify(local)); }
     catch (e) { console.warn("Browser storage is full; this change won't survive a reload."); }
