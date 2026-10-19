@@ -33,10 +33,54 @@ await page.evaluate(() => openHome("practice")); await wait(300);
 await page.click('[data-do="sealed"]'); await wait(300);
 check(await page.evaluate(() => modal.type === "sealed" && !!$("#sl-set")), "Practice has Sealed packs, which asks for a set");
 await page.selectOption("#sl-set", "OP05"); await page.click('[data-do="slopen"]'); await wait(400);
+// ripping the packs: a sealed pack first, torn by a swipe across its top
+const r0 = await page.evaluate(() => ({rip: !!$("#rip") && !$("#rip").hidden, pack: !!$("#rip .rippack"), head: $("#rip .riphead").textContent, cards: document.querySelectorAll("#rip .ripc").length, pool: !!SL && SL.pool.length, toast: $("#toast").hidden ? "" : $("#toast").textContent}));
+console.log("rip", JSON.stringify(r0));
+check(r0.rip && r0.pack && /OP05/.test(r0.head) && /Pack 1 of 6/.test(r0.head) && r0.cards === 0 && r0.pool === 72 && !/opened 6 packs/.test(r0.toast), "opening shows a sealed pack to tear, with the pool already kept and nothing spoiled");
+await page.screenshot({ path: OUT + "/pack.png" });
+const pb = await page.locator("#rip .rippack").boundingBox();
+await page.mouse.move(pb.x + 10, pb.y + 12); await page.mouse.down();
+for (let i = 1; i <= 10; i++) await page.mouse.move(pb.x + 10 + i * pb.width * .08, pb.y + 14);
+await page.mouse.up(); await wait(900);
+const r1 = await page.evaluate(() => ({n: document.querySelectorAll("#rip .ripc").length, up: document.querySelectorAll("#rip .ripc.up").length, codes: [...document.querySelectorAll("#rip .ripc .ripf .card b")].map(b => b.textContent).join(), want: SL.pool.slice(0, 12).join()}));
+console.log("torn", JSON.stringify(r1));
+check(r1.n === 12 && r1.up === 0 && r1.codes === r1.want, "swiping tears it open: the pack's 12 cards, face down, in pack order");
+await page.screenshot({ path: OUT + "/facedown.png" });
+await page.click('#rip .ripc[data-k="0"]'); await wait(700);
+const r2 = await page.evaluate(() => ({up: document.querySelectorAll("#rip .ripc.up").length, next: !!$('#rip [data-do="rip:next"]')}));
+check(r2.up === 1 && !r2.next, "clicking a card flips it");
+// hovering a flipped card zooms it over the screen
+const fb = await page.locator('#rip .ripc[data-k="0"]').boundingBox();
+await page.mouse.move(fb.x + fb.width / 2, fb.y + fb.height / 2); await wait(400);
+check(await page.evaluate(() => !!$("#preview") && $("#preview").querySelector("b").textContent === SL.pool[0]), "hovering a flipped card zooms in on it");
+await page.click('[data-do="rip:all"]'); await wait(2600);
+const r3 = await page.evaluate(() => ({up: document.querySelectorAll("#rip .ripc.up").length, hits: document.querySelectorAll("#rip .ripc.hit").length, want: SL.pool.slice(0, 12).filter(ripHit).length, next: ($('#rip [data-do="rip:next"]') || {}).textContent}));
+console.log("flipped", JSON.stringify(r3));
+check(r3.up === 12 && r3.hits === r3.want && /Next pack \(2 of 6\)/.test(r3.next), "Flip them all turns the rest over, the hits shine, and Next pack comes up");
+await page.screenshot({ path: OUT + "/flipped.png" });
+await page.click('[data-do="rip:next"]'); await wait(300);
+const r4 = await page.evaluate(() => ({pack: !!$("#rip .rippack"), head: $("#rip .riphead").textContent}));
+check(r4.pack && /Pack 2 of 6/.test(r4.head), "the next pack comes sealed");
+await page.click('#rip .rippack'); await wait(900);
+check(await page.evaluate(() => document.querySelectorAll("#rip .ripc").length === 12 && $("#rip .ripc .ripf .card b").textContent === SL.pool[12]), "clicking a pack tears it too, and it holds the next 12 cards");
+await page.click('[data-do="rip:skip"]'); await wait(400);
+check(await page.evaluate(() => !RIP && $("#rip").hidden), "Skip to your cards closes the packs");
 const st = await page.evaluate(() => ({n: SL.pool.length, set: SL.set, tiles: document.querySelectorAll(".slpool .slc").length, lds: [...document.querySelectorAll("#sl-ld option")].length - 1, toast: $("#toast").textContent, stored: !!localStorage.getItem("bounty:sealed")}));
 console.log("opened", JSON.stringify(st));
 check(st.n === 72 && st.set === "OP05" && st.tiles > 20 && st.lds >= 4 && /opened 6 packs of OP05/.test(st.toast) && st.stored, "opening shows the pool, the set's Leaders, and says what you pulled");
 await page.screenshot({ path: OUT + "/pool.png" });
+// hovering a card in the pool zooms it over the sealed screen (the docked zoom is behind it)
+const sb = await page.locator(".slpool .slc").first().boundingBox();
+await page.mouse.move(sb.x + sb.width / 2, sb.y + sb.height / 2); await wait(400);
+check(await page.evaluate(() => !!$("#preview") && $("#preview").querySelector("b").textContent === $(".slpool .slc").dataset.do.slice(6)), "hovering a card in the pool zooms in on it");
+await page.mouse.move(5, 5); await wait(200);
+// a pack with a hit: the hit shines when it's flipped
+await page.evaluate(() => { const keep = SL.pool; const sr = [...CARDDB].find(([c, e]) => c.startsWith("OP05-") && e.r === "SR")[0]; SL.pool = [...keep.slice(0, 11), sr]; ripStart(); SL.pool = keep; RIP.packs = [RIP.packs[0]]; ripTear(); });
+await wait(800); await page.click('[data-do="rip:all"]'); await wait(2400);
+check(await page.evaluate(() => document.querySelectorAll("#rip .ripc.hit").length === 1 && /See all your cards/.test($('#rip [data-do="rip:next"]').textContent)), "a Super Rare shines when it's flipped, and the last pack goes on to your cards");
+await page.screenshot({ path: OUT + "/hit.png" });
+await page.click('[data-do="rip:next"]'); await wait(300);
+check(await page.evaluate(() => !RIP && modal.type === "sealed" && !!$(".slpool")), "after the last pack, the pool is there to build from");
 // adding and taking out copies, limited by what you pulled
 const one = await page.evaluate(() => SL.pool.find(c => SL.pool.filter(x => x === c).length === 1));
 await page.click(`.slc[data-do="sladd:${one}"]`); await wait(150);

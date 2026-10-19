@@ -393,6 +393,47 @@ button,input,textarea,select{font:inherit;color:inherit}
 .qcbub.opp{transform:translate(-50%,0)}
 .slbtns{flex-wrap:wrap}
 .slpool{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;max-height:44vh;overflow:auto;padding:4px}
+#rip{position:fixed;inset:0;z-index:80;background:radial-gradient(ellipse at 50% 40%,rgba(30,62,72,.94),rgba(6,14,18,.97));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;overflow:auto;user-select:none}
+#rip[hidden]{display:none}
+.riphead{display:flex;gap:14px;align-items:baseline;color:#F1DDB0;font-family:var(--slab)}
+.riphead b{font-size:24px;color:#F2B84B}
+.riphint{color:#D5E8EC;margin:0;text-align:center}
+.ripbtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.ripstage{display:flex;flex-direction:column;align-items:center;gap:14px}
+.rippack{--tear:0;position:relative;width:min(260px,62vw);aspect-ratio:5/8;cursor:grab;touch-action:none;filter:drop-shadow(0 18px 30px rgba(0,0,0,.6))}
+.riptop,.ripbody{position:absolute;left:0;right:0;background:linear-gradient(115deg,hsl(var(--h) 70% 34%),hsl(var(--h) 75% 52%) 40%,hsl(calc(var(--h) + 40) 80% 70%) 52%,hsl(var(--h) 72% 40%) 64%,hsl(var(--h) 70% 26%));border:2px solid rgba(255,240,200,.7)}
+.riptop{top:0;height:11%;border-radius:10px 10px 0 0;border-bottom:none;background-size:100% 900%;background-position:top;transform-origin:100% 100%}
+.riptop::after{content:"";position:absolute;left:4px;right:4px;bottom:-1px;border-bottom:2px dashed rgba(255,246,224,.75)}
+.ripline{position:absolute;left:0;bottom:-2px;height:4px;width:calc(var(--tear)*100%);background:#FFF6E0;box-shadow:0 0 10px #FFE9A8;border-radius:2px}
+.ripbody{top:11%;bottom:0;border-radius:0 0 12px 12px;border-top:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#FFF6E0;text-shadow:0 2px 6px rgba(0,0,0,.55);overflow:hidden}
+.ripbody::before{content:"";position:absolute;inset:-40%;background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.38) 50%,transparent 60%);animation:ripshine 2.6s ease-in-out infinite}
+.ripbody small{font-family:var(--slab);letter-spacing:.2em;text-transform:uppercase;font-size:13px}
+.ripbody strong{font-family:var(--slab);font-size:64px;line-height:1}
+.ripbody em{font-style:normal;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.ripbody span{font-size:13px;opacity:.85}
+.rippack.torn .riptop{animation:riptop .6s ease-in forwards}
+.rippack.torn .ripbody{animation:ripbody .6s ease-in .12s forwards}
+.ripcards{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;width:min(980px,100%)}
+@media (max-width:720px){.ripcards{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.ripc{position:relative;aspect-ratio:63/88;perspective:900px;cursor:pointer;animation:ripdeal .45s ease-out var(--d) both}
+.ripin{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .5s ease;transform:rotateY(180deg)}
+.ripc.up .ripin{transform:none}
+.ripf,.ripb{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.ripb{transform:rotateY(180deg)}
+.ripf{pointer-events:none}
+.ripc.up .ripf{pointer-events:auto}
+.ripc.up{cursor:default}
+.ripf .card,.ripb .card{width:100%;height:100%;margin:0}
+.ripf .slr{position:absolute;right:4px;top:4px;background:#F2B84B;color:#12262D;border-radius:6px;padding:0 5px;font-size:11px;font-weight:800}
+.ripc.hit .ripf{border-radius:10px;box-shadow:0 0 0 3px #FFE9A8,0 0 28px 8px rgba(255,214,110,.75);animation:riphit 1.6s ease-in-out infinite alternate}
+.ripc.hit .ripf::after{content:"";position:absolute;inset:0;border-radius:10px;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.55) 45%,rgba(160,220,255,.35) 55%,transparent 70%);background-size:250% 100%;mix-blend-mode:screen;animation:ripfoil 2.2s linear infinite}
+@keyframes ripshine{0%{transform:translateX(-60%)}60%,100%{transform:translateX(60%)}}
+@keyframes riptop{40%{transform:rotate(-8deg) translate(10px,-14px)}100%{transform:rotate(-28deg) translate(160px,-120px);opacity:0}}
+@keyframes ripbody{to{transform:translateY(40%) scale(.92);opacity:0}}
+@keyframes ripdeal{from{transform:translateY(-60px) scale(.8);opacity:0}}
+@keyframes riphit{from{box-shadow:0 0 0 3px #FFE9A8,0 0 18px 4px rgba(255,214,110,.6)}to{box-shadow:0 0 0 3px #FFE9A8,0 0 36px 12px rgba(255,214,110,.9)}}
+@keyframes ripfoil{from{background-position:150% 0}to{background-position:-100% 0}}
+@media (prefers-reduced-motion:reduce){.ripbody::before,.ripc,.ripc.hit .ripf,.ripc.hit .ripf::after{animation:none}.ripin{transition:none}.rippack.torn .riptop,.rippack.torn .ripbody{animation:none;opacity:0}}
 .slc{position:relative;cursor:pointer;border-radius:8px;opacity:.75}
 .slc.in{opacity:1;outline:3px solid #F2B84B}
 .slc .card{width:100%;height:auto;aspect-ratio:63/88}
@@ -1594,6 +1635,10 @@ function snd(kind){
   else if (kind === "lose") [392, 330, 262, 196].forEach((f, i) => tone(f, 0, .34, "triangle", .11, i * .2));
   else if (kind === "turn") { tone(880, 0, .12, "sine", .09); tone(1320, 0, .16, "sine", .07, .1); }
   else if (kind === "chat") tone(1150, 1500, .09, "sine", .06);
+  else if (kind === "tear") { noise(.34, .55, 2600); noise(.22, .35, 900, .05); }
+  else if (kind === "flip") noise(.06, .35, 3200);
+  else if (kind === "flipr") { noise(.06, .35, 3200); tone(880, 1175, .16, "triangle", .07, .03); }
+  else if (kind === "rare") { noise(.06, .35, 3200); [784, 988, 1175, 1568].forEach((f, i) => tone(f, 0, .32, "triangle", .1, .05 + i * .07)); }
 }
 function fxLayer(){ let l = $("#fxl"); if (!l) { l = document.createElement("div"); l.id = "fxl"; l.setAttribute("aria-hidden", "true"); document.body.appendChild(l); } return l; }
 function fxCenter(el){ const r = el.getBoundingClientRect(); return r.width ? {x: r.left + r.width / 2, y: r.top + r.height / 2, r} : null; }
@@ -4289,9 +4334,7 @@ function slAction(a){
     const set = ($("#sl-set") || {}).value; if (!set) return true;
     const seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
     SL = {set, seed, pool: slOpen(set, seed), ld: "", dk: {}};
-    const hits = SL.pool.filter(c => ["SR", "SEC"].includes((CARDDB.get(c) || {}).r));
-    slStore(); renderModal(); snd && snd("chat");
-    toast(`You opened ${SL_PACKS} packs of ${set}${hits.length ? `: ${hits.map(c => nameOf(c) + " (" + CARDDB.get(c).r + ")").join(", ")}` : ""}.`);
+    slStore(); renderModal(); ripStart();
     return true;
   }
   if (!SL) return false;
@@ -4314,6 +4357,84 @@ function slAction(a){
     return true;
   }
   return false;
+}
+// ---------- ripping the packs open: tear each pack across the top, then flip its 12 cards one at a time ----------
+// RIP is only the show: the pool is already in SL (and saved) before the first pack is torn, so skipping or closing
+// the game midway loses nothing. Cards come out in pack order, so the Rare and the hit are the last two of each pack.
+let RIP = null;
+const ripHit = c => ["SR", "SEC"].includes((CARDDB.get(c) || {}).r);
+function slHitsToast(){
+  const hits = SL ? SL.pool.filter(ripHit) : [];
+  toast(`You opened ${SL_PACKS} packs of ${SL ? SL.set : ""}${hits.length ? `: ${hits.map(c => nameOf(c) + " (" + CARDDB.get(c).r + ")").join(", ")}` : ""}.`);
+}
+function ripStart(){
+  if (!SL) return;
+  const packs = []; for (let i = 0; i < SL.pool.length; i += 12) packs.push(SL.pool.slice(i, i + 12));
+  RIP = {packs, i: 0, torn: false, up: new Set()};
+  hidePreview();
+  let o = $("#rip");
+  if (!o) {
+    o = document.createElement("div"); o.id = "rip"; o.setAttribute("role", "dialog"); o.setAttribute("aria-label", "Opening packs"); document.body.appendChild(o);
+    // swiping across the top of the pack tears it; a click or a tap anywhere on the pack does too
+    let sx = null, far = 0;
+    o.addEventListener("pointerdown", e => { if (RIP && !RIP.torn && e.target.closest(".rippack")) { sx = e.clientX; far = 0; } });
+    o.addEventListener("pointermove", e => {
+      if (sx == null || !RIP || RIP.torn) return;
+      const pk = $("#rip .rippack"); if (!pk) return;
+      far = Math.max(far, Math.abs(e.clientX - sx) / pk.getBoundingClientRect().width);
+      pk.style.setProperty("--tear", Math.min(1, far * 1.4).toFixed(3));
+      if (far > .6) { sx = null; ripTear(); }
+    });
+    o.addEventListener("pointerup", () => { if (sx != null && RIP && !RIP.torn) { sx = null; ripTear(); } });
+  }
+  o.hidden = false; ripRender();
+}
+function ripTear(){
+  if (!RIP || RIP.torn) return;
+  RIP.torn = true; snd("tear");
+  const pk = $("#rip .rippack"); if (pk) pk.classList.add("torn");
+  setTimeout(() => { if (RIP && RIP.torn) ripRender(); }, matchMedia("(prefers-reduced-motion:reduce)").matches ? 60 : 650);
+}
+function ripFlip(k){
+  if (!RIP || !RIP.torn || RIP.up.has(k)) return;
+  const c = RIP.packs[RIP.i][k]; if (!c) return;
+  RIP.up.add(k);
+  const el = $(`#rip .ripc[data-k="${k}"]`); if (el) { el.classList.add("up"); if (ripHit(c)) el.classList.add("hit"); }
+  snd(ripHit(c) ? "rare" : (CARDDB.get(c) || {}).r === "R" ? "flipr" : "flip");
+  if (RIP.up.size === RIP.packs[RIP.i].length) ripRender(true);
+}
+function ripEnd(){
+  RIP = null; const o = $("#rip"); if (o) { o.hidden = true; o.innerHTML = ""; }
+  hidePreview(); if (modal && modal.type === "sealed") renderModal(); slHitsToast();
+}
+function ripAction(a){
+  if (!RIP) return;
+  if (a === "rip:tear") ripTear();
+  else if (a.startsWith("rip:flip:")) ripFlip(+a.slice(9));
+  else if (a === "rip:all") { const r = RIP, i = r.i; let j = 0; r.packs[i].forEach((c, k) => { if (!r.up.has(k)) setTimeout(() => { if (RIP === r && r.i === i) ripFlip(k); }, 140 * j++); }); }
+  else if (a === "rip:next") { if (RIP.i + 1 >= RIP.packs.length) ripEnd(); else { RIP.i++; RIP.torn = false; RIP.up = new Set(); hidePreview(); ripRender(); } }
+  else if (a === "rip:skip") ripEnd();
+}
+function ripRender(onlyButtons){
+  const o = $("#rip"); if (!o || !RIP) return;
+  const n = RIP.packs.length, i = RIP.i, pack = RIP.packs[i], done = RIP.up.size === pack.length, last = i + 1 >= n;
+  const btns = `<div class="ripbtns">${!RIP.torn ? `<button class="btn pri" data-do="rip:tear" type="button">Tear it open</button>`
+    : done ? `<button class="btn pri" data-do="rip:next" type="button">${last ? "See all your cards" : `Next pack (${i + 2} of ${n})`}</button>`
+    : `<button class="btn" data-do="rip:all" type="button">Flip them all</button>`}
+    <button class="btn" data-do="rip:skip" type="button">Skip to your cards</button></div>`;
+  if (onlyButtons) { const b = $("#rip .ripbtns"); if (b) b.outerHTML = btns; return; }
+  const head = `<div class="riphead"><b>${esc(SL.set)} booster</b><span>Pack ${i + 1} of ${n}</span></div>`;
+  if (!RIP.torn) {
+    o.innerHTML = `${head}<div class="ripstage"><div class="rippack" style="--h:${(parseInt(SL.set.slice(-2), 10) * 47 + (SL.set.startsWith("EB") ? 180 : 0)) % 360}" data-do="rip:tear" title="Swipe across the top, or click, to tear it open">
+      <div class="riptop"><i class="ripline"></i></div>
+      <div class="ripbody"><small>Bounty TCG</small><strong>${esc(SL.set)}</strong><em>Booster pack</em><span>12 cards</span></div></div>
+      <p class="riphint">Swipe across the top of the pack to tear it open.</p></div>${btns}`;
+    return;
+  }
+  const sl = typeof formSleeve === "number" ? formSleeve : 0;
+  o.innerHTML = `${head}<div class="ripcards">${pack.map((c, k) => `<div class="ripc${RIP.up.has(k) ? " up" + (ripHit(c) ? " hit" : "") : ""}" data-k="${k}" data-do="rip:flip:${k}" style="--d:${k * 45}ms">
+      <div class="ripin"><div class="ripf">${tile({u: 0, c, n: nameOf(c)}, "", false, 0)}${(r => r && r !== "C" && r !== "UC" ? `<span class="slr">${r}</span>` : "")((CARDDB.get(c) || {}).r)}</div><div class="ripb"><div class="card back sl${sl}"></div></div></div></div>`).join("")}</div>
+    <p class="riphint">Click a card to flip it. The Rare and the hit are at the end.</p>${btns}`;
 }
 // ---------- practice: play both sides of the table yourself ----------
 function practiceR(){ return {presence(p){ if (PR) { PR.pres[PR.cur] = JSON.parse(JSON.stringify(p)); practiceDeliver(); } return Promise.resolve(); }, leave: async () => {}}; }
@@ -6717,7 +6838,7 @@ function inspectOpp(k){
 // ---------- hover magnifier ----------
 let prevEl = null, prevT = null, mx = -1, my = -1;
 const ZOOM_EMPTY = '<div class="zoomempty">Hover over a card to read it here</div>';
-const isDocked = () => !builderOpen && window.matchMedia("(min-width:1100px)").matches && document.getElementById("zoom");
+const isDocked = () => !builderOpen && !RIP && !(modal && modal.type === "sealed") && window.matchMedia("(min-width:1100px)").matches && document.getElementById("zoom");
 function clearZoom(){ const z = document.getElementById("zoom"); if (z && !z.querySelector(".zoomempty")) z.innerHTML = ZOOM_EMPTY; }
 function hoverable(el){
   const cl = el.classList;
@@ -7377,11 +7498,13 @@ document.addEventListener("error", e => {
 document.addEventListener("keydown", e => {
   if (e.key === "Enter" && e.target && e.target.id === "bd-add") { e.preventDefault(); bdAddByNumber(); return; }
   if (e.key === "Escape" && builderOpen && !modal && !$("#menu")) { closeBuilder(); if (S.phase === "none") openHome(); return; }
+  if (e.key === "Escape" && RIP) { ripEnd(); return; }
   if (e.key === "Escape") { closeMenu(); hidePreview(); if (modal && modal.type !== "home" && !((modal.type === "setup" || modal.type === "lobbies") && S.phase === "none")) closeModal(); }
   if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches("[data-don]")) { e.preventDefault(); e.target.click(); }
 });
 $("#modal").addEventListener("click", e => { if (e.target.id === "modal" && modal && modal.type !== "setup" && modal.type !== "lobbies" && modal.type !== "home" && !artBusy && !rdBusy) closeModal(); });
 function doAction(a){
+  if (a.startsWith("rip:")) { ripAction(a); return; }
   if (modal && modal.type === "sealed" && /^sl(open|new|add:|rem:|auto|clear|save|play)/.test(a) && slAction(a)) return;
   if (RPV && /^(resetboard|refresh|undo|endturn|concede|keep|mull|draw|dfresolve)/.test(a)) { toast("Exit the replay first."); return; }
   if (a === "bddeckwide") {
