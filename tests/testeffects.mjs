@@ -292,13 +292,13 @@ const rh = await page.evaluate(evs => { while (fxCur) { fxQueue.length = 0; fxFi
   const st = fxCur.steps[0], glow = document.querySelectorAll("#hand .fxglow, #hand [data-fx]").length; fxCur.pick = ["hand:0"]; doAction("fxapply"); const early = fxCur && fxCur.i === 0;
   fxCur.pick = ["hand:1", "hand:2"]; doAction("fxapply"); const pay = {a: st.a, early, h: S.hand.length, next: fxCur && fxCur.steps[fxCur.i].a, log: myLog.slice(-1)[0][1]};
   doAction("fxgo"); pay.pm = S.chars[0].pm || 0; while (fxCur) { fxQueue.length = 0; fxFinish(false); }
-  S.hand = S.hand.slice(0, 2); commit(); fxEnqueue(fxJob(S.chars[0].card, fxAb("OP12-004").find(a => a.t === "activateMain"))); pay.short = document.querySelector("#fxpanel").innerText; pay.btns = [...document.querySelectorAll("#fxpanel button")].map(b => b.textContent);
+  S.hand = S.hand.slice(0, 2); commit(); fxEnqueue(fxJob(S.chars[0].card, fxAb("OP12-004").find(a => a.t === "activateMain"))); pay.short = myLog.slice(-1)[0][1]; pay.btns = fxCur ? ["still open"] : [];
   while (fxCur) { fxQueue.length = 0; fxFinish(false); }
   pay.events = cardFilter("Events")(evs[0]) && !cardFilter("Events")("OP01-016");
   return pay; }, evs);
 console.log("reveal hand", JSON.stringify(rh));
 check(rh.a === "revealHand" && rh.early && rh.h === 3 && /revealed .* from hand/.test(rh.log) && rh.pm === 2000, "OP12-004 reveals 2 Events from hand (they stay there) and gets +2000");
-check(/needs 2 cards/.test(rh.short) && rh.btns.join() === "Don't use it" && rh.events, "with only 1 Event in hand the cost can't be paid");
+check(/couldn't pay the cost .*needs 2 cards/.test(rh.short) && !rh.btns.length && rh.events, "with only 1 Event in hand the cost can't be paid, so the ability isn't used");
 // "You may place 2 cards with a type including "CP" from your trash at the bottom of your deck:" (OP03-080), by the computer
 const cp = await page.evaluate(() => [...CARDDB.keys()].filter(k => typesOf(k).some(y => y.includes("CP"))).slice(0, 2));
 const small = await page.evaluate(() => { const k = [...CARDDB.keys()].find(k => /^OP01-/.test(k) && (CARDDB.get(k) || {}).t === "Character" && (CARDDB.get(k) || {}).k <= 3); S.chars = [{card: {c: k, n: nameOf(k)}, r: false, d: 0, pt: 0}]; commit(); PR.pres[0] = JSON.parse(JSON.stringify(pubFull())); return k; });
@@ -477,7 +477,7 @@ const wh = await page.evaluate(() => {
   job([{a: "returnDon", who: "own", n: 1, upTo: false}]); doAction("fxrd:a"); doAction("fxrdok"); out.once = !fxCur; clear();
   S.leader = Object.assign({}, S.leader, {card: ld0, mk: []});
   const hm = ch("OP14-032"); S.chars = [hm]; fxEnqueue(fxJob(hm.card, normFx({abilities: [{t: "onPlay", text: "Rest this Character.", steps: [{a: "rest", self: true}]}]}).ab[0])); doAction("fxgo");
-  out.rest = hm.r && !!fxCur && fxCur.card.c === "OP14-032" && fxCur.steps[0].a === "rest" && fxCur.steps[0].who === "opp"; clear();
+  out.rest = hm.r && (!!fxCur && fxCur.card.c === "OP14-032" && fxCur.steps[0].a === "rest" && fxCur.steps[0].who === "opp" || myLog.slice(-3).some(e => /OP14-032.*nothing could be chosen/.test(e[1]))); clear();
   S.chars = [ch("OP04-053", {d: 1})]; const ev = [...BFX.keys()].find(k => (CARDDB.get(k) || {}).t === "Event" && fxAb(k).some(a => a.t === "main"));
   S.hand.push({c: ev, n: nameOf(ev), u: 96500}); moveCard("hand:" + (S.hand.length - 1), "event", true); out.event = queued("OP04-053"); clear();
   if (S.ev) { S.trash.unshift(S.ev.card); S.ev = null; }
@@ -531,7 +531,7 @@ const more = await page.evaluate(() => {
   out.after = S.chars[0].pm || 0;
   clear(); S.leader.pm = 0; S.leader.r = true; S.chars[0].pm = 0; commit();
   fxEnqueue(fxJob(ch, fxAb("OP04-006").find(a => a.t === "whenAttacking")));
-  out.rested = document.querySelector("#fxpanel").innerText; doAction("fxgo"); out.restedPm = S.leader.pm;
+  out.rested = (fxCur ? document.querySelector("#fxpanel").innerText : "") + myLog.slice(-1)[0][1]; doAction("fxgo"); out.restedPm = S.leader.pm;
   clear(); S.leader.r = false; S.chars = [];
   // OP02-051: draw until you have 3 cards
   const h0 = S.hand.slice(); S.hand = S.hand.slice(0, 1); commit();
@@ -541,16 +541,55 @@ const more = await page.evaluate(() => {
   // EB05-013 on a Leader that isn't {Fish-Man} or {Merfolk}: nothing happens
   S.donActive = 2; commit();
   fxEnqueue(fxJob({c: "EB05-013", n: nameOf("EB05-013")}, fxAb("EB05-013").find(a => a.t === "onOppAttack")));
-  doAction("fxgo"); out.typeTxt = document.querySelector("#fxpanel").innerText; out.typePm = S.leader.pm || 0;
+  doAction("fxgo"); out.typeTxt = (fxCur ? document.querySelector("#fxpanel").innerText : "") + myLog.slice(-3).map(e => e[1]).join(" | "); out.typePm = S.leader.pm || 0;
   clear(); commit();
   return out;
 });
 console.log("more", JSON.stringify(more));
 check(more.ctr[0] === 4000 && more.ctr[1] === 2000, "OP04-095 gives the chosen card an additional +2000 only with 15 or more cards in the trash");
 check(more.paid.ld === -5000 && more.paid.step === 1 && more.after === 2000, "OP04-006 pays with its Leader's −5000 power, then gains +2000");
-check(/Leader is rested/.test(more.rested) && more.restedPm === 0, "a rested Leader can't pay that cost");
+check(/couldn't pay the cost .*active Leader/.test(more.rested) && more.restedPm === 0, "a rested Leader can't pay that cost, so the ability isn't used");
 check(/until you have 3 cards in hand: 2 cards/.test(more.drawTxt) && more.hand === 3, "OP02-051 draws until you have 3 cards");
-check(/isn't \{Fish-Man\} or \{Merfolk\} type/.test(more.typeTxt) && more.typePm === 0, "EB05-013 only powers up a {Fish-Man} or {Merfolk} Leader");
+check(/Leader isn't that type/.test(more.typeTxt) && more.typePm === 0, "EB05-013 only powers up a {Fish-Man} or {Merfolk} Leader");
+// ---- the rules other simulators follow: required steps, costs paid in full first, Once Per Turn per ability ----
+const strict = await page.evaluate(() => {
+  const out = {}, wasBot = PR.bot, clear = () => { while (fxCur) { fxQueue.length = 0; fxFinish(false); } };
+  const btns = () => [...document.querySelectorAll("#fxpanel button")].map(b => b.textContent);
+  clear(); PR.bot = 1;   // against the computer: the rules are strict
+  out.strict = fxStrict();
+  // "Draw 1 card and trash 1 card from your hand": both happen
+  const h0 = S.hand.length; S.hand.push({c: "OP01-016", n: "Nami", u: 97001}); commit();
+  fxEnqueue(fxJob({c: "OP01-016", n: "Nami"}, normFx({abilities: [{t: "onPlay", text: "[On Play] Draw 1 card and trash 1 card from your hand.", steps: [{a: "draw", n: 1, who: "own", text: "Draw 1 card"}, {a: "discard", n: 1, who: "own", text: "trash 1 card from your hand"}]}]}).ab[0]));
+  out.draw = btns(); doAction("fxdraw"); out.discard = btns(); clear();
+  // "up to" and "you may" can be passed
+  fxEnqueue(fxJob({c: "OP01-016", n: "Nami"}, normFx({abilities: [{t: "onPlay", text: "[On Play] You may trash 1 card from your hand.", steps: [{a: "discard", n: 1, who: "own", text: "You may trash 1 card from your hand"}]}]}).ab[0]));
+  out.may = btns(); clear();
+  // a cost that can't be paid in full: the ability isn't used
+  S.hand = S.hand.slice(0, 1); commit();
+  fxEnqueue(fxJob({c: "OP01-016", n: "Nami"}, normFx({abilities: [{t: "onPlay", text: "[On Play] You may trash 2 cards from your hand: Draw 3 cards.", steps: [{a: "discard", n: 2, who: "own", pay: true, text: "You may trash 2 cards from your hand"}, {a: "draw", n: 3, who: "own", text: "Draw 3 cards"}]}]}).ab[0]));
+  out.unpaid = {open: !!fxCur, log: myLog.slice(-1)[0][1], hand: S.hand.length}; clear();
+  // nothing to choose: the step passes by itself
+  const oc = oppM && oppM.chars ? oppM.chars.length : 0;
+  fxEnqueue(fxJob({c: "OP01-016", n: "Nami"}, normFx({abilities: [{t: "onPlay", text: "[On Play] K.O. up to 1 of your opponent's Characters with a cost of 0.", steps: [{a: "ko", cost: 0, who: "opp", upTo: true, text: "K.O. up to 1 of your opponent's Characters with a cost of 0."}]}]}).ab[0]));
+  out.none = {open: !!fxCur, log: myLog.slice(-2).map(e => e[1]).join(" | ")}; clear();
+  // "at the end of this turn": waits for the end of the turn
+  fxEnqueue(fxJob({c: "OP01-016", n: "Nami"}, normFx({abilities: [{t: "onPlay", text: "[On Play] Set up to 2 of your DON!! cards as active at the end of this turn.", steps: [{a: "other", text: "Set up to 2 of your DON!! cards as active at the end of this turn."}]}]}).ab[0]));
+  out.laterStep = fxCur && fxCur.steps[0].a; doAction("fxlater"); out.queued = (S.eotq || []).length;
+  S.eotq = []; clear();
+  // Once Per Turn is per ability and ends with the turn
+  const f = {card: {c: "OP06-042", n: nameOf("OP06-042"), u: 97100}, r: false, d: 0, pt: 0}; S.chars = [f];
+  const a1 = {text: "[Once Per Turn] A"}, a2 = {text: "[Once Per Turn] B"};
+  optMark({card: f.card, text: a1.text}); out.opt = [optUsed(f.card, a1), optUsed(f.card, a2)];
+  S.chars = []; PR.bot = wasBot; commit();
+  return out;
+});
+console.log("strict", JSON.stringify(strict));
+check(strict.strict && !strict.draw.includes("Cancel") && !strict.draw.includes("Skip") && !strict.discard.includes("Skip") && !strict.discard.includes("Cancel"), "against someone, an ability's required steps have no Skip or Cancel");
+check(strict.may.includes("Skip"), "a \"you may\" step can still be passed");
+check(!strict.unpaid.open && /couldn't pay the cost/.test(strict.unpaid.log) && strict.unpaid.hand === 1, "a cost that can't be paid in full stops the ability before anything happens");
+check(!strict.none.open && /nothing could be chosen/.test(strict.none.log), "a step with nothing to choose passes by itself and says so");
+check(strict.laterStep === "later" && strict.queued === 1, "\"at the end of this turn\" waits for the end of the turn");
+check(strict.opt[0] && !strict.opt[1], "Once Per Turn counts each ability on a card on its own");
 await page.screenshot({ path: OUT + "/board.png" });
 check(!errs.length, "no page errors" + (errs.length ? ": " + errs.slice(0, 3).join(" / ") : ""));
 await app.close();

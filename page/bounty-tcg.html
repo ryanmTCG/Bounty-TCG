@@ -4021,7 +4021,8 @@ function renderModal(){
     return;
   }
   if (modal.type === "trig") {
-    showModal(`<h2>Trigger! ${esc(lab(modal.card))}</h2><p class="hint">This Life card has a [Trigger] ability:</p><p>${esc(modal.ab.text)}</p><div class="row end"><button class="btn" data-do="trigno" type="button">Keep in hand</button><button class="btn pri" data-do="trigyes" type="button">Activate [Trigger]</button></div>`);
+    const miss = fxCostMiss(fxJob(modal.card, Object.assign({}, modal.ab, {don: 0})));
+    showModal(`<h2>Trigger! ${esc(lab(modal.card))}</h2><p class="hint">This Life card has a [Trigger] ability:</p><p>${esc(modal.ab.text)}</p>${miss ? `<p class="hint">Its cost can't be paid right now (it needs ${esc(miss)}), so it goes to your hand.</p>` : ""}<div class="row end"><button class="btn${miss ? " pri" : ""}" data-do="trigno" type="button">Keep in hand</button>${miss ? "" : '<button class="btn pri" data-do="trigyes" type="button">Activate [Trigger]</button>'}</div>`);
     return;
   }
   if (modal.type === "oppatk") {
@@ -5048,9 +5049,10 @@ function botAbility(card, trigs, don, cause){
 function botTrigger(card){
   const ab = fxAb(card.c).find(x => x.t === "trigger"), i = S.hand.indexOf(card);
   if (!botCanRun(ab) || i < 0) return;
-  if (!/play this card/i.test(ab.text)) { S.hand.splice(i, 1); S.trash.unshift(card); }
+  const job = fxJob(card, Object.assign({}, ab, {don: 0})); if (fxCostMiss(job)) return;
+  if (!/play this card/i.test(ab.text)) { S.hand.splice(i, 1); S.trash.unshift(card); if (job.steps[0] && job.steps[0].pay) job.trig = card; }
   addLog(`activated the [Trigger] on ${lab(card)}`);
-  fxEnqueue(fxJob(card, Object.assign({}, ab, {don: 0}))); botFxGo();
+  fxEnqueue(job); botFxGo();
 }
 function botFxGo(){
   if (botFxBusy) return; botFxBusy = true;
@@ -5097,6 +5099,7 @@ function botFxStep(m, st){
     m.dsel = sel; doAction("fxrdok"); return;
   }
   if (st.a === "draw") { doAction("fxdraw"); return; }
+  if (st.a === "later") { doAction("fxlater"); return; }
   if (st.a === "don") { doAction(donRestedStep(st) ? "fxdon:r" : "fxdon:a"); return; }
   if (st.a === "look") { botLook(m, st); return; }
   if (HAND_PICK[st.a]) {
@@ -5576,10 +5579,38 @@ async function readEffect(code, force){
 }
 let fxFailed = false;
 const fieldDon = () => S.donActive + S.donRested + (S.leader ? S.leader.d || 0 : 0) + S.chars.reduce((a, f) => a + (f.d || 0), 0);
+// Like the official rules (and other simulators): what an ability says happens unless its wording says "you may",
+// "up to" or "any number of", so those steps can't be skipped and, once the first one is done, the ability can't be
+// cancelled. Costs are a choice ("Don't use it"), but only all of them. Test a deck and Practice alone keep Skip
+// everywhere (donTools()), as they keep the free board tools.
+const stepMay = st => !!(st.pay || st.a === "other" || st.a === "choose" || (st.text ? /\b(?:you may|up to|any number of)\b/i.test(st.text) : st.upTo));
+const fxStrict = () => !donTools();
+// "Set up to 2 of your DON!! cards as active at the end of this turn.": waits for the end of the turn (S.eotq)
+const LATER_RE = /^(?:then,\s*)?set up to (\d+) of your DON!! cards? as active at the end of this turn\.?$/i;
 function fxJob(card, ab){
-  const steps = ab.steps.length ? ab.steps.slice() : [{a: "other", text: ab.text, n: 1, who: "opp"}];
-  if (ab.donMinus > 0) steps.unshift({a: "returnDon", who: "own", n: ab.donMinus, upTo: false, must: true, text: `Cost: return ${ab.donMinus} DON!! to your DON!! deck`});
+  let steps = ab.steps.length ? ab.steps.slice() : [{a: "other", text: ab.text, n: 1, who: "opp"}];
+  if (ab.donMinus > 0) steps.unshift({a: "returnDon", who: "own", n: ab.donMinus, upTo: false, must: true, dm: true, text: `Cost: return ${ab.donMinus} DON!! to your DON!! deck`});
+  steps = steps.map(st => { const l = st.a === "other" && LATER_RE.exec(st.text || ""); return l ? Object.assign({}, st, {a: "later", later: {a: "standDon", n: +l[1]}}) : st; });
+  if (fxStrict()) steps = steps.map(st => st.must || stepMay(st) ? st : Object.assign({}, st, {must: true}));
   return {type: "efx", card, tl: TRIG[ab.t] || "Ability", text: ab.text, steps, i: 0, pick: [], dsel: {}};
+}
+// can every cost at the start of the ability (the steps before the first one that isn't a cost) be paid in full?
+// Returns null when it can, or what's missing.
+function fxCostMiss(m){
+  const pl = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+  for (const st of m.steps) {
+    if (!st.pay) break;
+    const n = Math.abs(st.n || 1);
+    if (st.a === "returnDon") { const have = S.donActive + S.donRested + (S.leader ? S.leader.d || 0 : 0) + S.chars.reduce((a, f) => a + (f.d || 0), 0); if (have < n) return `${pl(n, "DON!!")} to return`; continue; }
+    if (HAND_PICK[st.a]) { const pr = fxHandPred(st); if (S.hand.filter(c => !pr || pr(c.c)).length < n) return `${pl(n, "card")} in hand that fit`; continue; }
+    if (st.a === "restDon") { if (S.donActive < n) return `${pl(n, "active DON!!").replace(/DON!!s$/, "DON!!")}`; continue; }
+    if (st.a === "lifeTrash" && st.who === "own" || st.a === "lifeHand") { if (S.life.length < n) return pl(n, "Life card"); continue; }
+    if (st.a === "mill") { if (S.deck.length < n) return pl(n, "card") + " in your deck"; continue; }
+    if (st.a === "trashHand" || st.a === "trashDeck") { const pr = fxZonePred(st); if (S.trash.filter(c => !pr || pr(c.c)).length < n) return pl(n, "card") + " in your trash that fit"; continue; }
+    if (st.self || st.rt) { const f = st.rt ? rpHolder(m) : fxTgt(m, st); if (!f) return "the card to pay with"; if (st.act && f.r) return "an active Leader"; if (st.a === "rest" && f.r && !st.rt) return `an active ${lab(f.card)}`; continue; }
+    if (fxVerb(st, "it")) { const was = fxCur; fxCur = m; let k; try { k = fxCands(st).length; } finally { fxCur = was; } if (k + (st.a === "rest" && st.dn ? S.donActive : 0) < (st.all ? 1 : fxLim(st))) return "enough cards of yours to " + fxVerb(st, "them"); continue; }
+  }
+  return null;
 }
 // "If this Character would be K.O.'d, you may trash 1 card from your hand instead." (a.rp): when my Character f is about
 // to be K.O.'d (kind "ko") or leave the field another way ("rm") by my opponent's effect or in battle (cause "opp" or
@@ -5659,7 +5690,14 @@ function whenWho(f){
 // one of my Characters was K.O.'d: the count my opponent sees ("When your opponent's Character is K.O.'d") and my own
 // "When ... is K.O.'d"
 function koDone(who, cause){ S.kc = (S.kc || 0) + 1; whenFire("ko", Object.assign({}, who, {side: "own", cause})); }
-const optUsed = (card, a) => { const h = [S.leader, S.stage, ...S.chars].find(f => f && f.card === card); return !!(h && (h.mk || []).includes("au") && /once\s*per\s*turn/i.test(a.text || "")); };
+// [Once Per Turn]: each ability's text on that field card (f.op), kept until the end of the turn it was used in
+const optKey = t => String(t || "").slice(0, 60);
+const optUsed = (card, a) => { const h = [S.leader, S.stage, ...S.chars].find(f => f && f.card === card); return !!(h && /once\s*per\s*turn/i.test(a.text || "") && (h.op ? h.op.includes(optKey(a.text)) : (h.mk || []).includes("au"))); };
+function optMark(m){
+  const uf = [S.leader, S.stage, ...S.chars].find(f => f && f.card === m.card); if (!uf || !/once\s*per\s*turn/i.test(m.text || "")) return;
+  uf.op = uf.op || []; if (!uf.op.includes(optKey(m.text))) uf.op.push(optKey(m.text));
+  uf.mk = uf.mk || []; if (!uf.mk.includes("au")) uf.mk.push("au");
+}
 // the ability being resolved shows in a small box by Power and Cost; the player does it on the board, then taps Done
 let fxCur = null;
 function fxEnqueue(job){ if (fxCur) fxQueue.push(job); else { fxCur = job; fxSettle(); } renderFx(); }
@@ -5699,11 +5737,33 @@ function fxSettle(){
   for (let g = 0; fxCur && g < 12; g++) {
     const m = fxCur, st = m.steps[m.i];
     if (!st) { fxFinish(true); return; }
+    if (m.i === 0 && !m.costOk && !m.forced && !m.rpl) {
+      m.costOk = 1; const miss = fxCostMiss(m);
+      if (miss) { addLog(`couldn't pay the cost of ${lab(m.card)}'s ${m.tl || "ability"} (needs ${miss})`); if (!botQuiet) toast(`${lab(m.card)}: the cost can't be paid (it needs ${miss}), so the ability isn't used.`); fxFinish(false, true); return; }
+    }
     const c = stepCond(st);
-    if (!c || stepOk(m, st) !== false) return;
-    addLog(`${lab(m.card)}: skipped a step (${c.slice(0, 80)} isn't so)`);
+    if (c && stepOk(m, st) === false) {
+      addLog(`${lab(m.card)}: skipped a step (${c.slice(0, 80)} isn't so)`);
+      m.i++; m.pick = []; m.dsel = {}; m.play = null; m.did = false; m.res = null; continue;
+    }
+    // nothing can be chosen for it: say so and go on, instead of waiting on the player
+    const why = !st.pay && fxNothing(m, st);
+    if (!why) return;
+    addLog(`${lab(m.card)}: ${why}`);
     m.i++; m.pick = []; m.dsel = {}; m.play = null; m.did = false; m.res = null;
   }
+}
+// a step (not a cost) with nothing to act on: what to tell the player, or null
+function fxNothing(m, st){
+  if (st.rt || st.a === "other" || st.a === "choose") return null;
+  if (st.self) { if (st.a === "rest" && st.pay) return null; const f = fxTgt(m, st); return f ? null : st.same ? "no card got power from it, so that step does nothing" : st.myLd ? "your Leader isn't that type, so that step does nothing" : `${lab(m.card)} isn't on the field, so that step does nothing`; }
+  if (fxVerb(st, "it")) { if (st.a === "rest" && st.dn && S.donActive > 0) return null; const was = fxCur; fxCur = m; try { return fxCands(st).length ? null : "nothing could be chosen for a step, so it was passed"; } finally { fxCur = was; } }
+  if (HAND_PICK[st.a]) { const pr = fxHandPred(st); return S.hand.some(c => !pr || pr(c.c)) ? null : "no card in hand fits a step, so it was passed"; }
+  if (st.a === "trashHand" || st.a === "trashDeck") { const pr = fxZonePred(st); return S.trash.some(c => !pr || pr(c.c)) ? null : "no card in the trash fits a step, so it was passed"; }
+  if ((st.a === "lifeHand" || st.a === "lifeTrash" && st.who === "own") && !S.life.length) return "no Life cards for a step, so it was passed";
+  if (st.a === "deckLife" && !S.deck.length) return "the deck is empty, so a step was passed";
+  if (st.a === "standDon" && !S.donRested) return "no rested DON!! to set active";
+  return null;
 }
 function renderFx(){
   if (botQuiet) return;
@@ -5730,12 +5790,15 @@ function fxTellOpp(m){
   S.mf = {c: m.card.c, a, s: ab[a].steps.findIndex(x => x.text === st.text) + 1, n: S.mfn};
   setTimeout(commit, 0);
 }
-function fxFinish(done){
+function fxFinish(done, unpaid){
   const m = fxCur; if (!m) return;
+  // a [Trigger] whose cost wasn't paid: the card is added to hand instead, as it would have been
+  if (!done && m.trig && !m.paid) { const k = S.trash.indexOf(m.trig); if (k >= 0) { S.trash.splice(k, 1); S.hand.push(m.trig); addLog(`added ${lab(m.trig)} to their hand`); } }
   // a replacement ("... instead"): paid, the card stays; otherwise it leaves the field as it would have
   if (m.rpl) { const p = m.rpl; if (done) addLog(`used ${lab(m.card)}'s effect instead of ${lab(p.card)} ${p.kind === "ko" ? "being K.O.'d" : "leaving the field"}`); else rpOffer(p.f, p.kind, p.cause, p.go, p.tried); }
-  if (done) { const uf = [S.leader, S.stage, ...S.chars].find(f => f && f.card === m.card); if (uf && /once\s*per\s*turn/i.test(m.text || "")) { uf.mk = uf.mk || []; if (!uf.mk.includes("au")) uf.mk.push("au"); } addLog(`resolved ${lab(m.card)}'s ${m.tl || "On Play"}`); }
-  else addLog(`cancelled ${lab(m.card)}'s ability`);
+  if (done || m.paid) optMark(m);
+  if (done) { addLog(`resolved ${lab(m.card)}'s ${m.tl || "On Play"}`); }
+  else if (!unpaid) addLog(`cancelled ${lab(m.card)}'s ability`);
   if (S.ev && S.ev.card === m.card && !fxQueue.some(j => j.card === m.card)) { S.trash.unshift(S.ev.card); S.ev = null; addLog(`${lab(m.card)} went to the trash`); }
   S.mf = null; fxCur = fxQueue.shift() || null; if (fxCur) fxSettle(); commit(); renderFx();
 }
@@ -5984,7 +6047,8 @@ function fxCands(st){
 function fxStepHTML(m){
   m.manual = false;
   const st = m.steps[m.i]; if (!st) return "";
-  const cancel = m.forced || (m.rpl && m.rpl.must) ? "" : `<button class="btn" data-do="fxcancel" type="button">${st.pay ? "Don't use it" : "Cancel"}</button>`, skip = m.forced || st.pay || st.must ? "" : `<button class="btn" data-do="fxskip:no" type="button">Skip</button>`;
+  const locked = fxStrict() && !st.pay && (st.must || m.i > 0 && m.steps.slice(0, m.i).some(x => x.must || x.pay));
+  const cancel = m.forced || (m.rpl && m.rpl.must) || locked ? "" : `<button class="btn" data-do="fxcancel" type="button">${st.pay ? "Don't use it" : "Cancel"}</button>`, skip = m.forced || st.pay || st.must ? "" : `<button class="btn" data-do="fxskip:no" type="button">Skip</button>`;
   const go = (label, act) => `<button class="btn pri" data-do="${act || "fxgo"}" type="button">${label}</button>`, next = cancel + go("Next", "fxskip:no");
   const c = stepCond(st), cv = c ? stepOk(m, st) : true, pl = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
   const head = `<h3>[${esc(m.tl || "On Play")}] ${esc(lab(m.card))}</h3><p class="fxtext">${esc(m.text)}</p>${m.steps.length > 1 ? `<p class="q">Step ${m.i + 1} of ${m.steps.length}${st.text ? ": " + esc(st.text) : ""}</p>` : ""}${c && cv === null ? `<p class="hint">Only if ${esc(c)}. Skip it if that isn't so.</p>` : ""}${m.rpl ? `<p class="hint"><b>${esc(lab(m.rpl.card))}</b> would ${m.rpl.kind === "ko" ? "be K.O.'d" : "leave the field"}. ${m.rpl.must ? "This happens instead." : "Pay this to keep it on the field, or tap Don't use it."}</p>` : st.pay ? `<p class="hint">This is the cost. If you don't pay it, the rest doesn't happen.</p>` : ""}`;
@@ -6006,6 +6070,7 @@ function fxStepHTML(m){
       kw: `${nm} gains [${KW_NAME[st.k] || st.k}] this turn${st.n ? ` and ${sg(st.n)} power` : ""}.`}[st.a];
     if (what) return say(what, cancel + skip + go(st.pay ? "Pay" : "Do it"));
   }
+  if (st.a === "later") return say(`At the end of this turn, up to ${pl(st.later.n, "of your rested DON!!").replace(/DON!!s$/, "DON!!")} will be set as active.`, cancel + go("OK", "fxlater"));
   if (st.a === "choose") return say("Choose one:", cancel, `<div class="fxcol">${st.opts.map((o, i) => `<button class="btn" data-do="fxopt:${i}" type="button">${esc(o.text)}</button>`).join("")}</div>`);
   if (fxVerb(st, "it")) {
     const cs = fxCands(st), own = fxOwn(st), dnBtn = st.a === "rest" && st.dn && S.donActive > 0 ? `<button class="btn" data-do="fxrestdon" type="button">Rest a DON!!</button>` : "";
@@ -6093,6 +6158,7 @@ function fxStepHTML(m){
 }
 function fxNext(){
   const m = fxCur; if (!m) return;
+  const was = m.steps[m.i]; if (was && (was.pay || was.dm) && m.res !== false) m.paid = 1;
   m.did = m.res == null ? null : m.res; m.res = null; S.mf = null;
   m.i++; m.pick = []; m.dsel = {}; m.play = null;
   if (m.i >= m.steps.length) { fxFinish(true); return; }
@@ -6205,6 +6271,7 @@ function fxApply(arg){
   }
   const kind = st.a, refs = m.pick.slice(); m.res = refs.length > 0;
   if (!refs.length) { if (st.pay) { toast("Pick a card to pay this cost, or tap Don't use it."); return; } fxNext(); return; }
+  if (st.pay && !st.all && !st.upTo && refs.length < fxLim(st)) { toast(`This cost takes ${fxLim(st)} cards. Pick ${fxLim(st) - refs.length} more, or tap Don't use it.`); return; }
   if (kind === "giveDon") {
     const f = refs[0] === "ld" ? S.leader : S.chars[+refs[0].slice(3)]; if (!f) { fxNext(); return; }
     fxGiveDon(f, st); done(); return;
@@ -6365,7 +6432,7 @@ function startTurn(){
   if (S.phase === "play" && !S.turn && oppM && oppM.kp === 0) { toast(`Waiting for ${oppM.nick} to keep their hand and set Life.`); return; }
   if (S.phase !== "play") { toast(S.phase === "pre" ? "Keep your hand and set your Life first." : (S.phase === "wait" || S.phase === "roll") ? "The match hasn't started yet." : "Set up your deck first."); return; }
   S.turn++;
-  const stand = f => { if (f.mk && f.mk.includes("na") && S.turn >= (f.nat || 0)) { f.mk = f.mk.filter(k => k !== "na"); addLog(`${lab(f.card)} can attack again`); } if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; f.mk = (f.mk || []).filter(k => k !== "au" && k !== "ng"); };
+  const stand = f => { if (f.mk && f.mk.includes("na") && S.turn >= (f.nat || 0)) { f.mk = f.mk.filter(k => k !== "na"); addLog(`${lab(f.card)} can attack again`); } if (f.mk && f.mk.includes("fz")) { f.mk = f.mk.filter(k => k !== "fz"); if (f.r) addLog(`${lab(f.card)} stayed rested (Freeze)`); } else f.r = false; f.mk = (f.mk || []).filter(k => k !== "au" && k !== "ng"); f.op = []; };
   // power "until the start of your next turn" ends now (nx); an opponent's "until the end of your next turn" stays (nt)
   for (const f of S.chars) { stand(f); S.donRested += f.d; f.d = 0; f.pm = f.nt || 0; f.nx = 0; f.cm = f.ct || 0; f.cx = 0; f.bc = 0; }
   if (S.stage) S.stage.r = false;
@@ -6415,7 +6482,9 @@ function endTurn(){
     }
   }
   S.pw = 0; S.cc = 0; S.atk = null; S.blk = null;
-  for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = f.nx || 0; f.nt = 0; f.cm = f.cx || 0; f.ct = 0; f.bc = 0; if (negated(f)) f.mk = f.mk.filter(k => k !== "ng"); }
+  // "at the end of this turn" effects waiting in S.eotq
+  for (const l of (S.eotq || []).splice(0)) if (l.a === "standDon") { const k = Math.min(l.n, S.donRested); S.donRested -= k; S.donActive += k; addLog(`${l.by}: set ${k} DON!! as active at the end of the turn`); }
+  for (const f of [...S.chars, S.stage, S.leader]) if (f) { f.pm = f.nx || 0; f.nt = 0; f.cm = f.cx || 0; f.ct = 0; f.bc = 0; if (negated(f)) f.mk = f.mk.filter(k => k !== "ng"); f.op = []; if (f.mk) f.mk = f.mk.filter(k => k !== "au"); }
   if (S.ev) { S.trash.unshift(S.ev.card); addLog(`${lab(S.ev.card)} went to the trash`); S.ev = null; }
   S.myTurn = false; S.et = (S.et || 0) + 1;
   addLog(`ended turn ${S.turn || 0}`);
@@ -7611,10 +7680,11 @@ function doAction(a){
   }
   if (a === "trigno" && modal && modal.type === "trig") { closeModal(); return; }
   if (a === "trigyes" && modal && modal.type === "trig") {
-    const {card, ab} = modal, i = S.hand.findIndex(c => c.u === card.u); closeModal();
-    if (i >= 0 && !/play this card/i.test(ab.text)) { S.hand.splice(i, 1); S.trash.unshift(card); }
+    const {card, ab} = modal, i = S.hand.findIndex(c => c.u === card.u), job = fxJob(card, Object.assign({}, ab, {don: 0})), miss = fxCostMiss(job); closeModal();
+    if (miss) { toast(`The [Trigger]'s cost can't be paid (it needs ${miss}), so ${lab(card)} stays in your hand.`); return; }
+    if (i >= 0 && !/play this card/i.test(ab.text)) { S.hand.splice(i, 1); S.trash.unshift(card); if (job.steps[0] && job.steps[0].pay) job.trig = card; }
     addLog(`activated the [Trigger] on ${lab(card)}`); commit();
-    fxEnqueue(fxJob(card, Object.assign({}, ab, {don: 0})));
+    fxEnqueue(job);
     return;
   }
   if (a.startsWith("oablk:") && modal && modal.type === "oppatk") {
@@ -7630,6 +7700,11 @@ function doAction(a){
   if (a.startsWith("fxpick:") && fxCur) { fxPick(a.slice(7)); return; }
   if (a === "fxapply" && fxCur) { fxApply(); return; }
   if ((a === "fxapply:top" || a === "fxgo" || a.startsWith("fxgo:")) && fxCur) { fxApply(a === "fxapply:top" ? "top" : a.slice(5)); return; }
+  if (a === "fxlater" && fxCur) {
+    const st = fxCur.steps[fxCur.i];
+    if (st && st.later) { (S.eotq = S.eotq || []).push(Object.assign({by: lab(fxCur.card)}, st.later)); addLog(`${lab(fxCur.card)}: will set up to ${st.later.n} DON!! as active at the end of the turn`); }
+    fxCur.res = true; commit(); fxNext(); return;
+  }
   if (a.startsWith("fxopt:") && fxCur) {
     const st = fxCur.steps[fxCur.i], o = st && st.opts && st.opts[+a.slice(6)]; if (!o) return;
     const ss = o.steps.length ? o.steps.map(x => Object.assign({}, x)) : [{a: "other", who: "opp", n: 1, text: o.text}];

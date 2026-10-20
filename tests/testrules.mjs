@@ -89,7 +89,7 @@ await clear();
 // ---- a used Event goes to the trash ----
 await page.evaluate(() => { S.donActive = 10; S.hand.push({c: "OP02-046", n: nameOf("OP02-046")}); commit(); moveCard("hand:" + (S.hand.length - 1), "event", false, 0); });
 for (let i = 0; i < 10 && !await page.evaluate(() => !!fxCur); i++) await page.waitForTimeout(200);
-check(await page.evaluate(() => S.ev && S.ev.card.c === "OP02-046" && fxCur && fxCur.card.c === "OP02-046"), "the Event's [Main] comes up");
+check(await page.evaluate(() => S.ev && S.ev.card.c === "OP02-046" && fxCur && fxCur.card.c === "OP02-046" || myLog.slice(-4).some(e => /OP02-046.*nothing could be chosen/.test(e[1]))), "the Event's [Main] comes up (or, with no rested Character to K.O., passes by itself)");
 await page.evaluate(() => { const b = document.querySelector('#fxpanel [data-do^="fxskip"]'); if (b) b.click(); else fxFinish(true); });
 check(await page.evaluate(() => !S.ev && S.trash[0].c === "OP02-046"), "once it's done the Event is in the trash");
 await clear();
