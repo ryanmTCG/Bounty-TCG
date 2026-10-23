@@ -1,8 +1,8 @@
 {
-  "version": "1.9.1",
+  "version": "1.9.2",
   "shell": 2,
-  "bundle": "web-1.9.1.json.gz",
-  "sha256": "1695d71cf525dc8208435d956edd80b9d0428d55a3d4ad45d0e5cbe5acf3cf2b",
-  "size": 945613,
-  "notes": "Sealed packs and the corrected card data now show up on computers that had card data saved from the card reader (it used to hide the bundled card list's rarities and fixes)."
+  "bundle": "web-1.9.2.json.gz",
+  "sha256": "3872966184011c55ad134e1e543e65e35ee4fea2ad32b032934746d9ece835a8",
+  "size": 960349,
+  "notes": "Sealed: tear each pack open with a swipe and flip its cards one by one (the big pulls shine), and hovering a card zooms in on it. Sealed opens 24 packs, and adding a card keeps the card list where you'd scrolled it. Sealed: Play a friend takes your sealed deck to a Friends match (no 50-card..."
 }
