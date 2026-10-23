@@ -21,7 +21,7 @@ const deck = ["OP01-013","OP01-016","OP01-024","OP01-014","OP01-015","OP01-017",
 
 // every kind of step in effects.json is one the game knows
 const kinds = await page.evaluate(() => {
-  const known = ["rest","stand","ko","bounce","bottom","pwr","draw","look","don","returnDon","giveDon","discard","other","play","choose","cost","mark","life","trashCh","kw","restDon","standDon","oppDon","oppRetDon","oppDiscard","oppHandDeck","lifeHand","deckLife","handLife","lifeTrash","mill","handDeck","trashDeck","trashHand","shuffle","playSelf","handSelf","act","noBlock","noPlay","revealHand","reveal","playRv","addRv","rvPlace","rvKw","lifeUp","lifeDown","trash"];
+  const known = ["rest","stand","ko","bounce","bottom","pwr","draw","look","don","returnDon","giveDon","discard","other","play","choose","cost","mark","life","trashCh","kw","restDon","standDon","oppDon","oppRetDon","oppDiscard","oppHandDeck","lifeHand","deckLife","handLife","lifeTrash","mill","handDeck","trashDeck","trashHand","shuffle","playSelf","handSelf","act","noBlock","noPlay","revealHand","reveal","playRv","addRv","rvPlace","rvKw","lifeUp","lifeDown","trash","oppHandTrash","oppLifeHand","koStage"];
   const seen = new Set(); let stat = 0, dup = 0;
   const walk = sts => sts.forEach(s => { seen.add(s.a); if (s.opts) s.opts.forEach(o => walk(o.steps)); });
   for (const [code] of BFX) { const ab = fxAb(code); ab.forEach(a => { walk(a.steps); if (a.s) stat++; }); if (ab.some(a => a.t === "yourTurn" && !a.s) && ab.some(a => a.t === "onPlay" && a.text === (ab.find(b => b.t === "yourTurn") || {}).text)) dup++; }
@@ -128,6 +128,29 @@ check(o1.cm === -2, "−2 cost lands on the opponent's Character");
 check((o1.mk || []).includes("fz"), "Freeze lands on the opponent's rested Character");
 check(o1.h === o0.h - 1, "the opponent trashes a card from their hand");
 check(o1.lf === o0.lf - 1 && o1.tr >= o0.tr + 2, "the top of the opponent's Life is trashed");
+
+// more of the opponent's side: a card trashed at random from their hand, their Life to their hand, their Stage K.O.'d
+const parsed = await page.evaluate(() => { const st = (c, t) => (fxAb(c).find(a => a.t === t) || {steps: []}).steps; return {
+  hand: st("OP06-097", "main").map(x => x.a), life: st("EB04-054", "onKO").map(x => x.a), stage: st("OP17-018", "main").map(x => x.a),
+  zoro: st("OP12-039", "main")[0], buggy: st("OP16-058", "counter")[0], linlin: st("ST07-013", "activateMain").map(x => x.a), types: st("OP11-039", "counter")[0] }; });
+console.log("parsed", JSON.stringify(parsed));
+check(parsed.hand.includes("oppHandTrash") && parsed.life.includes("oppLifeHand") && parsed.stage.includes("koStage"), "the opponent's hand, Life and Stage wordings are carried out");
+check(parsed.zoro && parsed.zoro.myLd && parsed.zoro.ldn === "Roronoa Zoro" && parsed.buggy && parsed.buggy.a === "pwr" && parsed.buggy.ld && parsed.linlin.includes("kw") && parsed.types && parsed.types.a === "pwr", "named cards and several types are targets the game picks");
+await page.evaluate(() => botSide(() => { S.stage = {card: {c: "OP02-048", n: nameOf("OP02-048")}, r: false, d: 0, pt: 0}; return 0; }));
+await page.waitForTimeout(300);
+const p0 = await page.evaluate(() => ({h: oppM.h, lf: oppM.lf, st: !!oppM.st, tr: oppM.tr.length}));
+await fxRun([{a: "oppHandTrash", text: "Trash 1 card from your opponent's hand."}]); await page.evaluate(() => doAction("fxgo"));
+await page.waitForTimeout(300);
+await fxRun([{a: "oppLifeHand", text: "Add up to 1 card from the top of your opponent's Life cards to the owner's hand."}]); await page.evaluate(() => doAction("fxgo"));
+await page.waitForTimeout(300);
+await fxRun([{a: "koStage", cost: 0, text: "K.O. up to 1 of your opponent's Stages with a cost of 0 or less."}]);
+const p1 = await page.evaluate(() => ({open: !!fxCur, log: myLog.slice(-2).map(e => e[1]).join(" | ")}));
+await fxRun([{a: "koStage", text: "K.O. up to 1 of your opponent's Stages."}]); await page.evaluate(() => doAction("fxgo"));
+await page.waitForTimeout(500);
+const p2 = await page.evaluate(() => ({h: oppM.h, lf: oppM.lf, st: !!oppM.st, tr: oppM.tr.length}));
+console.log("opponent 2", JSON.stringify(p0), JSON.stringify(p1), JSON.stringify(p2));
+check(p0.st && !p1.open && /no Stage that fits/.test(p1.log), "a Stage that costs too much can't be K.O.'d, and the step passes");
+check(p2.h === p0.h && p2.lf === p0.lf - 1 && !p2.st && p2.tr === p0.tr + 2, "a random card from the opponent's hand is trashed, their top Life goes to their hand and their Stage is K.O.'d");
 
 // Life, deck and trash steps
 const z0 = await page.evaluate(() => ({h: S.hand.length, lf: S.life.length, dk: S.deck.length, tr: S.trash.length}));
@@ -580,6 +603,23 @@ const strict = await page.evaluate(() => {
   const f = {card: {c: "OP06-042", n: nameOf("OP06-042"), u: 97100}, r: false, d: 0, pt: 0}; S.chars = [f];
   const a1 = {text: "[Once Per Turn] A"}, a2 = {text: "[Once Per Turn] B"};
   optMark({card: f.card, text: a1.text}); out.opt = [optUsed(f.card, a1), optUsed(f.card, a2)];
+  // two abilities waiting together: the player picks which resolves first
+  const ab2 = t => normFx({abilities: [{t: "onPlay", text: "[On Play] " + t, steps: [{a: "draw", n: 1, who: "own", text: t}]}]}).ab[0];
+  fxEnqueue(fxJob({c: "OP01-016", n: "Nami"}, ab2("Draw 1 card."))); fxEnqueue(fxJob({c: "OP01-013", n: "Sanji"}, ab2("Draw 1 card. ")));
+  out.order = {offer: $("#fxpanel").innerHTML.includes('data-do="fxfirst:0"'), before: fxCur.card.c};
+  doAction("fxfirst:0"); out.order.after = fxCur.card.c; out.order.queued = fxQueue.map(j => j.card.c);
+  doAction("fxdraw"); out.order.offerAfterStart = fxCur && $("#fxpanel").innerHTML.includes("fxfirst"); clear();
+  // online, on the opponent's turn: mine waits while theirs is being resolved
+  const wasR = R, wasPR = PR, wasOpp = oppM, wasTurn = S.myTurn;
+  R = {presence: () => Promise.resolve()}; PR = null; S.myTurn = false; oppM = Object.assign({}, wasOpp || oppModel({nick: "Opp", p: 1}), {fb: 1});
+  try {
+    fxEnqueue(fxJob({c: "OP01-016", n: "Nami"}, ab2("Draw 1 card.")));
+    out.hold = {held: fxHeld(fxCur), text: $("#fxpanel").textContent.includes("Waiting for")};
+    const h = S.hand.length; doAction("fxdraw"); out.hold.blocked = S.hand.length === h && !!fxCur;
+    oppM.fb = 0; renderFx(); out.hold.free = !fxHeld(fxCur) && !$("#fxpanel").textContent.includes("Waiting for");
+    S.myTurn = true; oppM.fb = 1; fxCur.wt = 0; fxEnqueue(fxJob({c: "OP01-013", n: "Sanji"}, ab2("Draw 1 card. "))); out.hold.ownTurn = !fxQueue[0].wt;
+    clear();
+  } finally { R = wasR; PR = wasPR; oppM = wasOpp; S.myTurn = wasTurn; }
   S.chars = []; PR.bot = wasBot; commit();
   return out;
 });
@@ -589,6 +629,8 @@ check(strict.may.includes("Skip"), "a \"you may\" step can still be passed");
 check(!strict.unpaid.open && /couldn't pay the cost/.test(strict.unpaid.log) && strict.unpaid.hand === 1, "a cost that can't be paid in full stops the ability before anything happens");
 check(!strict.none.open && /nothing could be chosen/.test(strict.none.log), "a step with nothing to choose passes by itself and says so");
 check(strict.laterStep === "later" && strict.queued === 1, "\"at the end of this turn\" waits for the end of the turn");
+check(strict.order.offer && strict.order.before === "OP01-016" && strict.order.after === "OP01-013" && strict.order.queued[0] === "OP01-016" && !strict.order.offerAfterStart, "with two abilities waiting, the player picks which resolves first");
+check(strict.hold.held && strict.hold.text && strict.hold.blocked && strict.hold.free && strict.hold.ownTurn, "online, the turn player's ability resolves before the other player's");
 check(strict.opt[0] && !strict.opt[1], "Once Per Turn counts each ability on a card on its own");
 await page.screenshot({ path: OUT + "/board.png" });
 check(!errs.length, "no page errors" + (errs.length ? ": " + errs.slice(0, 3).join(" / ") : ""));
