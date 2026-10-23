@@ -53,6 +53,8 @@ for (let i = 0; i < 80 && !await page.evaluate(() => S.myTurn && !oppM.ak); i++)
 check(await page.evaluate(() => S.myTurn), "it's your turn against the computer");
 const clear = () => page.evaluate(() => { while (fxCur) { fxQueue.length = 0; fxFinish(false); } if (modal && modal.type !== "home") closeModal(); closeMenu(); });
 const panel = () => page.evaluate(() => { const p = document.querySelector("#fxpanel"); return p.hidden ? "" : p.innerText.replace(/\s+/g, " "); });
+// these checks walk each step of an ability, so steps with no real choice wait for a tap here (fxAutoOn)
+await page.evaluate(() => { fxAutoOn = false; });
 await page.evaluate(() => { S.turn = Math.max(S.turn, 3); S.donActive = 6; S.donRested = 0; S.leader.d = 0; S.chars = []; commit(); });
 const card = c => ({c, n: ""});
 const run = (code, t) => page.evaluate(([code, t]) => { const c = {c: code, n: nameOf(code) || ""}; const ab = fxAb(code).find(a => a.t === t); window.__c = c; return ab ? (fxEnqueue(fxJob(c, ab)), true) : false; }, [code, t]);
@@ -632,6 +634,33 @@ check(strict.laterStep === "later" && strict.queued === 1, "\"at the end of this
 check(strict.order.offer && strict.order.before === "OP01-016" && strict.order.after === "OP01-013" && strict.order.queued[0] === "OP01-016" && !strict.order.offerAfterStart, "with two abilities waiting, the player picks which resolves first");
 check(strict.hold.held && strict.hold.text && strict.hold.blocked && strict.hold.free && strict.hold.ownTurn, "online, the turn player's ability resolves before the other player's");
 check(strict.opt[0] && !strict.opt[1], "Once Per Turn counts each ability on a card on its own");
+// with fxAutoOn (the default), steps with no real choice happen by themselves
+const auto = await page.evaluate(async () => {
+  const tick = () => new Promise(r => setTimeout(r, 30));
+  fxAutoOn = true; const out = {}, clear = () => { while (fxCur) { fxQueue.length = 0; fxFinish(false); } };
+  const job = (steps, text) => fxEnqueue(fxJob({c: "OP01-016", n: "Nami"}, normFx({abilities: [{t: "onPlay", text: text || "[On Play] test", steps}]}).ab[0]));
+  const c = {c: "OP16-049", n: nameOf("OP16-049")}; S.chars = [{card: c, r: false, d: 0, pt: 0}]; commit();
+  let h = S.hand.length; fxEnqueue(fxJob(c, fxAb("OP16-049").find(a => a.t === "activateMain"))); await tick();
+  out.costAsks = !!fxCur && /Don't use it/.test($("#fxpanel").innerText); doAction("fxgo");
+  out.drewAfterPay = !fxCur && S.hand.length === h + 1 && S.chars[0].r; clear();
+  h = S.hand.length; job([{a: "choose", text: "Choose one.", opts: [{text: "Draw 1 card.", steps: [{a: "draw", who: "own", text: "Draw 1 card."}]}, {text: "Draw 2 cards.", steps: [{a: "draw", who: "own", n: 2, text: "Draw 2 cards."}]}]}]);
+  await tick(); out.chooseAsks = !!fxCur; doAction("fxopt:1"); out.chosenDrew = !fxCur && S.hand.length === h + 2; clear();
+  h = S.hand.length; job([{a: "draw", who: "own", text: "You may draw 1 card."}]); await tick(); out.mayAsks = !!fxCur && S.hand.length === h; clear();
+  S.chars[0].r = false; commit(); job([{a: "rest", who: "own", n: 1, upTo: false, text: "Rest 1 of your Characters."}]); await tick(); out.onlyTarget = !fxCur && S.chars[0].r; clear();
+  S.chars.push({card: {c: "OP01-013", n: nameOf("OP01-013")}, r: false, d: 0, pt: 0}); S.chars[0].r = false; commit();
+  job([{a: "rest", who: "own", n: 1, upTo: false, text: "Rest 1 of your Characters."}]); await tick(); out.twoTargetsAsk = !!fxCur; clear();
+  h = S.hand.length; job([{a: "draw", who: "own", text: "Draw 1 card."}]); job([{a: "draw", who: "own", text: "Draw 1 card. "}]); await tick();
+  out.orderAsks = !!fxCur && S.hand.length === h && $("#fxpanel").innerHTML.includes("fxfirst"); doAction("fxdraw"); await tick(); out.thenBoth = !fxCur && S.hand.length === h + 2;
+  out.toast = $("#toast").hidden ? "" : $("#toast").textContent; clear();
+  S.chars = []; fxAutoOn = false; commit();
+  return out;
+});
+console.log("auto", JSON.stringify(auto));
+check(auto.costAsks && auto.drewAfterPay, "paying a cost is still asked, and the draw after it happens by itself");
+check(auto.chooseAsks && auto.chosenDrew, "a choice is still asked, and the chosen option happens by itself");
+check(auto.mayAsks && auto.twoTargetsAsk, "\"you may\" steps and a pick between cards still ask");
+check(auto.onlyTarget, "a required step with only one card to pick does it by itself");
+check(auto.orderAsks && auto.thenBoth && /Nami/.test(auto.toast), "with two abilities waiting the order is asked, then the rest happens by itself and says what it did");
 await page.screenshot({ path: OUT + "/board.png" });
 check(!errs.length, "no page errors" + (errs.length ? ": " + errs.slice(0, 3).join(" / ") : ""));
 await app.close();

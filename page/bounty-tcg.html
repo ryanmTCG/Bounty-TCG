@@ -5791,8 +5791,11 @@ function fxSettle(){
 // conditions the game can't check, searches, plays and choices still ask, and so does the first step while another
 // ability is waiting to go first (fxFirst). The computer has its own (botFxStep).
 const FX_AUTO_APPLY = {oppDiscard: 1, oppHandDeck: 1, oppHandTrash: 1, oppLifeHand: 1, oppRetDon: 1, deckLife: 1, mill: 1, shuffle: 1, playSelf: 1, handSelf: 1, noBlock: 1, noPlay: 1};
+let fxAutoOn = true;
 function fxAuto(m, st){
-  if (botQuiet || m !== fxCur || m.forced || m.rpl || fxHeld(m) || (fxFresh(m) && fxOthers().length)) return false;
+  if (!fxAutoOn || botQuiet || m !== fxCur || m.forced || m.rpl || fxHeld(m) || (fxFresh(m) && fxOthers().length)) return false;
+  // abilities that trigger together are queued one after another: wait a moment so they're all there to be ordered
+  if (!m.tick) { m.tick = 1; setTimeout(() => { if (fxCur === m) { fxSettle(); renderFx(); } }, 0); return false; }
   if (st.a === "later") { m.auto = 1; doAction("fxlater"); return true; }
   if (st.pay || st.dm || stepMay(st) || stepOk(m, st) !== true) return false;
   const go = f => { m.auto = 1; f(); return true; };

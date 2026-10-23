@@ -39,6 +39,8 @@ for (let i = 0; i < 80 && !await page.evaluate(() => S.myTurn && !oppM.ak); i++)
 check(await page.evaluate(() => S.myTurn), "it's your turn against the computer");
 const clear = () => page.evaluate(() => { while (fxCur) { fxQueue.length = 0; fxFinish(false); } if (modal && modal.type !== "home") closeModal(); closeMenu(); });
 const panel = () => page.evaluate(() => { const p = document.querySelector("#fxpanel"); return p.hidden ? "" : p.innerText.replace(/\s+/g, " "); });
+// these checks walk each step of an ability, so steps with no real choice wait for a tap here (fxAutoOn)
+await page.evaluate(() => { fxAutoOn = false; });
 const toastText = () => page.evaluate(() => { const t = document.querySelector("#toast"); return t && !t.hidden ? t.innerText : ""; });
 // open a menu, then tap the item that starts with label
 const pick = async (open, label) => { await page.evaluate(open); return page.evaluate(label => { const b = [...document.querySelectorAll("#menu button")].find(x => x.textContent.startsWith(label)); if (b) b.click(); return !!b; }, label); };
