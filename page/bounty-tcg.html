@@ -5780,10 +5780,37 @@ function fxSettle(){
     }
     // nothing can be chosen for it: say so and go on, instead of waiting on the player
     const why = !st.pay && fxNothing(m, st);
-    if (!why) return;
+    if (!why) { fxAuto(m, st); return; }
     addLog(`${lab(m.card)}: ${why}`);
     m.i++; m.pick = []; m.dsel = {}; m.play = null; m.did = false; m.res = null;
   }
+}
+// A step the player has no real choice in is done straight away instead of waiting for a tap: a required draw, DON!!
+// from the DON!! deck, the opponent's side of an effect, this card's own power or keyword, "all of" a kind, or a
+// required target with only as many cards to pick as it takes. Costs ("you may ... :"), "up to" and "you may" steps,
+// conditions the game can't check, searches, plays and choices still ask, and so does the first step while another
+// ability is waiting to go first (fxFirst). The computer has its own (botFxStep).
+const FX_AUTO_APPLY = {oppDiscard: 1, oppHandDeck: 1, oppHandTrash: 1, oppLifeHand: 1, oppRetDon: 1, deckLife: 1, mill: 1, shuffle: 1, playSelf: 1, handSelf: 1, noBlock: 1, noPlay: 1};
+function fxAuto(m, st){
+  if (botQuiet || m !== fxCur || m.forced || m.rpl || fxHeld(m) || (fxFresh(m) && fxOthers().length)) return false;
+  if (st.a === "later") { m.auto = 1; doAction("fxlater"); return true; }
+  if (st.pay || st.dm || stepMay(st) || stepOk(m, st) !== true) return false;
+  const go = f => { m.auto = 1; f(); return true; };
+  if (st.a === "draw") return go(() => doAction("fxdraw"));
+  if (st.a === "don") return go(() => doAction(donRestedStep(st) ? "fxdon:r" : "fxdon:a"));
+  if (FX_AUTO_APPLY[st.a] || st.a === "lifeTrash" || st.a === "lifeHand" && !st.tb) return go(() => fxApply());
+  if (st.self || st.rt) return !st.rt && fxTgt(m, st) && st.a !== "play" ? go(() => fxApply()) : false;
+  if (fxVerb(st, "it")) {
+    const cs = fxCands(st); if (!cs.length) return false;
+    if (!st.all && cs.length > fxLim(st)) return false;
+    return go(() => { m.pick = cs.map(x => x.ref); fxApply(); });
+  }
+  if (HAND_PICK[st.a] && st.a !== "revealHand") {
+    const pr = fxHandPred(st), ok = S.hand.map((c, i) => !pr || pr(c.c) ? "hand:" + i : null).filter(Boolean);
+    if (!ok.length || ok.length > Math.abs(st.n) || st.a === "handDeck" && st.top) return false;
+    return go(() => { m.pick = ok; fxApply(); });
+  }
+  return false;
 }
 // a step (not a cost) with nothing to act on: what to tell the player, or null
 // "K.O. up to 1 of your opponent's Stages with a cost of 3 or less": their Stage, if it fits
@@ -5840,7 +5867,7 @@ function fxFinish(done, unpaid){
   // a replacement ("... instead"): paid, the card stays; otherwise it leaves the field as it would have
   if (m.rpl) { const p = m.rpl; if (done) addLog(`used ${lab(m.card)}'s effect instead of ${lab(p.card)} ${p.kind === "ko" ? "being K.O.'d" : "leaving the field"}`); else rpOffer(p.f, p.kind, p.cause, p.go, p.tried); }
   if (done || m.paid) optMark(m);
-  if (done) { addLog(`resolved ${lab(m.card)}'s ${m.tl || "On Play"}`); }
+  if (done) { addLog(`resolved ${lab(m.card)}'s ${m.tl || "On Play"}`); if (m.auto && !botQuiet) toast(`${lab(m.card)}: ${m.text.replace(/^(?:\[[^\]]+\]\s*)+/, "").slice(0, 140)}`); }
   else if (!unpaid) addLog(`cancelled ${lab(m.card)}'s ability`);
   if (S.ev && S.ev.card === m.card && !fxQueue.some(j => j.card === m.card)) { S.trash.unshift(S.ev.card); S.ev = null; addLog(`${lab(m.card)} went to the trash`); }
   S.mf = null; fxCur = fxQueue.shift() || null; if (fxCur) fxSettle(); commit(); renderFx();
